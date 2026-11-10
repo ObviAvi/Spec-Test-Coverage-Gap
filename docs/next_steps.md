@@ -44,7 +44,9 @@ Report:
 
 ### 3. Step 3 on Pro
 
-The build only writes `data/tasks/verified.jsonl`. Add a Pro task file, then judge all 731 tasks. 75 are cached; the remaining 656 have longer prompts, so expect $45-55.
+Done. The panel flags 258 of 731 public Pro tasks (35%, CI 32-39%); 201 of 656 (31%) outside the 75 known-overspecified validation tasks. Kappa 0.62. Report: `results/judge_v1/prevalence_pro.md` (`python -m stcg prevalence --set pro`).
+
+Caveat: the false-flag rate is measured on Verified only, so the corrected Pro prevalence (38-44%) assumes it carries over. There are no public per-task agent results for Pro in the pipeline, so no resolve-rate table.
 
 ### 4. Ablations and a baseline on dev
 
