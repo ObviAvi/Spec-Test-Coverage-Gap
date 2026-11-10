@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-25479",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14068,
+  "output": {
+    "reasoning": "1. The spec says that after `cm.register_cmap(name='my_cmap_name', cmap=my_cmap)` where `my_cmap.name` differs, `plt.set_cmap('my_cmap_name')` followed by `imshow` fails. The cause is that `set_cmap` stores `cmap.name` rather than the registered name. The implicated path is `pyplot.set_cmap`, the default-cmap lookup, and the registry.\n\n2. What the tests require:\n(a) `test_set_cmap_mismatched_name`: after registering under 'wrong-cmap' and calling `plt.set_cmap`, `plt.get_cmap('wrong-cmap') == cmap` holds, where the original is named 'test-cmap'.\n(b) The same test asserts `cmap_returned.name == 'wrong-cmap'`.\n(c) `test_colormap_equals`: a copy with a different `.name` must now compare equal to the original. This reverses the previous asserted behavior.\n\n3. Status of each:\n- The set_cmap and imshow workflow working with a mismatched name is settled by the spec.\n- (b) is open. The spec only asks that the name lookup work. It never says the registered object's `.name` must be rewritten to the registration key.\n- (c) is open and contradicts existing tested behavior: names previously made colormaps unequal. The spec says nothing about `Colormap.__eq__`.\n\n4. Alternative fix: change `pyplot.set_cmap` to record the string the user passed (or the registry key) in rcParams instead of `cmap.name`. This fully resolves the reported bug for strings and closely related inputs. Under that fix:\n- `cmap_returned.name` stays 'test-cmap', so (b) fails.\n- `Colormap.__eq__` still compares names, so `test_colormap_equals` fails.\n- If the registry renamed its copy, the equality assertion in the new test would also fail.\n\nThe tests thus require two unspecified design changes: renaming registered copies, and making `__eq__` ignore names. The second lives in a different function (`Colormap.__eq__`) that the spec never implicates, and it flips existing behavior.",
+    "score": 4,
+    "explanation": "A natural fix makes `pyplot.set_cmap` store the registered/requested name instead of `cmap.name`, which solves the reported bug. It still fails because the tests also require the registry to rename the stored colormap to the registration key (`cmap_returned.name == 'wrong-cmap'`). They further require `Colormap.__eq__` to ignore the `name` attribute, reversing previously tested behavior the spec never mentions.",
+    "overspecification_vector": "test_colormap_equals: `cm_copy.name = \"Test\"; assert cm_copy == cmap`; test_set_cmap_mismatched_name: `assert cmap_returned.name == \"wrong-cmap\"` and `assert cmap_returned == cmap` (with original named 'test-cmap')"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRMGjByKTK4izk11o9G",
+  "input_tokens": 5862,
+  "output_tokens": 1728,
+  "seconds": 17.3
+}

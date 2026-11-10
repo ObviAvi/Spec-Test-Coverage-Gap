@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14155",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9282,
+  "output": {
+    "reasoning": "1. The specification identifies ResolverMatch.__repr__() as the problem: a partial view must reveal its underlying function and arguments provided up front. Unwrapping in __init__() is suggested, not mandated, and no output format is specified.\n2. The tests construct matches through resolve(), using the configured URLconf. test_repr requires the existing positional arguments, empty kwargs, URL metadata, and empty namespace lists, but changes url_name and route to quoted strings. test_repr_functools_partial covers ordinary, nested, and wrapped partials and requires an exact functools.partial representation containing views.empty_view!r and template_name='template.html' or 'nested_partial.html'. It also requires args=(), kwargs={}, and exact surrounding metadata formatting. No test body is supplied for test_resolver_match_on_request, so no additional requirements can be established from it.\n3. Revealing the underlying function and bound keyword is settled by the specification. Nested and wrapped partials are reasonable related inputs. The ordinary resolver metadata and established representation structure follow existing behavior shown in the context. However, using exactly the native partial representation—including the underlying function's repr rather than its dotted name—is open. Adding quotes around ordinary views' url_name and route is also open; the old expectations explicitly show unquoted values.\n4. A reasonable fix could display the underlying function's dotted name and expose bound arguments in separate repr fields, while preserving callable behavior. This satisfies the issue but fails the exact partial-string assertion. Independently, a fix could use the required native partial representation yet preserve the existing unquoted URL metadata, failing test_repr.\n5. These constraints select particular externally observable formatting choices, rather than requiring an internal implementation, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could expose the underlying function and bound arguments without using the exact native functools.partial representation. It could also preserve the existing unquoted url_name and route formatting; the graded tests reject both reasonable choices.",
+    "overspecification_vector": "test_repr: the new exact values \"url_name='no-kwargs'\" and \"route='^no_kwargs/([0-9]+)/([0-9]+)/$'\". test_repr_functools_partial: func = (f\"functools.partial({views.empty_view!r}, \" f\"template_name='{template_name}')\") followed by the exact equality against f\"ResolverMatch(func={func}, args=(), kwargs={{}}, \" and its remaining metadata."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2091,
+  "output_tokens": 1523,
+  "seconds": 34.6
+}

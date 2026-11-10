@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15695",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9105,
+  "output": {
+    "reasoning": "1. The spec says that after an unnamed (old_fields) RenameIndex is moved backward, re-applying it crashes with 'relation new_pony_test_idx already exists'. It names the remedy: \"RenameIndex() should restore the old auto-generated name when an unnamed index ... is moving backward.\" Its example re-applies with `database_forwards(app_label, editor, project_state, new_state)`, the normal from/to order.\n\n2. What the graded test requires:\n(a) The existing context still asserts that backwards runs zero queries (`assertNumQueries(0)`) and that `new_pony_test_idx` still exists afterwards.\n(b) It then calls `database_forwards(app_label, editor, new_state, project_state)`, with the states swapped relative to the spec.\n(c) It asserts `new_pony_test_idx` still exists.\n\n3. Settled or open:\n(a) is open, and in fact contradicts the spec's stated remedy. A fix that makes backwards rename the index back to its auto-generated name, exactly as the spec says, issues queries. It fails `assertNumQueries(0)` and the `new_pony_test_idx` existence check after backwards.\n(b) is open. With the states swapped, `to_state` (project_state) only has index_together and no index named `new_pony_test_idx`. So `to_model_state.get_index_by_name(self.new_name)` raises ValueError. The call survives only if the fix returns early on `old_index.name == self.new_name` before looking up the new index in `to_state`. That is an ordering detail of the reference fix. Other reasonable fixes fail here, for example one that checks whether the target name already exists in the database after resolving `new_index`, or one that implements the spec's restore-on-backwards approach. These would handle the spec's own example (normal state order) correctly, yet crash or mis-assert on the swapped-state call.\n(c) passes only with the noop approach.\n\n4. The test checks a different scenario than the spec describes: swapped states and a noop-on-same-name policy. It rejects the remedy the spec explicitly proposes.",
+    "score": 4,
+    "explanation": "A fix that follows the spec, renaming the index back to its auto-generated name on backwards and re-applying normally, fails. The test still requires backwards to be a zero-query noop, then calls `database_forwards` with `new_state`/`project_state` swapped. That only passes if forwards returns early when the old index name equals `new_name`, before resolving the new index from `to_state`.",
+    "overspecification_vector": "operation.database_forwards(app_label, editor, new_state, project_state) followed by self.assertIndexNameExists(table_name, \"new_pony_test_idx\"); together with the retained `with connection.schema_editor() as editor, self.assertNumQueries(0): operation.database_backwards(...)` asserting backwards is a noop"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRG3gEhheXg7P9xfwnC",
+  "input_tokens": 3342,
+  "output_tokens": 2524,
+  "seconds": 24.4
+}

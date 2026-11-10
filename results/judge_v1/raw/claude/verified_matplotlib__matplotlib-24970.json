@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24970",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9385,
+  "output": {
+    "reasoning": "1. The spec says calling a colormap with a uint8 array (`plt.get_cmap()(np.empty((0,), dtype=np.uint8))`) emits NumPy 1.24 DeprecationWarnings. These come from `Colormap.__call__` assigning the out-of-range sentinel indices `_i_over`, `_i_under` and `_i_bad` (257, 256, 258) into a uint8 array. Expected outcome: no warnings.\n2. What the test requires: `mpl.colormaps[\"viridis\"](np.uint8(0))` must equal `cm(0)`, and it must not raise. Matplotlib's test config turns warnings into errors, so the DeprecationWarning currently makes this fail.\n3. Status of each requirement:\n- No warning for uint8 input: settled by the spec (\"Expected outcome: No warnings.\").\n- The uint8 value 0 maps to the same color as int 0: settled by convention and existing behavior. Integer inputs index the lookup table directly, regardless of integer width.\n- Scalar instead of empty array: same entry point (`Colormap.__call__`) with a closely related input.\n4. A reasonable fix might upcast to int before assigning sentinels, use masks computed before casting, or suppress or avoid the overflowing assignment. Each removes the warning and keeps uint8 0 mapped to index 0. No reasonable fix would map uint8(0) to a different color.",
+    "score": 2,
+    "explanation": "The test calls the colormap's public `__call__` with a uint8 value and checks it is warning-free and gives the same color as int 0, which any correct fix to the reported deprecation-warning bug satisfies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRM93pgaQ9UqmKHhaNd",
+  "input_tokens": 3564,
+  "output_tokens": 1349,
+  "seconds": 14.5
+}

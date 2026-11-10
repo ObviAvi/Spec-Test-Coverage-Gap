@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15741",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8625,
+  "output": {
+    "reasoning": "Spec: get_format should accept a lazy format_type parameter. The reported symptom is the date filter failing on a lazy string, for example some_date|date:_('Y-m-d').\n\nTests:\n1. get_format(gettext_lazy('DATE_FORMAT')) == 'N j, Y'. This is settled by the title, which names get_format and says it should allow a lazy parameter. The value 'N j, Y' is the existing en default, so it follows from current behavior.\n2. {{ t|date:_('H:i') }} renders '00:00'. This matches the spec's reproduction case near-verbatim.\n\nPossible alternative fix: handle the lazy string only in the date filter and leave get_format unchanged. Such a fix would fail test 1. It is not a fix that follows the spec, though, because the spec explicitly asks get_format to accept lazy parameters.\n\nFix inside get_format: any reasonable version (calling str() on format_type, or force_str) passes both tests. One small point is that the cache key would use the lazy object, which is fine either way.",
+    "score": 1,
+    "explanation": "Both tests directly check what the spec describes: get_format accepting a lazy format_type, and the date filter working with a lazy translated format string.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRGDhzCqmLz2k1QFY4M",
+  "input_tokens": 3269,
+  "output_tokens": 430,
+  "seconds": 5.5
+}

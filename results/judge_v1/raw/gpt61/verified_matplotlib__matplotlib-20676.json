@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-20676",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10110,
+  "output": {
+    "reasoning": "1. The specification identifies construction of an interactive SpanSelector as changing axes limits and requires that the limits 'remain at (10, 20) + margins.' It does not prescribe how selector handles are initialized.\n2. The tests construct horizontal and vertical selectors on positive-valued plotted data, require both axes' bounds to remain unchanged, inspect tool._edge_handles.positions, simulate press/onmove events, and require unchanged bounds plus handle positions matching the selected endpoints.\n3. Preserving the original bounds is explicitly settled. Testing vertical selection, both axes, and preservation during interaction are reasonable related regression checks. Updating selection endpoints during dragging follows normal selector behavior. However, requiring the private handle positions to equal list(bound) immediately after construction is open: neither the specification nor the supplied existing-code context requires initial handles at the two axis extrema.\n4. A reasonable fix could prevent selector/handle artists from contributing to data-limit updates while retaining their default pre-selection coordinates, then update their positions normally during dragging. That would resolve the reported autoscaling bug without satisfying the initial private-state assertion.\n5. Because this assertion requires a particular internal initialization strategy rather than merely unchanged axes limits, the tests are significantly overspecified.",
+    "score": 4,
+    "explanation": "A correct fix could exclude selector handles from autoscaling without initializing them at the axis boundaries. It would preserve the requested limits but fail the test's exact assertion about the private initial handle positions.",
+    "overspecification_vector": "assert tool._edge_handles.positions == list(bound)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2385,
+  "output_tokens": 780,
+  "seconds": 21.6
+}

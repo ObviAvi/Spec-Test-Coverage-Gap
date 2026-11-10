@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14404",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9270,
+  "output": {
+    "reasoning": "1. The specification identifies catch_all_view() and says its redirect incorrectly uses request.path_info, which omits the script prefix, instead of request.path, which includes it.\n2. The graded tests authenticate a staff user, reverse an existing admin changelist URL, remove its final slash, and request it with APPEND_SLASH=True. They supply the prefix through either SCRIPT_NAME='/prefix/' or FORCE_SCRIPT_NAME='/prefix/'. Both require a 301 redirect to '/prefix' + known_url; they do not fetch the redirect destination.\n3. Preserving the prefix and appending the missing slash are settled by the explicit request.path versus request.path_info description. FORCE_SCRIPT_NAME is explicitly named. Testing SCRIPT_NAME is a closely related input exposing the same path-truncation bug. The 301 status follows the existing adjacent missing-slash test. Authentication, URL reversal, and the chosen prefix are test setup rather than requirements for a particular implementation.\n4. No requirement leaves a meaningful alternative that a reasonable correct fix would violate. A fix preserving the full request path and existing redirect behavior passes both cases, regardless of its implementation.\n5. Score 2: the tests cover the reported behavior plus its directly related SCRIPT_NAME configuration.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix preserves the script prefix in the missing-slash redirect, satisfying the asserted '/prefix' + known_url destination for both FORCE_SCRIPT_NAME and the closely related SCRIPT_NAME input while retaining the existing 301 behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2105,
+  "output_tokens": 760,
+  "seconds": 16.4
+}

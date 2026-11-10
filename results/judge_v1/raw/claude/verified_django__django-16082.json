@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16082",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8040,
+  "output": {
+    "reasoning": "1. The spec says that combining numeric expressions of different types (Decimal and Integer) with MOD does not resolve output_field the way ADD, SUB, MUL and DIV do. The symptom is output_field resolution on combined expressions, which goes through CombinedExpression._resolve_output_field and the connector combinations table.\n2. The graded tests add Combinable.MOD to the connectors list in test_resolve_output_field_number. That test checks every lhs/rhs pair (Integer/Decimal→Decimal, Integer/Float→Float, and so on) against the same expected result as the other arithmetic operators. test_resolve_output_field_with_null presumably checks that MOD with a NULL operand resolves the same way the other operators do.\n3. Each requirement is settled by the phrase \"like it does for other mathematical operators.\" MOD must follow the same type-resolution rules as ADD/SUB/MUL/DIV for all numeric combinations, including Float and null. Extending the fix to Float/Integer and null cases is the same function on related inputs.\n4. No reasonable correct fix would resolve MOD differently from the other operators. A fix covering only Decimal/Integer would leave the same bug in closely related inputs, so it does not count.",
+    "score": 2,
+    "explanation": "The tests only assert that MOD resolves output_field exactly like the other arithmetic operators across numeric (and null) field combinations, which is what the spec asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRGnKncFgXpDssEUJ1G",
+  "input_tokens": 2939,
+  "output_tokens": 739,
+  "seconds": 8.0
+}

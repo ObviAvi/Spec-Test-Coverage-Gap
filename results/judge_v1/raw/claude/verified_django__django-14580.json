@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14580",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9219,
+  "output": {
+    "reasoning": "1. The spec says the generated migration references `models.Model` in `bases` without importing `models`. The reporter suspects `django.db.migrations.writer`. The root cause is the existing special case for `models.Model` in the type serializer, which emits the string `models.Model` with no imports.\n2. The test requires two things. First, `assertSerializedEqual(models.Model)` must round-trip: the serialized string is evaluated with its imports. Second, `MigrationWriter.serialize(models.Model)` must return exactly `('models.Model', {'from django.db import models'})`.\n3. The string `models.Model` is settled by existing code: the issue's output already shows `models.Model`, so the existing serializer emits it. The import `from django.db import models` is settled by convention: Django migrations always import models this way, and the writer already merges this exact import with `migrations`. Serializing at this layer is settled because `MigrationWriter.serialize` is the existing entry point the writer uses for every value, including bases.\n4. The obvious alternatives are unreasonable. One would always add a `models` import to every migration, leaving many unused imports. Another would special-case `bases` inside `CreateModel` instead of fixing the serializer, which leaves the bug for `models.Model` anywhere else it gets serialized. Neither is a natural, complete fix. Changing the output string to something like `django.db.models.Model` with `import django.db.models` would break the existing convention and would be an odd choice. The natural fix is to give the existing special case its missing import, and that is what the test checks.",
+    "score": 2,
+    "explanation": "Any reasonable fix adds the missing `from django.db import models` import to the existing `models.Model` serialization special case, which is exactly what `MigrationWriter.serialize(models.Model)` is asserted to return.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRCTMQoSFDEZb3Zvh66",
+  "input_tokens": 3407,
+  "output_tokens": 1289,
+  "seconds": 14.4
+}

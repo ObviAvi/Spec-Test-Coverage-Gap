@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14915",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9196,
+  "output": {
+    "reasoning": "1. The spec says ModelChoiceIteratorValue is unhashable, so `value in dict` raises TypeError. The dict is keyed by raw pk ints (`{1: [...]}`), so the lookup must succeed against those int keys.\n2. The test requires three things:\n   - `ModelChoiceIteratorValue` is importable from `django.forms.models` (it already exists; it is named in the spec).\n   - `hash(ModelChoiceIteratorValue(pk, instance)) == hash(ModelChoiceIteratorValue(pk, None))`.\n   - Hashes differ for different pks.\n3. Settled by spec and convention. The existing `__eq__` compares by `.value`, and Python requires equal objects to hash equally. For the reporter's lookup to work, the hash must also match `hash(pk)`. So the hash must depend only on `self.value`, which makes `__hash__ = hash(self.value)` the only reasonable fix. The instance is ignored automatically. Different int pks hash differently.\n4. Hashing on the instance, or on (value, instance), would fail the spec's own int-keyed dict lookup and break the eq/hash contract. Such a fix is not correct, so it does not count as a reasonable alternative.",
+    "score": 2,
+    "explanation": "The only fix that makes `value in {pk: ...}` work and stays consistent with the existing value-based `__eq__` is hashing on `self.value`. That is exactly what the assertion that hash ignores the instance and differs across pks checks, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRDMCr2akjuWapdSyLK",
+  "input_tokens": 3467,
+  "output_tokens": 782,
+  "seconds": 8.5
+}

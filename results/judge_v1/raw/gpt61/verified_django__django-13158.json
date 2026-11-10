@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13158",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8907,
+  "output": {
+    "reasoning": "1. The title explicitly identifies the bug as “QuerySet.none() on combined queries returns all results”; the description demonstrates it with union() and an empty form submission. Thus QuerySet.none() itself is a specified entry point, not an unrelated implementation detail. 2. The test builds two Number querysets with num__lte=1 and num__gte=8, combines them with union(), asserts that qs3.none() evaluates to [], and then checks that qs3 still contains [0, 1, 8, 9], without imposing ordering. There are no mocks, private methods, required messages, or implementation-state assertions. 3. The empty result is directly settled by the issue. The numeric filters are closely related inputs to the reported id filters. Preserving the original queryset is settled by the conventional non-mutating behavior of QuerySet.none(); checking its original results is a basic regression check. 4. There is no open choice that a reasonable correct fix could violate: mutating the source queryset would break the queryset API contract, and a form-only workaround would leave the explicitly reported QuerySet.none() bug unresolved.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix makes qs3.none() empty while preserving qs3's original union results; the latter assertion adds only a standard queryset non-mutation regression check.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2057,
+  "output_tokens": 484,
+  "seconds": 12.0
+}

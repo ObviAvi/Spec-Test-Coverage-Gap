@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16136",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10691,
+  "output": {
+    "reasoning": "1. The spec describes a symptom. An async View with only `post` crashes on GET because the method-not-allowed response is a plain HttpResponseNotAllowed that gets awaited. It names no function to change; the entry point is calling the view (as_view/dispatch).\n2. The graded test requires two things:\n   - Calling `instance.http_method_not_allowed(request)` directly on an AsyncView returns a coroutine (`asyncio.iscoroutine(response) is True`) that resolves to an HttpResponseNotAllowed.\n   - On SyncView it returns a plain response.\n3. Settlement of each requirement:\n   - Sync behaviour is unchanged existing behaviour: settled.\n   - Making `http_method_not_allowed` itself coroutine-returning for async views matches the existing `options()` pattern (`test_options_handler_responds_correctly` in context), so convention supports it. It is still not the only reasonable fix: open.\n4. A reasonable alternative fix fails. A developer could fix this in `dispatch()` or in the `view()` closure from `as_view()`. For example, when `view_is_async` and the handler result is not awaitable, wrap it in an async function before returning. Async views would then never return a non-awaitable, which resolves the reported crash and related cases. But `http_method_not_allowed` called directly would still return a plain HttpResponseNotAllowed, so `assertIs(asyncio.iscoroutine(response), True)` fails.\n   - The test pins where the fix lives by calling a specific (documented, public) handler method rather than going through the view entry point.\n   - Because the method is public and the options() precedent exists, this is a mild rather than severe gap.",
+    "score": 3,
+    "explanation": "A correct fix that makes dispatch()/as_view() wrap non-awaitable results for async views (rather than changing http_method_not_allowed itself) resolves the crash but fails the test. The test calls http_method_not_allowed directly and requires it to return a coroutine.",
+    "overspecification_vector": "response = instance.http_method_not_allowed(request_factory.post(\"/\")); self.assertIs(asyncio.iscoroutine(response), is_coroutine)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRH9z2e4e47UhtJrbap",
+  "input_tokens": 4076,
+  "output_tokens": 1612,
+  "seconds": 16.4
+}

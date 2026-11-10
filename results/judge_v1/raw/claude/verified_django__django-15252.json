@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15252",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13183,
+  "output": {
+    "reasoning": "1. The spec says MigrationRecorder (ensure_schema, record_applied, applied_migrations, record_unapplied) ignores the router's allow_migrate and creates django_migrations on connections where migration is disallowed. The natural fix is to consult router.allow_migrate for the recorder's connection inside MigrationRecorder.\n\n2. What the graded tests require:\n(a) test_migrate_test_setting_false_ensure_schema: with TEST['MIGRATE']=False, no custom router, and has_table mocked False, create_test_db must never call MigrationRecorder.ensure_schema (mocked and assert_not_called).\n(b) test_migrate_skips_schema_creation: MigrationExecutor(connection).migrate([], plan=[]) with has_table returning False must issue 0 queries.\nNeither test installs a router. Both require the executor to skip ensure_schema entirely when the plan is empty.\n\n3. Settledness: the spec never mentions skipping schema creation for empty plans, MIGRATE=False, or the executor's migrate() flow. It frames the problem purely as router obedience. Every requirement is therefore open, and it implicates a different code path (MigrationExecutor.migrate rather than MigrationRecorder).\n\n4. A reasonable fix that fails: add a router.allow_migrate(self.connection.alias, self.Migration) guard inside MigrationRecorder.ensure_schema, applied_migrations, record_applied and record_unapplied. This fully resolves the reported multi-db case.\n- Test (a): the executor still calls ensure_schema, so assert_not_called fails.\n- Test (b): with the default router, migration is allowed on 'default', so the table gets created and queries are issued, making assertNumQueries(0) fail.\nSo the correct, spec-driven fix fails both graded tests.\n\n5. The tests check an unspecified alternative behavior in a different component (executor skipping ensure_schema on an empty plan). They also assert on mock call state of an internal method. This warrants a score of 4.",
+    "score": 4,
+    "explanation": "A fix that makes MigrationRecorder consult router.allow_migrate (exactly what the issue asks) still has ensure_schema called by MigrationExecutor.migrate. It also still creates the table when no router forbids it. It therefore fails both the assert_not_called on ensure_schema and the 0-query assertion for executor.migrate([], plan=[]). The tests instead require the executor to skip schema creation when the migration plan is empty, which the spec never mentions.",
+    "overspecification_vector": "mocked_ensure_schema.assert_not_called() in test_migrate_test_setting_false_ensure_schema (with @mock.patch('django.db.migrations.executor.MigrationRecorder.ensure_schema')); `with self.assertNumQueries(0): executor.migrate([], plan=[])` in test_migrate_skips_schema_creation"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtREGoTsoQw9fREqnbwD",
+  "input_tokens": 4916,
+  "output_tokens": 1564,
+  "seconds": 16.3
+}

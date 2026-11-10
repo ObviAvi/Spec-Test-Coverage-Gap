@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-26466",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9745,
+  "output": {
+    "reasoning": "1. The spec says annotate() keeps a reference to the array passed as `xy`, so mutating that array later moves the arrow. The expected fix is that Annotation copies its `xy` input. Nothing else is implicated.\n2. The graded test compares two figures.\n - fig_ref: annotate with xy=an_xy and xycoords=line, then mutates an_xy. This needs the xy copy the spec describes.\n - fig_test: annotate with textcoords=OffsetFrom(l, of_xy), then mutates of_xy. This needs the OffsetFrom constructor to copy its ref_coord argument.\n - For the images to match, both copies must happen.\n3. Status of each requirement:\n - The xy copy in Annotation is settled by the spec: \"It is very likely that the same array is kept instead of a copy.\"\n - The OffsetFrom copy is open. The spec never mentions OffsetFrom, textcoords, or the ref_coord argument. It is a separate class and constructor whose stored reference is a separate instance of the same aliasing bug.\n4. A competent developer could fix `_AnnotationBase.__init__` (and perhaps xytext) to store a copy of xy, e.g. with np.array(xy) or tuple(xy). That fully resolves the reported issue and closely related xy inputs. Yet OffsetFrom would still hold a reference to of_xy, so of_xy[:] = 1 moves the fig_test text and the image comparison fails. The test therefore exercises a different code path, the OffsetFrom constructor, than the one the spec implicates.\n5. Score: 4.",
+    "score": 4,
+    "explanation": "A fix that makes Annotation copy its `xy` argument, which is exactly what the issue asks for, fails because the test also requires `OffsetFrom.__init__` to copy its `ref_coord` array. The spec never mentions OffsetFrom.",
+    "overspecification_vector": "ax.annotate(\"foo\", textcoords=OffsetFrom(l, of_xy), xytext=(10, 0), xy=(0, 0)); of_xy[:] = 1 (fig_test relies on OffsetFrom copying its ref_coord input)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRNDB9yLMKvbf1d52kP",
+  "input_tokens": 3880,
+  "output_tokens": 1403,
+  "seconds": 13.9
+}

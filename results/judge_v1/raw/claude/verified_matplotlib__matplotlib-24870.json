@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24870",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9307,
+  "output": {
+    "reasoning": "1. The spec asks that boolean 2D arrays passed to contour() automatically get levels=[0.5] instead of the default 8 levels. It names contour() only. contourf and tricontour are never mentioned.\n\n2. The test requires:\n- plt.contour(bool list / bool ndarray / masked bool array).levels == [.5];\n- plt.contourf(same inputs).levels == [0, .5, 1];\n- plt.tricontour(x, y, bool 1D list/array).levels == [.5];\n- plt.tricontourf(x, y, bool 1D list/array).levels == [0, .5, 1].\n\n3. Each requirement against the spec:\n- contour with ndarray giving [.5]: settled by the spec (\"default levels to [0.5] in that case\").\n- contour with list or masked-array input: a reasonable extension. Detection after asarray handles lists, so most fixes pass.\n- contourf levels [0, .5, 1]: open. The spec never mentions filled contours. A single level cannot work for contourf, so a value must be chosen. [0, .5, 1] is natural, but alternatives are reasonable:\n  - leave contourf unchanged, since the spec only asks about contour lines;\n  - use [0, 1];\n  - use bounds like [-0.5, 0.5, 1.5].\n- tricontour/tricontourf: open. These live in a separate module (matplotlib.tri) and are not mentioned. A competent fix scoped to contour()/ContourSet in contour.py, as the issue asks, would leave tricontour on default levels and fail.\n\n4. A reasonable fix that sets levels=[0.5] only for line contours of bool input via contour() fails the contourf and tricontour assertions. A fix choosing [0, 1] for contourf also fails.\n\n5. These are observable behaviors, but they pin unspecified choices and scope, so the score is 3.",
+    "score": 3,
+    "explanation": "The tests also require contourf on bool input to default to levels [0, .5, 1], and require tricontour/tricontourf to auto-detect bools too, none of which the issue specifies. A fix that only changes contour() line levels, or picks different filled levels such as [0, 1], fails.",
+    "overspecification_vector": "assert plt.contourf(z).levels.tolist() == [0, .5, 1] (and list/masked variants); assert plt.tricontour(x, y, z).levels.tolist() == [.5]; assert plt.tricontourf(x, y, z).levels.tolist() == [0, .5, 1]"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRLvx4Eok1YDZzbEoPJ",
+  "input_tokens": 3634,
+  "output_tokens": 1305,
+  "seconds": 13.4
+}

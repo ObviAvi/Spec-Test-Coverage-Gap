@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14351",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16245,
+  "output": {
+    "reasoning": "The specification reports that combining a related-object queryset membership condition with an aggregate condition using Q.__or__ produces an invalid multi-column subquery. The test reproduces that structure through public ORM APIs: Author.objects.filter(pk=self.a1.pk), Book.objects.annotate(Count('authors')), and filter(Q(authors__in=authors) | Q(authors__count__gt=2)), followed by queryset evaluation. Related-queryset membership combined with an aggregate OR condition is settled by the reported example. Using different models and a count threshold of >2 instead of =0 is a closely related input; its meaning is settled by ordinary filter and Count semantics. The assertion set(books) == {self.b1, self.b4} checks the fixture-specific matching objects without requiring ordering or duplicate behavior. The database-feature decorator only limits where the test runs. There are no open implementation requirements: the test does not inspect SQL text, aliases, selected-column internals, or a particular repair method. A reasonable general fix cannot preserve incorrect membership-or-count results merely because the models or aggregate threshold differ.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes because the set-equality assertion checks correct results for the same related-queryset IN combined with aggregate OR pattern, using closely related inputs rather than prescribing an implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4158,
+  "output_tokens": 682,
+  "seconds": 17.6
+}

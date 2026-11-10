@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13344",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16239,
+  "output": {
+    "reasoning": "1. The specification describes only a symptom. Under ASGI, the first middleware's process_response() receives a coroutine instead of an HttpResponse when the next middleware is a built-in one such as SecurityMiddleware. It names no function or mechanism to fix.\n\n2. The graded tests require the following.\n- test_coroutine: for each of 19 built-in middlewares, `asyncio.iscoroutinefunction(middleware(async_get_response))` must be True, and must be False when get_response is sync.\n- test_deprecation: each of the 19 middlewares, called with no argument, must raise RemovedInDjango40Warning with the exact existing message.\n- Importing flatpages and redirects middleware relies on the runtests change, which ships with the test patch.\n\n3. How each requirement is settled.\n- The response type seen by process_response is settled by the spec, but no graded test checks it directly.\n- The instance being detected as a coroutine function is open. Existing MiddlewareMixin uses an `_async_check` that marks the instance, so a developer who finds the root cause (subclasses overriding `__init__` without calling super) would get this for free. The spec never states it.\n- Coverage of all 19 middlewares, including contrib ones the spec never mentions, is open. It follows only if the developer audits every built-in middleware.\n- The deprecation warning for all of them is open. It is consistent with the existing pattern, though, if the fix routes through `super().__init__`.\n\n4. Reasonable fixes that would fail.\n- A fix in `MiddlewareMixin.__call__` that dispatches dynamically to `__acall__` when `asyncio.iscoroutinefunction(self.get_response)` is true. This makes the response correct in the reported case but leaves the instance not marked as a coroutine function.\n- A fix in `BaseHandler.load_middleware` that adapts or awaits coroutine responses.\n- A fix that only patches SecurityMiddleware and the other middlewares named in the old deprecation test, missing other contrib middlewares.\n\nEach of these would fail test_coroutine. The asserted property, instance coroutine-ness, is Django's existing async-signaling contract and is externally observable. It is not a private method, but it is one mechanism among several that would resolve the symptom.",
+    "score": 3,
+    "explanation": "The tests do not check the response type passed to process_response. Instead they require every built-in middleware instance, including contrib ones not mentioned in the issue, to satisfy `asyncio.iscoroutinefunction(instance)` when given an async get_response. A fix that dispatches to the async path at call time, or fixes the handler, would resolve the reported symptom but fail this assertion.",
+    "overspecification_vector": "test_coroutine: `self.assertIs(asyncio.iscoroutinefunction(middleware_instance), True)` over the 19-item `middlewares` list; test_deprecation over the same expanded list"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR892j22gFCMRyFiCTB",
+  "input_tokens": 6323,
+  "output_tokens": 4266,
+  "seconds": 41.1
+}

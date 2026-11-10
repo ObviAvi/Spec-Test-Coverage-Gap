@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14629",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9868,
+  "output": {
+    "reasoning": "1. The specification reports that cross_val_predict(..., method='predict_proba') fails with MultiOutputClassifier. It explicitly suggests obtaining labels through 'mo_clf.estimators_[i].classes_' rather than requiring the wrapper to expose classes_.\n2. The graded estimator1 case fits MultiOutputClassifier(RandomForestClassifier(n_estimators=2)) on the existing X and y, then requires estimator.classes_ to exist, be a list, have n_outputs entries, and contain arrays equal to the expected classes in output order. It never calls cross_val_predict. The other parameter cases are not graded.\n3. Supporting MultiOutputClassifier is settled by the specification; using another classifier underneath it is a reasonable related input. Exposing classes_ directly on the fitted wrapper is open, as is requiring a list representation. Per-output lengths and correct class labels are conventional if that attribute is added, but adding it is not required by the issue.\n4. A reasonable alternative fixes cross_val_predict's multioutput probability handling by retrieving each output's classes from the fitted estimators_[i].classes_, handling the outputs consistently without adding MultiOutputClassifier.classes_. This directly follows the issue's suggested access pattern and can address related inputs, yet the graded test fails at estimator.classes_.\n5. The test therefore mandates a particular fitted-state API change through a different entry point instead of checking that the reported operation works.",
+    "score": 4,
+    "explanation": "A correct fix could update cross_val_predict to use MultiOutputClassifier.estimators_[i].classes_ without adding classes_ to the wrapper. The graded test instead calls fit directly and requires that wrapper attribute, so it rejects this reasonable fix.",
+    "overspecification_vector": "estimator.fit(X, y); assert isinstance(estimator.classes_, list); assert len(estimator.classes_) == n_outputs; and the loop comparing estimator.classes_ entries with classes. These require a fitted-wrapper classes_ API rather than successful cross_val_predict(..., method='predict_proba')."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2341,
+  "output_tokens": 939,
+  "seconds": 22.4
+}

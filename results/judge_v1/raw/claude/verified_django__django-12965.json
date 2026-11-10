@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12965",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9770,
+  "output": {
+    "reasoning": "1. The specification says `Model.objects.all().delete()` in Django 3.1 emits `DELETE ... WHERE id IN (SELECT id FROM table)` instead of a plain `DELETE FROM table`, and asks that the old plain form be restored. The entry point is `QuerySet.delete()` on an unfiltered queryset.\n2. What the graded test requires:\n   - `User.objects.all().delete()` runs in exactly one query.\n   - The captured SQL contains no 'SELECT'.\n3. Status of each requirement:\n   - No SELECT: settled by the spec. It says Django 3.0 generated `DELETE FROM testapp_alphabet`, the subquery is the regression, and \"we shouldn't change the SQL here\".\n   - One query: settled by existing behavior. This is the fast-delete path, which was already a single query in 3.1; only its form regressed.\n   - The User model: an existing test model on the same code path (unfiltered `all().delete()`).\n4. The subquery comes from the generic `SQLDeleteCompiler`: with no where clause, `single_alias` is false, so the pk__in subquery is built. That affects every backend, so a fix in the delete compiler fixes the test database too. A fix limited to the MySQL backend would leave the same regression on other backends, so it does not count as a reasonable full fix. Any fix that restores plain `DELETE FROM` for an unfiltered delete passes. No names, messages or internal details are pinned.",
+    "score": 2,
+    "explanation": "The test asserts the specified behavior: a full `all().delete()` issues a single DELETE with no SELECT subquery. Any fix restoring Django 3.0's plain `DELETE FROM` passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR6XT3icjovfmfmgsij",
+  "input_tokens": 3832,
+  "output_tokens": 1332,
+  "seconds": 14.7
+}

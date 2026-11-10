@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-14508",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10858,
+  "output": {
+    "reasoning": "1. Spec: Card._format_float produces needlessly long float strings, e.g. 0.009125 becomes 0.009124999999999999. That pushes the card past 80 characters and truncates the comment. The issue suggests using str(value) first and falling back to the existing formatting only if the result exceeds 20 characters.\n2. What the tests require:\n- They build a public fits.Card with a HIERARCH keyword, a float value, and a comment.\n- They assert the card string starts with `{k} = <value> / {com}` for 0.009125, 8.95 and -99.9.\n3. Each requirement against the spec:\n- 0.009125 is exactly the reproduction case. Settled.\n- 8.95 and -99.9 are closely related inputs. str() gives '8.95' and '-99.9'. The old .16G format gives '8.949999999999999' and '-99.90000000000001', so they show the same bug.\n- The expected output is the shortest round-trip representation, which is the natural meaning of 'not larger than necessary'. Settled.\n- The HIERARCH ' = ' spacing and ' / ' comment separator are existing behaviour, shown in the spec's own output. Settled.\n4. Alternatives considered:\n- A fix that shortens only when the card would overflow also passes. Each test card overflows with the long representation (26+3+17+3+36 > 80), so it would shorten.\n- A fix that always uses repr/str with a fallback passes.\n- No reasonable fix would render 8.95 as anything other than '8.95' while still being 'not larger than necessary'.",
+    "score": 2,
+    "explanation": "The test asserts that floats like 0.009125, 8.95 and -99.9 render as their shortest Python repr in a public Card string, which is exactly what the spec asks for. The extra values are related inputs with the same bug, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtQyZxR535aCQk73e5wn",
+  "input_tokens": 4189,
+  "output_tokens": 1051,
+  "seconds": 11.3
+}

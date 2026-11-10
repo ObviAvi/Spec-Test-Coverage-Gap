@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15561",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8455,
+  "output": {
+    "reasoning": "1. The spec says AlterField with only a choices change still generates SQL on SQLite (new table, insert, drop, rename). On Postgres the same migration generates none. It names the AlterField operation and the SQLite backend, and the expected behaviour is that no SQL is emitted.\n2. What the test requires: create the Author model, then call `connection.schema_editor().alter_field(Author, old, new, strict=True)` with a CharField that differs only in choices. It asserts 0 queries, then asserts 0 queries again for the reverse change (removing choices).\n3. Requirement status:\n- Zero queries: settled by the spec ('shouldn't be needed', 'on e.g. postgres the same migration generates no sql').\n- Both directions (adding and removing choices): settled; the title says 'adding/changing choices', and the reverse is a closely related input.\n- Entry point `schema_editor.alter_field`: settled by convention. The AlterField operation delegates to `schema_editor.alter_field`. The neighbouring context test `test_alter_field_fk_attributes_noop` already uses exactly this assertNumQueries(0) pattern for non-db attribute noops. The base schema editor already decides noops via `_field_should_be_altered`. The natural fix is to make SQLite's `alter_field` respect that check.\n4. A fix placed only in the AlterField migration operation, special-casing choices, would bypass the test. That is contrived given the existing noop infrastructure, and it would leave direct schema-editor callers broken. No reasonable alternative fix fails the test.",
+    "score": 2,
+    "explanation": "The test asserts zero queries when SQLite's schema editor alters a field to add or remove choices, which is exactly the noop behaviour the issue asks for. It goes through the same schema-editor entry point that AlterField uses and follows the existing noop test pattern.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRFYJe79bBNxgX7rEGz",
+  "input_tokens": 3096,
+  "output_tokens": 1291,
+  "seconds": 13.7
+}

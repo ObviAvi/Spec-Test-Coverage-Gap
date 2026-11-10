@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7985",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11328,
+  "output": {
+    "reasoning": "1. The spec says linkcheck reports local links only as '-local-' and never checks them. It asks that local links also be checked, so a missing target like `doesntexist` should be reported. The issue itself labels it 'broken local-link_'. No function is named; the entry point is the linkcheck builder.\n2. Requirements of the graded tests:\n   - test_defaults: output.txt contains '[broken] path/to/notfound'.\n   - test_defaults: output.txt has exactly 6 lines, so the valid local link `conf.py` must not appear in output.txt.\n   - test_anchors_ignored: with 'path/to/notfound' in linkcheck_ignore, the link is ignored like other URIs and does not show up as broken.\n3. Settlement of each requirement:\n   - The '[broken]' status matches the existing status vocabulary (working/broken/redirected/local/ignored). The issue explicitly calls the missing local target 'broken local-link_'. The output.txt format '[status] uri' already exists.\n   - Valid local files not being written follows from existing behaviour: output.txt does not record working links.\n   - Resolving `conf.py` relative to the source dir or relative to the document's dir both work, since links.txt sits at the root of srcdir.\n   - Honoring linkcheck_ignore for local URIs is the existing ignore mechanism applied to the same check path.\n4. Open points: a developer could invent a new status such as 'local-broken'. Given the existing vocabulary and the issue's own wording, 'broken' is the natural and essentially only reasonable status. The message after ' - ' is not asserted.",
+    "score": 2,
+    "explanation": "The graded assertion '[broken] path/to/notfound' maps directly to the issue's request to report a nonexistent local link as broken, using the existing 'broken' status and output format; a valid local file stays out of output.txt, matching existing behaviour for working links.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRWHdWgebaEXRrBbmF4",
+  "input_tokens": 4278,
+  "output_tokens": 1687,
+  "seconds": 19.0
+}

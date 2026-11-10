@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11790",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8552,
+  "output": {
+    "reasoning": "1. The spec says AuthenticationForm's username field no longer renders a maxlength HTML attribute. This is a regression where max_length is set on the form field after init, so the widget never receives it. The spec names only the symptom, the rendered HTML.\n\n2. The graded tests require form.fields['username'].widget.attrs.get('maxlength') to equal the integer 255 for the custom user model and the integer 254 for the default case.\n\n3. Settlement:\n- That maxlength should be present is settled by the spec (\"doesn't render with maxlength HTML attribute\").\n- The values 255 and 254 are settled by existing behaviour, since the context lines already assert max_length is 255 or 254.\n- That the value lives in widget.attrs, rather than only in the rendered HTML, is open.\n- That the value is an int rather than a str is open.\n\n4. A Django-idiomatic fix fails the type check. One example is recreating the field in __init__ with the correct max_length, e.g. self.fields['username'] = UsernameField(max_length=...). Another is calling widget.attrs.update(field.widget_attrs(widget)). Both go through CharField.widget_attrs, which stores 'maxlength' as str(self.max_length), i.e. '255'. That renders identical HTML (maxlength=\"255\"), but '255' != 255, so the assertion fails. Likewise, a fix that adds maxlength at render time (e.g. via get_context or build_attrs) without mutating widget.attrs renders correctly but fails the assertion.\n\n5. The tests pin the int type in widget.attrs, an observable public attribute, so a correct alternative is rejected. Score 3.",
+    "score": 3,
+    "explanation": "The tests require widget.attrs['maxlength'] to be the integer 255/254. A correct fix that rebuilds the field or uses CharField.widget_attrs stores the string '255' (Django's own convention), and a render-time fix doesn't touch widget.attrs at all. Both render the correct HTML maxlength yet fail.",
+    "overspecification_vector": "self.assertEqual(form.fields['username'].widget.attrs.get('maxlength'), 255) and self.assertEqual(form.fields['username'].widget.attrs.get('maxlength'), 254): integer comparison on widget.attrs rather than checking the rendered HTML"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR3rsmBJYyggcdEYaxf",
+  "input_tokens": 3212,
+  "output_tokens": 1465,
+  "seconds": 14.8
+}

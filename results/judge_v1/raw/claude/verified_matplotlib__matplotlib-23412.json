@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-23412",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10776,
+  "output": {
+    "reasoning": "1. The issue says the offset in a dash-tuple linestyle on patches (Rectangle, Ellipse) is ignored. In the example, `ls=(10,(10,10))` draws exactly like `(0,(10,10))`. The expected behavior is the same as Line2D, where the offset works. No function is named, only the drawing symptom.\n\n2. What the graded test requires:\n- The test draws two Rectangles with `linestyle=(0,[6,6])` and `(6,[6,6])`.\n- It compares that, via `check_figures_equal` PNG, against Rectangles drawn with `(0,[6,6])` and `(0,[0,6,6,0])`.\n- The pattern `(0,[0,6,6,0])` is visually the same as `(6,[6,6])` with the offset honored.\n- It also asserts `get_linestyle()` returns the tuple as passed. This is existing behavior: Patch stores the user-supplied linestyle, and these asserts hold before the fix too.\n\n3. How each requirement is settled:\n- Honoring the offset at draw time is settled by the spec: \"the offset has no effect... expected outcome is shown here with Line2D objects.\"\n- Scaling the offset by linewidth is settled by convention. Patches already scale the dash pattern by linewidth, and Line2D scales the offset the same way. Treating the offset differently from the on/off lengths would be inconsistent and unreasonable.\n- The PNG output is observable rendering. Any fix that passes the offset through to the renderer, the same way Line2D does, produces matching images.\n- The `get_linestyle` asserts check pre-existing behavior.\n\n4. No reasonable correct fix fails. One deviant would leave the offset unscaled while the dashes are scaled, but that contradicts both the existing pattern scaling and Line2D's behavior.",
+    "score": 2,
+    "explanation": "The test only checks, by image comparison, that a patch with dash offset 6 renders like the equivalent zero-offset on/off pattern. That is exactly the behavior the issue asks for, so any fix that honors the offset at draw time (scaled like Line2D) passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRLBJjDAYeSmcDPcFdZ",
+  "input_tokens": 4326,
+  "output_tokens": 1299,
+  "seconds": 13.0
+}

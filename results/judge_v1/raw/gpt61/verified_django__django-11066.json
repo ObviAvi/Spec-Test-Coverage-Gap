@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11066",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11003,
+  "output": {
+    "reasoning": "The specification identifies RenameContentType._rename() saving on the default database instead of schema_editor.connection.alias, and explicitly proposes content_type.save(using=db, update_fields={'model'}). The graded test creates a content type on 'other', installs a router whose db_for_write() returns 'default', and runs migrate with database='other'. It requires the old model name to disappear and the renamed model name to exist on 'other'. These requirements are settled by the reported wrong-database behavior and the explicit requirement to use the migration connection. The database aliases, app label, and model names are reproduction fixtures, not implementation constraints. The test additionally migrates back to 'zero' and requires the original name to be restored on 'other'. This is settled by normal migration reversibility: reversing the rename must also save to the migration database, rather than exhibit the same bug in the opposite direction. The noninteractive and verbosity arguments impose no separately asserted behavior. No internal save invocation, exact implementation, message, or new API is required. There is no open requirement for which a reasonable correct fix would fail.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix saves the renamed content type on the migration database; the test checks that behavior both forward and backward, with the reverse migration being a natural related regression case.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2445,
+  "output_tokens": 649,
+  "seconds": 16.6
+}

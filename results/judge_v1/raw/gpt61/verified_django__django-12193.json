@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12193",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9284,
+  "output": {
+    "reasoning": "1. The specification reports checked-state leakage between SplitArrayField BooleanField widgets and identifies CheckboxInput.get_context() mutating shared attrs as its cause. It does not explicitly require eliminating mutation from every standalone CheckboxInput call.\n2. The sole graded test calls CheckboxInput.get_context('name', True, attrs), with attrs={'checked': False}, and requires the caller's attrs['checked'] to remain exactly False. The added SplitArrayWidget test is not graded.\n3. CheckboxInput.get_context(), True values, and modification of the 'checked' attribute are explicitly implicated by the specification. However, preserving the input dictionary during a standalone call is an open implementation requirement. The observation that other widgets do not mutate attrs supports this approach, but does not make it the only reasonable fix.\n4. A reasonable alternative is to pass a fresh copy of final_attrs to each child widget in SplitArrayWidget. This prevents checked-state leakage for arbitrary BooleanField sequences, while leaving CheckboxInput's standalone mutation behavior unchanged. That correct fix would fail the graded assertion. The test therefore constrains intermediate shared-state handling rather than merely requiring the reported rendering defect to be resolved.",
+    "score": 4,
+    "explanation": "A developer could fix SplitArrayWidget by passing a fresh attrs dictionary to each child, eliminating checked-state leakage. That fix would still fail the direct CheckboxInput test because it leaves the caller's attrs['checked'] changed to True.",
+    "overspecification_vector": "self.widget.get_context('name', True, attrs), followed by self.assertIs(attrs['checked'], False), with attrs = {'checked': False}"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2095,
+  "output_tokens": 864,
+  "seconds": 22.2
+}

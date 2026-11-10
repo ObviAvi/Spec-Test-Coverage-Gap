@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8269",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10618,
+  "output": {
+    "reasoning": "1. The specification says that when `linkcheck_anchors=True` and the server returns an error status, linkcheck reports \"Anchor not found\". It should instead report the HTTP error, \"Same as when `linkcheck_anchors=False`\". The spec gives that output verbatim: `404 Client Error: Not Found for url: https://google.com/test.txt`. This is the standard `str(requests.HTTPError)` text produced by `raise_for_status()`. The spec describes a symptom, not a specific function.\n\n2. What the test requires:\n- It runs the linkcheck builder against a local server that returns 500, for the URI `http://localhost:7777/#anchor` with anchors enabled.\n- `output.txt` must equal `index.rst:1: [broken] http://localhost:7777/#anchor: 500 Server Error: Internal Server Error for url: http://localhost:7777/\\n`.\n\n3. Status of each requirement:\n- The `[broken]` status and the `output.txt` line format are existing builder conventions.\n- The error text is settled by the spec (\"Same as when linkcheck_anchors=False\" plus the example). It is the requests `HTTPError` message that the non-anchor path already produces.\n- The URL without the fragment is also settled. The spec example shows `for url: https://google.com/test.txt` without `#test`, and the anchor branch already requests the defragmented URL.\n\n4. The natural fix is to call `response.raise_for_status()` in the anchor branch before checking anchors. Any equivalent fix that reports the same error as the non-anchor path yields this exact string. A fix that invented a different message would contradict the explicit requirement to match the `linkcheck_anchors=False` output, so it would not be a reasonable correct fix. No reasonable fix is rejected.\n\n5. Score 2: the test is a different status code (500) on the same path, and the asserted message format follows directly from the spec.",
+    "score": 2,
+    "explanation": "The test asserts that the anchor-enabled path reports the same requests HTTPError message as the non-anchor path, which is exactly what the spec demands (\"Same as when linkcheck_anchors=False\"), here applied to a 500 instead of a 404.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRX8bZzqCGAFGFYypyq",
+  "input_tokens": 4119,
+  "output_tokens": 1095,
+  "seconds": 11.9
+}

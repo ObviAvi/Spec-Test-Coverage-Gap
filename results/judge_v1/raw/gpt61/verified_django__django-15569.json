@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15569",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10289,
+  "output": {
+    "reasoning": "1. The specification explicitly says that RegisterLookupMixin._unregister_lookup() must clear the lookup cache, as register_lookup() already does. 2. The graded caching test requires 'exactly' to disappear from field.get_lookups() after the registration context unregisters Exactly from models.ForeignObject. This directly checks the requested cache invalidation. The graded JSONField test unregisters MyTransform and, without manually clearing the cache, requires get_transform('my_transform') to return a KeyTransformFactory. 3. Automatic invalidation is settled by the specification; the JSONField fallback type is established by the unchanged assertion that previously followed manual cache clearing. The tests require no particular invalidation implementation. 4. There are no open requirements that reject a reasonable correct fix. The schema test changes are not graded.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the tests require an unregistered lookup to disappear immediately and preserve the existing JSONField fallback without manual cache clearing, directly checking the requested behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2304,
+  "output_tokens": 489,
+  "seconds": 11.6
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-12682",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9860,
+  "output": {
+    "reasoning": "1. The spec says SparseCoder does not expose Lasso's max_iter, so lasso_cd can fail to converge. It suggests adding some way for users to pass parameters to the underlying estimator, but it never names a parameter.\n\n2. The test requires two things:\n- a new constructor keyword `transform_max_iter` on SparseCoder;\n- `fit_transform` emits a ConvergenceWarning with value 1 and no warnings with value 2000.\n\n3. Settledness:\n- The behavior (it can converge, it warns at low iteration counts) follows from the spec.\n- The name `transform_max_iter` is open. The spec only says \"there should be a way for the user to specify other parameters of the estimator\" and names `max_iter`.\n- Existing SparseCoder params use a `transform_` prefix (transform_algorithm, transform_n_nonzero_coefs, transform_alpha), so `transform_max_iter` follows convention. Even so, the spec explicitly floats a generic mechanism.\n\n4. Reasonable alternatives that fail:\n- a `max_iter=` keyword, which is the name the issue itself uses;\n- a generic `transform_params`/`estimator_params` dict, which is exactly what the issue suggests.\nBoth resolve the issue, but the test raises a TypeError on the unknown keyword `transform_max_iter`.\n\nThe test depends on a new name the spec never states, which matches the rubric's description for a 4. Mitigation: the existing prefix convention makes this name likely. Still, the spec explicitly invites a generic-parameter approach, so this is a significant overspecification.",
+    "score": 4,
+    "explanation": "The test requires a new SparseCoder constructor keyword named exactly `transform_max_iter`, which the issue never specifies. A fix that adds `max_iter`, or a generic dict of estimator parameters (as the issue itself suggests), would fail with a TypeError.",
+    "overspecification_vector": "SparseCoder(D_multi, transform_algorithm=transform_algorithm, transform_max_iter=1) and SparseCoder(..., transform_max_iter=2000)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRTJ9w66TKaxBs84aVs",
+  "input_tokens": 3754,
+  "output_tokens": 731,
+  "seconds": 8.6
+}

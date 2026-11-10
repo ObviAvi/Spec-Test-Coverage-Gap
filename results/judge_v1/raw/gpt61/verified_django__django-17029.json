@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-17029",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8656,
+  "output": {
+    "reasoning": "1. The issue explicitly identifies Apps.clear_cache() as the entry point and says get_swappable_settings_name's functools cache is not cleared. It quotes the contract, “Clear all internal caches,” and proposes calling self.get_swappable_settings_name.cache_clear().\n2. The test populates caches using get_swappable_settings_name(\"admin.LogEntry\") and get_models(), calls clear_cache(), and requires both cache_info().currsize values to be zero. It also requires the initial swappable-setting lookup to return None under SOME_INSTALLED_APPS.\n3. Clearing get_swappable_settings_name's cache is directly settled by the issue. Checking its cache_info().currsize is a direct measurement of the explicitly identified cache, not an unspecified implementation requirement. Clearing get_models' cache is regression coverage reasonably implied by “all internal caches.” The None result for the nonswappable admin.LogEntry model is a basic existing-behavior/setup check, rather than a new choice about the fix.\n4. No reasonable correct fix for the reported cache invalidation bug needs to change that lookup result or stop clearing the other registry cache. There is no open requirement here that rejects a reasonable alternative fix.\n5. Score 2: the central assertion is directly specified, with only ordinary setup and regression checks added.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix clears the named swappable-settings cache, satisfying the zero-size assertion, while preserving the ordinary lookup result and the all-internal-caches behavior checked for get_models().",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2015,
+  "output_tokens": 1021,
+  "seconds": 24.1
+}

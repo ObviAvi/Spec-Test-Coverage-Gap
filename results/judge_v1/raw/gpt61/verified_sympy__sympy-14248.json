@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-14248",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12016,
+  "output": {
+    "reasoning": "The specification identifies incorrect subtraction formatting and explicitly names str, pretty, and latex: differences are 'supposed to print like a-b', without an explicit (-1) coefficient or '+ -' separators. Tests of these printers on unary negatives, matrix products, grouped sums, and MatrixElements are closely related regression cases. However, exact term ordering and spacing are open: the tests require strings such as '-B - A*B + A' and '-A*B -B*C + A*B*C', whereas a reasonable fix could produce 'A - A*B - B' and 'A*B*C - A*B - B*C'. Existing failing output demonstrates an ordering, but the specification does not require retaining it. More significantly, the graded MatrixElement tests require changed results from ccode, fcode, jscode, julia_code, mcode, and rcode. These are distinct code-generation entry points not identified in the report. A reasonable fix scoped to the three reported display printers need not change those backends' existing coefficient notation. The tests therefore impose both externally observable formatting choices and requirements on additional code paths.",
+    "score": 4,
+    "explanation": "A correct fix for str, pretty, and latex can leave the separate code-generation printers unchanged, but the graded MatrixElement assertions require those printers to change too. The tests also reject reasonable subtraction formatting such as 'A - A*B - B' by requiring negative terms first.",
+    "overspecification_vector": "assert(ccode(F) == \"(-B + A)[0]\")\nassert(fcode(F) == \"      (-B + A)(1, 1)\")\nassert(jscode(F) == \"(-B + A)[0]\")\nassert(julia_code(F) == \"(-B + A)[1,1]\")\nassert(mcode(F) == \"(-B + A)(1, 1)\")\nassert(rcode(F) == \"(-B + A)[0]\")\nAdditional formatting constraints: assert str(A - A*B - B) == \"-B - A*B + A\"; assert pretty(A*B*C - A*B - B*C) == \"-A*B -B*C + A*B*C\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3459,
+  "output_tokens": 2561,
+  "seconds": 56.2
+}

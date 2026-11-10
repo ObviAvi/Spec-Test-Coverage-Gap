@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15278",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9115,
+  "output": {
+    "reasoning": "Spec: adding a nullable OneToOneField via migrations AddField crashes on SQLite because SQLite cannot ADD COLUMN with UNIQUE. The natural entry point is the schema editor's add_field. The test creates Author and Note, adds OneToOneField(Note, CASCADE, null=True) via editor.add_field, then asserts that 'note_id' is among the columns and that columns['note_id'][1][6] is true. That index is the null_ok flag from introspection, so the assertion only says the column is nullable. Requirements: (1) add_field must not crash. This is settled by the spec ('Adding nullable OneToOneField crashes'). (2) The column must exist as note_id. This follows from Django's naming convention. (3) The column must be nullable. This is settled because the field is null=True. A reasonable fix makes SQLite's add_field remake the table when the field is unique, or skip the plain ALTER path for unique fields. Any correct fix produces a nullable note_id column. column_classes is an existing test helper. Nothing in the test is arbitrary.",
+    "score": 2,
+    "explanation": "The test only checks that add_field of a nullable OneToOneField on SQLite succeeds and yields a nullable note_id column, which any correct fix produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRErmNTL8aknx22WayT",
+  "input_tokens": 3449,
+  "output_tokens": 437,
+  "seconds": 5.3
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11820",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9137,
+  "output": {
+    "reasoning": "1. The spec says models.E015 is wrongly raised when Meta.ordering contains `<related>__pk` (e.g. 'option__pk'), and calls it a regression. It describes only a symptom, which lives in Model._check_ordering, reached through Model.check().\n2. Requirements of the graded tests:\n(a) test_ordering_pointing_to_related_model_pk: ordering ('parent__pk',) gives Child.check() == []. This is settled directly by the spec: \"E015 is raised when Meta.ordering contains __pk of a related field\".\n(b) test_ordering_pointing_multiple_times_to_model_fields: ordering ('parent__field1__field2',), where field1 is a CharField on Parent, must produce exactly one E015 error with the existing message format. This test is FAIL_TO_PASS, so before the fix the check produced no error. The reason is that the traversal loop only updates `_cls` when it meets a relation field. After `field1` (not a relation), `_cls` stays Parent, so `field2` is wrongly found on Parent. This is a separate false-negative bug. The spec never mentions it; the spec only covers a false positive for 'pk'.\n3. (a) is settled. The error text and id in (b) follow the existing convention, but the requirement to report this case at all is open.\n4. A reasonable correct fix for the stated issue adds `if part == 'pk': fld = _cls._meta.pk else: fld = _cls._meta.get_field(part)` inside the loop. That fixes 'option__pk' and closely related pk inputs. Because it does not reset `_cls` to None after a non-relation field, 'parent__field1__field2' still resolves silently and returns [], so test (b) fails. The original fix happened to correct both problems in one patch.\n5. The test asserts observable behavior through the same check() entry point, but it requires fixing an unreported bug, so some reasonable fixes are rejected. Score 3.",
+    "score": 3,
+    "explanation": "A fix that only teaches _check_ordering to resolve 'pk' to the related model's primary key resolves the reported issue. It still fails test_ordering_pointing_multiple_times_to_model_fields, which also requires that traversal through a non-relational field (parent__field1__field2) raises E015, a separate bug the spec never mentions.",
+    "overspecification_vector": "test_ordering_pointing_multiple_times_to_model_fields: ordering = ('parent__field1__field2',) with assertEqual(Child.check(), [Error(\"'ordering' refers to the nonexistent field, related field, or lookup 'parent__field1__field2'.\", obj=Child, id='models.E015')])"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR4ApWXt9MmPAHxWVgc",
+  "input_tokens": 3406,
+  "output_tokens": 1721,
+  "seconds": 16.4
+}

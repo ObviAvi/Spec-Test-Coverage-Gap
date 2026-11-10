@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13406",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12042,
+  "output": {
+    "reasoning": "1. Spec: assigning a pickled values()/annotate() query to `qs.query` makes the queryset return broken model instances instead of dicts. The title covers both values() and values_list(). The natural entry point is the QuerySet.query setter, or pickling metadata on the query.\n2. Graded requirements:\n (a) test_annotation_values: a reloaded values('name').annotate(Max) query's `.get()` returns `{'name': 'test', 'latest_time': ...}`. Settled by the spec: \"the result of the query is and should be a list of dicts\".\n (b) test_annotation_values_list: values_list('name'), values_list(flat=True) and values_list(named=True), when reloaded, each return the dict `{'name': 'test'}`. This is open. The spec never says what a reloaded values_list query should yield.\n (c) test_annotation_with_callable_default: an existing behaviour check, which any correct fix passes.\n3./4. For (b), a reasonable developer could preserve the values_list shape. They could record on the Query which iterable class or flat/named mode was used, or infer tuples, and restore it in the query setter. The reloaded querysets would then return `('test',)`, `'test'`, or a Row namedtuple. That is arguably more faithful and fixes the crash, but it fails the assertion that every case equals `{'name': 'test'}`. The test pins the upstream choice of always downgrading to ValuesIterable. This is an observable-output choice, not internal state.",
+    "score": 3,
+    "explanation": "The values_list test requires a reloaded values_list query (including flat=True and named=True) to return a dict `{'name': 'test'}`. A correct fix that preserves values_list semantics (returning `('test',)`, `'test'`, or a named Row) would fix the crash but fail.",
+    "overspecification_vector": "test_annotation_values_list: `self.assertEqual(reloaded.get(), {'name': 'test'})` for values_list('name'), values_list('name', flat=True), values_list('name', named=True)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR8kuys6KApautEruXA",
+  "input_tokens": 4565,
+  "output_tokens": 1024,
+  "seconds": 10.8
+}

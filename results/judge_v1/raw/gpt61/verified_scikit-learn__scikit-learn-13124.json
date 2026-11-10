@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-13124",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13549,
+  "output": {
+    "reasoning": "1. The issue identifies StratifiedKFold(shuffle=True) as merely reordering existing folds instead of changing their membership. It explicitly expects 'batches to be different ... for different random_state seeds.'\n2. The added test uses the public StratifiedKFold.split API with two balanced classes, five samples per class, five folds, shuffle=True, and seeds 0 and 1. It sorts the collections of test-index tuples and asserts that those collections differ.\n3. The entry point and membership-changing behavior are settled by the specification. Sorting the collections directly reflects the complaint that changing only batch order is insufficient. The smaller sample count and different seed values are closely related regression inputs rather than the literal reproduction. The test requires no exact permutation, particular sample pairing, internal method, or implementation technique.\n4. There is no substantive open implementation choice constrained by the assertion: independently shuffling the strata can be implemented in different ways without matching any prescribed output. No reasonable failing alternative is established by the supplied evidence.",
+    "score": 2,
+    "explanation": "The assertion test_set1 != test_set2 checks the requested change in fold membership across random seeds on a smaller version of the reported balanced two-class example, without prescribing exact shuffled results.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4498,
+  "output_tokens": 1168,
+  "seconds": 30.4
+}

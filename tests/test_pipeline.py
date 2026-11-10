@@ -155,3 +155,11 @@ def test_errors_are_retried_and_editing_a_prompt_is_refused(tmp_path, monkeypatc
     path.write_text(json.dumps(rec))
     with pytest.raises(SystemExit):
         judging.run_judges([t], ["a"], "judge_v1", workers=1)
+
+
+def test_prevalence_helpers():
+    from stcg.prevalence import corrected_prevalence, resolve_band
+
+    assert corrected_prevalence(0.234, 0.861, 0.038) == pytest.approx(0.238, abs=1e-3)
+    assert corrected_prevalence(0.01, 0.9, 0.05) == 0.0
+    assert [resolve_band(x) for x in (0, 0.5, 16 / 30, 0.9)] == ["0%", "1-50%", "51-89%", ">=90%"]

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12155",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9856,
+  "output": {
+    "reasoning": "1. The specification identifies incorrect docstring indentation when text begins on the first line, names trim_docstring as the culprit, and explicitly proposes computing indentation from lines[1:].\n2. The graded test passes 'firstline\\n\\n    second line' to parse_docstring, renders the resulting title and body through parse_rst, requires '<p>firstline</p>\\n' and '<p>second line</p>\\n', and requires empty captured stderr. It imposes no implementation-specific calls or new names.\n3. Supporting a nonempty first line and removing the subsequent common indentation are settled by the reported bug and proposed solution. Rendering both resulting plain-text paragraphs as ordinary HTML paragraphs follows standard reStructuredText behavior. Empty stderr for this valid input follows the explicit complaint about the default-role directive error. The precise HTML serialization is the existing renderer's ordinary output, not a newly imposed format.\n4. No open requirement excludes a reasonable correct fix. Merely preventing the directive error while leaving the second paragraph incorrectly indented would not resolve the indentation problem described. The test permits alternative normalization implementations and does not assert trim_docstring's intermediate output.\n5. The additional paragraph and ordinary HTML assertions are reasonable consequences of the requested fix.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should render the first-line title and dedented body as ordinary paragraphs without emitting the reported docutils error; the test checks that behavior on a closely related multiline docstring.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2284,
+  "output_tokens": 978,
+  "seconds": 24.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11400",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14925,
+  "output": {
+    "reasoning": "1. The specification concerns ordering in RelatedFieldListFilter and RelatedOnlyFieldListFilter. It explicitly requests fallback to the related model's Meta.ordering and identifies RelatedOnlyFieldListFilter's missing ordering argument to field.get_choices() as the reason ModelAdmin.ordering is ignored.\n2. The graded admin tests inspect lookup_choices after constructing a changelist. They require RelatedFieldListFilter to respect Employee._meta.ordering = ('name',), including the analogous reverse-relationship case with Book._meta.ordering = ('title',). They require RelatedOnlyFieldListFilter to respect both Employee ModelAdmin.ordering and Employee._meta.ordering. The expected fixture sequences follow those configured sort fields. These requirements are settled by the specification or its straightforward application to reverse relationships; no arbitrary order is imposed.\n3. The two model-field tests additionally call self.field.get_choices(include_blank=False) and self.field.remote_field.get_choices(include_blank=False) directly, without an ordering argument. They require these standalone calls to honor Foo._meta.ordering = ('d',) and Bar._meta.ordering = ('b',), yielding foo2 before foo1 and bar2 before bar1. This default behavior of the underlying field APIs is open: the specification mentions get_choices() as a call made by the admin filters, but does not require changing its behavior for callers outside those filters.\n4. A reasonable correct fix can resolve ordering within the admin filters: use the related ModelAdmin's ordering when applicable, otherwise the related model's Meta.ordering, and pass that ordering explicitly to field.get_choices() from both filters. Such a fix addresses the reported behavior, including reverse relationships, while leaving standalone get_choices() defaults unchanged. It therefore fails the two graded model-field tests.\n5. Those tests enforce a change to a lower-level entry point that an admin-local fix need not change, so the most overspecified requirement scores 4.",
+    "score": 4,
+    "explanation": "A correct fix could resolve and explicitly pass ordering within both admin filters without changing Field.get_choices() or the reverse field's get_choices() defaults. The two standalone model-field tests would reject that fix even though the reported admin ordering problems are resolved.",
+    "overspecification_vector": "test_get_choices_default_ordering: self.field.get_choices(include_blank=False) must return [self.foo2, self.foo1] after Foo._meta.ordering = ('d',). test_get_choices_reverse_related_field_default_ordering: self.field.remote_field.get_choices(include_blank=False) must return [self.bar2, self.bar1] after Bar._meta.ordering = ('b',). Both require default behavior changes outside the admin-filter entry points."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3443,
+  "output_tokens": 1083,
+  "seconds": 24.2
+}

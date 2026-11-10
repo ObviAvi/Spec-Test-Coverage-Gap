@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7490",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 31309,
+  "output": {
+    "reasoning": "The specification identifies a regression in request.node.add_marker(pytest.mark.xfail(...)) during test execution: a failing test should be reported as xfailed, as it was in pytest 5.x. The first graded test reproduces that example and requires xfailed=1; this is directly settled by the specification. The second uses the same marker API during test execution but supplies strict=True and lets the test pass, requiring failed=1. This is settled by pytest's standard strict-xfail semantics: an unexpected pass under a strict xfail is a failure. It is a closely related input, not a new entry point or an implementation constraint. A patch that handles dynamically added markers only when an exception occurs would leave the same marker-recognition problem for this related case. Neither test constrains internal state, fix structure, diagnostic wording, or arbitrary values. There are no open requirements that admit a reasonable alternative outcome.",
+    "score": 2,
+    "explanation": "The xfailed=1 assertion directly matches the reported regression, while failed=1 for a passing test dynamically marked xfail(strict=True) follows standard strict-xfail semantics.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6162,
+  "output_tokens": 554,
+  "seconds": 13.6
+}

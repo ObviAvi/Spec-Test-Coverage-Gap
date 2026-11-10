@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15732",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10923,
+  "output": {
+    "reasoning": "1. The specification describes a migration failing to remove a single-column unique_together constraint when another uniqueness constraint covers that column. The title explicitly includes a field with unique=True; the description reproduces the analogous primary-key case.\n2. The graded test creates a model with a unique=True name field and unique_together on that same field. It checks that both constraints initially exist, runs AlterUniqueTogether(\"Pony\", set()) through the normal migration state/database lifecycle, and verifies that the field's unique constraint remains while the unique_together constraint disappears. There are no mocks or requirements for a new helper or private implementation.\n3. Removing unique_together is directly specified. Retaining the independent unique=True constraint is the necessary migration semantics: removing one model option must not remove the field's uniqueness. The non-primary-key input is explicitly covered by the issue title and closely related to the reproduction. The hardcoded database names identify the two constraints created by the fixture; they do not require the fix to introduce a particular naming scheme. The feature guard limits the test to databases supporting the duplicate-constraint setup.\n4. No material requirement remains open. Merely dropping an arbitrary matching constraint would not reliably remove the intended constraint while preserving the independent one. A correct fix can use any discovery or deletion implementation that achieves that result.",
+    "score": 2,
+    "explanation": "The test reasonably covers the unique=True variant named in the issue and verifies the required result: removing unique_together without removing the field's independent unique constraint.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2427,
+  "output_tokens": 2083,
+  "seconds": 53.1
+}

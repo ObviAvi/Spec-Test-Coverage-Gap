@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15503",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10351,
+  "output": {
+    "reasoning": "1. The spec says has_key, has_keys and has_any_keys on JSONField fail to match numeric-looking string keys on SQLite, MySQL and Oracle. The cause is the JSON path compiler turning such keys into array indexes instead of object keys. It names the three lookups as the entry points.\n\n2. What the graded tests require:\n- A model containing numeric string keys at the top level, inside a nested object and inside an array element, plus the key \"000\".\n- Filters using has_key, has_keys and has_any_keys, both directly and through key transforms such as nested and array__0, must return that object.\n- test_has_keys is listed as fail-to-pass but is not changed in the diff. It is an existing public-behaviour test of has_keys, so it adds nothing a fix must invent.\n\n3. Settlement of each requirement:\n- Numeric keys with has_key, has_keys and has_any_keys: settled by the issue title (\"has_key, has_keys, and has_any_keys JSONField() lookups don't handle numeric keys\") and the reproduction with '1111'.\n- Nested and array-transform lhs: closely related inputs on the same lookups. A correct fix must treat the final rhs key as an object key while the lhs transforms still resolve normally, for example array__0 as an index.\n- \"000\": still a numeric-looking key that must be treated as a string key. Any fix that always quotes the rhs key handles it.\n- Assertions use only public ORM filtering and the expected result set. There are no messages, private APIs or new names.\n\n4. No reasonable correct fix fails. A fix that always compiles the has_key rhs as an object key passes every case. A fix that broke the lhs array index would be incorrect, not an alternative valid choice.",
+    "score": 2,
+    "explanation": "The tests check, through the public ORM, that has_key, has_keys and has_any_keys find numeric string keys, including on nested and array-element transforms and the key \"000\". This is exactly the issue's behaviour applied to closely related inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRFRhHLzsBewTDDz77D",
+  "input_tokens": 4050,
+  "output_tokens": 1314,
+  "seconds": 14.6
+}

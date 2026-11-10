@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-10908",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10643,
+  "output": {
+    "reasoning": "1. The specification identifies CountVectorizer.get_feature_names as the entry point: it \"should not raise NotFittedError if the vocabulary parameter is provided but the vectorizer has not been trained.\"\n2. The graded additions require: fixed_vocabulary_ to be False after get_feature_names fails on an unfitted vectorizer; get_feature_names to return the nine supplied vocabulary terms in their index order without fitting; fixed_vocabulary_ to be True afterward; and vocabulary_ to contain each returned term at its corresponding index. The test-function rename is outside the graded test.\n3. Successful feature-name retrieval with a supplied vocabulary is directly settled. Returning the supplied terms in feature-index order follows the method's purpose and the existing index-alignment checks. However, creating or updating fixed_vocabulary_ is open: the specification never mentions that field. Although vocabulary_ is discussed as a side effect of transform, the specification does not explicitly require get_feature_names to materialize it.\n4. A reasonable fix could validate the constructor vocabulary and derive feature names from it without materializing fitted-state attributes. Another reasonable fix could initialize the supplied vocabulary lazily while preserving the existing failure path when no vocabulary was supplied, without defining fixed_vocabulary_ on that failure path. These fix the reported behavior but can fail the added state assertions.\n5. The most overspecified requirements concern internal state rather than the returned feature names, so the score is 4.",
+    "score": 4,
+    "explanation": "The tests require fixed_vocabulary_ to exist and have particular values after both unsuccessful and successful get_feature_names calls. A correct fix could return validated feature names from the supplied vocabulary while leaving these internal attributes untouched, or preserve the original unfitted error path without creating fixed_vocabulary_.",
+    "overspecification_vector": "assert_false(cv.fixed_vocabulary_); assert_true(cv.fixed_vocabulary_); assert_equal(idx, cv.vocabulary_.get(name)) in the newly added custom-vocabulary block"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2506,
+  "output_tokens": 1610,
+  "seconds": 38.5
+}

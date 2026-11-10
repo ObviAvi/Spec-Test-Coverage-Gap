@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15731",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9061,
+  "output": {
+    "reasoning": "The specification identifies lost metadata on queryset methods exposed through managers: inspect.signature(Person.objects.bulk_create) shows (*args, **kwargs) instead of the underlying method's signature, and it explicitly recommends functools.wraps. The sole graded assertion calls inspect.signature(Article.objects.bulk_create), converts it to a string, and requires the named parameters in order with their defaults. Restoring the bulk_create signature is directly settled by the reproduction. Using Article rather than Person is an equivalent model-manager input. The additional update_conflicts, update_fields, and unique_fields parameters are not listed in the issue's example, but faithfully exposing the underlying method's existing signature—including its current parameters and defaults—is the only reasonable interpretation of the requested metadata preservation. String formatting follows inspect.Signature's standard representation. No reasonable correct fix would deliberately omit or alter existing queryset parameters. The separate name and docstring assertions are not graded.",
+    "score": 2,
+    "explanation": "Every reasonable fix that restores the underlying queryset method's signature will satisfy the bulk_create signature assertion; the test extends the reproduction only to an equivalent model and the method's current parameter list.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2037,
+  "output_tokens": 751,
+  "seconds": 18.9
+}

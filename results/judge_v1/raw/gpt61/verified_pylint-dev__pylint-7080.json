@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pylint-dev__pylint-7080",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 32994,
+  "output": {
+    "reasoning": "The specification requires recursive linting to honor ignore-paths: with '--recursive=y src/', '^src/gen/.*$' must exclude generated files. The test uses the same CLI behavior, but changes the target to '.', supplies ignore-paths directly rather than through TOML, and requires exit code 0. CLI/configuration equivalence is a reasonable inference, and the sys.path/cwd helpers merely establish the fixture. However, the combination of '.' and '^ignored_subdirectory/.*' additionally requires matching paths without a leading './'. That normalization is open: the specification never establishes whether anchored regexes match normalized paths or traversal paths retaining their supplied spelling. A reasonable fix could consistently filter recursive discoveries, support the reported slash formats, and preserve './' in paths discovered beneath '.'. It would solve the reported exclusion bug generally, but this test's regex would not match './ignored_subdirectory/...', causing the exit-code assertion to fail.",
+    "score": 3,
+    "explanation": "The test additionally requires stripping the leading './' before applying an anchored ignore-paths regex. A reasonable recursive-filtering fix that preserves traversal-path spelling would exclude the reported src/gen files but fail this test.",
+    "overspecification_vector": "The combination of target \".\", \"--ignore-paths=^ignored_subdirectory/.*\", and the assertion code=0 in test_ignore_path_recursive_current_dir."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 8771,
+  "output_tokens": 2055,
+  "seconds": 52.0
+}

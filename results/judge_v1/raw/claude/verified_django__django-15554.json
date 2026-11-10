@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15554",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9628,
+  "output": {
+    "reasoning": "1. The spec says that when several FilteredRelations on the same relation have different conditions, Django builds only one JOIN and ignores the others. The expected behaviour is a separate join for each FilteredRelation.\n\n2. The test annotates two FilteredRelations on \"book\" with different conditions (contains \"Alice\" and icontains \"Jane\"), filters on name=\"Jane\", and selects the title through each alias. It expects two rows:\n- the alice title is None, or the empty string on backends that interpret empty strings as nulls;\n- the jane title is \"The book by Jane A\" and \"The book by Jane B\", respectively.\n\n3. Settlement of each requirement:\n- The public API (annotate, FilteredRelation, values) already exists, so it is settled.\n- The expected results are exactly what correct SQL produces once each FilteredRelation gets its own LEFT OUTER JOIN with its own condition. That is settled by the spec: \"should I be able to do the thing above\" implies each relation is applied independently.\n- The test uses annotate rather than alias. These are the same code path, since both register filtered relations in the query.\n- The row count is two. That follows from the correct join semantics: Jane's two books join through the jane relation, and the alice join yields NULL.\n- assertCountEqual ignores row order.\n\n4. Any correct fix, whether it makes join reuse take the filtered relation into account or adjusts equality, produces separate joins and therefore these results. No reasonable correct fix would fail.",
+    "score": 1,
+    "explanation": "The test checks the reported scenario directly: each FilteredRelation on the same relation must get its own join, so every correct fix yields these query results.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRFUcPtb34v1YNHWvDg",
+  "input_tokens": 3525,
+  "output_tokens": 584,
+  "seconds": 7.7
+}

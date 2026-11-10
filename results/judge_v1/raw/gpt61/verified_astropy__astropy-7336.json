@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-7336",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20459,
+  "output": {
+    "reasoning": "The issue identifies u.quantity_input trying to convert a None return value when the decorated callable has a -> None annotation. The sole graded test decorates a function taking solarx: u.arcsec, calls it with 1*u.arcsec, and asserts that its implicit return remains None without an exception. Handling the annotation is settled by the reported failure and the suggestion to \"check whether None is returned and then omit the unit check.\" Preserving the implicit None return is settled by Python semantics. Using an ordinary function rather than __init__, and arcseconds rather than volts, reasonably generalizes the same decorator behavior to closely related inputs. No private APIs, implementation details, messages, or arbitrary output choices are required. A constructor-only workaround that leaves the identical failure for other None-returning callables would not resolve the underlying bug for closely related inputs.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should allow the decorated -> None function to execute and preserve its None return, as asserted by `assert solarx is None`; this is a straightforward generalization of the constructor reproducer.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5530,
+  "output_tokens": 486,
+  "seconds": 12.9
+}

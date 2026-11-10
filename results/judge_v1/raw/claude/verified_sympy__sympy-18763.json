@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-18763",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8023,
+  "output": {
+    "reasoning": "1. The spec says that LaTeX printing of `3*Subs(-x+y, (x,),(1,))` does not parenthesize the Add inside the Subs bar. It gives the desired output exactly: `'3 \\left. \\left(- x + y\\right) \\right|_{\\substack{ x=1 }}'`. The entry point is `latex()` and the Subs printer.\n\n2. The graded test requires two things:\n(a) `latex(3*Subs(-x+y,(x,),(1,)))` equals the exact string from the spec.\n(b) `latex(Subs(x*y,(x,y),(1,2)))` equals `\\left. \\left(x y\\right) \\right|_{...}`. This changes the previous expected output, which was `\\left. x y \\right|`.\n\n3. Status of each requirement:\n(a) is settled verbatim by the spec.\n(b) is open. The spec only discusses an Add (`-x+y`) needing parentheses. It says nothing about a product such as `x y`. The original fix evidently parenthesizes with Mul precedence and strict=True, so even products get wrapped.\n\n4. A natural alternative fix parenthesizes the inner expression only when its precedence is lower than Mul, e.g. `self.parenthesize(expr, PRECEDENCE['Mul'])` without strict, or an explicit check for Add. This fixes the reported case and related Add cases. It also leaves the old `x y` output unchanged, which the existing test previously asserted as correct. Such a fix fails assertion (b). Whether to wrap a product is a judgment call the issue never addresses, so the test pins one choice among several. The output is observable, so this is not a score of 4.",
+    "score": 3,
+    "explanation": "A fix that wraps only lower-precedence expressions such as Add, which resolves the reported `3*Subs(-x+y,...)` case, would keep printing `\\left. x y \\right|` for `Subs(x*y, ...)`. The updated test instead demands `\\left. \\left(x y\\right) \\right|`, which the spec never asks for.",
+    "overspecification_vector": "assert latex(Subs(x*y, (x, y), (1, 2))) == r'\\left. \\left(x y\\right) \\right|_{\\substack{ x=1\\\\ y=2 }}'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRco9wXKimx9oxXTThn",
+  "input_tokens": 3100,
+  "output_tokens": 998,
+  "seconds": 11.3
+}

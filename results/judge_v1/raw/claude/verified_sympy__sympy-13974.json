@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-13974",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8931,
+  "output": {
+    "reasoning": "1. The spec says powers of TensorProduct are left unevaluated by `tensor_product_simp` and `expand(tensorproduct=True)`. Its only examples are squares: `tp(1,1)*tp(1,1)` and `tp(1,Pauli(3))*tp(1,Pauli(3))`. The expected result is that the power is simplified as if multiplied out.\n2. The tests call only `tensor_product_simp` and require:\n   (a) `TP(A,B)**x` -> `TP(A**x, B**x)`, with x a symbolic, non-integer-declared exponent;\n   (b) `x*TP(A,B)**2` -> `x*TP(A**2,B**2)`;\n   (c) `x*(TP(A,B)**2)*TP(C,D)` -> `x*TP(A**2*C, B**2*D)`;\n   (d) `TP(A,B)-TP(C,D)**x` -> `TP(A,B)-TP(C**x,D**x)`.\n3. Settledness:\n   - (b) and (c) follow from the spec's squared examples plus the existing Mul simplification. They are settled.\n   - (a) and (d) are open. The spec never addresses symbolic exponents; every example is a concrete square.\n4. A competent developer could fix only integer powers, e.g. by rewriting `TP(...)**n` as a product of n factors and reusing the existing Mul logic. That is a cautious choice, since distributing an arbitrary symbolic power across tensor factors is only obviously valid for integer exponents. Such a fix fully resolves the reported cases and closely related integer powers. It would leave `TP(A,B)**x` unchanged and fail assertions (a) and (d).\n5. The tests pin one valid design choice, distributing arbitrary exponents, through the public entry point. That is observable behavior, so the score is 3.",
+    "score": 3,
+    "explanation": "A reasonable fix that only simplifies integer powers of TensorProduct (e.g., expanding `TP(A,B)**2` into a product) solves the reported squared cases but leaves `TP(A,B)**x` with a symbolic exponent untouched. It would fail the assertions requiring `TP(A**x, B**x)` and `TP(C**x, D**x)`.",
+    "overspecification_vector": "assert tensor_product_simp(TP(A, B)**x) == TP(A**x, B**x); assert tensor_product_simp(TP(A,B)-TP(C,D)**x) == TP(A,B)-TP(C**x,D**x)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRarihdFtDVsPs6scqG",
+  "input_tokens": 3588,
+  "output_tokens": 1595,
+  "seconds": 15.3
+}

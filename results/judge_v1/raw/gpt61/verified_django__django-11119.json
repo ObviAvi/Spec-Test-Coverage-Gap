@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11119",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7879,
+  "output": {
+    "reasoning": "1. The specification identifies Engine.render_to_string() and says it should honor the engine's autoescape attribute, explicitly describing autoescape=False as the broken case. 2. The graded test constructs Engine(dirs=[TEMPLATE_DIR], autoescape=False), calls render_to_string('test_context.html', {'obj': '<script>'}), and requires 'obj:<script>\\n'. It uses no mocks or internal implementation assertions. 3. The entry point, configuration, and unescaped substitution are directly settled by the specification. The existing template fixture and its 'obj:' prefix and newline are consistent with the surrounding existing expectation 'obj:test\\n'; they are ordinary rendering context, not new fix requirements. 4. No open requirement rejects a reasonable correct fix: honoring autoescape=False must preserve '<script>' rather than escape it, while retaining the template's surrounding text. 5. This directly tests the reported bug.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the assertion directly checks that Engine.render_to_string() leaves '<script>' unescaped when the engine has autoescape=False.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1785,
+  "output_tokens": 435,
+  "seconds": 10.2
+}

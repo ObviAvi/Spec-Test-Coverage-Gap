@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11400",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14925,
+  "output": {
+    "reasoning": "1. The spec names two admin bugs. RelatedFieldListFilter leaves ordering as an empty tuple (filters.py L196) instead of falling back to the related model's Meta.ordering. RelatedOnlyFieldListFilter calls field.get_choices without the ordering kwarg (L422). The entry points are the admin list filters in filters.py.\n\n2. What the graded tests require:\n(a) Admin tests: lookup_choices on RelatedFieldListFilter (reverse relationship) honour Book._meta.ordering. RelatedOnlyFieldListFilter honours both ModelAdmin.ordering and Employee._meta.ordering.\n(b) model_fields tests: Field.get_choices(include_blank=False) and ForeignObjectRel.get_choices(include_blank=False), called directly with no ordering argument, return objects sorted by the model's Meta.ordering.\n\n3. Settledness:\n(a) is settled by the spec: \"it should fall back to the ordering defined in the related model's Meta.ordering\" and \"omits the ordering kwarg entirely.\"\n(b) is open. The spec never says Field.get_choices itself should change. Its default ordering=() does .order_by(*()), which clears Meta.ordering, but that is never described as a bug. The spec only presents get_choices as the call site that lacks a kwarg.\n\n4. A reasonable fix that fails (b): change filters.py only. RelatedFieldListFilter.field_admin_ordering returns related_admin.get_ordering() if set, else field.remote_field.model._meta.ordering. RelatedOnlyFieldListFilter passes ordering=self.field_admin_ordering(...) to get_choices. This fixes every admin case in the issue, including reverse relations, and passes all four admin tests. It fails test_get_choices_default_ordering and test_get_choices_reverse_related_field_default_ordering, because Field.get_choices still clears ordering when none is given. Those tests call a different public function directly, not the admin filter entry point the issue implicates.\n\n5. Score: 4.",
+    "score": 4,
+    "explanation": "A correct fix confined to admin/filters.py (falling back to the related model's Meta.ordering and passing ordering to get_choices) resolves every admin symptom in the issue. It still fails the model_fields tests, which call Field.get_choices / ForeignObjectRel.get_choices directly without an ordering argument and require them to stop clearing Meta.ordering.",
+    "overspecification_vector": "tests/model_fields/tests.py: test_get_choices_default_ordering (self.field.get_choices(include_blank=False) expecting Meta.ordering) and test_get_choices_reverse_related_field_default_ordering (self.field.remote_field.get_choices(include_blank=False) expecting Meta.ordering)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR2rPiFRHPa5ze97MsD",
+  "input_tokens": 6013,
+  "output_tokens": 1877,
+  "seconds": 17.8
+}

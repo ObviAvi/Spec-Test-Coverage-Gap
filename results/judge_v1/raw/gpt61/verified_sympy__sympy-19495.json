@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-19495",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9670,
+  "output": {
+    "reasoning": "1. The issue identifies plain ConditionSet.subs as mishandling a free parameter when the base is an ImageSet: substituting y must not replace the bound x. It explicitly shows that substituting 1/3 should produce the ImageSet obtained with xreplace or simultaneous substitution.\n2. The added reproduction constructs imageset(Lambda(k, 2*k*pi + asin(y)), S.Integers), wraps it in ConditionSet(x, Contains(y, Interval(-1, 1)), ...), substitutes S.One/3, and compares against the corresponding ImageSet using dummy_eq. These inputs and the expected result are settled by the issue's examples. The local name k imposes no implementation requirement, and dummy_eq permits equivalent bound-variable names.\n3. The other added requirement changes ConditionSet(n, n < x, Interval(-oo, 0)).subs(x, p) from EmptySet to Interval(-oo, 0). This is a related regression rather than a verbatim reproduction. Its expectation follows the same bound/free-variable distinction and parallels the unchanged assertion for Interval(0, oo): substituting a free parameter must not mistakenly rebind the ConditionSet variable or introduce a membership test for the replacement value.\n4. There are no required private methods, implementation names, messages, or arbitrary representations. No reasonable alternative needs to violate either the reported ImageSet result or the related substitution regression; preserving the latter erroneous behavior would leave the same class of substitution problem unresolved.",
+    "score": 2,
+    "explanation": "The ImageSet assertion directly reproduces the reported substitution bug, while the changed interval assertion reasonably extends the same requirement that free-parameter substitution preserve the ConditionSet's bound variable.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2615,
+  "output_tokens": 1928,
+  "seconds": 44.3
+}

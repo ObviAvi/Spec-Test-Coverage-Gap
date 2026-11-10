@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-25775",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10861,
+  "output": {
+    "reasoning": "1. What the spec asks for: add `get_antialiased` and `set_antialiased` to Text and Annotation, store the value per artist, and use it when drawing through the GraphicsContext instead of the global rcParam. It names the public getter and setter but no internal storage.\n\n2. What the tests require:\n- `Text(..., antialiased=...)` and `Annotation(..., antialiased=...)` constructor kwargs.\n- `set_antialiased` and `get_antialiased` methods.\n- The private attribute `_antialiased`, checked with `is True` / `is False`.\n- The default value of `_antialiased` must equal `rcParams['text.antialiased']` at construction time.\n- Rendering with `antialiased=X` must match rendering with the rcParam set to X, for png and pdf.\n\n3. Settled vs open:\n- The getter and setter names are settled (\"Add get/set_antialiased to Text objects\").\n- The constructor kwarg follows from the Artist convention: kwargs map to setters.\n- The draw-time effect is settled (\"use that info in the drawing stage\").\n- The private attribute `_antialiased` and its eager default are open. Line2D and Patch in matplotlib do use `_antialiased`, but nothing in the spec requires it.\n\n4. A reasonable fix that fails: store `None` by default, meaning \"follow rcParams\", and resolve it in `get_antialiased` or at draw time. This is a lazy-default design. That fix works correctly through the public API, yet `assert txt._antialiased == mpl.rcParams['text.antialiased']` fails because `None != True`. A fix that names the attribute differently (e.g. `_antialias`, or a GC-related name) fails every `_antialiased` assertion. These assertions inspect internal state the spec never names.\n\n5. Score: the tests assert on private internal state, so this is a 4.",
+    "score": 4,
+    "explanation": "The tests assert directly on the private attribute `txt._antialiased`, including that its default equals rcParams at construction. A correct fix that stores the setting under another name, or keeps `None` as a lazy \"use rcParams\" default resolved in `get_antialiased` or at draw time, fails even though the public getter, setter and rendering all behave correctly.",
+    "overspecification_vector": "assert txt._antialiased == mpl.rcParams['text.antialiased']; assert txt._antialiased is True/False; assert annot._antialiased is True; assert annot4._antialiased == mpl.rcParams['text.antialiased']"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRMiobUGexenatDRbYH",
+  "input_tokens": 4325,
+  "output_tokens": 1198,
+  "seconds": 11.9
+}

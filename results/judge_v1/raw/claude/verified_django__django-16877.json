@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16877",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9979,
+  "output": {
+    "reasoning": "1. The specification asks for a new template filter, `escapeseq`, that is to `escape` what `safeseq` is to `safe`. That means it applies the `escape` filter to each item of a sequence. The example is `{{ some_list|escapeseq|join:\",\" }}`, and the spec says it should work when autoescape is off.\n\n2. What the tests require:\n- A filter named `escapeseq`. Settled: the spec names it.\n- Plain-string items are escaped, with autoescape both on and off. Settled: \"each item of some_list is escaped,\" and \"makes sense in a context where autoescape is off.\"\n- Items wrapped in `mark_safe` are left unescaped. Settled by convention: Django's `escape` filter calls `conditional_escape`, which leaves safe strings alone, and the spec says escapeseq mirrors `escape`.\n- Escaped items come out of `join` without double escaping. Settled by convention: `conditional_escape` returns SafeString, which `join` respects.\n- The separator `<br/>` is not escaped. This is existing `join` behaviour: template string literals are already safe.\n\n3. The only conceivable deviation is a fix that uses the always-escape function `django.utils.html.escape` (force_escape semantics). That would contradict the stated analogy to the `escape` filter, so it is not a reasonable reading of the spec.\n\n4. Every reasonable fix applies `conditional_escape` per item and returns a sequence of safe strings, which passes all four tests.",
+    "score": 2,
+    "explanation": "Every reasonable fix that mirrors the `escape` filter, applying `conditional_escape` to each item as the spec's \"escapeseq is to escape what safeseq is to safe\" implies, produces the asserted outputs, including leaving `mark_safe` items unescaped.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRJf5mwPxub2tyjUCcq",
+  "input_tokens": 3904,
+  "output_tokens": 1285,
+  "seconds": 13.1
+}

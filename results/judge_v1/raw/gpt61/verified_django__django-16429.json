@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16429",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9401,
+  "output": {
+    "reasoning": "The specification identifies timesince() failing for timezone-aware datetimes over intervals of at least a month because its calendar pivot is offset-naive. The tests add a subclass that reruns existing tests with USE_TZ=True and an aware self.t. This is settled by the reported timezone failure; using explicit endpoints and testing additional units and depths are closely related inputs. The visible long-interval assertions require timesince(t, self.t) and timeuntil(self.t, t) to return \"1000\\u00a0years\", with t created by replacing self.t's year. These expectations follow the existing thousand-year regression, extended to aware inputs; the inverse timeuntil assertion does not impose a new implementation requirement. The exact invalid-depth ValueError message is also an unchanged existing contract, not a newly selected error message for this issue. The detailed inherited depth/unit assertions are not shown, but the patch adds no new expected values for them—only timezone-aware execution. No visible requirement selects among reasonable correct timezone fixes or mandates the suggested constructor change.",
+    "score": 2,
+    "explanation": "The tests reasonably extend the reported month-or-longer timezone failure to existing duration, depth, and thousand-year cases with aware datetimes, without prescribing how the pivot must be fixed.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2223,
+  "output_tokens": 1319,
+  "seconds": 30.5
+}

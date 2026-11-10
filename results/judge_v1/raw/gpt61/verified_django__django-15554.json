@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15554",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9628,
+  "output": {
+    "reasoning": "1. The specification identifies multiple FilteredRelation objects for the same relation being incorrectly merged: it says the query generates \"a single SQL JOIN\" and \"ignores the other.\" Correct behavior must preserve both filters independently.\n2. The test uses Author.objects.annotate() with two FilteredRelation(\"book\", condition=...) expressions, Q lookups containing \"Alice\" and \"Jane\", filter(name=\"Jane\"), and values() selecting both aliases' titles. It requires two result dictionaries: the Alice-filtered title is absent, and the Jane-filtered titles are \"The book by Jane A\" and \"The book by Jane B\". The absent value is None or the backend's empty-string representation. assertCountEqual does not require row order.\n3. Independent conditions on the same relation are settled by the reported bug. Using annotate(), a single-hop relation, and different string lookups are closely related public ORM inputs. Selecting each alias's corresponding title, retaining rows when one filtered relation has no match, and returning each matching Jane book follow ordinary filtered outer-join and values() semantics. The backend-dependent absent value follows existing Django database conventions. Alias names and title strings are test inputs and fixture results, not names or constants a fix must introduce.\n4. No open requirement selects among reasonable implementations. A fix that still conflates the aliases, loses the unmatched side's rows, or returns the wrong matching titles would leave the described bug or a closely related instance unresolved. The test does not require particular SQL text, join names, private methods, or implementation structure.\n5. The test is a reasonable generalization of the reproduction rather than a near-verbatim copy.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should preserve both filtered relations independently, producing the two Jane-book rows with an absent Alice-filtered title as asserted.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2190,
+  "output_tokens": 758,
+  "seconds": 19.1
+}

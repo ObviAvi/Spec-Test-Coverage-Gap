@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14672",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 32297,
+  "output": {
+    "reasoning": "1. The specification says ManyToManyRel.identity contains through_fields unconverted, so a list value makes hash() fail. It names the fix directly: \"Add missing make_hashable call on self.through_fields in ManyToManyRel\", following the existing limit_choices_to pattern.\n2. What the tests require:\n   - Model checks must pass when a ManyToManyField has through_fields given as a list, including the field-clash check on an inherited child. This mirrors the repro.\n   - hash() of a reverse M2M relation with list through_fields must work and match the hash of the inherited copy on PersonChild.\n   - reverse_m2m.through_fields must still equal ['event', 'invitee'], i.e. stay a list.\n   - The many other m2m_through tests fail only because models.py now uses a list, which breaks model checks and loading. They pass once hashing works.\n3. Settlement:\n   - Hashability is settled by the spec.\n   - The list-preserving assertion is settled by the prescribed approach: make_hashable is applied inside identity, the same way limit_choices_to (a dict) is stored raw and made hashable only in identity.\n   - Hash equality of the original and inherited relations follows from identity-based hashing. Both carry the same identity elements, which the existing design already relies on.\n4. A fix that stored through_fields as a tuple in __init__ would fail the list-equality assertion. But that contradicts the explicit solution text and the existing pattern, so it is not a reasonable reading of the spec. The prescribed fix passes all assertions.",
+    "score": 2,
+    "explanation": "The spec explicitly prescribes wrapping through_fields with make_hashable in ManyToManyRel.identity, and the tests only check that hashing works for list through_fields while the stored attribute remains unchanged, which that prescribed fix satisfies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRCgXBF4NH3RS7Km67d",
+  "input_tokens": 13534,
+  "output_tokens": 1114,
+  "seconds": 12.3
+}

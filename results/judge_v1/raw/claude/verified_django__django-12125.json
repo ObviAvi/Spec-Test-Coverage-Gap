@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12125",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10679,
+  "output": {
+    "reasoning": "1. The spec says migration serialization writes nested classes as if they were top-level (module.Inner instead of module.Outer.Inner). It shows this both for a nested Field subclass and for a nested Enum class passed as a field argument (enum=test1.models.State, which should be test1.models.Thing.State). The natural fix is to use __qualname__ instead of __name__ when serializing class references (TypeSerializer, and the deconstruct path for fields).\n\n2. What the graded tests require: serializing the nested classes WriterTests.NestedEnum (enum.IntEnum) and WriterTests.NestedChoices (models.TextChoices) must give the string 'migrations.test_writer.WriterTests.<Name>' with imports {'import migrations.test_writer'}. test_serialize_numbers is also listed as graded; its body is not changed in the patch. It presumably fails pre-fix for collateral reasons and adds no requirement beyond correct serialization.\n\n3. Settlement:\n- The dotted path module.Outer.Inner is settled by the spec: \"should have been test1.models.Outer.Inner\" and \"should refer to test1.models.Thing.State\".\n- The import set is settled by existing convention: the serializer already emits 'import <module>' for class references.\n- Using an enum class directly as the serialized value is settled by the spec's real-life example, where the enum class itself is serialized as an argument.\n- TextChoices is closely related (also an enum class), so it is covered by the same expectation.\n\n4. Alternatives: a fix that only patched Field.deconstruct and not class serialization would ignore the spec's enum example, so it is not reasonable. Any fix using __qualname__ in class serialization produces exactly the asserted string. No reasonable alternative output format exists.",
+    "score": 2,
+    "explanation": "The test asserts that a nested enum/choices class serializes to 'module.Outer.Inner' with the module import, which is exactly the spec's expected output for the enum example; any qualname-based fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR4pJmFMUDKvQ65HCjG",
+  "input_tokens": 3984,
+  "output_tokens": 1626,
+  "seconds": 16.8
+}

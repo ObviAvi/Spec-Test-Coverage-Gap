@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13933",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9118,
+  "output": {
+    "reasoning": "1. The specification says ModelChoiceField raises an invalid_choice ValidationError without including the offending value. Unlike ChoiceField and ModelMultipleChoiceField, it passes no params. The suggested fix is \"Passing in parameters with the invalid value and modifying the default error message.\"\n2. The test builds a ModelChoiceField with a custom invalid_choice message using the %(value)s placeholder. It calls clean('invalid') and expects the error '\"invalid\" is not one of the available choices.'\n3. Requirements:\n- The param key must be 'value'. This is settled by convention: ModelMultipleChoiceField's message, quoted in the spec, uses %(value)s, and ChoiceField does the same. The spec explicitly says to match those.\n- The interpolated value must be the raw invalid input 'invalid'. This is settled because the spec asks for \"the value of the invalid choice\", and the raw submitted value is the only natural choice.\n- The default message wording is not checked, because the test supplies a custom message.\n4. No reasonable fix that passes params with the invalid value under the 'value' key would fail. Using a different key name would contradict the explicit pattern the spec points to.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes because the test only checks that a custom invalid_choice message's %(value)s placeholder is filled with the invalid input, which is exactly what the spec asks for, following the ChoiceField/ModelMultipleChoiceField convention.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRAY8q3WsztQgi8sd3D",
+  "input_tokens": 3417,
+  "output_tokens": 797,
+  "seconds": 8.6
+}

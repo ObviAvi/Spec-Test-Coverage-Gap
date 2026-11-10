@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13925",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14310,
+  "output": {
+    "reasoning": "1. The spec says W042 (auto-created primary key warning) is wrongly raised on models that inherit their primary key from an ancestor that defines one. It describes a symptom in the system check, not a specific function.\n2. The graded tests require:\n   - (a) `test_explicit_inherited_pk`: a Parent with an explicit `AutoField` pk and a Child subclass produce no warnings.\n   - (b) `test_auto_created_inherited_pk`: a Parent with no explicit pk and a Child subclass produce exactly one W042, on Parent only. The message and hint are the existing ones.\n3. Requirement (a) is settled directly by the spec: \"These models should not use auto-created primary keys! I already defined the primary key in the ancestor.\" Requirement (b) is settled by convention and the semantics of the check.\n   - The child's pk is the auto-created `parent_ptr` OneToOneField. `DEFAULT_AUTO_FIELD` does not govern it.\n   - The real auto-created AutoField lives on the parent, which already gets the warning.\n   - The hint names the child's app config's `default_auto_field`. Changing that would have no effect on an inherited pk, especially across apps.\n   - So the natural fix is to skip the check when the pk is an inherited parent link and let the parent report its own pk. That yields one warning on Parent.\n   - The message and hint strings are unchanged existing text.\n4. One alternative would walk to the root parent and warn on the child whenever the root's pk is auto-created. That emits redundant, misdirected warnings: the hint points at a config that cannot fix the child. It is the same class of spurious child warning the issue complains about, so it is not really a reasonable alternative. Any fix that treats inherited parent-link pks as not subject to this check passes both tests.\n5. Score 2.",
+    "score": 2,
+    "explanation": "Both tests assert that W042 is not emitted for a child whose pk is inherited through the parent link (with the parent still warned when its own pk is auto-created), which is the direct reading of the issue's complaint that inheriting models should not get this warning.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRATEuHNjpJMNaQbs37",
+  "input_tokens": 5516,
+  "output_tokens": 1785,
+  "seconds": 18.3
+}

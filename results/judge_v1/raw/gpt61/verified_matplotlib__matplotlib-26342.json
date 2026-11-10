@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-26342",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8584,
+  "output": {
+    "reasoning": "1. The specification requests ContourSet.set_paths(transformed_paths) as a replacement for modifying the sequence returned by get_paths(): paths[:] = transformed_paths. Both the entry point and its path-replacement semantics are explicit.\n2. The graded test creates two contour sets from different 2×2 grids, calls cs_test.set_paths(cs_ref.get_paths()), and uses check_figures_equal to require matching PNG renderings.\n3. Calling set_paths with a sequence of paths is settled by the proposed API. Replacing the displayed contour geometry is settled by the existing workaround that the setter must replace. The concrete grids merely provide different geometries with otherwise matching contour settings; they impose no additional API requirement.\n4. There are no open implementation choices constrained by the test: it does not assert storage identity, return values, internal methods, or mutation strategy. Any reasonable implementation of the requested replacement behavior should produce the reference rendering.\n5. The test directly checks the requested functionality.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix should pass because the image comparison checks that set_paths replaces the rendered paths, exactly as requested by the proposed replacement for paths[:] = transformed_paths.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2011,
+  "output_tokens": 567,
+  "seconds": 15.1
+}

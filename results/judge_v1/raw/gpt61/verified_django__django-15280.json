@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15280",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10961,
+  "output": {
+    "reasoning": "1. The specification reports that a nested prefetch back to the parent loses the fields loaded by the inner queryset, causing an unwanted query on access. It explicitly expects three queries for evaluation and zero for accessing the inner parent's selected field, and says the bug also affects ForeignKey relationships. 2. The test substitutes House/Room, name/address, and rooms/house for the reported models and fields; requires three evaluation queries; requires zero queries for house.rooms.first().house.address; and checks Room.house.is_cached(self.room) is True. 3. The query counts and deferred-field access are settled by the reproduction's assertNumQueries(3) and assertNumQueries(0). The ForeignKey variation is expressly covered by the report, while accessing the prefetched related collection follows ordinary prefetch behavior. The fixture-cache assertion follows Django's existing ForeignKey assignment convention: creating self.room with house=house already caches that relationship. 4. Although is_cached() checks internal state, it checks the original fixture instance, not the separately fetched Room instance. A reasonable fix to nested prefetch handling would not invalidate that fixture's existing cache, so this assertion does not reject an alternative correct implementation. No open requirement identifies a reasonable correct fix that would fail.",
+    "score": 2,
+    "explanation": "The test applies the reported three-query evaluation and zero-query nested-field access to the explicitly mentioned ForeignKey case; its additional cache assertion checks a relationship already cached by fixture construction.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2506,
+  "output_tokens": 843,
+  "seconds": 21.4
+}

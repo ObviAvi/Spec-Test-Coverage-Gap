@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7748",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9234,
+  "output": {
+    "reasoning": "The issue asks autodoc_docstring_signature to extract all overload signatures appearing at the start of a docstring, rather than only the first. The graded tests exercise the related constructor case: E.__init__ supplies two typed signatures, and autoclass_content='init' and 'both' must expose both through the class directive. Including both signatures is settled by 'pick up all of them'; applying the existing constructor-docstring behavior is a reasonable extension, demonstrated by the neighboring D expectations. Preserving their order and consuming the signature text rather than leaving it as body documentation follow the existing extraction behavior. No private API, mock, or implementation-specific name is required. However, the exact continuation indentation is open: the tests demand fourteen spaces before the second E signature. The existing context establishes single-signature directive formatting, not that continuation layout. A reasonable implementation could emit the second signature with three-space indentation inside the same directive, producing equivalent valid reStructuredText and documenting both overloads, but fail these exact output comparisons.",
+    "score": 3,
+    "explanation": "A correct fix could emit both overloads using a three-space-indented continuation of the class directive. The tests instead require fourteen-space alignment before the second signature, rejecting that semantically equivalent output.",
+    "overspecification_vector": "In both graded tests, the exact expected continuation line: '              E(foo: str, bar: str, baz: str) -> None'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2185,
+  "output_tokens": 3816,
+  "seconds": 87.5
+}

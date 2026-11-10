@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15098",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12091,
+  "output": {
+    "reasoning": "The specification requires i18n_patterns URLs containing both script and region to work, explicitly including /en-latn-us/ and /en-Latn-US/. The visible graded changes exercise the existing trans_real.get_language_from_path() function under configured LANGUAGES. The English script-region cases are specified; /nan-hani-tw/ is a closely related input. Returning the configured language spelling follows the existing lookup convention. The retained Polish, English, German, fallback, and None assertions are regression checks. However, the added /de-ch-1901/ assertion requires region-plus-variant support, not script-plus-region support. That is open: although the issue quotes RFC grammar mentioning variants, it does not request comprehensive support for every tag form. A reasonable fix could preserve existing one- and two-component parsing and additionally recognize three-component tags whose middle component is a script and whose final component is a region. That fixes the reported bug generally but still rejects /de-ch-1901/. The additional de-1996, i-mingo, and kl-tunumiit cases broaden coverage further, but the region-plus-variant assertion alone establishes the gap. No added assertions are visible for the other named graded test; the changed page-response test is not graded.",
+    "score": 3,
+    "explanation": "A reasonable fix could add general script-plus-region support while preserving prior behavior, without adding support for region-plus-variant tags. Such a fix would resolve the reported URLs but fail the requirement that /de-ch-1901/ resolve to de-ch-1901.",
+    "overspecification_vector": "test_get_language_from_path_real: ('/de-ch-1901/', 'de-ch-1901')"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3018,
+  "output_tokens": 2957,
+  "seconds": 66.3
+}

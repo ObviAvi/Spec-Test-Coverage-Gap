@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11451",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10539,
+  "output": {
+    "reasoning": "The issue identifies ModelBackend.authenticate() and explicitly requests avoiding both database queries and password hashing when either credential is None, suggesting `if username is None or password is None: return`. The added test calls authenticate() with {}, username only, and password only; these directly produce the missing-credential cases described. Its assertNumQueries(0) is settled by “shouldn't make a database query,” and CountingMD5PasswordHasher.calls == 0 measures the explicitly unwanted password-hashing work. The PASSWORD_HASHERS override and call counter are measurement tools, not requirements on the fix's implementation. Obtaining the username through UserModel.USERNAME_FIELD follows the existing implementation shown in the specification. Running the inherited test with different user models introduces no arbitrary behavior requirement. No open choice excludes a reasonable correct fix. No added assertions for the listed test_custom_perms tests are shown.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because zero database queries and zero password-hasher calls for missing username or password directly match the requested shortcut.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2336,
+  "output_tokens": 577,
+  "seconds": 16.1
+}

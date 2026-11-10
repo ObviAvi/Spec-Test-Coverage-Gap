@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12325",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11786,
+  "output": {
+    "reasoning": "1. The specification reports order-dependent model construction when a subclass declares both an explicit parent link and another OneToOneField to its parent. The request to honor the \"explicit parent_link marker\" settles that the marked field must be selected regardless of declaration order.\n2. The graded test_onetoone_with_parent_model instead declares only an unmarked other_place relationship. It requires successful class construction and ParkingLot.check() == []. The graded test_clash_parent_link likewise declares only an unmarked other_parent relationship, requiring an automatically generated parent_ptr and exactly four reverse-relation errors: E304 and E305 in each direction, with the specified messages, hints, field objects, and order.\n3. Default parent-pointer naming and standard reverse-relation diagnostics are conventional Django behavior once automatic parent-link creation is chosen. However, requiring automatic creation when an unmarked OneToOneField already targets the parent is open: neither reported example lacks an explicit parent link. Indeed, the removed test supplies evidence that this configuration previously raised ImproperlyConfigured.\n4. A reasonable fix could first search for explicitly marked parent links, making their selection independent of declaration order, while retaining the existing rejection when only an unmarked relationship exists. This fixes the reported ambiguity generally, not just the literal example, but both graded tests would fail during class construction.\n5. The gap concerns externally observable behavior for another model configuration through the same construction mechanism, rather than a required internal implementation, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could prioritize explicit parent_link=True fields regardless of declaration order while preserving the existing error when no explicit parent link is supplied alongside an ordinary OneToOneField. Both graded tests require that previously rejected configuration to become valid and acquire an implicit parent pointer, which the specification does not require.",
+    "overspecification_vector": "test_onetoone_with_parent_model: `other_place = models.OneToOneField(Place, models.CASCADE, related_name='other_parking')` without any explicit parent link, followed by `self.assertEqual(ParkingLot.check(), [])`. test_clash_parent_link: `other_parent = models.OneToOneField(Parent, models.CASCADE)` without any explicit parent link, followed by the exact `Child.check()` error list referencing an automatically generated `parent_ptr`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2651,
+  "output_tokens": 1529,
+  "seconds": 33.7
+}

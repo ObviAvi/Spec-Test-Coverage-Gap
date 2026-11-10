@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12262",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12395,
+  "output": {
+    "reasoning": "1. The spec says custom tag argument parsing (`parse_bits`, shared by simple_tag and inclusion_tag) wrongly rejects a keyword-only arg that has a default. It also says a duplicate keyword-only arg gives the wrong message. The spec gives the expected message verbatim: \"'hi' received multiple values for keyword argument 'greeting'\".\n\n2. What the tests require:\n- `simple_keyword_only_default kwarg=37` renders 37. Settled: this is the reported case.\n- `inclusion_keyword_only_default kwarg=37` renders 37. Settled: the spec says \"Same goes for inclusion tags\". The new tag is defined in the test patch's templatetags file, so the fix need not add it.\n- `simple_keyword_only_param kwarg=42 kwarg=37` raises \"'simple_keyword_only_param' received multiple values for keyword argument 'kwarg'\". Settled: this matches the spec's stated message, and the existing test for `simple_unlimited_args_kwargs` uses the same message format.\n- The same duplicate-kwarg message for `simple_keyword_only_default` and `inclusion_keyword_only_default`. Settled for the same reason; these are closely related inputs.\n\n3. Nothing is open. The message wording is given in the spec and already exists in the code for the multiple-values case. Any correct fix to `parse_bits` (e.g. checking `kwonly` rather than unhandled_kwargs membership) produces this behavior.",
+    "score": 1,
+    "explanation": "Every reasonable fix passes: the tests check the reported cases directly (a keyword-only arg with a default accepts a value, for both simple and inclusion tags) and the exact 'received multiple values for keyword argument' message that the spec states.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR5Nocz7FVzzQ4uNcUX",
+  "input_tokens": 4716,
+  "output_tokens": 620,
+  "seconds": 7.0
+}

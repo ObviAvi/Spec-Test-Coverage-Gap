@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16877",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9979,
+  "output": {
+    "reasoning": "1. The specification requests the template filter `escapeseq`, explicitly relating it to existing filters: \"to escape what safeseq is to safe.\" Its example requires escaping individual sequence elements before `join`, including with autoescape off.\n2. The graded tests render templates through the normal template engine. They require `x&y` and `<p>` to become `x&amp;y` and `&lt;p&gt;`, preservation of elements passed through `mark_safe`, equivalent results with autoescape on and off, and joining with either `\", \"` or `\"<br/>\"` without double-escaping elements or escaping the literal HTML separator. There are no mocks or required implementation helpers; `setup`, `SimpleTestCase`, and `render_to_string` are test scaffolding.\n3. Per-element escaping and operation with autoescape off are explicitly settled by the description and example. Preserving safe elements follows Django's existing `escape` semantics: the requested analogy is element-wise `escape`, not element-wise `force_escape`. Avoiding double escaping when autoescape is on follows the same safe-string convention. Preserving a template-literal join separator follows normal template/join behavior; the new filter operates on the sequence, not the separator.\n4. No tested requirement leaves a reasonable alternative that would fail. Unconditionally re-escaping marked-safe elements would implement force-escaping rather than the requested analogue of `escape`. The additional autoescape mode and separators exercise the advertised composition with `join`, not an unrelated entry point.\n5. The tests therefore add conventional implications and closely related inputs, rather than selecting among valid implementations.",
+    "score": 2,
+    "explanation": "Every reasonable fix implementing element-wise Django `escape` semantics passes: the tests check escaping before `join`, including with autoescape off, while preserving safe elements and normal join behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2452,
+  "output_tokens": 1033,
+  "seconds": 25.9
+}

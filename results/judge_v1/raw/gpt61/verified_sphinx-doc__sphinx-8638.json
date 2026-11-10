@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8638",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11179,
+  "output": {
+    "reasoning": "1. The specification describes an output/linking bug: class-variable documentation must not automatically link to unrelated same-named variables. It explicitly says users can request such links themselves with a reference such as :const:`somename`. It does not prescribe where cross-reference suppression occurs.\n2. The test parses a py:class directive containing ':var int attr: blah blah'. It requires an exact doctree hierarchy, the label 'Variables', a direct literal_strong node containing 'attr', particular punctuation and description ordering, and a pending_xref for 'int' containing literal_emphasis with refdomain='py', reftype='class', reftarget='int', and py:class='Class'.\n3. Preventing the variable name from becoming an unrelated link is settled by the specification. Preserving the ordinary field presentation and type-reference behavior is a reasonable regression expectation. However, requiring the variable name to already be a direct literal_strong node immediately after parsing is open: the issue specifies the resulting documentation, not this intermediate representation. The exact type-reference representation is also not prescribed.\n4. A reasonable fix could retain a pending cross-reference for the field-generated variable name, mark it as non-linking, and unwrap it during cross-reference resolution, while preserving explicitly authored references. That fixes the reported problem and related variable fields, but fails the test's direct-node assertion before resolution.\n5. The test therefore enforces an intermediate implementation choice rather than only the absence of unwanted links.",
+    "score": 4,
+    "explanation": "A correct fix could suppress field-generated variable-name links during cross-reference resolution while leaving a pending_xref wrapper in the parsed doctree. This test would reject it because it requires 'attr' to be a direct literal_strong node immediately after parsing.",
+    "overspecification_vector": "doctree = restructuredtext.parse(app, text); assert_node(doctree[1][1][0][0][1][0], ([addnodes.literal_strong, \"attr\"], \" (\", [pending_xref, addnodes.literal_emphasis, \"int\"], \")\", \" -- \", \"blah blah\"))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2623,
+  "output_tokens": 1498,
+  "seconds": 36.5
+}

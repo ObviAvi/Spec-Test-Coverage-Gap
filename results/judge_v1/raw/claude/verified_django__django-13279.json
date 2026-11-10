@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13279",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10379,
+  "output": {
+    "reasoning": "1. What the spec says is wrong: after #31274 changed the session encoding format, Django 3.0 instances cannot decode sessions written by Django 3.1 instances. This holds even with DEFAULT_HASHING_ALGORITHM='sha1'. The suggested fix is to use the legacy encode() when DEFAULT_HASHING_ALGORITHM == 'sha1'.\n2. What the test requires: under override DEFAULT_HASHING_ALGORITHM='sha1', `self.session.encode(data)` must produce output that `self.session._legacy_decode(encoded)` decodes back to `data`.\n3. Each requirement:\n- `encode()` is the natural entry point and is named in the spec (\"use the legacy encode()\"). Settled.\n- `_legacy_decode` is a private method, but it already exists in the repo. It came with #31274 as the fallback for reading pre-3.1 data, and the context test `test_decode_legacy` exercises the legacy path. The fix does not have to introduce it. Settled by existing code.\n- The output format must be the legacy (3.0) format. This is the only way to meet the spec's goal: 3.0 instances, which cannot be changed, must be able to read the data. `_legacy_decode` is exactly the 3.0 decoding logic, so any fix that makes the data readable by 3.0 passes this assertion. Settled.\n4. No reasonable alternative fails. Changing only the decode side would not help the already-released 3.0 instances. Any other encoding that 3.0 can read would be the legacy format, which `_legacy_decode` accepts.\n5. The switch of test bases to SimpleTestCase is just so `self.settings` works and imposes nothing on the fix.",
+    "score": 2,
+    "explanation": "Any correct fix must make sha1-mode `encode()` emit the pre-3.1 format so Django 3.0 instances can read it, and the test only checks that round trip through the existing `_legacy_decode` helper, which mirrors 3.0 decoding.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR7oDc1nN1mqE5n3FV9",
+  "input_tokens": 4080,
+  "output_tokens": 1178,
+  "seconds": 12.2
+}

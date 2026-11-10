@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-6938",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10605,
+  "output": {
+    "reasoning": "1. The specification describes a symptom: `Dataset.swap_dims()` mutates the `.dims` of a variable in the original dataset when that variable is already an IndexVariable. It names only the public entry point `swap_dims`. It does not mention `to_index_variable` or `IndexVariable`.\n\n2. What the graded test requires:\n- It constructs `IndexVariable(\"x\", [\"a\"])`, which already exists.\n- It calls `IndexVariable.to_index_variable()` directly.\n- It asserts the result `is not` the original object.\n- It mutates `b.dims` and asserts `a.dims` is unchanged.\n\n3. Settlement of each requirement:\n- The issue's only requirement is that `swap_dims` must not modify the original. That is settled by \"I expected it not to modify the original object.\"\n- That `IndexVariable.to_index_variable()` must return a new object is open. The specification never mentions this method. Its contract of returning self for an IndexVariable is existing behaviour, and nothing in the issue says it is wrong.\n\n4. A reasonable fix that fails: a developer could fix the bug inside `Dataset.swap_dims` (and similarly `DataArray.swap_dims`). For example, they could copy the variable before assigning dims (`var = v.to_index_variable().copy(deep=False); var.dims = dims`), or build a fresh `IndexVariable(dims, v.data, v.attrs, v.encoding)` instead of mutating in place.\n- This fully resolves the reported case and related inputs, since `swap_dims` no longer mutates the original.\n- But `to_index_variable()` would still return `self`, so `assert a is not b` fails.\n- The test checks a different, lower-level method than the one the specification implicates.\n\n5. Because the graded test pins the location of the fix to a method the issue never mentions, this is significant overspecification.",
+    "score": 4,
+    "explanation": "The test calls `IndexVariable.to_index_variable()` directly and requires it to return a new object. A correct fix that copies or reconstructs the variable inside `swap_dims`, without changing `to_index_variable`, resolves the issue but fails `assert a is not b`.",
+    "overspecification_vector": "b = a.to_index_variable()\nassert a is not b\nb.dims = (\"y\",)\nassert a.dims == (\"x\",)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRQEETSSx9SPVHSrNZG",
+  "input_tokens": 4180,
+  "output_tokens": 989,
+  "seconds": 9.7
+}

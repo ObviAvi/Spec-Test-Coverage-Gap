@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-10844",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10475,
+  "output": {
+    "reasoning": "1. Spec: fowlkes_mallows_score overflows when pk*qk is large and returns nan; it should return a finite float. The entry point fowlkes_mallows_score is named.\n2. The test calls fowlkes_mallows_score(x, y) on large label arrays and asserts the result is finite with assert_all_finite. It also calls mutual_info_score(x, y). That call already passed before the fix, since the existing test asserted the same thing with .ravel().\n3. Requirements:\n- Function name: settled; the spec names fowlkes_mallows_score.\n- Finite output: settled; the spec says \"return a float\" instead of nan.\n- Inputs: these are large arrays that trigger the overflow, which is exactly the reported case.\n4. Any correct fix passes, whether it uses the proposed sqrt(tk/pk)*sqrt(tk/qk), converts to float or int64, or uses another overflow-safe formula. No exact value is pinned.\n5. Score 1.",
+    "score": 1,
+    "explanation": "The test only asserts that fowlkes_mallows_score returns a finite value on inputs large enough to cause the overflow, which is exactly what the issue requests, so any overflow-safe fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRT4DY4mVMVVQNa6pbV",
+  "input_tokens": 4070,
+  "output_tokens": 430,
+  "seconds": 4.8
+}

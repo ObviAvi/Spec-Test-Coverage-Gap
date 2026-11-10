@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11885",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8961,
+  "output": {
+    "reasoning": "1. The issue identifies deletion.Collector's cascading fast deletes and requests that queries be combined \"by table\" into \"a single one by using OR\". The examples retain one dependent-table DELETE and one parent-table DELETE.\n2. The test creates Origin and Referrer fixtures, sets origin and unique_field=42, then calls referer.delete(). Its only assertion is assertNumQueries(2). The comment identifies two relationships from SecondReferrer that should share a DELETE. There are no mocks, private-method calls, SQL-format assertions, or required new implementation names.\n3. Calling an instance's delete() is settled by the specification's person.delete() and user.delete() examples. Combining relationships targeting the same dependent table is explicitly specified. Applying that behavior to these model fixtures, including a relationship involving a unique field, is a reasonable extension of the stated table-based rule. The value 42 is setup data, not an asserted implementation choice. Two queries correspond to the specified combined dependent-table deletion plus the parent deletion.\n4. No open requirement selects among reasonable implementations. A fix may construct the combined predicate differently, but must achieve the requested query consolidation for these closely related inputs. The test does not inspect how that consolidation is implemented.\n5. Score: 2, because the test applies the specified optimization to related model fixtures rather than reproducing the example models verbatim.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should satisfy assertNumQueries(2): one combined cascading DELETE for the dependent table and one DELETE for the parent, as illustrated in the specification.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2027,
+  "output_tokens": 825,
+  "seconds": 22.0
+}

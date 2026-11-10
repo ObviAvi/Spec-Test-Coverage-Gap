@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14155",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9282,
+  "output": {
+    "reasoning": "1. Spec: ResolverMatch.__repr__ shows functools.partial unhelpfully, hiding the underlying function and its arguments. It suggests unwrapping partial objects in ResolverMatch.__init__() so the wrapped function and pre-supplied arguments become visible.\n\n2. What the graded tests require:\n(a) test_repr now expects url_name='no-kwargs' and route='^no_kwargs/...$' with quotes, i.e. %r formatting instead of %s.\n(b) test_repr_functools_partial expects func=functools.partial(<function empty_view ...>, template_name='template.html'), i.e. repr() of the partial object itself, not an unwrapped function.\n(c) The test resolves '/partial/', '/partial_nested/' and '/partial_wrapped/' in urlpatterns_reverse.urls, with url_names partial, partial_nested and partial_wrapped and specific template_name values.\n(d) test_resolver_match_on_request presumably also checks the new quoted repr format.\n\n3. Settled or open:\n(a) Open. The spec never mentions quoting url_name or route; existing behavior used unquoted %s. A fix that only handles partials leaves the old format and fails test_repr and test_resolver_match_on_request.\n(b) Open, and it contradicts the spec's own suggestion. If __init__ unwraps the partial, the repr would show func=urlpatterns_reverse.views.empty_view, with the partial's args and kwargs merged into or shown alongside args/kwargs. The test instead requires the literal functools.partial(...) repr. A developer following the spec's recommended approach fails.\n(c) Open. These URL patterns and template names are not in the visible test patch and are never mentioned in the spec. If the fix must add them to urls.py, the names and values are unspecified, so a developer would have to invent them exactly.\n\n4. A reasonable fix that unwraps partials in __init__, as the issue proposes, fails on both the func format and the quoting. Even a fix that keeps partial objects, but displays them differently or leaves url_name/route unquoted, fails.\n\nThe tests pin an output format that diverges from the spec's suggested design and add unrelated formatting changes, so this is significant overspecification.",
+    "score": 4,
+    "explanation": "A fix that follows the spec and unwraps functools.partial in ResolverMatch.__init__ would show func=urlpatterns_reverse.views.empty_view, but the tests demand the raw functools.partial(...) repr. The tests also require url_name and route to be quoted via repr (e.g. url_name='no-kwargs'), a format change the spec never mentions. They further depend on URL patterns named partial, partial_nested and partial_wrapped with specific template names that the spec never mentions.",
+    "overspecification_vector": "\"args=('42', '37'), kwargs={}, url_name='no-kwargs', app_names=[], namespaces=[], route='^no_kwargs/([0-9]+)/([0-9]+)/$')\"; func = f\"functools.partial({views.empty_view!r}, template_name='{template_name}')\"; resolve(f'/{name}/') for 'partial', 'partial_nested', 'partial_wrapped' with url_name='{name}' and route='{name}/'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRBAug1p93QK3EAMdmA",
+  "input_tokens": 3510,
+  "output_tokens": 1713,
+  "seconds": 17.3
+}

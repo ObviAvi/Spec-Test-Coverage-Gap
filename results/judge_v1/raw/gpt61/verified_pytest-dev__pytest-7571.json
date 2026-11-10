@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7571",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9243,
+  "output": {
+    "reasoning": "The specification identifies caplog.set_level leaking the capture handler's level between tests, explicitly showing caplog.handler.level remaining 42 instead of returning to 0. The graded test requires an initial handler level of 0, set_level(41) making it 41, restoration to 0 in the next test, and the same behavior with level 43 in a third test. Restoration to 0 is settled by the reported expected output and 'The log levels set are restored automatically at the end of the test.' The immediate level assertions check the same set_level effect demonstrated by the reproduction; 41 and 43 merely substitute nearby values for 42. Testdir and assert_outcomes(passed=3) execute and verify that reproduction rather than constrain the implementation. No requirement leaves a reasonable alternative that would fix the reported regression but fail these assertions.",
+    "score": 1,
+    "explanation": "The assertion that the next test sees caplog.handler.level == 0 directly checks the reported regression; the other assertions repeat the same behavior with nearby level values.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2163,
+  "output_tokens": 1178,
+  "seconds": 29.9
+}

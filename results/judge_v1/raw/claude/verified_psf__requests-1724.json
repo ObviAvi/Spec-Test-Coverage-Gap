@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/psf__requests-1724",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15357,
+  "output": {
+    "reasoning": "1. The spec says that passing a unicode method name such as `u'POST'` to `requests.request` on Python 2 makes the method unicode. That unicode value contaminates the HTTP header string and triggers a UnicodeDecodeError when it is joined with a binary body. It names `sessions.py`'s `req.method = method.upper()` as the cause. The implied fix is to convert the method to a native str.\n\n2. The test patch adds `test_unicode_method_name`, which posts `files` with `method=u'POST'` and asserts status 200. That mirrors the spec's reproduction almost verbatim, but it is not in the graded list. The graded F2P tests are existing end-to-end tests:\n- digest auth returning a cookie\n- digest auth 200 on GET\n- different encodings not breaking post\n- generic cookiejar\n- uppercase scheme redirect\n- user agent transfers\n\nThese exercise public behavior through `requests.get`/`post`, sessions and auth. None references a new name, private helper or specific internal value introduced by the fix.\n\n3. Their requirements reduce to: requests keep working correctly end-to-end with the method normalized. That is settled by convention (existing behavior must not regress) and by the spec (the method must be a native str so headers and body combine). Their failure before the fix is most likely tied to how the method string type flows through prepare, digest auth and redirect handling in the test environment. Any fix that makes the method a native, uppercased str at the request and prepare stage resolves it.\n\n4. I see no reasonable correct fix that would fail. A fix converting the method to a native str in `Session.request` or `PreparedRequest.prepare_method` keeps all public behavior intact. The graded tests don't inspect internals or messages.\n\n5. Score 2: the tests are regression and behavioral checks on public APIs.",
+    "score": 2,
+    "explanation": "The graded tests are existing end-to-end request tests (digest auth, cookies, redirects, user agent, encoded posts) that pass for any fix that normalizes the HTTP method to a native str without breaking public behavior, which is exactly what the spec calls for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRNdZrYZPTixNbT5Nnm",
+  "input_tokens": 6001,
+  "output_tokens": 1409,
+  "seconds": 16.0
+}

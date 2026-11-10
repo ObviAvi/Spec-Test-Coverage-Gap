@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pylint-dev__pylint-4661",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8540,
+  "output": {
+    "reasoning": "1. The specification describes unwanted storage in ~/.pylint.d and requests XDG-compliant placement. It explicitly identifies the files as data and names \"$HOME/.local/share/<PROGRAM_NAME>\"; it names no API. 2. The changed test computes appdirs.user_cache_dir(\"pylint\") and requires config.PYLINT_HOME to equal that exact path. PYLINT_HOME and the unresolved-home fallback already appear in the unchanged test context. Using appdirs to calculate the expectation does not itself require the implementation to use appdirs. 3. Moving storage out of ~/.pylint.d is settled by the specification; checking the existing location constant follows the existing test. However, selecting the cache directory rather than the data directory is not settled by the specification, which expressly distinguishes the two. 4. A reasonable fix could respect XDG_DATA_HOME and default to ~/.local/share/pylint, moving pylint's stored files there. This addresses the reported problem but fails the cache-directory equality. 5. The gap concerns the externally observable storage location, rather than a required implementation technique, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could store pylint's data under $XDG_DATA_HOME/pylint, defaulting to ~/.local/share/pylint as the issue describes. The test instead requires appdirs.user_cache_dir(\"pylint\"), rejecting that reasonable XDG-compliant fix.",
+    "overspecification_vector": "Added line: expected = appdirs.user_cache_dir(\"pylint\"), enforced by assert config.PYLINT_HOME == expected."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1970,
+  "output_tokens": 766,
+  "seconds": 17.6
+}

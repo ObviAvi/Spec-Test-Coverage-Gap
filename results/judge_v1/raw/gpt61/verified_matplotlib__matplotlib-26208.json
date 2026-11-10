@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-26208",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9939,
+  "output": {
+    "reasoning": "1. The specification reports that plotting on a twin axis destroys the original stackplot axis's data limits. Its stated requirement is: \"To not change ax1 dataLims, since I made no changes to it.\" The reproduction uses categorical x values, stackplot(), twinx(), and then plot().\n2. The graded tests instead create an ordinary plot with categorical values on both axes, create a twin using twinx() or twiny(), and inspect Axis.units immediately, before plotting on the twin. They require the original axis's units to be non-None, the twin's shared-axis units to be non-None, and both units attributes to reference exactly the same object.\n3. Categorical plotting establishing units on the original axis is conventional. Testing twiny() as the symmetric counterpart of twinx() is a reasonable related-input extension. However, immediate unit initialization on the twin and exact units-object identity are open: neither is specified by the requirement to preserve dataLim. The tests do not assert preservation of data limits or use a stackplot.\n4. A reasonable alternative fix could make unit-triggered limit recalculation preserve or correctly recompute stackplot/collection bounds, while leaving the twin's units initially unset until data is plotted on it. That would address the reported corruption and closely related collection cases but fail the immediate non-None assertion. Exact units-object identity additionally constrains the state-sharing mechanism rather than the requested result.\n5. The strongest gap is the requirement for particular intermediate unit state, so the score is 4.",
+    "score": 4,
+    "explanation": "A correct fix could prevent unit changes from discarding stackplot data limits while retaining lazy unit initialization on the twin. It would fail these tests because they require the twin's units to be initialized immediately and to be the identical object as the original axis's units, rather than checking the reported data-limit corruption.",
+    "overspecification_vector": "assert getattr(ax2, axis_name).units is not None\nassert getattr(ax2, axis_name).units is getattr(ax1, axis_name).units"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2475,
+  "output_tokens": 921,
+  "seconds": 22.5
+}

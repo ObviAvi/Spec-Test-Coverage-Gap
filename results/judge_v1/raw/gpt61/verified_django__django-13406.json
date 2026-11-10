@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13406",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12042,
+  "output": {
+    "reasoning": "1. The specification describes restoring a pickled queryset.query into another queryset and incorrectly receiving broken model instances. Its values('material').annotate(...) example explicitly requires dictionaries; the title also includes values_list().\n2. test_annotation_values requires values('name').annotate(latest_time=Max('when')) to survive that same query-pickling and assignment process, with get() returning {'name': 'test', 'latest_time': self.happening.when}. Dictionary output is settled by the report; get(), another grouping field, and Max() are reasonable related inputs. The concrete values follow the fixture and ordinary aggregation semantics. The unchanged test_annotation_with_callable_default checks ordinary whole-queryset pickling, an existing regression expectation.\n3. test_annotation_values_list requires ordinary, flat=True, and named=True values_list() queries all to become dictionaries after restoration. This is open: the specification never requires discarding their tuple, scalar, or named-tuple output formats. The use of _iterable_class.__name__ only labels subtests and imposes no asserted internal-state requirement.\n4. A reasonable fix could preserve the projection's iterable metadata in the pickled query and restore the corresponding queryset iterable when assigning it. That would fix values() and values_list() while retaining their original output formats, but fail all three dictionary assertions for values_list().\n5. The disputed requirement concerns observable return types, not implementation internals, so the score is 3.",
+    "score": 3,
+    "explanation": "The tests require every restored values_list() query, including flat=True and named=True, to return dictionaries. A reasonable correct fix could instead preserve the original tuple, scalar, or named-tuple output format and would fail those assertions.",
+    "overspecification_vector": "test_annotation_values_list: the three inputs values_list('name'), values_list('name', flat=True), and values_list('name', named=True), combined with self.assertEqual(reloaded.get(), {'name': 'test'})."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2834,
+  "output_tokens": 858,
+  "seconds": 21.4
+}

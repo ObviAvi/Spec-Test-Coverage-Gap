@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13023",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8793,
+  "output": {
+    "reasoning": "1. The specification names DecimalField.to_python() and requires dictionary conversion failures to raise ValidationError rather than TypeError. 2. The shown graded test calls DecimalField(max_digits=4, decimal_places=2).clean(value, None) for (), [], {}, set(), object(), complex(), a nonnumeric string, and nonnumeric bytes. It requires ValidationError containing the exact text '“%s” value must be a decimal number.' interpolated with the value. 3. ValidationError for dictionaries is explicitly settled; extending this to other unsupported conversion inputs is reasonably inferred. Testing through clean() is ordinary integration coverage and does not itself exclude a correct to_python() fix. The removed test establishes the asserted message as an existing convention for malformed strings. However, identical wording for newly handled TypeError cases is not uniquely settled. 4. A reasonable fix could catch TypeError and raise ValidationError with a type-specific diagnostic, or preserve the original conversion diagnostic inside ValidationError, while retaining existing malformed-string handling. That fixes dictionaries and closely related inputs but fails the exact-message assertions. The body of test_lookup_really_big_value is not supplied, so no additional requirements can be established from its name.",
+    "score": 3,
+    "explanation": "A correct fix could translate unsupported-type conversion errors into ValidationError while preserving the original diagnostic or providing a clearer type-specific message. The test rejects that fix because it requires the existing malformed-string message for every newly covered input.",
+    "overspecification_vector": "msg = '“%s” value must be a decimal number.'; with self.assertRaisesMessage(ValidationError, msg % (value,)): for the newly handled unsupported-type inputs."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1995,
+  "output_tokens": 1715,
+  "seconds": 42.6
+}

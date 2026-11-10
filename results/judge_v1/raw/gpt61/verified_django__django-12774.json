@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12774",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11148,
+  "output": {
+    "reasoning": "1. The specification identifies QuerySet.in_bulk(field_name=...) as rejecting fields that are unique through a total UniqueConstraint rather than unique=True, and requests support for those fields.\n2. The only graded test creates Season rows with years 2011, 2012, and 2013, declares an unconditional single-field UniqueConstraint on year, and calls in_bulk([2011, 2012], field_name='year'). It requires a dictionary mapping those two years to their corresponding objects, excluding 2013.\n3. Accepting the constrained field is settled by 'Allow QuerySet.in_bulk() for fields with total UniqueConstraints.' Using an integer field instead of the example's character field is a straightforward related input. Filtering by the supplied identifiers and returning the existing key-to-object mapping follow the established in_bulk() contract. The fixture values and constraint name impose no special implementation requirement; dictionary order is not asserted.\n4. There are no open choices that reject a reasonable correct fix. The additional negative test in the patch is not graded and does not affect this assessment.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix would accept the single-field total UniqueConstraint and preserve in_bulk()'s normal behavior of returning only the requested objects keyed by that field.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2550,
+  "output_tokens": 731,
+  "seconds": 19.6
+}

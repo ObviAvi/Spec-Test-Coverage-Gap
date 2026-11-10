@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15563",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9725,
+  "output": {
+    "reasoning": "1. The specification identifies QuerySet.update() targeting the wrong inherited parent rows: updating Child's second-parent field instead uses primary keys from the first parent. The required behavior is to update the inherited field belonging to the selected child instances.\n2. Both tests create an unrelated Politician, create a child instance (Congressman or Senator), call that child's objects.update(title=\"senator 1\"), and assert that objects.get().title equals the supplied value. They exercise parent and grandparent variants.\n3. Correctly updating the selected child's inherited field is settled by the specification's complaint that updating the second parent's fields \"has no effect\" and instead modifies unrelated instances. Creating an unrelated parent first reproduces the reported primary-key mismatch. Using existing models, create()/get(), and a string-valued field are conventional related inputs. The exact string is an update argument whose successful persistence is asserted, not an independently prescribed output. Grandparent traversal is a reasonably inferred extension of the same inheritance bug rather than a near-verbatim reproduction.\n4. No open implementation choice is constrained: the tests require no particular SQL, internal method, query count, or intermediate state. A fix that still fails to update the inherited field through a grandparent leaves the same bug in a closely related input, so it is not a reasonable complete alternative.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should make both child QuerySet.update(title=\"senator 1\") calls persist that value on the retrieved child, including the closely related grandparent-inheritance case.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2257,
+  "output_tokens": 605,
+  "seconds": 17.3
+}

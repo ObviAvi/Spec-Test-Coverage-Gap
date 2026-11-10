@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13028",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11986,
+  "output": {
+    "reasoning": "1. The spec says that filtering on a model instance whose model has a field named `filterable` holding False raises NotSupportedError. The error comes from `check_filterable`, which reads the instance's `filterable` attribute as if it were the expression flag. The expected behaviour is that the filter just works.\n2. What the tests require:\n- A new BooleanField `filterable` on the test model ExtraInfo. This is a test-model change, not something the fix must provide.\n- `Author.objects.filter(extra=self.e2)` must return [a3, a4] when `e2.filterable=False`. This is the issue's reproduction almost verbatim: FK filter, RHS instance with filterable=False.\n- `test_ticket8439`, an existing test, now fails only because setUp gives e2 `filterable=False`, and it filters with that instance. It needs the same fix on related queries.\n3. Every requirement is settled by the spec: \"Error happened when filtering ProductMetaData with a metadata_type\". The expected result, normal filter results, is the only reasonable outcome.\n4. Any correct fix passes. Examples: skip `check_filterable` for non-expressions (check `resolve_expression`), or skip it for model instances. No message, private API or new name is asserted.",
+    "score": 1,
+    "explanation": "The graded tests just filter by an FK instance whose model has `filterable=False` and expect ordinary query results, which is exactly what the issue describes. Any fix that stops misreading model fields as the expression flag passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR6wsUz1GTgab3vaazc",
+  "input_tokens": 4749,
+  "output_tokens": 816,
+  "seconds": 9.9
+}

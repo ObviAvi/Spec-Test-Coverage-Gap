@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12708",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11391,
+  "output": {
+    "reasoning": "1. The specification reports that removing index_together crashes when unique_together covers the same two fields, because constraint discovery finds both the unique constraint and the ordinary index. It explicitly asks that deletion of index_together be possible independently of unique_together.\n2. The graded test creates a model with unique_together, adds index_together on the same ['pink', 'weight'] fields, then removes it using AlterIndexTogether. It requires an ordinary index after addition, successful removal, no ordinary index afterward, and preservation of the unique constraint.\n3. These are the reported reproduction and its intended database result. Preserving uniqueness is settled by removing only index_together, not unique_together. AlterIndexTogether, state_forwards(), database_forwards(), state cloning, and schema_editor() are the existing migration machinery, not a newly required implementation interface. The app label and field names are fixture choices. The introspection checks distinguish the two objects implicated by the report using their columns and unique/index flags; they impose no constraint names or implementation strategy. The database-feature guard only restricts execution to supported databases.\n4. No asserted detail selects an otherwise unspecified fix strategy. The specification's additional concern about avoiding index recreation when changing declaration styles is not tested here; that is missing coverage rather than overspecification.",
+    "score": 1,
+    "explanation": "The test directly reproduces the reported conflict and verifies that removing index_together removes the ordinary index without crashing or deleting the unique_together constraint.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2568,
+  "output_tokens": 1186,
+  "seconds": 30.7
+}

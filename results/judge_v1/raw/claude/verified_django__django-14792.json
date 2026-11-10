@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14792",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10149,
+  "output": {
+    "reasoning": "1. The spec describes a regression in Django 3.2. Trunc/Extract with an 'Etc/GMT-10' tzinfo now produce 'Etc/GMT+10' in SQL, reversing the direction. It attributes this to `timezone._get_timezone_name()` returning 'Etc/GMT-10' instead of the 3.1 value '+10'. It also names Postgres `_prepare_tzname_delta()` as the step that flips the sign.\n2. The graded test calls `timezone._get_timezone_name(tz)` directly and asserts:\n   - `datetime.timezone(+10h)` returns 'UTC+10:00'\n   - `datetime.timezone(+10h, name='Etc/GMT-10')` returns 'Etc/GMT-10'\n   - pytz 'Europe/Madrid' returns 'Europe/Madrid'\n   - pytz 'Etc/GMT-10' returns '+10'\n   - zoneinfo 'Europe/Madrid' returns 'Europe/Madrid'\n   - zoneinfo 'Etc/GMT-10' returns '+10'\n3. What the spec settles and what it leaves open:\n   - The '+10' value for pytz/zoneinfo Etc/GMT-10 is settled by the spec: \"On Django 3.1 ... returns '+10'\" and \"The above is the same when using Python's zoneinfo.ZoneInfo() too.\"\n   - Named zones staying unchanged follows from existing behaviour.\n   - The datetime.timezone cases record current behaviour and pass if the fix uses `tzname(None)` with a fallback.\n   - Open: where the fix lives. The spec says the query goes wrong \"due to the return value of _prepare_tzname_delta() of the Postgres DatabaseOperations class\".\n4. A competent developer could fix the backend side instead. For example, make `_prepare_tzname_delta` (and its counterparts in other backends) flip the sign only for bare offset strings like '+10'/'-10' and leave names such as 'Etc/GMT-10' alone. The generated SQL would then be correct, so the Trunc bug is resolved. `_get_timezone_name` would still return 'Etc/GMT-10', and the test fails.\n   - The test checks the helper's return value, not the SQL or query results.\n   - The spec does name `_get_timezone_name` and its expected 3.1 output, so it is not an unmentioned private API. That keeps this at 3 rather than 4.",
+    "score": 3,
+    "explanation": "The test asserts `timezone._get_timezone_name(pytz.timezone('Etc/GMT-10')) == '+10'` (and the same for zoneinfo). A correct fix that leaves the helper alone and instead stops the backends' `_prepare_tzname_delta` from flipping the sign of 'Etc/GMT±N' names would produce correct Trunc/Extract SQL but fail this assertion.",
+    "overspecification_vector": "self.assertEqual(timezone._get_timezone_name(tz), expected) with (pytz.timezone('Etc/GMT-10'), '+10') and (zoneinfo.ZoneInfo('Etc/GMT-10'), '+10')"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRDHiFBN79TdCz31wUA",
+  "input_tokens": 3948,
+  "output_tokens": 2445,
+  "seconds": 23.8
+}

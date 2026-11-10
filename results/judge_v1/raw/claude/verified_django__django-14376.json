@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14376",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10839,
+  "output": {
+    "reasoning": "1. The specification says the MySQL backend's connection setup in django/db/backends/mysql/base.py (linked lines 202-205, i.e. get_connection_params) passes the deprecated 'db' and 'passwd' kwargs to mysqlclient. It should pass 'database' and 'password' instead. Only base.py is implicated; the dbshell client is never mentioned.\n2. What the graded tests require: all three are in dbshell.test_mysql and call settings_to_cmd_args_env, which belongs to the dbshell client (client.py), not base.py.\n - OPTIONS {'database': ..., 'password': ...} must yield the option db name and MYSQL_PWD.\n - When both new and deprecated keys are in OPTIONS, 'database' must win over 'db' and 'password' over 'passwd'.\n - test_parameters is also expected to change behavior, again in the client.\n3. Status of each requirement:\n - Supporting a 'database' key in the dbshell client OPTIONS: open. The spec talks only about the kwargs base.py passes to mysqlclient.\n - Preferring the new keys over the deprecated ones in dbshell: open, and an arbitrary but sensible precedence choice.\n - The context lines show the client already handled 'password' in OPTIONS, so the database key and the precedence are the new behavior being pinned.\n4. A competent developer could fix exactly what the issue describes. They would change base.py to set kwargs['database'] = NAME and kwargs['password'] = PASSWORD, then let OPTIONS override as before. That removes the deprecation warnings and fully resolves the reported problem. It leaves client.py untouched, so the client still reads OPTIONS.get('db', NAME). It would fail test_options_non_deprecated_keys_preferred and the 'database' subtest of test_options_override_settings_proper_values. The tests exercise the dbshell argument-building code path, a different function and module from the one the spec points to.\n5. Because the tests validate a different code path than the one the issue implicates, the gap is significant.",
+    "score": 4,
+    "explanation": "A fix that updates only base.py's get_connection_params to pass 'database'/'password' to mysqlclient fully resolves the issue but fails. The graded tests instead check the dbshell client's settings_to_cmd_args_env, requiring it to read OPTIONS['database'] and to prefer 'database'/'password' over 'db'/'passwd'.",
+    "overspecification_vector": "dbshell tests calling settings_to_cmd_args_env with OPTIONS {'database': 'optiondbname', 'db': 'deprecatedoptiondbname', 'password': 'optionpassword', 'passwd': 'deprecatedoptionpassword'} expecting 'optiondbname'; and the subTest loop over [('database','password'), ('db','passwd')] in test_options_override_settings_proper_values"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRBnkSRc2rmX6FdrG8u",
+  "input_tokens": 3999,
+  "output_tokens": 1848,
+  "seconds": 19.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7440",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9820,
+  "output": {
+    "reasoning": "1. The specification reports a false duplicate-glossary warning and asks “MySQL != mysql term right?” It requires differently cased terms to coexist, but names no implementation function or anchor format.\n2. The changed test supplies `TERM2` in the existing glossary fixture. It requires preserved display text, an index-node entry `(\"single\", \"TERM2\", \"term-TERM2\", \"main\", None)`, and a `get_objects()` entry `(\"TERM2\", \"TERM2\", \"term\", \"index\", \"term-TERM2\", -1)`.\n3. Preserving the author's displayed spelling is conventional, and distinguishing term identities follows from the specification. The surrounding doctree structure and tuple formats follow existing test conventions. However, preserving uppercase letters in the generated anchor `term-TERM2` is open: neither the report nor the existing lowercase examples settle anchor capitalization.\n4. A reasonable fix could make duplicate detection and term lookup case-sensitive while retaining lowercase-normalized anchors, disambiguating collisions with suffixes. That would resolve the reported problem and closely related case variants, but produce `term-term2` for this fixture. It would fail both the intermediate index-node assertion and the inventory target assertion.\n5. Because a graded assertion pins this unspecified intermediate index-node value, the test is significantly overspecified.",
+    "score": 4,
+    "explanation": "A correct fix could distinguish glossary terms case-sensitively while retaining lowercase-normalized, collision-disambiguated anchors. It would fail the doctree index-entry and inventory assertions requiring the exact anchor `term-TERM2`.",
+    "overspecification_vector": "entries=[(\"single\", \"TERM2\", \"term-TERM2\", \"main\", None)] and assert (\"TERM2\", \"TERM2\", \"term\", \"index\", \"term-TERM2\", -1) in objects"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2339,
+  "output_tokens": 1440,
+  "seconds": 34.1
+}

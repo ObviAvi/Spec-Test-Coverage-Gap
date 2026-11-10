@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-15875",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7976,
+  "output": {
+    "reasoning": "1. The specification identifies an incorrect False result from Add.is_zero and says it should return None 'if it cannot decide' and 'should never give the wrong answer.' 2. The added test constructs the exact reported expression, e = -2*I + (1 + I)**2, and requires e.is_zero is None. 3. The expression and public property are explicitly specified; requiring None rather than True is open, since the specification does not require the computation to remain undecided. 4. A reasonable fix could improve zero detection for complex sums by expanding integer powers or evaluating real and imaginary components. Such a fix could correctly recognize this expression, and related expressions, as zero and return True, failing the assertion. 5. This pins one valid externally observable result among multiple allowed results, warranting score 3.",
+    "score": 3,
+    "explanation": "The test requires None even though a reasonable fix could conclusively recognize that the reported expression equals zero and return True. That fix would satisfy the specification but fail the test.",
+    "overspecification_vector": "assert e.is_zero is None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1894,
+  "output_tokens": 449,
+  "seconds": 11.8
+}

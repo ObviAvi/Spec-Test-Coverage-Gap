@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-13496",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9471,
+  "output": {
+    "reasoning": "1. The issue requests exposing `warm_start` in `IsolationForest.__init__`, defaulting to False, while preserving the existing BaseBagging behavior: \"reuse the solution of the previous call to fit and add more estimators to the ensemble.\"\n2. The test constructs `IsolationForest` with `warm_start=True`, fits 10 trees, increases `n_estimators` to 20 using `set_params`, and fits again. It requires 20 fitted estimators and retention of the original first tree by identity.\n3. Constructor acceptance is explicitly specified. Increasing `n_estimators` between fits is explicitly described. `fit`, `set_params`, and `estimators_` follow the existing estimator interface. The count assertion directly checks incremental addition; the identity assertion verifies that an existing tree was reused rather than replaced. The random data, seed, and sample count are ordinary inputs and impose no additional output requirements.\n4. There is no substantive open requirement. Although identity would distinguish copying from retaining existing trees, introducing such copying is not a reasonable alternative fix to a request to expose already-working inherited warm-start behavior.\n5. The test directly exercises the requested functionality without imposing an unrelated implementation choice.",
+    "score": 1,
+    "explanation": "Every reasonable fix exposing the existing warm-start behavior passes: the assertions check that increasing `n_estimators` adds trees while retaining the previously fitted tree.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2213,
+  "output_tokens": 676,
+  "seconds": 16.0
+}

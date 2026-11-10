@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-25122",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11737,
+  "output": {
+    "reasoning": "1. The specification identifies incorrect window normalization in `mlab._spectral_helper`: “The np.abs is not needed” and gives the difference between `abs(window).sum()**2` and `window.sum()**2` for a negative-valued flattop window.\n2. The graded test constructs a real flattop window and calls the existing public `mlab.psd` entry point with `scale_by_freq=False` and its default density scaling. Across sampling rates, sidedness, and real/complex signals, it requires `spec * win.sum()**2` to equal `spec_a * Fs * (win**2).sum()` within numerical tolerance. It does not assert frequency arrays or require a particular implementation.\n3. Using the signed window sum is settled by the specification's explicit formula and diagnosis. The relationship between spectrum and density normalization follows the existing PSD scaling convention; for this real window, removing `abs` from the squared-energy term does not change its value. The flattop coefficients and parameter combinations are related test inputs, not implementation requirements.\n4. No open requirement excludes a reasonable correct fix. Calling the public PSD interface exercises the reported spectral normalization behavior, and the tolerance allows ordinary floating-point differences.\n5. These are reasonable extensions of the reported case rather than constraints on how the fix must be written.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix passes the spectrum-versus-density normalization assertion, which checks the requested signed-window-sum correction for flattop windows across ordinary PSD parameter variants.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2886,
+  "output_tokens": 861,
+  "seconds": 20.5
+}

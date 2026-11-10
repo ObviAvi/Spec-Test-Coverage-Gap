@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-9230",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10664,
+  "output": {
+    "reasoning": "The specification describes incorrect separation of an inline datatype from its parameter name: ':param dict(str, str) opc_meta:' should render with name 'opc_meta' and complete type 'dict(str,str)'. The graded test adds the closely related input ':param Dict[str, str] params: blah blah' through the existing parse path. It requires a fourth parameter entry, the name 'params', the complete compound datatype, the description, and the existing Python-domain cross-reference conventions. The square-bracket datatype is a reasonable related input, and the adjacent existing assertions support the reference conventions. The test additionally requires the datatype punctuation to contain exactly ', ', including the space. That formatting choice is open: the specification's expected rendering actually omits that space. A reasonable fix could normalize whitespace inside balanced datatype parentheses/brackets before separating the type and parameter name, then use the existing rendering machinery. Such a fix handles the reported case and related compound types, but produces 'Dict[str,str]' and fails the assertion requiring a comma-space token. The concrete rejection is therefore an externally visible formatting choice, rather than a necessary consequence of fixing the parsing bug.",
+    "score": 3,
+    "explanation": "A correct fix could normalize compound-type whitespace and render 'params (Dict[str,str))' with the appropriate balanced parentheses and existing references. The test nevertheless requires preservation of the comma-space in 'Dict[str, str]', even though the specification's expected datatype omits that space.",
+    "overspecification_vector": "[addnodes.literal_emphasis, \", \"] in the added assertion for ':param Dict[str, str] params:'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2595,
+  "output_tokens": 2658,
+  "seconds": 68.9
+}

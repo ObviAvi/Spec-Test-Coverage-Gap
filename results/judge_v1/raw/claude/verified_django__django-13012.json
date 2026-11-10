@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13012",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9220,
+  "output": {
+    "reasoning": "1. The spec says that when ExpressionWrapper wraps a constant (Value(3)), the constant ends up in the GROUP BY clause, while an unwrapped Value is correctly omitted. It describes the symptom through queryset annotate/values/annotate SQL output and names no method.\n2. The tests call ExpressionWrapper(...).get_group_by_cols(alias=None) directly. For Value(3) they require []. For Lower(Value('f')) they require [expr.expression], i.e. the inner expression and not the wrapper.\n3. Settled vs open:\n - That a wrapped constant contributes nothing to GROUP BY is settled by the spec (\"Django correctly identifies and omits the constant from the GROUP BY clause\").\n - That this is checked through ExpressionWrapper.get_group_by_cols is convention, not spec. It is Django's documented expression API and the natural place for the fix, but a fix in the compiler or in Query.set_group_by (e.g. unwrapping ExpressionWrapper there) would also fix the SQL and would fail test 1.\n - That a non-constant wrapped expression returns [inner expression] rather than [self] is open. The spec says nothing about non-constant wrapped expressions.\n4. A fix that overrides get_group_by_cols to return [] when the wrapped expression is constant and otherwise falls back to super(), returning [self] (the wrapper), is reasonable. It fixes the reported bug and the SQL stays valid. Yet it fails test_non_empty_group_by, because ExpressionWrapper(...) != Lower(...). A compiler-level fix fails both tests.\n5. The assertions pin a specific return value of an expression-API method, choosing the inner expression over the wrapper. That is one valid choice among several, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix that returns [] for constant wrapped expressions but keeps the wrapper itself ([self]) for non-constant ones, or that fixes the grouping in the SQL compiler instead, fails. The test requires get_group_by_cols to return exactly [expr.expression], i.e. full delegation to the inner expression.",
+    "overspecification_vector": "self.assertEqual(expr.get_group_by_cols(alias=None), [expr.expression]) in test_non_empty_group_by; direct call to ExpressionWrapper.get_group_by_cols(alias=None) in both tests"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR6rSZPPLo7wVHMaK3H",
+  "input_tokens": 3500,
+  "output_tokens": 1756,
+  "seconds": 17.4
+}

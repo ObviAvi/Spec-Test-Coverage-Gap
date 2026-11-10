@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15731",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9061,
+  "output": {
+    "reasoning": "1. The spec says inspect.signature on manager proxy methods returns (*args, **kwargs) instead of the real QuerySet method signature. It names the cause (manager.py, where name and docstring are assigned manually) and suggests functools.wraps.\n2. The graded test requires that str(inspect.signature(Article.objects.bulk_create)) equal the current QuerySet.bulk_create signature string, which now includes update_conflicts, update_fields and unique_fields.\n3. The spec's example shows an older signature, but the expected behavior is clearly 'the real signature of the QuerySet method.' The extra parameters come from the repo's current bulk_create definition, so they are settled by existing code.\n4. Any reasonable fix produces exactly that string:\n- functools.wraps sets __wrapped__, so inspect.signature follows it to the unbound QuerySet method. Its signature starts with self.\n- Hmm, with wraps the signature would include 'self', because manager_method is a function bound to the manager instance with signature (self, *args, **kwargs). inspect.signature on a bound method follows __wrapped__ and gets (self, objs, ...). Then it drops the first parameter because it is a bound method. Actually the unwrapping happens inside _signature_from_callable for the underlying function, and the bound-method handling then drops the first param. So the result is (objs, ...). This matches the test.\n- An alternative fix sets __signature__ = inspect.signature(method). That gives (self, objs, ...), and since it is bound, signature drops self, giving (objs, ...). Also passes.\n- Any correct fix yields the actual signature, which is the only reasonable output.\nNo reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "Any fix that makes inspect.signature report the real QuerySet.bulk_create signature (via functools.wraps or __signature__) produces exactly the asserted string; the test differs from the issue's example only in parameters that bulk_create has gained in the current code.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRGCBwxBtEB8K5JULCh",
+  "input_tokens": 3348,
+  "output_tokens": 684,
+  "seconds": 8.0
+}

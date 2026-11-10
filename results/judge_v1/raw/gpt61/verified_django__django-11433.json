@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11433",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9003,
+  "output": {
+    "reasoning": "1. The specification describes an omitted payload field whose model default prevents an assignment through self.cleaned_data from taking effect. It asks to allow cleaned_data to overwrite defaults, without restricting this to nonempty values.\n2. The test defines an optional ModelForm CharField, assigns its value in clean(), submits {}, and calls save(commit=False). It requires 'de' to replace the model default, then requires the default 'di' to survive every assignment from the field's empty_values collection.\n3. Honoring the nonempty assignment is settled by the specification: the field \"cannot be overwritten with 'self.cleaned_data'.\" Using clean() and save(commit=False) is a conventional public reproduction of that behavior. The fixture names and strings introduce no implementation requirements. However, preserving the default after an explicit empty assignment is open. The framework's empty_values collection identifies empty values, but does not settle whether an intentional assignment of one should overwrite a default.\n4. A reasonable fix could honor explicit assignments made in clean(), including an empty string intended to clear the field, while retaining defaults for untouched missing fields. That resolves the reported problem but fails the empty-value assertions.\n5. The additional constraint concerns observable field values, not implementation details, so the score is 3.",
+    "score": 3,
+    "explanation": "A reasonable fix could allow clean() to intentionally overwrite a model default with an empty string. The test rejects that behavior by requiring the default 'di' whenever clean() assigns any member of empty_values, a restriction the specification never states.",
+    "overspecification_vector": "for empty_value in pub_form.fields['mode'].empty_values: ... pub_form.mocked_mode = empty_value ... self.assertEqual(pub.mode, default_mode), where default_mode = 'di'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2033,
+  "output_tokens": 1363,
+  "seconds": 34.0
+}

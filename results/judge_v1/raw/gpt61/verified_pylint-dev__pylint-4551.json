@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pylint-dev__pylint-4551",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11928,
+  "output": {
+    "reasoning": "1. The specification describes a pyreverse output defect: it ignores Python type hints when an attribute receives an annotated parameter, especially with a None default. The requested result is “something like: a : String”. It names no annotation-resolution helper or internal return format.\n2. The added graded tests require pylint.pyreverse.utils.get_annotation and infer_node to exist. get_annotation must accept an AnnAssign's value and an AssignAttr, and return an object with a .name field. For annotated assignments and constructor parameters, the tests demand exactly 'str' or 'Optional[str]', including implicit Optional[str] for a str annotation with a None default. infer_node must return set() on astroid.InferenceError and set('x') when the mocked inference returns 'x', with astroid.node_classes.NodeNG.infer called. The patches also require utils.get_annotation to be patchable. The existing DOT and visibility tests have no added assertions shown here.\n3. Settled: type hints must inform UML attribute types, including the reported constructor/default-None case. Related explicit annotations and non-None defaults are reasonable coverage. Open: the helper names, their placement in utils, accepted internal AST inputs, .name return representation, exact Optional[str] labeling, and mocked inference/fallback protocol. None is specified by the issue or established as an existing interface by the supplied context.\n4. A reasonable fix could resolve parameter and assignment annotations in the linker or diagram-generation code and render their types directly, without introducing either helper. It would fix the reported issue and related inputs but fail the imports and direct helper tests. A fix could also preserve the explicitly declared str type with a None default rather than synthesize the exact Optional[str] label.\n5. The internal helper contracts make the strongest overspecification significant, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix could propagate annotations through the linker or diagram generator without defining utils.get_annotation or utils.infer_node, yet these tests require those exact helpers and their internal return contracts. They additionally pin exact Optional[str] labels that the requested UML output does not settle.",
+    "overspecification_vector": "from pylint.pyreverse.utils import get_annotation, get_visibility, infer_node; get_annotation(node.value).name; get_annotation(assign_attr).name; exact labels 'str' and 'Optional[str]'; @patch(\"pylint.pyreverse.utils.get_annotation\"); @patch(\"astroid.node_classes.NodeNG.infer\", side_effect=astroid.InferenceError); @patch(\"astroid.node_classes.NodeNG.infer\"); assert infer_node(node) == set(); assert infer_node(node) == set(\"x\"); assert mock_infer.called"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2920,
+  "output_tokens": 918,
+  "seconds": 21.1
+}

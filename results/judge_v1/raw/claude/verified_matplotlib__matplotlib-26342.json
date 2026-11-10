@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-26342",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8584,
+  "output": {
+    "reasoning": "1. The specification asks for a new public method `ContourSet.set_paths(paths)` that replaces all of a ContourSet's paths. It names the method explicitly: `cs.set_paths(transformed_paths)`.\n\n2. What the test requires:\n- A `set_paths` method on the ContourSet returned by `contour`.\n- It must accept the list returned by `get_paths()` from another ContourSet.\n- After the call, the test figure must render identically to the reference figure.\n\n3. How each requirement is settled:\n- The method name and signature are settled by the specification: \"cs.set_paths(transformed_paths)\".\n- Rendering the new paths is the obvious meaning of replacing the paths.\n- The test input is a list of paths from `get_paths()`, which is exactly the Cartopy use case.\n\n4. Possible gaps:\n- Rendering equality depends on the paths actually being used when drawing. In this matplotlib version ContourSet is a Collection, so the natural fix is to assign `self._paths = paths`, or to rely on the inherited `Collection.set_paths`.\n- If old split collections are cached, a correct fix would need to invalidate them, but the test never accesses collections.\n- Colors are tied to levels, and both contour sets have the same levels, so color is not an issue.\n- Any fix that genuinely replaces the paths passes.\n\n5. Score: the test checks exactly the requested behavior.",
+    "score": 1,
+    "explanation": "The test calls `cs.set_paths(other.get_paths())`, exactly the API named in the specification, and checks that the rendered output matches, which any correct implementation produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRN8GymjfZuDGdFGrvV",
+  "input_tokens": 3275,
+  "output_tokens": 569,
+  "seconds": 6.8
+}

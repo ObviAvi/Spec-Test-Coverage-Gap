@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-15875",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7976,
+  "output": {
+    "reasoning": "1. The spec says `is_zero` must return None when undecidable and must never be wrong. For `e = -2*I + (1 + I)**2` it wrongly returns False, though the expression is mathematically zero. The fix belongs in Add's is_zero logic.\n\n2. The graded test requires `(-2*I + (1 + I)**2).is_zero is None`.\n\n3. Is that requirement settled?\n- The input is the spec's own example, so it is settled.\n- The spec only says the result must not be False: \"should return `None` if it cannot decide, but should never give the wrong answer.\" Since the expression is zero, both None and True are correct answers.\n- The release note only says \"Fix `is_zero` becoming `False`\".\n- So the exact value None is open.\n\n4. A reasonable fix that fails: a developer could make the assumptions system decide this case correctly. For example, they could teach Pow to recognize that (1+I)**2 is purely imaginary (2*I). Add._eval_is_zero could then combine the imaginary coefficients of its terms and conclude zero. That gives `e.is_zero == True`, which is strictly better and still correct, but it fails `is None`. Exact evaluation of a numeric expression with no symbols, decided as True, is a plausible approach for a competent developer.\n\nThe test pins one of two valid outcomes, so it is mildly overspecified.",
+    "score": 3,
+    "explanation": "A fix that makes Add/Pow assumptions smart enough to decide that -2*I + (1+I)**2 is exactly zero would return True, which is correct, but the test asserts `is None` and rejects it.",
+    "overspecification_vector": "assert e.is_zero is None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRbVAwfSHiktGZ2b4JE",
+  "input_tokens": 3018,
+  "output_tokens": 1189,
+  "seconds": 13.3
+}

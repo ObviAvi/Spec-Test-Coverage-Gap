@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15368",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8986,
+  "output": {
+    "reasoning": "The specification identifies bulk_update() incorrectly storing the string representation of a plain F() instead of resolving the referenced column. The test creates ten Note rows, assigns F('note') to each row's misc field, calls bulk_update(notes, ['misc']), and asserts that filtering for misc='test_note' returns exactly those rows. The entry point and expression behavior are explicitly settled by “assign plain F(...) to some model instance field” and “save with bulk_update.” Note, note/misc, the fixture strings, and ten rows are equivalent substitutions for the reproduction's model, character fields, and data; they impose no independent implementation requirement. assertCountEqual imposes no ordering requirement. There are no mocks, private calls, SQL-format assertions, or required return values. No open requirement rejects a reasonable correct fix: resolving plain field references as requested necessarily makes the database assertion pass.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the assertion directly verifies that bulk_update() copies the referenced field's value for a plain F() expression rather than storing its string representation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2091,
+  "output_tokens": 431,
+  "seconds": 12.8
+}

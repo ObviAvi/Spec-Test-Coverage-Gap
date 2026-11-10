@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/psf__requests-2931",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7839,
+  "output": {
+    "reasoning": "1. The issue reports that requests.put(..., data=u\"ööö\".encode(\"utf-8\")) fails because of to_native_string; the required outcome is successful transmission of binary data without text-decoding failures. 2. The test constructs requests.Request('PUT', 'http://example.com', data=the same bytes), calls prepare(), and requires request.body to be an instance of bytes. There are no mocks or required messages. 3. PUT and the payload are settled by the reproduction. Testing preparation directly and requiring its body representation to be bytes are not explicitly settled: the specification concerns the high-level request succeeding. 4. A reasonable alternative is to prepare binary payloads as binary streams, such as io.BytesIO, with appropriate content length and transport handling. This avoids text conversion and preserves arbitrary payload bytes, but the prepared body is not a bytes instance. Thus the graded assertion constrains an intermediate representation rather than just the reported behavior.",
+    "score": 4,
+    "explanation": "A correct fix could represent binary payloads as binary streams and transmit their contents unchanged, avoiding to_native_string. It would fix the reported request but fail the test's requirement that the prepared body itself be a bytes object.",
+    "overspecification_vector": "assert isinstance(request.body, bytes)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1794,
+  "output_tokens": 1836,
+  "seconds": 46.7
+}

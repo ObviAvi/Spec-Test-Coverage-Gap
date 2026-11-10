@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16642",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7817,
+  "output": {
+    "reasoning": "1. The specification identifies FileResponse incorrectly reporting the underlying text/html type for files ending in .br or .Z. It requires handling the compression suffix rather than retaining the uncompressed file's MIME type. 2. The added test cases require .tar.br to produce application/x-brotli and .tar.Z to produce application/x-compress. 3. Testing .tar instead of .html is a reasonable generalization of the reported bug. Existing .tar.gz, .tar.bz2, and .tar.xz cases establish the convention of reporting the compressed representation's type. However, neither the specification nor those existing mappings settles the exact MIME strings for Brotli and compress files. 4. A reasonable fix could preserve existing compression mappings and serve Brotli files as application/octet-stream, avoiding the incorrect underlying MIME type without adopting the nonstandard application/x-brotli label. It would fail the added Brotli expectation. 5. The gap concerns an externally observable header value, so the score is 3.",
+    "score": 3,
+    "explanation": "The tests require exact MIME labels that the specification does not prescribe. A reasonable fix that serves .br files as application/octet-stream rather than the underlying text/html or application/x-tar would resolve the reported problem but fail the application/x-brotli expectation.",
+    "overspecification_vector": "(\".tar.br\", \"application/x-brotli\"), (\".tar.Z\", \"application/x-compress\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1790,
+  "output_tokens": 685,
+  "seconds": 16.2
+}

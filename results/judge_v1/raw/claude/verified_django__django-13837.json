@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13837",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10608,
+  "output": {
+    "reasoning": "1. The spec says `django.utils.autoreload.get_child_arguments` detects `python -m` only for `django`. It prescribes the fix: Python was started with `-m pkg` iff `__main__.__spec__.parent == \"pkg\"`, so the child arguments should use that parent.\n\n2. What the graded test requires:\n   - `sys.modules['__main__']` is patched to a test package's `__main__` module, whose `__spec__.parent` is `utils_tests.test_module`.\n   - `sys.argv` is patched to `[test_main.__file__, 'runserver']` and `sys.warnoptions` to `[]`.\n   - `get_child_arguments()` must return `[sys.executable, '-m', 'utils_tests.test_module', 'runserver']`.\n\n3. How each requirement is settled:\n   - Using `__main__.__spec__.parent` is settled by the spec (\"Python was started with -m pkg if and only if __main__.__spec__.parent == 'pkg'\").\n   - The output format `[exe, '-m', pkg, *args]` is settled by the existing `django` case (`test_run_as_module`).\n   - Reading `__main__` from `sys.modules` follows the standard Python mechanism. Both `import __main__` inside the function and `sys.modules['__main__']` resolve to the patched module.\n\n4. Possible failing alternatives:\n   - A fix that does `import __main__` at module top level of autoreload would bind the real main module and miss the patch. In practice `__main__` never changes, so the mismatch exists only under the test's mocking. That is a fringe implementation pattern rather than a pinned behavior.\n   - A fix using `__spec__.name` would contradict the spec's explicit `.parent` instruction.\n\n5. The asserted output is the only reasonable result of the specified algorithm.",
+    "score": 2,
+    "explanation": "The spec dictates using `__main__.__spec__.parent` to build `-m <pkg>`, and the test checks exactly `[sys.executable, '-m', 'utils_tests.test_module', 'runserver']` when `__main__` is a module in that package.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRAKeFx4knccV5rWSYi",
+  "input_tokens": 3968,
+  "output_tokens": 1684,
+  "seconds": 17.2
+}

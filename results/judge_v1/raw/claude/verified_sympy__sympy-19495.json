@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-19495",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9670,
+  "output": {
+    "reasoning": "1. Spec: after `subs`, a ConditionSet whose condition becomes True gives a wrong result: `{1/3 | 1/3 ∊ ImageSet ∧ ...}`. The bound variable is wrongly replaced by the new value. The expected behavior is the base set with the substitution applied, as with `xreplace` and simultaneous subs (`{2⋅π⋅n + asin(1/3) | n ∊ ℤ}`).\n\n2. Requirements of the tests:\n(a) `ConditionSet(x, Contains(y, Interval(-1,1)), img1).subs(y, 1/3)` must `dummy_eq` the substituted ImageSet.\n(b) `ConditionSet(n, n < x, Interval(-oo,0)).subs(x, p)` must equal `Interval(-oo, 0)`, where n is negative and p is positive. Previously the test expected EmptySet.\n\n3. Status of each requirement:\n(a) Settled by the spec: Out[78]/Out[80] show the expected result, and `dummy_eq` tolerates dummy-variable naming.\n(b) Settled by the same bug in a closely related input. With n negative and p positive, the condition `n < p` becomes True. The old code built `ConditionSet(new, Contains(new, base), base)`, i.e., it put `p` in place of the bound variable. Since p is not in (-oo,0], this wrongly gave EmptySet. That is exactly the mistake the issue describes: \"as if the bound variable x ... were mistaken for a y\". Once the condition is True, the correct result is the base set. Any fix that stops substituting `new` for the bound variable, whether it returns `base` or calls `self.func(self.sym, cond, base)` (which auto-reduces when cond is True), yields `Interval(-oo, 0)`.\n\n4. No reasonable correct fix keeps EmptySet here, because that would retain the very bug reported. The updated assertion simply corrects a test that encoded the buggy behavior.",
+    "score": 2,
+    "explanation": "Both assertions check that once the condition becomes True, `subs` returns the (substituted) base set. That is the only reasonable reading of the issue, so every correct fix, including on the Interval(-oo,0) case, returns the asserted sets.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRd6sofR75rF5Skj4a5",
+  "input_tokens": 4114,
+  "output_tokens": 2389,
+  "seconds": 22.1
+}

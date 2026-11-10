@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-9711",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9696,
+  "output": {
+    "reasoning": "The specification identifies incorrect string ordering in the needs_extensions minimum-version check and explicitly requires accepting 0.10.0 when the minimum is 0.6. The test exercises that check through verify_needs_extensions, using app.config.needs_extensions and an Extension stored in app.extensions. It requires: (1) an empty configuration defaults to {} and validation succeeds—a basic baseline/regression check; (2) installed version '3.10' satisfies minimum '3.9'—the same numeric-versus-lexicographic bug on closely related inputs, settled by the specification; and (3) installed version '3.10' does not satisfy minimum '3.11', raising VersionRequirementError—ordinary minimum-version enforcement, with an exception consistent with the reported 'Sphinx version error'. The dummy extension name and version literals are test inputs, not required implementation choices. No exact error text, parsing library, intermediate representation, or newly introduced helper is asserted. There is no open behavioral choice here that a reasonable correct fix would resolve differently.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should accept '3.10' against minimum '3.9', reject it against minimum '3.11', and preserve successful validation of an empty requirements mapping.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2271,
+  "output_tokens": 1024,
+  "seconds": 22.6
+}

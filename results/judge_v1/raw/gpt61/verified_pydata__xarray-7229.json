@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-7229",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12830,
+  "output": {
+    "reasoning": "The specification identifies xr.where(..., keep_attrs=True) overwriting coordinate metadata with data-variable metadata and explicitly says, \"Coordinate attributes should be preserved.\" The graded test exercises this same public function with three DataArrays, scalar operands, two Datasets, and mixed DataArray/Dataset operands. It asserts selection values, coordinate structure, and exact object, data-variable, and coordinate attributes using assert_identical; there are no private APIs or mocks.\n\nSettled: preserving coordinate metadata rather than replacing it with variable metadata directly addresses the issue. Conventional/regression constraints: ordinary where selection results and x-sourced data attributes follow existing behavior—the removed test already expected attributes from x and empty result attributes when both alternatives were scalars. Dataset coverage reasonably extends the reported operation.\n\nOpen: the specification does not settle coordinate-attribute precedence when cond, x, and y have conflicting metadata, nor require discarding all coordinate attributes when x is scalar. Nevertheless, the tests require x_coord when x has coordinates, and completely empty coordinate attributes when x is scalar, even though cond and y supply attributed coordinates. A reasonable fix could preserve the coordinate metadata selected by the coordinate-merging process, while independently retaining the established x-source rule for data attributes. In particular, it could preserve available coordinate attributes from cond or y when x is scalar. That resolves the reported overwrite and related cases but fails the exact empty-coordinate-attribute assertions. These are public observable choices, so the overspecification is mild rather than implementation-specific.",
+    "score": 3,
+    "explanation": "The tests require coordinate attributes to be empty whenever x is scalar, although the specification only asks that coordinate attributes be preserved. A reasonable fix retaining available coordinate metadata from cond or y would fix the reported bug but fail these assertions.",
+    "overspecification_vector": "The blocks `actual = xr.where(cond, 0, y, keep_attrs=True)` / `expected = xr.DataArray([0, 0], coords={\"a\": [0, 1]})` / `assert_identical(expected, actual)` and `actual = xr.where(cond, 1, 0, keep_attrs=True)` / `expected = xr.DataArray([1, 0], coords={\"a\": [0, 1]})` / `assert_identical(expected, actual)` require empty coordinate attributes despite attributed coordinates on other operands."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3481,
+  "output_tokens": 1240,
+  "seconds": 31.2
+}

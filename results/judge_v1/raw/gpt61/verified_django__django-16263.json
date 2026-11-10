@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16263",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9988,
+  "output": {
+    "reasoning": "The specified entry point is queryset.count(), and the problem is unnecessary annotation expressions in its SQL: Django should strip annotations \"not referenced by filters, other annotations or ordering.\" The graded tests use Count(\"authors\") through annotate() and alias(), and Lower(\"name\") through annotate(). These are reasonable related inputs covered by \"any annotations\"; requiring the unused annotation aliases to disappear from SQL follows the specification. CaptureQueriesContext and lowercasing simply inspect that SQL.\n\nThe tests additionally require exactly one SELECT for an unused aliased aggregate, one for a nonaggregate annotation, and two for an annotated aggregate. These requirements are open: the specification does not prescribe subquery wrapping. A conservative correct fix could remove unused annotation expressions while retaining a primary-key-only subquery, including grouping where necessary. That would satisfy annotation pruning but fail the one-SELECT assertions. Conversely, a fix that also eliminates joins and grouping made redundant by pruning could generate a direct count for the simple annotated-aggregate case, failing its two-SELECT assertion. Such optimizations can be applied when safe, with a grouped-subquery fallback for more complex queries.\n\nThus the SELECT-count assertions constrain the SQL compilation strategy rather than merely checking that unused annotations have been removed.",
+    "score": 4,
+    "explanation": "A reasonable fix could strip unused annotation expressions but retain a count-over-subquery strategy, failing the one-SELECT requirements. The tests prescribe subquery wrapping decisions that the specification never requires.",
+    "overspecification_vector": "test_unused_aliased_aggregate_pruned: self.assertEqual(sql.count(\"select\"), 1, \"No subquery wrapping required\"); test_non_aggregate_annotation_pruned: self.assertEqual(sql.count(\"select\"), 1, \"No subquery wrapping required\"); test_unreferenced_aggregate_annotation_pruned: self.assertEqual(sql.count(\"select\"), 2, \"Subquery wrapping required\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2257,
+  "output_tokens": 2064,
+  "seconds": 50.4
+}

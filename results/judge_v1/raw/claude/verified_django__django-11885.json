@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11885",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8961,
+  "output": {
+    "reasoning": "1. The spec says that when the deletion Collector takes the fast-delete path for cascaded relations, it should combine those DELETE queries per table with OR. This reduces N per-relation queries on the same table to one, e.g. `DELETE FROM entry WHERE created_by_id = :id OR updated_by = :id`. The visible symptom is the number of round trips.\n\n2. What the test requires:\n- It uses the existing `Origin`, `Referrer` and (implicitly) `SecondReferrer` models. These are already present, since the test patch adds no models.\n- It calls the public `referer.delete()`.\n- It asserts exactly 2 queries: one combined DELETE on SecondReferrer and one DELETE on Referrer.\n\n3. Settlement of each requirement:\n- Combining multiple FK relations from one table into one query is settled by the spec: \"the collection logic should combine such queries by table\" and \"N queries depending on the number of foreign relationships can be combined into a single one by using OR\".\n- The fact that SecondReferrer's two FKs are already fast-deletable is pre-existing behavior; the test fails before the fix only because of the per-field query count.\n- One FK here appears to target a to_field (`unique_field`) rather than the pk. A natural ORM fix ORs Q objects of the form `field__in=objs`, and that handles to_field transparently, as the existing fast-delete filter already does.\n- The count of 2 follows directly from the spec's own example pattern: one combined child delete plus the parent delete.\n\n4. Open details: essentially none. A fix that combined only relations pointing to the pk would ignore the spec's \"combine by table\" across all foreign relationships, so it is not a full fix. Any fix that combines per table passes.",
+    "score": 2,
+    "explanation": "The test only asserts that deleting a Referrer issues 2 queries, which is exactly the spec's requirement that fast-delete queries against the same table be combined into one OR'd DELETE.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR4LVSNB3JRXdygoUMg",
+  "input_tokens": 3329,
+  "output_tokens": 1565,
+  "seconds": 17.7
+}

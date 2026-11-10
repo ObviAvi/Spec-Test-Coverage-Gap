@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-25232",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9419,
+  "output": {
+    "reasoning": "1. The specification requests a `fill_value` parameter on `IterativeImputer` for `initial_strategy=\"constant\"`, including support for `np.nan`. It specifies initialization behavior, not how that behavior must be implemented. 2. The test constructs `IterativeImputer` with `missing_values=-1`, `initial_strategy=\"constant\"`, `fill_value=100`, and `max_iter=0`; calls `fit_transform` on numeric data containing scattered missing entries and an entirely missing column; and requires every entry of `imputer.initial_imputer_.statistics_` to equal 100. 3. Accepting and using `fill_value=100` is settled by the requested parameter. The alternate missing-value marker and zero-iteration initialization are reasonable related inputs. However, storing the requested constant in `initial_imputer_.statistics_` is open: the specification does not require forwarding the parameter to that helper or prescribe its fitted state. 4. A reasonable implementation could retain the existing initial imputer for bookkeeping and apply the requested constant directly to the missing-value mask during initialization and transformation, including handling `np.nan` explicitly. That implementation could produce correct initialized data while leaving the helper's statistics at its default constant. 5. The assertion therefore imposes an internal implementation requirement rather than checking only the requested behavior.",
+    "score": 4,
+    "explanation": "A correct fix could apply `fill_value` directly to missing entries during initialization and transformation without storing that value in the helper imputer's statistics. The test would reject it because it inspects `initial_imputer_.statistics_` rather than the initialized output.",
+    "overspecification_vector": "assert_array_equal(imputer.initial_imputer_.statistics_, fill_value)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2188,
+  "output_tokens": 852,
+  "seconds": 21.7
+}

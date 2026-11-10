@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16256",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15372,
+  "output": {
+    "reasoning": "1. The spec says acreate(), aget_or_create() and aupdate_or_create() on related managers wrongly delegate to QuerySet methods instead of the related manager's own create(), get_or_create() and update_or_create(). Proper async versions should be added to related managers. The sample diff wraps the sync method with sync_to_async.\n\n2. What the tests require:\n- On a forward M2M manager (mtm1.simples), acreate, aget_or_create (including a through_defaults kwarg) and aupdate_or_create (including a defaults kwarg) work, link the new object to the instance, and return the sync-equivalent (obj, created) results.\n- On a reverse FK manager (s1.relatedmodel_set), the same three methods set the FK to the instance.\n- On a generic relation manager (bacon.tags), the same three methods work.\n- Each test asserts the values and counts that the sync methods would produce.\n\n3. How each requirement is settled:\n- Method names are settled by the spec.\n- The behaviour (delegating to the related manager's sync method) is settled: \"they don't call create(), get_or_create(), and update_or_create() respectively from a related manager\".\n- Passing through_defaults and defaults is settled by convention. The async wrappers mirror the sync signatures, and a **kwargs or mirrored-signature wrapper forwards them.\n- Generic related managers are not shown in the diff, which says \"e.g.\". However, the issue covers \"related managers\" in general, and GenericRelatedObjectManager is a related manager that inherited the same broken QuerySet methods. Fixing only the two shown managers would leave the identical bug in a closely related case.\n- The asserted values are exactly what the sync methods return. No exact messages, names or private APIs are involved.\n\n4. No reasonable complete fix fails. A fix that skips generic relations is incomplete with respect to \"related managers\", not an alternative design.",
+    "score": 2,
+    "explanation": "The tests only check that the three async methods on M2M, reverse FK and generic related managers behave like their sync related-manager counterparts, which is exactly what the spec asks for on related managers.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRHLoeQrQWmBX9GR1vs",
+  "input_tokens": 6104,
+  "output_tokens": 1333,
+  "seconds": 13.9
+}

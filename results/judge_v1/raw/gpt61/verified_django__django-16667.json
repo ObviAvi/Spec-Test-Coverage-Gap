@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16667",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10946,
+  "output": {
+    "reasoning": "1. The specification identifies SelectDateWidget.value_from_datadict() and says that user-controlled y, m, and d can cause an unhandled OverflowError during date construction. A correct fix must prevent that crash for excessively large components, not just the reported year.\n2. The graded form test supplies mydate_month=str(sys.maxsize + 1), day='31', and year='2010', then requires is_valid() to be False and errors to contain 'Enter a valid date.' Rejecting an overflowing month is settled by the specification's statement that 'y, m and d are user controlled'; the error follows conventional DateField validation and the existing message shown in the patch.\n3. The graded widget test supplies year=str(sys.maxsize + 1), month='12', and day='1', and requires value_from_datadict() to return exactly '0-0-0'. Handling this input without OverflowError is specified, but the sentinel is open: neither the specification nor the shown existing tests establishes that return value.\n4. A reasonable fix could catch OverflowError and return an invalid date string preserving the submitted components, allowing DateField to reject it normally. That resolves the crash and produces an invalid form but fails the exact sentinel assertion. The added assertion in test_datefield_1 is not graded and does not affect the score.\n5. The most overspecified graded assertion requires an unspecified sentinel, warranting score 4.",
+    "score": 4,
+    "explanation": "The widget test requires overflowing input to return exactly '0-0-0', although the issue only requires preventing the crash. A reasonable fix that returns an invalid date string preserving the submitted components would let normal DateField validation reject the input, yet fail this assertion.",
+    "overspecification_vector": "In SelectDateWidgetTest.test_value_from_datadict: +            ((str(sys.maxsize + 1), \"12\", \"1\"), \"0-0-0\"), specifically the required sentinel \"0-0-0\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2575,
+  "output_tokens": 799,
+  "seconds": 17.4
+}

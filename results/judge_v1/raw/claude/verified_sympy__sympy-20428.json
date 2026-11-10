@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-20428",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11871,
+  "output": {
+    "reasoning": "1. The specification says `clear_denoms()` on a constant Poly that is really zero returns a Poly whose DMP keeps an unstripped `[EX(0)]`. That Poly prints as zero but has `is_zero == False`, and `terms_gcd`/`primitive` mishandle it. The named entry point is `clear_denoms()`; the root symptom is the unstripped DMP in its result.\n\n2. What the test requires: it builds `f = Poly(<complicated expr>, x)` and asserts `f == Poly(0, x, domain='EX')`. It never calls `clear_denoms()`. So the Poly constructor itself must recognize the EX coefficient as zero and strip it, giving a rep of `DMP([])`.\n\n3. Is that settled? Not by the issue. The issue only shows the bad representation appearing in the result of `clear_denoms()`. It never says the original `f` should already equal the zero Poly at construction. It does mention, in struck-through text, that @jksuom points to an EX zero-recognition bug in #20428. That hints at a domain-level fix but does not require one.\n\n4. A failing alternative: a competent developer could fix the reported problem by stripping the DMP produced by `clear_denoms` and related ground multiplication (e.g., applying `dmp_strip`/`dup_strip` after `dmp_mul_ground` in `clear_denoms`). Then `bad_poly` becomes a proper zero Poly with `is_zero` True, and `terms_gcd`/`primitive` work. That fixes everything the issue demonstrates. But `f` itself would still hold the unsimplified nonzero-looking EX coefficient, so `f == Poly(0, x, domain='EX')` fails. The test checks a different code path (Poly construction / EX domain zero detection) than the one the issue implicates (`clear_denoms`).",
+    "score": 4,
+    "explanation": "A fix that strips the unstripped DMP in `clear_denoms()` resolves every symptom in the issue but still fails. The test never calls `clear_denoms`; it asserts the freshly constructed Poly already equals the zero Poly, which requires EX-domain zero detection at construction time.",
+    "overspecification_vector": "assert f == Poly(0, x, domain='EX')  (asserted on the constructor result, not on f.clear_denoms())"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRdGffZ69sMocnEP4MX",
+  "input_tokens": 5104,
+  "output_tokens": 1921,
+  "seconds": 19.1
+}

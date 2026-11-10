@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12308",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8689,
+  "output": {
+    "reasoning": "1. The spec says readonly JSONField values in the admin render as a Python dict repr instead of JSON. It names django.contrib.admin.utils.display_for_field and suggests special-casing JSONField there by calling the form field's prepare_value, not json.dumps directly.\n\n2. What the graded tests require:\n- display_for_field(value, models.JSONField(), empty) must return:\n  - '{\"a\": {\"b\": \"c\"}}' for {'a': {'b': 'c'}}\n  - '[\"a\", \"b\"]' for ['a', 'b']\n  - '\"a\"' for 'a'\n  - \"{('a', 'b'): 'c'}\" for the unserializable dict {('a','b'):'c'}\n- None must still return the empty value (non-graded test).\n- test_label_for_field is also listed as failing-to-pass, but no changed assertions for it are visible.\n\n3. Settled vs. open:\n- The JSON output for valid values is settled by the spec (\"would be displayed as {'foo': 'bar'}, which is not valid JSON\"). Both prepare_value and json.dumps with default separators give these exact strings.\n- The unserializable-value case is open. The spec only mentions InvalidJSONInput, which is the form's string wrapper for bad user input. It says nothing about values json.dumps cannot encode.\n\n4. Fixes that fail the open case:\n- Following the spec's suggestion literally means calling field.formfield().prepare_value(value). forms.JSONField.prepare_value calls json.dumps, which raises TypeError on a tuple key, so the fourth subtest errors.\n- A developer who does catch the error might fall back to empty_value or some other placeholder rather than str(value). That also fails, because the test pins the specific fallback \"{('a', 'b'): 'c'}\" (the display_for_value / str rendering).\n- These are reasonable fixes that resolve the reported issue, and they are rejected by an unspecified edge-case behavior.\n\n5. The assertions check observable output from the natural entry point, so this is 3, not 4.",
+    "score": 3,
+    "explanation": "The test requires that an unserializable value ({('a','b'): 'c'}) be caught and shown as its str() rendering \"{('a', 'b'): 'c'}\". A fix that follows the spec's suggestion to call prepare_value raises TypeError here. A fix that catches the error but falls back to the empty value or another placeholder also fails.",
+    "overspecification_vector": "({('a', 'b'): 'c'}, \"{('a', 'b'): 'c'}\"),  # Invalid JSON. in test_json_display_for_field"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR5e5szz67aJ7rtSfXC",
+  "input_tokens": 3220,
+  "output_tokens": 1786,
+  "seconds": 16.6
+}

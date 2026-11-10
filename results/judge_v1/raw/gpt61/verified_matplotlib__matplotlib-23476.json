@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-23476",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10915,
+  "output": {
+    "reasoning": "1. The specification reports repeated DPI multiplication when unpickling a pyplot-created figure on the MacOSX backend. Its expected output keeps DPI at 200 across round trips; it does not prescribe where scaling must be corrected.\n2. The test constructs a bare Figure(dpi=42), calls the private canvas method _set_device_pixel_ratio(7), checks dpi == 294, then requires pickle.loads(pickle.dumps(fig)).dpi == 42.\n3. Settled: preventing repeated DPI multiplication during unpickling. Reasonable regression inputs: baseline DPI 42 and device ratio 7 instead of the reported values. The initial dpi == 294 assertion establishes the simulated scaling and does not itself constrain the fix. Open: requiring a bare figure's serialized round trip to remove existing device scaling, rather than retaining its current DPI. The specification's constant-DPI output does not settle that behavior outside GUI canvas recreation.\n4. A reasonable fix could make GUI canvas/manager recreation use the figure's unscaled baseline DPI, applying the device ratio only once. That fixes repeated unpickling on high-DPI displays without changing serialization of a bare Figure. Such a fix can leave this test's restored DPI at 294 and fail its final assertion.\n5. Score 4: the test bypasses the implicated GUI recreation path and requires backend-independent DPI normalization as an intermediate mechanism, rather than merely checking that the reported figure retains its DPI.",
+    "score": 4,
+    "explanation": "A correct fix could prevent duplicate scaling during GUI canvas recreation while preserving the current DPI when a bare Figure is pickled. This test instead bypasses that GUI path and requires the bare figure's DPI to drop from 294 to 42, rejecting that reasonable fix.",
+    "overspecification_vector": "The combination of `fig = Figure(dpi=42)`, `fig.canvas._set_device_pixel_ratio(7)`, and `assert fig2.dpi == 42` after the bare Figure's pickle round trip."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2882,
+  "output_tokens": 1924,
+  "seconds": 49.3
+}

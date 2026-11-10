@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8621",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10140,
+  "output": {
+    "reasoning": "1. What the spec says is wrong: the `:kbd:` role treats every `-`, `+` and `^` as a separator, so standalone keys like `-` turn into empty nested kbds. It asks that a single keystroke produce \"just a single `kbd` element\". For compounds, the algorithm should \"differentiate between `-`, `+` and `^` characters appearing in separator vs keystroke positions\".\n\n2. What the graded tests require:\n- (a) `:kbd:`-`` must produce exactly `<p><kbd class=\"kbd docutils literal notranslate\">-</kbd></p>`, plus LaTeX `\\sphinxkeyboard{\\sphinxupquote{\\sphinxhyphen{}}}`.\n- (b) `:kbd:`Alt+^`` must produce an outer kbd containing an `Alt` kbd, a literal `+`, and a `^` kbd, plus LaTeX `Alt+\\textasciicircum{}`.\n\n3. Settled or open:\n- (a) is settled by the spec text \"For single keystrokes that use `-`, `+` or `^`, just a single `kbd` element should be created\". The format of a single non-nested kbd is the existing output for simple keys. The LaTeX side reflects existing escaping and is unaffected by the HTML transform.\n- (b) is settled by the spec's separator-vs-keystroke distinction. In `Alt+^`, the `^` sits at the end, so it is unambiguously a keystroke and the `+` is the separator. The nested markup follows the existing compound pattern (the `Control+X` context test).\n\n4. A plausible alternative fix would be lookbehind/lookahead regex splitting, or token-based parsing that requires non-empty keys on both sides of a separator. Both would yield the same output on these inputs. The ambiguous case `Shift-+` is not tested.\n\n5. No open requirement rejects a reasonable fix, so the score is 2.",
+    "score": 2,
+    "explanation": "Both assertions follow directly from the spec: a lone `-` must be a single kbd element, and in `Alt+^` the trailing `^` is in keystroke position and must be rendered with the existing compound-key markup, so any reasonable separator-vs-keystroke algorithm passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRXcbZX5QUtFcF4Rt4E",
+  "input_tokens": 3958,
+  "output_tokens": 1324,
+  "seconds": 12.9
+}

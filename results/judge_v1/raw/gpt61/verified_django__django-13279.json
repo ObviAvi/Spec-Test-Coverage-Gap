@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13279",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10379,
+  "output": {
+    "reasoning": "1. The issue describes session-format incompatibility during mixed-version deployment: setting DEFAULT_HASHING_ALGORITHM to 'sha1' must permit transition to Django 3.1. It specifically suggests using 'the legacy encode()' under that setting.\n2. The graded test sets DEFAULT_HASHING_ALGORITHM='sha1', passes a simple dictionary to self.session.encode(), and requires self.session._legacy_decode(encoded) to recover that dictionary. This is repeated across the session backend classes. Warning suppression and SimpleTestCase inheritance provide test infrastructure, not additional fix requirements.\n3. The setting and legacy-format compatibility are settled by the specification. The dictionary round trip and coverage across backends are ordinary related-input checks. Using the existing _legacy_decode() as a compatibility reader is inferred from the required interoperability with older instances; the test does not require an exact encoded string or a particular encoder implementation.\n4. Although _legacy_decode() is private, its role here is to verify the required legacy-readable output, rather than an intermediate implementation detail. An alternative encoding implementation can pass so long as it produces data the legacy reader understands. Merely making the new decoder accept more formats would not resolve older instances being unable to read newly written sessions. No independent, arbitrary output choice is imposed.",
+    "score": 2,
+    "explanation": "The assertion that legacy decoding recovers data encoded with DEFAULT_HASHING_ALGORITHM='sha1' reasonably expresses the mixed-version compatibility requirement and the specification's suggested legacy-encoding behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2363,
+  "output_tokens": 2921,
+  "seconds": 78.4
+}

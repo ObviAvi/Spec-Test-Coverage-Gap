@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11149",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13186,
+  "output": {
+    "reasoning": "1. The specification reports that users with only view permission can add or remove relationships through an auto-created many-to-many inline. Preventing those mutations is settled; it does not specify how an empty inline should appear on an add page.\n2. Both graded tests grant view_book and GET the Author admin page, using author_add or author_change. They require inline_admin_formset permission flags of view=True and add/change/delete=False, the relationships heading, and a management input named Author_books-TOTAL_FORMS with value 0 or 1 respectively. The add test also excludes the add-another control; the change test requires the existing book in a <p> element and excludes its DELETE checkbox.\n3. The permission restrictions and absence of editing/deletion controls follow from 'view only permissions.' Displaying existing relationships read-only is a conventional interpretation of view permission. The management fields and read-only markup follow the tested rendering choice. However, requiring an empty inline to remain visible on the add page is open: neither the issue nor its example settles that presentation choice.\n4. A reasonable fix could enforce read-only access to existing relationships while omitting empty, non-editable inlines from the add page. This prevents the reported unauthorized editing but fails the add test's required heading and zero-form management input. The test's own comment explicitly acknowledges hiding that inline as a possible improvement.\n5. This is an externally visible presentation choice rather than a necessary part of fixing the permission bug, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could hide empty, non-editable many-to-many inlines on the add page while preserving read-only display of existing relationships. The add-page test rejects that valid choice by requiring the empty inline's heading and management form.",
+    "overspecification_vector": "In test_inline_add_m2m_view_only_perm: self.assertContains(response, '<h2>Author-book relationships</h2>') and the assertion requiring '<input type=\"hidden\" name=\"Author_books-TOTAL_FORMS\" value=\"0\" id=\"id_Author_books-TOTAL_FORMS\">'."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3019,
+  "output_tokens": 2526,
+  "seconds": 66.9
+}

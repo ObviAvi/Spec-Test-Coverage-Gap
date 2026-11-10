@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15916",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10378,
+  "output": {
+    "reasoning": "The specification requests support for Meta.formfield_callback and says modelform_factory() must retain that callback from its base form when no callback argument is supplied. It explicitly expects the callback to affect fields in both the original ModelForm and the factory-generated form.\n\nThe first test defines a ModelForm with Meta.formfield_callback and fields ['id', 'name'], then checks that its generated fields use Textarea widgets. Using the Meta callback is directly settled by 'Allow ModelForm meta to specify formfield_callback.' The particular model, field selection, and callback are related inputs: Textarea is not an arbitrary mandated output, but the widget explicitly returned by the supplied callback.\n\nThe second test supplies a base form with Meta.formfield_callback and fields='__all__' to modelform_factory(), omitting the callback argument. Its widget assertions directly check the requested preservation of the base form's callback. It also subclasses the generated form and checks matching widget types. This is settled by ordinary ModelForm inheritance conventions: subclassing without overrides should preserve the configured fields and callback behavior. Inspecting base_fields checks the generated form fields rather than requiring a particular implementation of callback lookup.\n\nNo requirement introduces an open implementation choice that a reasonable correct fix could violate. A fix that handles only the example's required attribute, or fails on ordinary subclassing, would leave the requested callback support incomplete.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should apply the Meta callback to both directly declared and factory-generated forms; checking its returned widgets and their preservation under ordinary inheritance adds only closely related coverage.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2306,
+  "output_tokens": 643,
+  "seconds": 17.1
+}

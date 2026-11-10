@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15278",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9115,
+  "output": {
+    "reasoning": "The specification reports that adding a nullable OneToOneField on SQLite crashes with 'Cannot add a UNIQUE column'. The test creates two models, constructs OneToOneField(Note, CASCADE, null=True), names it 'note', and calls schema_editor.add_field(). Successful addition is settled by the reported bug; the assertion that the column remains nullable is settled by 'nullable' and null=True. The expected 'note_id' column name follows Django's standard relationship-column naming convention. Author, Note, and 'note' are fixture inputs, not implementation requirements. Using CASCADE instead of the example's SET_NULL is an unspecified but closely related input: it does not change the problematic nullable, unique column addition, so a reasonable general fix must handle it too. The schema-editor call exercises the database schema operation underlying AddField, and column_classes() inspects the resulting schema without prescribing how it was produced. No reasonable correct alternative is rejected.",
+    "score": 2,
+    "explanation": "Every reasonable fix should allow this closely related nullable OneToOneField addition and produce the conventional 'note_id' column with nullability preserved, as the two assertions require.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2091,
+  "output_tokens": 778,
+  "seconds": 19.7
+}

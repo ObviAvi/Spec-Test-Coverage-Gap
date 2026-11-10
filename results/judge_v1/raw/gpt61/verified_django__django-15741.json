@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15741",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8625,
+  "output": {
+    "reasoning": "1. The specification names django.utils.formats.get_format and says it \"should allow lazy parameter,\" reporting a TypeError when the date filter receives a lazy format string. 2. The tests require get_format(gettext_lazy(\"DATE_FORMAT\")) to return \"N j, Y\", and rendering '{{ t|date:_(\"H:i\") }}' with time(0, 0) to produce \"00:00\". There are no mocks or implementation-specific assertions. 3. Supporting lazy arguments to get_format is explicitly settled. Supporting them through the date filter is also explicit; substituting H:i for the reported Y-m-d is a closely related input. By ordinary lazy-string and formatting semantics, evaluating a lazy format name must preserve the existing format lookup, and H:i must format midnight as 00:00. The expected DATE_FORMAT value is an existing formatting default, not a new choice imposed on the fix. 4. No open implementation choice is constrained: a fix that handles only literal format strings but breaks lazy named formats would leave the same bug in closely related inputs. 5. The tests are reasonably specified.",
+    "score": 2,
+    "explanation": "Every reasonable fix should make lazy format arguments behave like their evaluated strings, satisfying both the DATE_FORMAT lookup and the date filter's midnight formatting assertion.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1998,
+  "output_tokens": 675,
+  "seconds": 15.8
+}

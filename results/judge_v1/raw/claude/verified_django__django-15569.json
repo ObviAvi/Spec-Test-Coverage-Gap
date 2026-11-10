@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15569",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10289,
+  "output": {
+    "reasoning": "Spec: _unregister_lookup should clear the lookup cache, the same way register_lookup does. The entry point is named.\n\nGraded tests:\n1. test_lookups_caching: after the register_lookup context manager exits (which calls _unregister_lookup), the test asserts that field.get_lookups() no longer contains \"exactly\". This is the direct observable consequence of clearing the cache on unregistration. Settled by the spec.\n2. test_get_transforms: the test calls JSONField._unregister_lookup(MyTransform) and then get_transform without manually calling _clear_cached_lookups. It expects the default KeyTransformFactory, which again requires the cache to be cleared on unregister. Settled.\n\nThe test calls the private _unregister_lookup directly, but the spec names exactly that method, so this is fine.\n\nAny reasonable fix, such as adding cls._clear_cached_lookups() in _unregister_lookup, passes both tests. The schema test change is not graded.",
+    "score": 1,
+    "explanation": "Both graded tests directly check that lookups and transforms are no longer returned after _unregister_lookup, which is exactly the cache clearing the spec requests.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRFo2Rq77vmsGQkSAJb",
+  "input_tokens": 3829,
+  "output_tokens": 416,
+  "seconds": 5.4
+}

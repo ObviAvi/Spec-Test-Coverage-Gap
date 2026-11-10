@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14725",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10813,
+  "output": {
+    "reasoning": "1. The specification says model formsets lack a way to disallow new object creation, giving an 'edit only' view. It asks to 'Provide a way' but names no parameter, attribute or API.\n2. What the graded tests require:\n- `modelformset_factory(..., edit_only=True)` and `inlineformset_factory(..., edit_only=True)` must be accepted as keyword arguments.\n- Extra submitted forms with no pk must be silently ignored: `is_valid()` is True and `save()` creates nothing.\n- Existing objects in the queryset can still be edited.\n- A submitted pk outside the queryset must not cause a new object to be created, and validation still passes.\n3. Settled vs open:\n- The goal of preventing creation is settled by 'disallow new object creation'.\n- The kwarg name `edit_only` is open. The spec never mentions it.\n- Silently ignoring extra forms, rather than raising a validation error, is open.\n- The handling of out-of-queryset pks is open.\n4. Reasonable fixes that fail:\n- A developer could add `can_create=False`, `allow_new=False` or `can_add=False` (cf. existing `can_delete`). All three tests then fail with a TypeError on the unknown kwarg `edit_only`.\n- A developer could keep the factory API but have `is_valid()` reject extra forms with a non-form error. That fails the `assertIs(formset.is_valid(), True)` checks.\nThe tests depend on a new, unspecified parameter name, so a correct fix through the natural factory entry point fails.",
+    "score": 4,
+    "explanation": "The tests require a new keyword argument named exactly `edit_only` on `modelformset_factory` and `inlineformset_factory`, a name the issue never mentions. A correct fix using `can_create=False` or `allow_new=False` would fail. The tests also require extra forms to be silently ignored with `is_valid()` True, so a fix that reports a validation error for attempted creation would fail too.",
+    "overspecification_vector": "modelformset_factory(Author, fields='__all__', edit_only=True); inlineformset_factory(Author, Book, can_delete=False, fields='__all__', edit_only=True); self.assertIs(formset.is_valid(), True) with extra new-object form data"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRCpLULmM7rhiwmJC7y",
+  "input_tokens": 4197,
+  "output_tokens": 1069,
+  "seconds": 11.3
+}

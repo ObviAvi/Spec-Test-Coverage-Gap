@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-14976",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9153,
+  "output": {
+    "reasoning": "The specification identifies premature floating-point division in lambdify(..., 'mpmath') and resulting loss of nsolve precision. Supporting rational inputs beyond 232/3 is reasonably implied. The only graded addition, however, directly constructs MpmathPrinter and requires doprint(Rational(1, 2)) to return exactly 'mpmath.mpf(1)/mpmath.mpf(2)'. Neither repairing this standalone printer nor wrapping both operands with that exact spelling is specified. A reasonable fix could implement precision-preserving rational generation specifically in lambdify's mpmath backend, leaving the standalone printer unchanged. Alternatively, a printer fix could emit 'mpmath.mpf(1)/2', which also avoids native floating-point division but fails the exact-string assertion. The added test_nsolve_rational is not graded and does not affect the score.",
+    "score": 4,
+    "explanation": "The graded test bypasses the reported lambdify entry point and requires a particular intermediate printer output. A correct backend-specific lambdify fix could leave MpmathPrinter unchanged, and even a printer fix using 'mpmath.mpf(1)/2' would fail the required string.",
+    "overspecification_vector": "assert p.doprint(Rational(1, 2)) == 'mpmath.mpf(1)/mpmath.mpf(2)'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2314,
+  "output_tokens": 1332,
+  "seconds": 28.9
+}

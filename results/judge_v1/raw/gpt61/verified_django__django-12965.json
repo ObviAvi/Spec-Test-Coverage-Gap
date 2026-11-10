@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12965",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9770,
+  "output": {
+    "reasoning": "The specification identifies Model.objects.all().delete() generating an unnecessary self-referencing subquery, causing locking failures and a performance regression. It explicitly contrasts the desired single DELETE statement with DELETE ... IN (SELECT ...) and says the SQL should not have changed. The test exercises that same entry point using User as the concrete model. Its requirements are: deletion executes exactly one query, matching the single-statement reproduction, and the generated SQL contains no SELECT, directly checking removal of the unwanted subquery. Using an existing model and capturing its emitted SQL introduce no implementation requirements. There are no materially open choices constrained by the test: retaining an aliased subquery would address locking alone, not the specified performance regression, while reasonable direct-delete implementations satisfy both assertions.",
+    "score": 1,
+    "explanation": "The test directly reproduces the reported operation and checks that it emits one query without SELECT, matching the specification's requested return to a simple DELETE.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2378,
+  "output_tokens": 779,
+  "seconds": 20.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-8872",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8797,
+  "output": {
+    "reasoning": "The specification identifies unwanted promotion when creating a Quantity from np.float16: it becomes float64, unlike other floating types. The added tests construct u.Quantity from arrays [1., 2.] with unit u.yr and require the result dtype to equal the input dtype for float32 and float16. Preserving float32 is settled by both the specification's comparison and the existing test. Preserving float16 is the requested correction; applying it to an array through the public Quantity constructor is a reasonable generalization of the scalar multiplication example. The array values and choice of unit impose no additional behavioral policy. There are no mocks, private APIs, implementation requirements, or arbitrary output choices. A scalar-only fix that leaves the same promotion bug for float16 arrays would leave a closely related input unfixed, so it is not a reasonable counterexample under the stated rules.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should preserve float16 dtype when constructing a Quantity from a float16 array, while retaining the existing float32 preservation behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2155,
+  "output_tokens": 522,
+  "seconds": 14.1
+}

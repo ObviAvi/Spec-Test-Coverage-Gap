@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14089",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7971,
+  "output": {
+    "reasoning": "1. The spec says OrderedSet cannot be passed to reversed(). It names the fix directly: add a __reversed__() method to OrderedSet.\n2. What the test requires:\n   - reversed(OrderedSet([1, 2, 3])) returns an instance of collections.abc.Iterator.\n   - list() of that result equals [3, 2, 1].\n3. Settlement of each requirement:\n   - Reverse order is settled by the spec: \"allowed to be passed as an argument to Python's reversed()\" and \"OrderedSet is ordered\".\n   - The Iterator return type is settled by convention. Python's data model says __reversed__ should return a new iterator object, and the builtin reversed() always yields an iterator.\n4. A fix returning a list or tuple from __reversed__ would fail the Iterator check. That breaks the documented protocol, so it is not a reasonable correct fix. Natural implementations all return iterators and pass:\n   - return reversed(self.dict)\n   - return reversed(list(self.dict))\n   - a generator\n5. Nothing is left open, so the score is 2.",
+    "score": 2,
+    "explanation": "The test checks that reversed(OrderedSet([1,2,3])) yields [3,2,1] as an iterator, which is exactly what the spec asks for plus Python's documented __reversed__ protocol, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRB3c8UqfHrb1WU8372",
+  "input_tokens": 2980,
+  "output_tokens": 743,
+  "seconds": 7.6
+}

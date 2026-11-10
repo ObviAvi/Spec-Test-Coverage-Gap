@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-21379",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9433,
+  "output": {
+    "reasoning": "The specification reports an unexpected PolynomialError from expr.subs({1: 1.0}) for hyperbolic functions with real-symbol Piecewise arguments. The added substitution call is settled by that exact reproduction; renaming the real symbols and using z without real assumptions introduce no meaningful restriction, since the issue explicitly says z need not be real. The tests also require standalone (Piecewise(...)/z) % 1 and sinh(Piecewise(...)*z**-1.0).is_zero to complete without exceptions. They assert no numerical result, Boolean result, message, or implementation name. The standalone modulo requirement is open: the specification does not request direct Mod evaluation to work. A reasonable fix could guard the hyperbolic assumption-evaluation path against unsupported Piecewise polynomial reasoning, returning an unknown assumption rather than propagating PolynomialError. That can resolve substitution for the reported and related expressions, and allow the is_zero query, while leaving direct modulo evaluation unchanged and failing the first added expression. Thus the tests require repairing an additional entry point rather than merely resolving the reported substitution failure.",
+    "score": 4,
+    "explanation": "A reasonable fix could make hyperbolic assumption evaluation conservatively return unknown when Piecewise polynomial reasoning is unsupported, fixing the reported substitutions without changing Mod. The test would still reject that fix because it separately requires direct Piecewise modulo evaluation to succeed.",
+    "overspecification_vector": "(Piecewise((x_r, y_r > x_r), (y_r, True)) / z) % 1"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2296,
+  "output_tokens": 1024,
+  "seconds": 25.2
+}

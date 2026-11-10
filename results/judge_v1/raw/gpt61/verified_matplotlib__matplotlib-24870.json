@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24870",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9307,
+  "output": {
+    "reasoning": "1. The issue identifies contour() producing multiple overlapping lines for boolean data and proposes: \"Autodetect boolean inputs to contour, and default levels to [0.5] in that case.\" 2. The tests require public .levels values of [.5] for contour() on a boolean list, ndarray, and masked ndarray; [0, .5, 1] for contourf() on those inputs; [.5] for tricontour() on flattened boolean lists and arrays with random x/y coordinates; and [0, .5, 1] for tricontourf() on those triangular inputs. There are no mocks or private-method requirements. 3. The contour() level is explicitly settled, and lists and masked arrays are reasonably related representations of boolean input. The other three entry points are open: the specification does not request changes to filled or triangular contour functions, nor define filled-contour levels. 4. A reasonable fix could normalize boolean input and select [.5] in the rectangular, unfilled contour path, covering lists and masked arrays while preserving existing defaults for contourf(), tricontour(), and tricontourf(). That resolves the reported issue but fails the additional-function assertions. 5. Because these assertions require changes through different, unspecified entry points, the score is 4.",
+    "score": 4,
+    "explanation": "A correct fix scoped to contour() could handle boolean arrays, lists, and masked arrays while leaving filled and triangular contour APIs unchanged. The tests would reject it because they additionally require tricontour() to use [.5] and contourf()/tricontourf() to use exactly [0, .5, 1].",
+    "overspecification_vector": "All assertions requiring plt.contourf(...).levels.tolist() == [0, .5, 1], plt.tricontour(...).levels.tolist() == [.5], and plt.tricontourf(...).levels.tolist() == [0, .5, 1]."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2315,
+  "output_tokens": 943,
+  "seconds": 18.7
+}

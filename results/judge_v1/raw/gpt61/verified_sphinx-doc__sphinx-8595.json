@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8595",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8944,
+  "output": {
+    "reasoning": "1. The issue concerns autodoc's handling of a module with `__all__ = []` and an `automodule` directive using `:members:`. The specified result is: \"No entries should be shown because `__all__` is empty.\"\n2. The graded test uses the same inputs through `do_autodoc(app, 'module', 'target.empty_all', {'members': True})`: a module with an empty `__all__` and three documented functions named foo, bar, and baz. It requires generated output containing only the module declaration, the fixture's module docstring, and normal separating blank lines.\n3. Excluding all three functions is directly settled by the expected behavior. Keeping the module declaration and supplied module docstring is ordinary module-documentation behavior: an empty export list suppresses members, not documentation of the module itself. The fixture's module name and docstring determine their corresponding output strings; these are not names or messages the implementation must introduce. The test asserts no internal state, sentinel, or implementation-specific call.\n4. There is no open behavioral choice that a reasonable correct fix would violate. Suppressing the whole module, including its docstring, would go beyond fixing member selection. The full-output assertion verifies the reported reproduction while preserving normal non-member output.",
+    "score": 1,
+    "explanation": "The assertion directly checks the reported behavior: documenting a module with `__all__ = []` and `:members:` produces no function entries while retaining ordinary module documentation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2160,
+  "output_tokens": 1343,
+  "seconds": 29.1
+}

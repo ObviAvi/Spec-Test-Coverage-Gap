@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15037",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8892,
+  "output": {
+    "reasoning": "1. The spec says inspectdb ignores the referenced column when a foreign key points at a non-primary-key unique column. The generated ForeignKey should target that specific column (to_field). It describes the symptom at the inspectdb command level.\n2. The test runs `inspectdb` on the table `inspectdb_foreignkeytofield` and asserts this exact substring: `to_field_fk = models.ForeignKey('InspectdbPeoplemoredata', models.DO_NOTHING, to_field='people_unique_id')`.\n3. Requirements:\n- Emitting a `to_field` kwarg is settled: the spec says the FK should be to foo(other_id), not just foo.\n- The model name, `models.DO_NOTHING` and the kwargs-after-on_delete layout are settled by the existing inspectdb output convention.\n- The `to_field` value is open. The referenced column `people_unique_id` is itself a FK column, so inspectdb would generate the referenced model's field as `people_unique` (a OneToOneField with the `_id` stripped). A to_field value naming that generated field would be `people_unique`. The test requires the raw column name `people_unique_id`, which only works because `_meta.get_field` also accepts attnames.\n4. A reasonable fix could run the referenced column through inspectdb's existing column-name normalization (normalize_col_name), so that to_field matches the field name in the generated referenced model. That fix would emit `to_field='people_unique'` and fail the exact substring assertion. The spec's own example (other_id int, not a FK) doesn't distinguish the two choices.\n5. The test checks observable output but pins one of two reasonable values.",
+    "score": 3,
+    "explanation": "The test requires to_field to be the raw database column name 'people_unique_id'. A correct fix that converts the referenced column to the field name inspectdb would generate for it (stripping '_id' for relation columns, giving 'people_unique') produces valid output but fails the exact-string assertion.",
+    "overspecification_vector": "self.assertIn(\"to_field_fk = models.ForeignKey('InspectdbPeoplemoredata', \" \"models.DO_NOTHING, to_field='people_unique_id')\", out.getvalue())"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRDWtWERrr8C4YVSmrS",
+  "input_tokens": 3374,
+  "output_tokens": 1853,
+  "seconds": 18.2
+}

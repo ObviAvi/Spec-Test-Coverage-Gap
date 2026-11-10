@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13195",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13021,
+  "output": {
+    "reasoning": "1. The spec says HttpResponse.delete_cookie() should preserve the cookie's samesite. The messages app's cookie expiry drops SameSite. It also notes that browsers will reject SameSite=None cookies that lack Secure. The reporter's suggested patch passes samesite, secure and httponly from the session settings.\n2. What the graded tests require:\n(a) delete_cookie accepts a `samesite` kwarg and emits it.\n(b) delete_cookie('c', samesite='none') automatically sets secure=True.\n(c) The messages storage passes samesite=SESSION_COOKIE_SAMESITE when deleting.\n(d) The session middleware passes samesite on deletion. Its Set-Cookie string must exactly equal '...Max-Age=0; Path=/; SameSite=Lax', with no HttpOnly and no Secure.\n3. Status of each:\n(a) Settled by the title; the kwarg name matches set_cookie's existing `samesite` parameter.\n(b) Open. The spec mentions the SameSite=None/Secure problem, but a fix could instead add an explicit `secure` parameter, or leave secure alone. Then delete_cookie('c', samesite='none') would not yield secure=True.\n(c) Largely settled, since the messages case is the reported one.\n(d) Open. The spec never mentions sessions. More importantly, the reporter's own suggested kwargs include httponly=settings.SESSION_COOKIE_HTTPONLY or None, which defaults to True. A fix that also preserves httponly (and secure) on session or messages deletion would emit '; HttpOnly' and fail the exact-string session assertions. A fix that changes only delete_cookie and messages would fail the session tests entirely.\n4. These are observable-behavior choices among several reasonable ones, not internal state.",
+    "score": 3,
+    "explanation": "A reasonable fix might not auto-set secure when samesite='none' (e.g., it adds an explicit secure parameter instead), which fails test_delete_cookie_secure_samesite_none. A fix following the issue's suggested kwargs (also passing httponly/secure) for session deletion would emit extra attributes and fail the exact Set-Cookie string assertions in the session tests.",
+    "overspecification_vector": "response.delete_cookie('c', samesite='none'); self.assertIs(response.cookies['c']['secure'], True); and the exact-string assertions 'Set-Cookie: {}=\"\"; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/; SameSite={}' in sessions_tests test_session_delete_on_end / _with_custom_domain_and_path"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR7eXEBSPUJSqc22YZS",
+  "input_tokens": 5132,
+  "output_tokens": 1673,
+  "seconds": 16.1
+}

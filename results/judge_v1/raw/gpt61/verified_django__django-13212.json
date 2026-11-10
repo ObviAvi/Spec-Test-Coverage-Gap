@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13212",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13294,
+  "output": {
+    "reasoning": "The specification requests that built-in validators supply the provided value in ValidationError so custom messages can use '%(value)s'; it names no particular function or form-field entry point.\n\nMost test requirements reasonably follow that scope. Through CharField, the tests exercise validate_integer, validate_email (including newline-containing inputs), validate_slug, validate_unicode_slug, the IP validators, comma-separated integer validators, RegexValidator, URLValidator, and length validators. IntegerField exercises minimum/maximum value validators and URLValidator with a converted numeric input. DecimalField exercises digit-count constraints, FileField exercises validate_image_file_extension, and CharField exercises null-character rejection. These are related built-in validator failures. Requiring the overridden message to display the supplied value—including the null-containing string and the uploaded file's string representation—is settled by the requested placeholder behavior and ordinary string formatting. The tests otherwise impose no implementation structure, new names, ordering, or mocks.\n\nOne requirement goes beyond that scope: the decimal test's ('NaN', 'invalid') case. DecimalField rejects non-finite values in its own field-level validation before its DecimalValidator runs. Requiring interpolation for that error therefore also requires changing field-level validation, rather than merely making built-in validators provide value.\n\nA reasonable complete fix could add the value parameter to all built-in validators, including DecimalValidator's own non-finite-value error, while leaving DecimalField's separate validation unchanged. That fixes the specified validator behavior but fails the form-level NaN assertion. This is an additional code path, not an arbitrary choice of message text.",
+    "score": 4,
+    "explanation": "A fix covering all built-in validators can still fail the NaN case because DecimalField rejects non-finite input before invoking DecimalValidator. The test additionally requires value interpolation in that separate field-level ValidationError, which the specification does not require.",
+    "overspecification_vector": "test_value_placeholder_with_decimal_field: ('NaN', 'invalid'), combined with forms.DecimalField(..., error_messages={code: '%(value)s'}) and self.assertEqual(form.errors, {'field': [value]}) for value == 'NaN'."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2976,
+  "output_tokens": 4600,
+  "seconds": 82.6
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pylint-dev__pylint-7277",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8998,
+  "output": {
+    "reasoning": "1. Spec: pylint unconditionally removes sys.path[0] at the linked line, which is inside modify_sys_path in pylint/__init__.py. Expected behavior is stated explicitly: only remove the first item if it is \"\", \".\" or os.getcwd().\n2. Test requirements:\n- Call the existing modify_sys_path() (it already appears in the context lines), with os.getcwd patched.\n- [\"\", ...] -> first item removed.\n- [\".\", ...] -> first item removed.\n- [\"/do_not_remove\", ...] -> sys.path unchanged.\n- Existing cases, where cwd is first, still work.\n3. Each requirement is settled by the spec: \"Check if `\\\"\\\"`, `\\\".\\\"` or `os.getcwd()` before removing the first item from sys.path\". The function is the one at the linked line. The patched os.getcwd matches the spec naming os.getcwd(). Path.cwd() and abspath-based comparisons also go through os.getcwd internally, so they behave the same.\n4. No open requirements. Any fix that checks membership in {\"\", \".\", cwd} passes, as does one that normalizes paths before comparing.",
+    "score": 2,
+    "explanation": "The tests check that modify_sys_path() removes a leading \"\" or \".\" (and cwd) but keeps \"/do_not_remove\", which is exactly the check the issue prescribes for the function at the linked line.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRRchLoj66R4vxqhUep",
+  "input_tokens": 3299,
+  "output_tokens": 2020,
+  "seconds": 19.5
+}

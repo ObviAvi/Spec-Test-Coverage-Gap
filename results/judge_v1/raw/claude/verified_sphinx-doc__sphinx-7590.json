@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7590",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10973,
+  "output": {
+    "reasoning": "1. The spec says the Sphinx C++ domain parser rejects user-defined literals such as `6.62607015e-34q_J` and asks for UDL support. It describes a parse-failure symptom only. It says nothing about how a UDL should be rendered or what its symbol ID should be.\n\n2. What the tests require:\n- `exprCheck` must accept integer, float, hex-float, character and string literals with a ud-suffix (e.g. `_udl`, `uludl`, `fudl`, `q_J`).\n- The parsed expression must round-trip to the same text.\n- Each expression must produce one exact mangled ID, e.g. `clL_Zli4_udlEL5EE` and `clL_Zli4_udlE c97 E`. This encodes the UDL as a call (`cl`) to the literal operator `L_Z li<len><suffix> E` with the inner literal as its argument.\n- For char literals the inner literal uses the existing char encoding (e.g. `c97`); for strings it uses `LA3_KcE`.\n\n3. Settled vs open:\n- Parsing UDLs: settled by the spec (\"add those\").\n- Treating `5uludl` as integer `5` with suffix `uludl`, and `5.fudl` likewise: settled by the C++ grammar, since a ud-suffix follows a literal that has no built-in suffix.\n- Text round-trip: settled by convention.\n- The exact ID encoding: open. It does follow the Itanium ABI convention of mangling a UDL as a call to `operator\"\"suffix`. However, Sphinx IDs are already loosely Itanium-like, and the spec gives no guidance.\n\n4. A competent developer could add a UDL AST node whose `get_id` returns something simpler, such as the literal's ID with the suffix appended (`L5_udlE`) or `li4_udl` followed by the literal. That fix parses and renders every case correctly, resolves the reported warning, yet fails every UDL `exprCheck` because of the ID mismatch. The ID is observable output (anchor/target names), not private internals, so this is mild overspecification rather than an implementation check.",
+    "score": 3,
+    "explanation": "The tests assert an exact ID mangling for UDLs: a call expression to the literal operator, e.g. `clL_Zli4_udlEL5EE` and `clL_Zli3q_JEL6.62607015e-34EE`. A fix that parses and renders UDLs correctly but builds the ID differently (e.g. appending the suffix to the literal's ID) fails every UDL check.",
+    "overspecification_vector": "exprCheck(i + '_udl', 'clL_Zli4_udlEL' + i + 'EE'); exprCheck(f + 'fudl', 'clL_Zli4fudlEL' + f + 'EE'); exprCheck(\"{}'{}'_udl\".format(p, c), 'clL_Zli4_udlE' + t + val + 'E'); exprCheck('\"abc\"_udl', 'clL_Zli4_udlELA3_KcEE'); exprCheck('6.62607015e-34q_J', 'clL_Zli3q_JEL6.62607015e-34EE')"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRVdyMNan5APyydfq7j",
+  "input_tokens": 4684,
+  "output_tokens": 2173,
+  "seconds": 21.2
+}

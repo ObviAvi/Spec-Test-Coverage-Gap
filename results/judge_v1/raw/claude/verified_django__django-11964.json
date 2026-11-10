@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11964",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9939,
+  "output": {
+    "reasoning": "1. The spec says that for a model field using TextChoices or IntegerChoices, the value on a freshly created instance is the enum member. Calling str() on it gives 'MyChoice.FIRST_CHOICE' instead of 'first'. It points at the cause directly: \"when invoking __str__(...) we don't actually get the value property of the enum value\". The title covers both TextChoices and IntegerChoices.\n2. test_str requires str(member) == str(member.value) for every member of Gender, Suit, YearInSchool and Vehicle. These are existing TextChoices and IntegerChoices enums in the test module. test_textchoices is listed as graded but no changes to it appear in the patch, so it is existing behaviour that a __str__ fix should satisfy.\n3. Requirement: str() of a Choices member returns str(value). This is settled by the spec's __str__ remark and the expected 'first' output. Requirement: it applies to IntegerChoices as well. This is settled by the title, \"TextChoices/IntegerChoices\".\n4. One possible alternative is to coerce enum members to raw values in the model field descriptor, leaving enum __str__ alone. That ignores the spec's explicit diagnosis of __str__ and leaves the enum inconsistent elsewhere, so it is not the natural reading. A fix that only touches TextChoices ignores the IntegerChoices part of the spec. Any fix that overrides __str__ on Choices, or on both TextChoices and IntegerChoices, passes. No arbitrary value or name is pinned.",
+    "score": 2,
+    "explanation": "The graded assertion str(test[member.name]) == str(member.value) is exactly the spec's complaint that __str__ does not return the enum's value, applied across the TextChoices and IntegerChoices enums the issue names.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR4Rqeouvh37Z7R8rd2",
+  "input_tokens": 3700,
+  "output_tokens": 1788,
+  "seconds": 18.8
+}

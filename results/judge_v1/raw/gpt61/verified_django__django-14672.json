@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14672",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 32297,
+  "output": {
+    "reasoning": "1. The specification identifies unhashable list-valued through_fields in ManyToManyRel.identity and explicitly requests a missing make_hashable call on self.through_fields.\n2. The added tests require: Child.check() to return the existing models.E006 field-clash diagnostic despite a list-valued through_fields relation; inherited reverse relations to have equal hashes; and both reverse relations' through_fields attributes to equal the literal list ['event', 'invitee'].\n3. Settled: accepting list-valued through_fields and making the relation hashable directly follow from the issue. Convention: preserving model-check diagnostics and equal hashes for equivalent inherited relations are reasonable regression requirements. Open: preserving through_fields specifically as a list in stored relation metadata. The specification permits list input but does not require retaining its original representation.\n4. A reasonable alternative is to normalize self.through_fields with make_hashable during ManyToManyRel initialization, rather than only when building identity. This accepts the reported input and fixes hashing for proxy and inherited relations, but stores ('event', 'invitee'). It therefore fails both list-equality assertions. Those assertions constrain internal representation beyond the requested behavior.",
+    "score": 4,
+    "explanation": "A correct fix could normalize self.through_fields to a hashable tuple during initialization. The tests reject that fix because they inspect relation metadata and require through_fields to remain a list, although the specification only requires list input to work and relation hashing to succeed.",
+    "overspecification_vector": "self.assertEqual(reverse_m2m.through_fields, ['event', 'invitee'])\nself.assertEqual(inherited_reverse_m2m.through_fields, ['event', 'invitee'])"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 7607,
+  "output_tokens": 1112,
+  "seconds": 25.6
+}

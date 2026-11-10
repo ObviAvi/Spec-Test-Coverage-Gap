@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-6599",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11867,
+  "output": {
+    "reasoning": "1. The spec says `xr.polyval` with a timedelta64 coordinate gives wrong results on main. It names the entry point and says the expected behavior is to match v2022.3.0. The correct output shown confirms that timedeltas were treated as float nanoseconds: 4447392.16 + 5.84e-6 * 1e10 ≈ 4505788, close to the shown 4505537.\n\n2. What the test requires:\n   - It calls `xr.polyval` with a timedelta64[ns] DataArray `[1000, 2000, 3000]` and coefficients `[0, 1]` for degrees 0 and 1.\n   - It expects `[1000.0, 2000.0, 3000.0]` along dim x.\n\n3. Whether each requirement is settled:\n   - Entry point `polyval`: settled, since the spec names it.\n   - Converting timedelta to float nanoseconds with no offset: settled by \"Both the stable and latest `polyval` functions should return the same results.\" The stable behavior used ns units and no offset for timedeltas, as the shown values confirm.\n   - The output is a float array matching the old numeric conversion. A fix using another unit (e.g. seconds) would contradict the stable results shown in the issue, so it is not a correct fix. Subtracting the minimum would also deviate from stable behavior.\n   - The test does not check dimension order or coordinates.\n\n4. Every reasonable correct fix converts timedelta to numeric ns and evaluates the polynomial, so it passes.",
+    "score": 2,
+    "explanation": "The test checks that `polyval` on a timedelta64[ns] input treats the values as float nanoseconds, giving [1000., 2000., 3000.]. That is exactly the stable-version behavior the issue asks to restore, as shown by its correct output.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRPwpUfcp616EdcNjNG",
+  "input_tokens": 4831,
+  "output_tokens": 1312,
+  "seconds": 13.4
+}

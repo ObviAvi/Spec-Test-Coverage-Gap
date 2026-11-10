@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-25775",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10861,
+  "output": {
+    "reasoning": "1. The specification requests per-Text get_antialiased/set_antialiased methods, corresponding Annotation support if needed, and use of the per-object setting during drawing. 2. The tests require Text and Annotation to accept antialiased=True/False, expose working getters/setters, default to rcParams['text.antialiased'], and render explicit settings equivalently to matching global defaults in PNG/PDF. They also require an attribute named _antialiased containing the Boolean state, including immediately after construction and setter calls. 3. The public methods and rendering behavior are settled by 'Add similar getters/setters on Text objects ... and use that info in the drawing stage.' Annotation support, constructor keyword support, and retaining the rcParams default are reasonable extensions of the requested artist-property behavior. The private backing-field name and representation are not specified. 4. A reasonable implementation could store the state in _text_antialiased, return it through get_antialiased(), update it through set_antialiased(), and forward it to the graphics context when drawing. That would implement the requested behavior but fail the direct _antialiased assertions. 5. These graded assertions constrain internal implementation, warranting score 4.",
+    "score": 4,
+    "explanation": "The tests require the new property to be stored specifically in the private attribute _antialiased. A correct implementation using another backing field would support the requested public API and rendering behavior but fail these assertions.",
+    "overspecification_vector": "Direct private-state assertions: assert txt._antialiased == mpl.rcParams['text.antialiased']; assert txt._antialiased is True; assert txt._antialiased is False; assert txt2._antialiased is True; assert txt2.get_antialiased() == txt2._antialiased; assert txt3._antialiased is False; assert txt3.get_antialiased() == txt3._antialiased; assert annot._antialiased is True; assert annot.get_antialiased() == annot._antialiased; assert annot2._antialiased is False; assert annot2.get_antialiased() == annot2._antialiased; assert annot3._antialiased is True; assert annot4._antialiased == mpl.rcParams['text.antialiased']."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2674,
+  "output_tokens": 739,
+  "seconds": 13.7
+}

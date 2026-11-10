@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-13398",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20193,
+  "output": {
+    "reasoning": "1. Settled: the issue requests direct ITRS↔AltAz and ITRS↔HADec transformations that stay within ITRS, treat positions as time invariant, and adopt the destination obstime. Its example interprets ITRS Cartesian coordinates as geocentric: it subtracts the observing location before rotation and adds it on the inverse transformation.\n\n2. The graded tests require more. The two refraction tests construct `ITRS(location=loc)`, transform distant ICRS sources through that frame, and require agreement with the existing observed-coordinate route to 0.1 mas and 10 cm, including pressure=1000 hPa, relative_humidity=0.5, inverse refraction, and Cartesian round trips. Numerical agreement and round trips are conventional expectations for supported transformations, but observer-relative ITRS frame semantics are not specified. Refraction is explicitly unresolved: 'I have yet to add refraction, but I can do so if it is deemed important.' There are no mocks or required implementation helpers.\n\n3. The overhead test requires a different ITRS representation contract from the supplied example: an already observer-subtracted vector is placed in `ITRS(..., location=home)` and must produce altitude 90°, hour angle zero, and declination 52°, within 1 microarcsecond. Those geometric results are conventional once that representation is supported, but requiring the ITRS location attribute and its observer-relative semantics is open. A reasonable implementation of the supplied geocentric subtract/rotate/add approach need not introduce this API and would not pass this test.\n\n4. `test_cirs_itrs_topo` additionally requires topocentric CIRS↔ITRS round trips and their different-obstime behavior. The context establishes existing geocentric CIRS↔ITRS tests, not a requirement to extend this frame pair to topocentric ITRS. A fix confined to the requested direct observed-frame transformations can leave that extension unimplemented. The strongest gap is therefore the additional ITRS representation/API and supporting transformation scope, rather than an arbitrary numerical tolerance.",
+    "score": 4,
+    "explanation": "A reasonable fix implementing the supplied geocentric subtract/rotate/add transformations can resolve the requested direct conversions without introducing observer-relative `ITRS(..., location=...)` semantics or extending CIRS↔ITRS transformations. The tests depend on those additional capabilities, so such a fix would fail despite addressing the specification.",
+    "overspecification_vector": "itrs_frame = ITRS(location=loc)\ncirs2 = cirs.transform_to(ITRS(location=loc)).transform_to(cirs)\ncirs6_2 = cirs6.transform_to(ITRS(location=loc)).transform_to(cirs)  # different obstime\nitrs_topo = ITRS(itrs_repr, obstime=t, location=home)\naa = itrs_topo.transform_to(AltAz(obstime=t, location=home))\nassert_allclose(aa.alt, 90*u.deg, atol=1*u.uas, rtol=0)\nhd = itrs_topo.transform_to(HADec(obstime=t, location=home))\nassert_allclose(hd.ha, 0*u.hourangle, atol=1*u.uas, rtol=0)\nassert_allclose(hd.dec, 52*u.deg, atol=1*u.uas, rtol=0)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5457,
+  "output_tokens": 2729,
+  "seconds": 56.6
+}

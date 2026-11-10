@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pylint-dev__pylint-4970",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8268,
+  "output": {
+    "reasoning": "1. The spec says that setting `min-similarity-lines` to 0 in the pylint rcfile should disable the duplicate-code check (R0801) instead of flagging every line. It describes pylint's checker behavior through rcfile configuration. It does not mention the standalone `symilar` tool, `similar.Run`, or the `--duplicates` CLI flag.\n\n2. What the test requires:\n- It calls `similar.Run([\"--duplicates=0\", SIMILAR1, SIMILAR2])`, the standalone symilar command-line entry point.\n- It expects SystemExit with code 0.\n- It expects stdout to be exactly empty.\n\n3. Status of each requirement:\n- Disabling at 0: settled by the spec (\"Setting `min-similarity-lines` to `0` should disable the duplicate code check\").\n- Use of the standalone `similar.Run` / `--duplicates` path: open. The spec implicates the pylint checker driven by the rcfile option.\n- Exit code 0: plausible by existing behavior.\n- Completely empty stdout: open. The standalone tool's `run()` normally always prints a `TOTAL lines=... duplicates=... percent=...` summary.\n\n4. Reasonable fixes that fail:\n- (a) A fix in `SimilarChecker`, such as skipping in `process_module`/`close` when `min_lines == 0`, fully resolves the pylint rcfile case. The standalone symilar run is untouched and still reports every line as duplicate, so the test fails.\n- (b) A fix in `Similar._compute_sims`/`_iter_sims` returning no similarities when `min_lines == 0` fixes both pylint and symilar. Symilar would still print the TOTAL summary line (duplicates=0), so `output.getvalue() == \"\"` fails.\n\nOnly a fix that short-circuits `Similar.run()` before display passes. The test exercises a different entry point than the spec describes and pins an unspecified output choice.",
+    "score": 4,
+    "explanation": "A correct fix that disables R0801 in pylint's SimilarChecker when min-similarity-lines is 0 fails, because the test drives the standalone `similar.Run` CLI, which the spec never mentions. A fix that makes similarity computation return nothing at 0 also fails, because symilar still prints its TOTAL summary line and the test requires completely empty stdout.",
+    "overspecification_vector": "similar.Run([\"--duplicates=0\", SIMILAR1, SIMILAR2]); assert output.getvalue() == \"\""
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRQwqFBNEdS1RPFdTER",
+  "input_tokens": 3065,
+  "output_tokens": 2025,
+  "seconds": 20.3
+}

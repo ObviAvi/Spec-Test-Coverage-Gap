@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14011",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15614,
+  "output": {
+    "reasoning": "The specification requires database connections to be closed when LiveServerTestCase request threads finish, preventing the destroy_test_db() race. It does not prescribe a constructor parameter or cleanup helper. The graded tests cover existing live-server behavior: URL/port handling, database access and fixtures, subviews, HTTP handling, and static/media serving. Preserving these is an existing-behavior requirement. However, the patch also changes LiveServerThread._create_server() to unconditionally pass connections_override=connections_override to self.server_class(). Consequently, the graded tests' ordinary server startup requires support for an unspecified constructor keyword. A reasonable fix could close connections in a process_request_thread() finally block and ensure workers finish during shutdown, retaining the existing constructor; it would fail startup under this patch despite resolving the reported problem. The newly added test_closes_connections is not listed as graded, so its _close_connections hook, event, and timeout are not independent grounds for this score.",
+    "score": 4,
+    "explanation": "The patch makes ordinary graded live-server tests depend on a new connections_override constructor keyword. A correct per-worker connection-cleanup fix that leaves the server constructor unchanged can fail during server startup, before its cleanup behavior is exercised.",
+    "overspecification_vector": "django/test/testcases.py: the added `connections_override=connections_override,` argument to `self.server_class(...)` in `LiveServerThread._create_server(self, connections_override=None)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3505,
+  "output_tokens": 2242,
+  "seconds": 47.9
+}

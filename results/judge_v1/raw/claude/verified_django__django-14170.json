@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14170",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10842,
+  "output": {
+    "reasoning": "1. Spec: the YearLookup BETWEEN optimization is also applied to __iso_year, so filtering by iso_year returns the wrong rows. The entry point is the __iso_year lookup used in filter().\n\n2. What the tests require:\n- filter(start_datetime__iso_year=2015) returns the objects whose ISO year is 2015.\n- iso_year__gt=2014 returns the ISO-2015 objects.\n- iso_year__lte=2014 returns the ISO-2014 object.\n- Results are ordered by start_datetime.\n\n3. Settlement:\n- Exact lookup: settled. The spec says \"This results in the wrong data being returned by filters using iso_year\" and shows start_date__iso_year=2020.\n- gt and lte lookups: these are closely related inputs of the same bug. YearLookup subclasses (YearGt, YearLte, etc.) are all registered on ExtractIsoYear, so a correct fix must disable the optimization for all of them. A fix that only handled exact would leave the same bug in closely related inputs and would not count.\n- The values asserted are true ISO-year semantics, the only correct answer.\n\n4. Alternative fixes all pass:\n- Unregistering the lookups from ExtractIsoYear.\n- Checking lookup_name in YearLookup.as_sql.\n- Implementing ISO-aware bounds.\nAny of these yields the correct rows. No open requirement remains.",
+    "score": 2,
+    "explanation": "The tests assert that filtering via __iso_year (exact, gt, lte) returns rows matching true ISO-year semantics, which is exactly the spec's complaint that iso_year filters return wrong data. The related comparison lookups are the same YearLookup bug and must be fixed by any correct fix.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRBH6EwRoCbJnz81xvE",
+  "input_tokens": 4271,
+  "output_tokens": 622,
+  "seconds": 6.6
+}

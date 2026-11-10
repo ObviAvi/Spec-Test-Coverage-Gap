@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16256",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15372,
+  "output": {
+    "reasoning": "1. The specification identifies three broken public entry points—acreate(), aget_or_create(), and aupdate_or_create()—on related managers, explaining that they incorrectly use QuerySet behavior rather than the corresponding related-manager behavior. It proposes async wrappers around the existing synchronous methods.\n2. The tests require these operations to preserve many-to-many membership, populate a reverse foreign-key relationship, and maintain generic relations. They check returned objects, Boolean created flags, related-object counts, and ordinary field values. They also exercise defaults when updating, defaults being ignored when get_or_create finds an object, and through_defaults being accepted without affecting an existing object. There are no mocks, private APIs, required implementation names, or exact error messages.\n3. Settled by the specification: the three async method names and their related-manager semantics. Settled by existing API conventions: create establishes the relationship; get_or_create returns an existing object unchanged or creates one; update_or_create applies defaults; both return the usual (object, created) pair. The displayed synchronous many-to-many signature explicitly includes through_defaults, and the generic-relation context shows existing synchronous equivalents. Fixture fields, IDs, tag strings, and counts merely make those semantics observable rather than prescribe arbitrary implementation choices.\n4. Generic related managers extend beyond the illustrated descriptor implementations, but they are still related managers with the same reported defect. Omitting them would leave the same bug on a closely related input, not constitute a reasonable complete fix. No tested requirement remains open in a way that admits a reasonable correct alternative which would fail.",
+    "score": 2,
+    "explanation": "Every reasonable complete fix preserves the synchronous related-manager semantics, including the tested relationship membership, created flags, and defaults behavior across ordinary and generic related managers.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3712,
+  "output_tokens": 1201,
+  "seconds": 29.2
+}

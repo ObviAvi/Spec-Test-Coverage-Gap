@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16136",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10691,
+  "output": {
+    "reasoning": "1. The specification reports that GET requests to a View with only an async post() handler crash through Demo.as_view(), because HttpResponseNotAllowed is awaited. Correct behavior is a method-not-allowed response without the await error, including for related unsupported methods.\n2. The added graded test instantiates SyncView and AsyncView, directly calls http_method_not_allowed(RequestFactory().post('/')), requires asyncio.iscoroutine(response) to be False and True respectively, runs the async result with asyncio.run(), and requires an HttpResponseNotAllowed instance. The unsupported-method response is conventional and consistent with the reported exception; preserving synchronous views is a reasonable regression requirement. Testing another HTTP method is also reasonable. However, requiring the directly called helper to return a coroutine for async views is open: the specification does not prescribe where asynchronous adaptation must occur.\n3. A reasonable fix could adapt synchronous fallback responses in dispatch() or the as_view() callable for async views, while leaving http_method_not_allowed() synchronous. That fixes unsupported requests through the reported entry point but fails the direct helper coroutine assertion. This tests implementation placement rather than whether requests work. The body of test_mixed_views_raise_error is not provided, so no additional requirements can be inferred from its name.",
+    "score": 4,
+    "explanation": "A correct fix could wrap synchronous fallback responses at dispatch() or as_view(), leaving http_method_not_allowed() synchronous. It would resolve the reported crash but fail the test's requirement that calling the helper directly on AsyncView returns a coroutine.",
+    "overspecification_vector": "response = instance.http_method_not_allowed(request_factory.post(\"/\")); self.assertIs(asyncio.iscoroutine(response), is_coroutine), specifically the (AsyncView, True) case."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2508,
+  "output_tokens": 815,
+  "seconds": 19.5
+}

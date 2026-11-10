@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15499",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8365,
+  "output": {
+    "reasoning": "1. The spec asks that during migration optimization, CreateModel followed by AlterModelManagers be reduced to a single CreateModel that carries the managers, analogous to the existing handling of AlterModelOptions.\n\n2. What the test requires:\n- The optimizer turns [CreateModel(Foo, fields=[]), AlterModelManagers(Foo, managers=[objects, things])] into a single CreateModel(Foo, fields=[], managers=[...]).\n- assertOptimizesTo compares deconstructed/serialized operations, so the managers list must match, including its order.\n- The other CreateModel kwargs are left at their defaults.\n\n3. Each requirement against the spec:\n- The reduction itself is settled by the spec: \"CreateModel + AlterModelManagers can become just CreateModel.\"\n- Replacing the managers with the AlterModelManagers value is settled by AlterModelManagers semantics: it replaces the full manager list. Since the original CreateModel had no managers, any reasonable approach (replace or merge) yields the same list, in the same order.\n- Options, bases, and fields are unchanged, so there is nothing open there.\n\n4. No reasonable fix produces a different result for this input.",
+    "score": 1,
+    "explanation": "The test directly checks the reduction the spec describes, CreateModel + AlterModelManagers becoming a single CreateModel with those managers, which every correct implementation produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRFNNqmTtT7kr3E5dFt",
+  "input_tokens": 3024,
+  "output_tokens": 503,
+  "seconds": 5.8
+}

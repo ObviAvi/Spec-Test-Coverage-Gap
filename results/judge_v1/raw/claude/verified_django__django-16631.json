@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16631",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9429,
+  "output": {
+    "reasoning": "1. The spec says session auth hashes ignore SECRET_KEY_FALLBACKS, so rotating the key logs everyone out. It points at get_session_auth_hash and salted_hmac and describes the symptom: users should stay logged in when the old key is a fallback.\n\n2. What the graded test requires:\n(a) After rotating with the old key in fallbacks, get_user(request) returns the user. This is settled by the spec, which says sessions should survive rotation.\n(b) While the fallback is active, request.session.session_key must differ from its previous value. The fix must therefore cycle the session key when a fallback hash matches. This is open; the spec says nothing about rotating session keys.\n(c) After the fallback is removed, get_user still returns the user. The fix must therefore have rewritten the stored session hash with the current secret during the fallback check. This is also open. The docs quoted in the spec say to remove fallbacks \"when you are ready to expire the sessions ... that make use of them\". Under that reading, sessions still hashed with the old key would legitimately be logged out once the fallback is removed.\n\n3. Reasonable fixes that fail:\n- A fix that only makes get_user (or the hash verification) also accept hashes from fallback secrets passes (a). It fails (b) because no key is cycled, and it fails (c) because the stored hash still uses the old secret.\n- A fix that accepts fallback hashes and updates session[HASH_SESSION_KEY], but does not call cycle_key, fails (b).\n\nBoth are plausible correct resolutions of the reported issue. The test asserts observable session behavior, but it pins a specific design (upgrade the hash and cycle the key) that the spec never mentions.",
+    "score": 3,
+    "explanation": "A fix that simply verifies the session hash against SECRET_KEY_FALLBACKS keeps users logged in but fails two assertions. It fails the check that the session key changes (the reference fix calls cycle_key), and it fails the check that the user stays logged in after the fallback is removed (the reference fix rewrites the stored hash with the current secret). Neither behavior is requested in the spec.",
+    "overspecification_vector": "self.assertNotEqual(request.session.session_key, prev_session_key); the second block `with override_settings(SECRET_KEY=\"newsecret\"): user = get_user(request); self.assertIsInstance(user, User)` requiring the session hash to have been updated"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRJNPS1JXdicYW3qsoB",
+  "input_tokens": 3474,
+  "output_tokens": 1223,
+  "seconds": 12.8
+}

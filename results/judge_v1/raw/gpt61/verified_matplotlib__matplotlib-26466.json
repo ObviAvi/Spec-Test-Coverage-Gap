@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-26466",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9745,
+  "output": {
+    "reasoning": "1. The specification identifies aliasing of the array supplied as annotate's xy argument: “changing the array after calling the function changes the arrow position.” Preserving the original annotation position after that mutation is settled.\n2. The graded test compares two rendered figures using check_figures_equal(extensions=[\"png\"]). Both contain a line from (0, 0) to (2, 2) and text offset by (10, 0). The reference passes an array [.5, .5] as annotate's xy with artist coordinates, then overwrites it with 2. The test figure instead passes [.5, .5] to OffsetFrom, uses that object as textcoords, and overwrites its array with 1.\n3. Preserving annotate's xy under mutation is specified; using artist coordinates and omitting arrows reasonably generalizes the same input-ownership bug. The plotting setup, offsets, and PNG comparison are ordinary ways to observe positioning. However, requiring OffsetFrom to snapshot its own coordinate argument is open: the specification never mentions that class or its input ownership.\n4. A reasonable fix could copy or convert xy to an immutable coordinate pair when constructing an annotation, across coordinate systems and with or without arrows. That resolves the reported bug and related annotate inputs without changing OffsetFrom. The reference would then remain anchored at the line's center, while the test figure's OffsetFrom would move to the endpoint, failing image equality.\n5. This additional requirement exercises a separate, unspecified constructor and therefore warrants score 4.",
+    "score": 4,
+    "explanation": "A correct fix that snapshots annotate's xy argument can still fail because the test additionally requires OffsetFrom to snapshot its separate coordinate argument. Leaving OffsetFrom unchanged makes the two rendered figures differ even though the reported annotation bug is fixed.",
+    "overspecification_vector": "textcoords=OffsetFrom(l, of_xy), followed by of_xy[:] = 1, under @check_figures_equal(extensions=[\"png\"]). These require mutation isolation for OffsetFrom's coordinate input, not just annotate's xy input."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2417,
+  "output_tokens": 962,
+  "seconds": 23.7
+}

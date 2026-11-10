@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-22714",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9280,
+  "output": {
+    "reasoning": "1. Spec: with evaluate(False), constructing Point2D(1,2) raises 'Imaginary coordinates are not permitted.' The traceback shows the error is raised in Point.__new__ (point.py line 153), reached through Point2D.__new__. Under global evaluate(False), the im(a) check is left unevaluated and treated as truthy.\n2. The graded test requires that `with evaluate(False): Point(1, 2)` raises no error. It asserts no particular value.\n3. Point(1, 2) is the same constructor the traceback names. Only the input differs: plain Point with Python ints rather than a sympified Point2D string. A fix that resolves the reported case must fix the imaginary-coordinate check in Point.__new__ under evaluate(False), which also fixes this test. That makes it a closely related input on the same code path.\n4. The only fix that would fail is one that patches Point2D or the sympify path alone and leaves Point.__new__ broken. That patches the literal example and leaves the same bug in closely related inputs, so it does not count as a reasonable fix.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes, because the test only checks that Point(1, 2) under evaluate(False) no longer raises, and the spec's traceback places the failing check in Point.__new__.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRejFrLJwpuRH3ku6tP",
+  "input_tokens": 3590,
+  "output_tokens": 811,
+  "seconds": 8.6
+}

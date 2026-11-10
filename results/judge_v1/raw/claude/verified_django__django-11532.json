@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11532",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10844,
+  "output": {
+    "reasoning": "1. The spec says that when DNS_NAME (the hostname) is non-ASCII and the email encoding is iso-8859-1, building the Message-ID crashes. It prescribes the fix: convert the domain name to punycode in django.core.mail.utils or django.core.mail.message. Its example test asserts 'xn--p8s937b' in message['Message-ID'].\n2. What the test requires:\n- It patches socket.getfqdn to return '漢字'. Settled by existing code: CachedDnsName already calls socket.getfqdn.\n- It deletes DNS_NAME._fqdn to clear the cache. Settled by existing code: CachedDnsName already caches in _fqdn, and the test's import of DNS_NAME from django.core.mail uses an existing export.\n- It builds an EmailMessage with encoding iso-8859-1 and calls message(). Settled: this is the spec's reproduction.\n- It asserts '@xn--p8s937b>' is in Message-ID. Settled: the spec asks for punycode and uses the same expected value. Any IDNA/punycode conversion of '漢字' gives 'xn--p8s937b', and make_msgid wraps it as '@domain>'.\n3. Placement of the conversion: punycoding inside CachedDnsName.get_fqdn or at the make_msgid call site in message.py both pass. The mock sits upstream of both points and the cache is cleared first.\n4. The only theoretical failure is a fix that rewrites CachedDnsName's caching to use a different attribute; delattr would then raise. Nothing in the issue motivates that, so it is not a reasonable variant. Encoding the header in some other way, such as RFC2047, would ignore the spec's explicit punycode instruction.\n5. Score 2: it closely matches the spec's example and relies only on existing internals.",
+    "score": 2,
+    "explanation": "The graded assertion that Message-ID contains '@xn--p8s937b>' is exactly the punycode conversion the spec prescribes, using the spec's own example. It passes whether the conversion happens in utils.CachedDnsName or in message.py.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR3KKTvkr3scuc4EdHo",
+  "input_tokens": 4187,
+  "output_tokens": 1771,
+  "seconds": 18.4
+}

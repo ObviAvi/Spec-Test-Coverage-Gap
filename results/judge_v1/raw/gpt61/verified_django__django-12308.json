@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12308",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8689,
+  "output": {
+    "reasoning": "The specification identifies readonly JSONField rendering and explicitly names django.contrib.admin.utils.display_for_field and JSONField.prepare_value, so testing that function is settled. The graded test passes a nested dictionary, a list, a string, and a dictionary with a tuple key, requiring exact string results. Rendering the first three as JSON, including quoting a scalar string, is specified or reasonably inferred; their formatting also matches ordinary JSON preparation. The tuple-key case adds an open requirement: an unserializable Python dictionary must fall back to exactly its Python repr. The specification mentions handling InvalidJSONInput, but that does not settle the treatment of a native dictionary containing an invalid JSON key, much less require this exact fallback. A reasonable fix could use prepare_value for valid values, preserve InvalidJSONInput, and show an explicit invalid-JSON diagnostic for other unserializable objects. That would resolve the reported problem but fail this assertion. This is an observable-output restriction, not an implementation restriction. The added null assertion is outside the graded test, and no added assertions for test_label_for_field are shown.",
+    "score": 3,
+    "explanation": "The test requires an unserializable tuple-key dictionary to display exactly as its Python repr. A reasonable fix could correctly prepare valid JSON and preserve InvalidJSONInput while displaying an invalid-JSON diagnostic for this separate invalid-object case, but the test would reject it.",
+    "overspecification_vector": "({('a', 'b'): 'c'}, \"{('a', 'b'): 'c'}\"),  # Invalid JSON."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1979,
+  "output_tokens": 2087,
+  "seconds": 45.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14053",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10976,
+  "output": {
+    "reasoning": "1. The specification identifies the public entry point and failure: \"export_text returns IndexError when there is single feature,\" illustrated with a fitted tree and a one-element feature_names list.\n2. The added tests fit DecisionTreeRegressor(max_depth=2, random_state=0) on six one-feature samples and the existing multi-output target y_mo. They call export_text with decimals=1 and feature_names=['first'], both with default options and show_weights=True. Both calls must return the expected split at 0.0, named 'first', with two-component leaf values [-1.0, -1.0] and [1.0, 1.0] in the normal text-tree layout. There are no mocks, private calls, or required implementation details.\n3. Supporting one feature and its supplied name is settled by the reported failure and reproduction. Using a regressor and multi-output targets is a closely related input to the same export function; the surrounding existing assertions establish regression export support. The numerical output follows the fitted tree and decimals=1. Preserving the text format and regression behavior under show_weights=True is an existing-behavior constraint, supported by the adjacent exact-output assertions with and without that option.\n4. Although the issue does not spell out the output string, no reasonable fix to this indexing failure needs to change the established formatting, fitted-tree values, or regression semantics. A classifier-only workaround leaving the same single-feature failure in regression would not be a complete fix for closely related inputs. The tests introduce no open choice that a reasonable correct fix would violate.\n5. The tests therefore reasonably generalize the reproduction rather than overspecify the repair.",
+    "score": 2,
+    "explanation": "Every reasonable complete fix should make single-feature export_text work for the related regression case while preserving its established output, including the supplied feature name and behavior with show_weights=True.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2659,
+  "output_tokens": 831,
+  "seconds": 20.6
+}

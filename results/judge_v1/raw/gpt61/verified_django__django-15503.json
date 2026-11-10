@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15503",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10351,
+  "output": {
+    "reasoning": "1. The specification identifies incorrect numeric-key handling in the public JSONField lookups: “has_key, has_keys, and has_any_keys,” with a reproduction querying the string key '1111'.\n2. The added test creates a JSON value using the existing NullableJSONModel fixture, builds Q expressions, and filters through the ORM. It requires all three named lookups to find numeric string keys at the root, inside a nested object, and inside an object reached through array index 0. It also checks mixed numeric/nonnumeric key lists, the leading-zero key '000', and has_any_keys lists containing a nonexistent alternative. Each query must return exactly the created object. There are no mocks, required new names, internal-method calls, or implementation assertions. No additional changed assertions for the separately listed test_has_keys are supplied.\n3. The three lookup names and numeric-key matching are explicitly settled by the issue title and reproduction. Nesting, mixed key lists, and array traversal are conventional applications of those same ORM lookups. JSON object keys are strings, so '000' must remain that exact object key; treating it as an integer would leave the reported class of bug unresolved. Returning the matching object, requiring all keys for has_keys, and accepting either key for has_any_keys follow the lookup semantics.\n4. These related inputs add coverage but do not select among reasonable implementations. No reasonable complete fix would intentionally leave numeric object keys broken after nesting, confuse the final key with an array index, or normalize away leading zeros.",
+    "score": 2,
+    "explanation": "Every reasonable complete fix should make the three named lookups find numeric string keys, including nested keys, keys reached through arrays, and leading-zero keys; the tests extend the reproduction without imposing an arbitrary implementation choice.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2487,
+  "output_tokens": 764,
+  "seconds": 20.5
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-10097",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 42935,
+  "output": {
+    "reasoning": "The specification names URLValidator and requires rejecting unencoded ':', '@', and '/' within username/password fields. The added invalid fixtures cover extra '@' characters, '/' in either credential field, and an extra ':' inside the password; these are settled by that explicit requirement. The fixture http://foo/bar@example.com is the reported reproduction. Rejecting http://invalid-.com/?m=foo@example.com directly covers the described query-string bypass of existing invalid-host validation. The updated valid fixture preserves ordinary credential punctuation and percent-encoded characters while retaining one username/password separator. That expectation is supported by the previous valid fixture and the requirement to continue accepting encoded credentials, rather than introducing a new policy. No implementation details, messages, or private APIs are required, and no reasonable correct alternative is excluded. The unrelated FAIL_TO_PASS names provide no additional assertion details to assess.",
+    "score": 2,
+    "explanation": "Every reasonable fix should reject the reserved-character and query-bypass examples while preserving the existing acceptance of otherwise valid, percent-encoded credentials.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 9554,
+  "output_tokens": 980,
+  "seconds": 25.7
+}

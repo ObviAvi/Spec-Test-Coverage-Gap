@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13568",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10813,
+  "output": {
+    "reasoning": "1. The specification identifies a false uniqueness error and asks to “Skip auth.E003 system check for USERNAME_FIELD with total UniqueConstraints.” It explicitly reproduces an AbstractBaseUser model with a CharField username and an unconditional, single-field UniqueConstraint.\n2. The sole graded test creates that same model shape, selects it through AUTH_USER_MODEL, and calls checks.run_checks(app_configs=...). It requires an empty result under both the default authentication configuration and AUTHENTICATION_BACKENDS=['my.custom.backend']. The model and constraint names are fixture identifiers, not names the implementation must introduce. No mocks, private methods, internal state, or exact diagnostic text are asserted.\n3. Recognizing the constraint and returning no uniqueness error are directly settled by the reproduction and requested behavior. Returning no warning under a custom backend is a reasonable extension to a closely related input: the constraint makes the username unique regardless of authentication backend. An empty check result is appropriate because the fixture presents no other reported defect.\n4. The custom-backend case is not explicit, but there is no reasonable alternative behavior to preserve here. A fix that still treats this username as non-unique for a custom backend leaves the same false uniqueness diagnosis in a closely related configuration. The added partial-constraint test is not graded and does not affect the score.",
+    "score": 2,
+    "explanation": "The test reproduces the specified unconditional username constraint and reasonably checks that it produces neither an error nor a warning when the authentication backend changes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2347,
+  "output_tokens": 681,
+  "seconds": 16.4
+}

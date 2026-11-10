@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12276",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10744,
+  "output": {
+    "reasoning": "1. The issue says FileInput must not output required when initial file data exists, and explicitly identifies moving ClearableFileInput.use_required_attribute() to FileInput.use_required_attribute() as the intended change. 2. The widget test calls that named hook with 'resume.txt' and requires False; this is settled by the requested behavior. Its None → True assertion is a conventional regression check: without an existing file, a required file field must still require an upload. 3. The form test uses FileField(widget=FileInput), requiring rendered HTML to omit required with initial={'file1': 'resume.txt'} and retain it without initial data. The first assertion directly matches the issue; the second preserves ordinary required-field behavior. The surrounding table markup reflects unchanged form rendering, not a new implementation requirement. 4. There are no open choices that reject a reasonable correct fix; the tests do not require physically moving the method or any other particular implementation.",
+    "score": 2,
+    "explanation": "Every reasonable fix should omit required for an initial file while preserving it when no initial file exists; the tests add only basic regression checks to the explicitly requested behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2474,
+  "output_tokens": 780,
+  "seconds": 21.2
+}

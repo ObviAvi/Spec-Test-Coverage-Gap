@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11734",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9589,
+  "output": {
+    "reasoning": "Step 1: The spec says that using OuterRef inside exclude() or ~Q() in a subquery crashes with ValueError, because the outer reference is resolved against the wrong model. It names the entry points: exclude() and filter(~Q()) with OuterRef in an Exists subquery.\n\nStep 2: What the graded test requires:\n- Public APIs only: Exists, OuterRef, exclude(), filter() and exists().\n- It filters JobResponsibilities by Exists(Responsibility.objects.exclude(jobs=OuterRef('job'))), going through an m2m relation.\n- It asserts that qs.exists() is True.\n- After deleting r1, it asserts that qs.exists() is False.\n\nStep 3: Each requirement against the spec:\n- No crash: settled. The spec reports \"crashes\" and expects it to work.\n- The True/False results: settled by correct exclude semantics. Exists should be true when some Responsibility is not linked to the outer row's job.\n  - Before deletion, j1 has r1 and j2 has r2, so each job has an unlinked responsibility and the result is True.\n  - After deleting r1, only r2 remains, linked to j2, and j1 has no remaining JobResponsibilities. For the j2 row, every responsibility is linked to j2, so Exists is False.\n  - Any fix that makes exclude with OuterRef correct yields these results.\n- The m2m relation and passing Exists directly to filter() are closely related inputs, not arbitrary choices. A fix that only handles the literal Item/tags example would not count as reasonable.\n- No private APIs, names or messages are asserted.\n\nStep 4: No reasonable correct fix fails. Any fix that resolves OuterRef correctly in exclude's split_exclude subquery passes.",
+    "score": 2,
+    "explanation": "The test exercises OuterRef inside exclude() within an Exists subquery, exactly as the spec describes, and checks results that follow from correct exclude semantics, so any correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR3quiiiNvRYQGMqjiE",
+  "input_tokens": 3703,
+  "output_tokens": 701,
+  "seconds": 7.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/psf__requests-1921",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8721,
+  "output": {
+    "reasoning": "The specification describes a transmission bug: setting `session.headers['Accept-Encoding'] = None` should prevent sending that header, rather than send `Accept-Encoding: None`. The test's Session construction, header name, and None value are settled by the reproduction example. Creating a GET request is ordinary setup. However, the test additionally calls `ses.prepare_request(req)` and requires the header to be absent from `prep.headers` before anything is sent. That processing stage is open: the specification does not require removal during preparation. A reasonable fix could remove all None-valued headers in Session.send before dispatch, matching the documented deletion workaround for outgoing requests while leaving the prepared headers unchanged until sending. Such a fix would resolve the reported issue and related headers but fail this intermediate-state assertion.",
+    "score": 4,
+    "explanation": "A correct fix could remove None-valued headers in Session.send before transmission rather than during preparation. It would prevent the unwanted header from being sent but fail the test's requirement that Accept-Encoding already be absent immediately after prepare_request.",
+    "overspecification_vector": "prep = ses.prepare_request(req)\nassert 'Accept-Encoding' not in prep.headers"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1994,
+  "output_tokens": 1015,
+  "seconds": 24.7
+}

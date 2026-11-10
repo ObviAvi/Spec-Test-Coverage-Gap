@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16502",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12200,
+  "output": {
+    "reasoning": "1. The specification identifies a runserver HTTP behavior bug: “response bodies must not be returned for HEAD requests.” It does not prescribe an implementation or require particular Content-Length or Connection headers.\n2. The graded test invokes WSGIRequestHandler with socket/server stubs and a WSGI application returning one HTML byte string. For HTTP/1.0 GET it requires the original body, a matching Content-Length, no Connection: close header, and INFO logging. For HEAD it requires no body, no Content-Length header, no Connection: close header, and INFO logging.\n3. The HEAD body assertion is directly settled by the specification. Preserving GET output and ordinary request logging are reasonable regression expectations. The handler and stubs exercise the relevant server behavior without requiring a new implementation-specific API. However, omitting Content-Length on HEAD is open: the specification only prohibits the body, and HTTP permits a HEAD response to carry the length that the corresponding GET response would have. Prohibiting Connection: close is also not specified; explicitly signaling connection closure is valid for HTTP/1.0.\n4. A reasonable server-level fix could calculate or retain the normal response length and suppress only transmission of body bytes for HEAD. It would resolve the reported bug but fail the assertion forbidding Content-Length. Likewise, a compliant implementation could explicitly send Connection: close.\n5. These extra constraints concern externally observable headers rather than internal implementation details, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could suppress the HEAD response body while retaining Content-Length equal to the corresponding GET body length. That complies with HEAD semantics but fails the test's requirement that Content-Length be absent.",
+    "overspecification_vector": "self.assertIs(any([line.startswith(b\"Content-Length:\") for line in lines]), False); self.assertNotIn(b\"Connection: close\\r\\n\", lines)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3016,
+  "output_tokens": 1236,
+  "seconds": 33.1
+}

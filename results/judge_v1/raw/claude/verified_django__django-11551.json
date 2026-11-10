@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11551",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13765,
+  "output": {
+    "reasoning": "1. The issue: _check_list_display_item raises admin.E108 when hasattr(model, item) is False (the descriptor raises AttributeError on class access) even though model._meta.get_field(item) would succeed. The spec names the function and even gives the full corrected code.\n2. The test defines a custom Field whose __get__ raises AttributeError when instance is None, puts it in list_display, and asserts the admin is valid (no errors).\n3. Requirements:\n- No E108 for a field found via _meta.get_field even though getattr on the class raises AttributeError. Settled by the spec: \"there is no longer a check for hasattr(model, item), as that being false should not prevent us form attempting to get the field via get_field\".\n- No E109, since the field is not M2M. Settled by the spec's table: \"False ok False False [] E108 []\".\n- Uses only public check machinery (assertIsValid). No private names, messages or new APIs are asserted.\n4. Any correct fix that tries get_field before giving up on E108 passes this test. That includes the spec's patch and variants such as catching the AttributeError from getattr and then trying get_field. No reasonable alternative fails.\n5. The test is essentially the reproduction scenario (PositionField-like descriptor) with an assert-valid check.",
+    "score": 1,
+    "explanation": "The test reproduces the issue's PositionField scenario (a descriptor raising AttributeError on class access) and asserts the ModelAdmin passes checks, which is exactly the behavior the spec describes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR3NZBDqBEpzwU3Qo5i",
+  "input_tokens": 5032,
+  "output_tokens": 526,
+  "seconds": 6.4
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-20488",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10373,
+  "output": {
+    "reasoning": "1. The specification identifies an existing regression: `test_huge_range_log` fails during image rendering because `LogNorm` raises `ValueError(\"Invalid vmin or vmax\")` on a huge-range image. 2. The graded case is only x=-1: a 5×5 float64 array containing -1 and 1e20, rendered through `imshow` with `LogNorm(vmin=1, vmax=data.max())`, nearest interpolation, and viridis. It must render without error and match a reference with white negative-value regions and the colormap's upper endpoint for the large positive values. No private API, intermediate state, or particular implementation is asserted. 3. The rendering entry point and failure are settled by the reported traceback. The array, interpolation, colormap, and reference-image behavior are established by the existing test shown in the removed/context lines. Masking invalid logarithmic values and mapping vmax to the colormap endpoint are conventional normalization behavior. Changing vmin from 100 to 1 is not explicit in the report, but is a closely related input exercising the same numerical problem. The new `with_extremes(under='w')` reference construction preserves the previous reference's white under-color. 4. There is no open implementation choice that the graded comparison restricts: a reasonable fix should preserve the existing image semantics while correcting the numerical failure for this related lower bound. The added x=1 case is not graded.",
+    "score": 2,
+    "explanation": "The graded test checks the reported rendering regression with a closely related vmin, retaining the existing reference-image semantics for invalid negative values and the upper colormap endpoint.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2548,
+  "output_tokens": 884,
+  "seconds": 25.6
+}

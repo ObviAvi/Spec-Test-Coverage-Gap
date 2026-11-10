@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13512",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8802,
+  "output": {
+    "reasoning": "1. What is wrong: `json.dumps` escapes non-ASCII by default, so Chinese text in a JSONField shows up in the admin as `\\uXXXX` escapes. The title says the admin does not display these characters properly, and the body mentions the edit form. No function is named; only the symptom is described.\n\n2. What the graded tests require:\n- `forms.JSONField.prepare_value` must return unescaped unicode for strings, dicts and lists. Inputs include CJK text, emoji and Polish characters.\n- `admin.utils.display_for_field` must show a JSONField value `{'a': '你好 世界'}` as `{\"a\": \"你好 世界\"}`.\n- `test_label_for_field` is listed but has no patch changes, so it is likely incidental.\n\n3. Settled or open:\n- `prepare_value` output is settled by the spec: editing in the admin renders the form field value, and the expected output is plain JSON with unicode left as-is.\n- `display_for_field` output is settled by the title, \"Admin doesn't display properly unicode chars.\" The read-only admin display is the same bug in a closely related path.\n- The exact format otherwise matches existing behavior: `\", \"` and `\": \"` separators, as in the context lines. Only escaping changes.\n\n4. Alternatives:\n- Any fix applying `ensure_ascii=False`, or routing display through the form field, passes. This includes a fix in the model field's `get_prep_value`.\n- A fix touching only the form field would leave the read-only admin display broken. That is the same bug in a related admin path, so it is not a fully correct fix.\n- The asserted outputs are the only reasonable result.",
+    "score": 2,
+    "explanation": "The tests assert that unicode in JSONField values is rendered unescaped, both in the admin edit form (`prepare_value`) and in the read-only admin display (`display_for_field`), which is exactly the symptom the issue describes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR8z6jsiXGMZdEb19a7",
+  "input_tokens": 3417,
+  "output_tokens": 1291,
+  "seconds": 13.7
+}

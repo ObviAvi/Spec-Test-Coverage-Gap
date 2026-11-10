@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14608",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10326,
+  "output": {
+    "reasoning": "1. The specification asks for a `nonform` CSS class on non-form errors in FormSets, matching how forms add `nonfield` to non-field errors. The entry point is `formset.non_form_errors()`.\n2. What the graded tests require:\n   - `str(formset.non_form_errors())` must equal `'<ul class=\"errorlist nonform\"><li>...</li></ul>'`. This is checked for the validate_max error, the validate_min error, and an error raised in a custom `clean()`.\n   - In the admin test, the string must equal `str(ErrorList([...], error_class='nonform'))`.\n3. How each requirement is settled:\n   - The class name `nonform` is settled by the spec: \"I'd expect to see the nonform CSS class added for non form errors.\"\n   - The rendering `\"errorlist nonform\"` is settled by existing convention. `ErrorList(error_class=...)` already renders as `errorlist <extra>`, and forms already do this with `nonfield`.\n   - Every source of non-form errors must carry the class. The spec says this generally (\"non form errors\"), so the validate_min/max errors and the custom `clean()` errors are all covered.\n4. Any reasonable fix passes `error_class='nonform'` when building the formset's non-form ErrorList, either in `full_clean` or in the accessor. Every such fix produces the same HTML. The admin test goes through the same formset `non_form_errors` path. No reasonable alternative fails.\n5. Score 2: the tests follow from the spec plus the existing `nonfield` pattern.",
+    "score": 2,
+    "explanation": "The tests assert `<ul class=\"errorlist nonform\">`, which is exactly what you get by following the spec's `nonform` class with the existing `ErrorList(error_class=...)` convention used for `nonfield`, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRCdkyLT9u3FumpLzNP",
+  "input_tokens": 3901,
+  "output_tokens": 1118,
+  "seconds": 11.3
+}

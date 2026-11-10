@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16100",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10439,
+  "output": {
+    "reasoning": "1. The specification identifies missing transaction handling in admin changelist_view, specifically list_editable processing, and asks for a transaction to \"prevent unexpected states in case of errors.\"\n2. The test creates two Swallow records, logs in a superuser, and posts a valid two-row list_editable form through the admin changelist URL. It changes load/speed from (4, 1) and (2, 2) to (9, 3) and (5, 1). It injects DatabaseError through the existing ModelAdmin.log_change method, first on the first call and then on the second call. Both requests must raise DatabaseError, and refreshing both records must show their original values. The test runs only when the database supports transactions.\n3. Rolling back all edits after either failure is settled by the requested transaction handling: committing earlier rows would leave precisely the unexpected partial state described. The admin URL, form fields, authentication, and logging hook exercise the existing processing path rather than requiring a new implementation interface. The particular record values are fixtures, not prescribed implementation choices. Using DatabaseError and preserving its propagation are conventional fault injection and preservation of existing error behavior.\n4. No open implementation choice rejects a reasonable correct fix. Wrapping the entire view or just the list_editable save operation in an appropriate transaction passes. Per-row transactions or committing changes before logging would not provide the requested atomic handling of the operation. The mock does not require a particular transaction API or transaction boundary beyond that behavior.",
+    "score": 2,
+    "explanation": "The assertions that both records retain their original values after a first- or second-row failure directly verify the requested atomic list_editable processing, with conventional database-error injection and propagation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2401,
+  "output_tokens": 899,
+  "seconds": 20.9
+}

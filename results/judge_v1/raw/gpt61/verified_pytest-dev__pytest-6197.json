@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pytest-dev__pytest-6197",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11460,
+  "output": {
+    "reasoning": "1. The specification reports that pytest 5.2.3 incorrectly imports unrelated package initializers during collection: it \"tries to import any `__init__.py` file under the current directory.\"\n2. Both graded tests use testdir helpers to create files, invoke runpytest(), and require ExitCode.OK; neither requires a particular implementation or mock interaction. The first creates a passing test alongside foopkg/__init__.py containing `assert False`. This is settled by the reported reproduction: the unrelated initializer must not cause collection to fail.\n3. The second creates src/nope/__init__.py and requires `import nope` inside a test to raise ImportError. ImportError is conventional for an unavailable module, but requiring this package to remain unavailable is open: the specification prohibits eager initializer imports, not changes to import search paths.\n4. A reasonable fix could defer package-initializer execution until tests in that package actually need collecting, while retaining path additions performed during package discovery. It would resolve the reported problem and analogous unused-package cases, yet fail the second test because `nope` remains importable.\n5. This is score 3: the additional constraint concerns externally observable import behavior, rather than a private API or required implementation.",
+    "score": 3,
+    "explanation": "A correct fix could stop executing unused package initializers while retaining discovery-time import-path additions. Such a fix resolves the reported collection regression but fails the additional requirement that `import nope` raise ImportError.",
+    "overspecification_vector": "test_does_not_put_src_on_path: creation of `src/nope/__init__.py`, followed by `with pytest.raises(ImportError): import nope`, enforced through `assert result.ret == ExitCode.OK`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2929,
+  "output_tokens": 1339,
+  "seconds": 32.9
+}

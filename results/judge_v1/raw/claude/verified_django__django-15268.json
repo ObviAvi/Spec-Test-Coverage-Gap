@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15268",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11774,
+  "output": {
+    "reasoning": "1. The specification asks that a sequence of AlterUniqueTogether(set()), AlterIndexTogether(set()), AlterUniqueTogether({...}), AlterIndexTogether({...}) be reduced to the final AlterUniqueTogether({...}) and AlterIndexTogether({...}). It describes desired optimizer output and gives the exact expected operation list.\n2. The graded tests go through the autodetector (via the test helper `get_changes`). They assert:\n - the operation types and order: [AlterUniqueTogether, AlterIndexTogether], possibly preceded by RenameField or followed by RemoveField;\n - the attribute values on each operation (the final unique_together/index_together sets).\n3. Settlement of each requirement:\n - Collapsing the four operations into two, unique before index: settled by the spec's example (\"should be optimized to ... AlterUniqueTogether ... AlterIndexTogether\").\n - RenameField before and RemoveField after the together operations: settled by existing behavior, visible in the unchanged context lines and test names.\n - The values asserted: the final target sets, settled by the example.\n - Entry point: the autodetector already runs the migration optimizer on generated operations, so a fix in the optimizer or operation `reduce` logic shows up in autodetector output. A fix done directly in the autodetector would pass too.\n4. No open requirement remains. Any correct fix that makes the four-operation pattern collapse in generated migrations yields exactly these operations in this order. The alternative of keeping index-before-unique contradicts the spec's example.",
+    "score": 2,
+    "explanation": "The tests assert that the autodetector's generated migration contains only the final AlterUniqueTogether and AlterIndexTogether operations in the order the spec's example shows. Since the autodetector runs the optimizer, every correct fix produces this.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtREb3pqYCZZAyNkDkz4",
+  "input_tokens": 4439,
+  "output_tokens": 2253,
+  "seconds": 22.1
+}

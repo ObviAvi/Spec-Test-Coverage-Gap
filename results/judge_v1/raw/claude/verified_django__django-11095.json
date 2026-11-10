@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11095",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8966,
+  "output": {
+    "reasoning": "1. The spec asks for a new hook, `ModelAdmin.get_inlines(request, obj=None)`, that lets users choose inline classes from the request or object. It says the hook replaces copying the for loop out of `get_inline_instances`, which implies `get_inline_instances` should iterate over `get_inlines()`.\n2. What the test requires:\n- a user-defined `get_inlines(self, request, obj)` override with no default for obj;\n- `get_inline_instances(request)` calls `self.get_inlines` with the request and obj, positionally or as `obj=`;\n- `get_inline_instances` returns `[]` when the override returns `[]`;\n- otherwise it instantiates the returned classes;\n- `ma.get_inlines(request, None)` calls the override directly.\n3. How each is settled:\n- Hook name and signature are given verbatim in the spec: \"hook get_inlines(request, obj=None)\".\n- That `get_inline_instances` uses the hook is implied by \"Currently, We can override the method get_inline_instances ... but a for loop should be copied\".\n- Passing obj through follows from the signature. `get_inline_instances` already receives obj, so forwarding it is the only sensible choice, and both positional and `obj=obj` calls work with the override.\n- An empty list producing no instances falls out of the existing loop.\n- Permission checks in the existing loop are unchanged; the test request is a superuser in this test class's setup.\n4. The only conceivable failure is a fix that calls `get_inlines(request)` without obj. That ignores the specified signature, so it is not reasonable. No reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "The spec names the hook and its signature, and says it should replace the loop in get_inline_instances. Any fix where get_inline_instances iterates over self.get_inlines(request, obj) passes the test's checks that the returned instances match the override's classes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR1AMece6uryMiRMco1",
+  "input_tokens": 3304,
+  "output_tokens": 1034,
+  "seconds": 10.9
+}

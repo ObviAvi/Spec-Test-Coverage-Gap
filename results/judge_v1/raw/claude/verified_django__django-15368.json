@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15368",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8986,
+  "output": {
+    "reasoning": "1. Spec: bulk_update() treats a plain F() expression as a literal value because the type check is too narrow. It names the entry point, bulk_update, and suggests two fixes: a duck-typing check or adding F to the isinstance check.\n2. Test requirements: assign F('note') to the misc field on Note instances, call Note.objects.bulk_update(notes, ['misc']), then check that filtering misc='test_note' returns all the notes.\n3. Each requirement:\n- Calling bulk_update with F as the field value is settled by the spec's repro.\n- The DB value resolving to the referenced column's value is settled: the spec says the SQL should resolve \"to the column name\" instead of the repr.\n- Note and its note/misc fields are existing test models; the fix doesn't need to create anything.\n4. Any reasonable fix, whether duck-typing or isinstance with F, makes F resolve in the CASE expression and passes. Instance state after bulk_update is not checked beyond PK equality via assertCountEqual. The test mirrors the repro on different models, so no fix is rejected.",
+    "score": 1,
+    "explanation": "The test reproduces the issue's example (assign F('other_field') and bulk_update, then check the stored value equals the other column), which every correct fix satisfies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRF8J1gwsiTda21FwoZ",
+  "input_tokens": 3414,
+  "output_tokens": 446,
+  "seconds": 5.6
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12406",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11371,
+  "output": {
+    "reasoning": "1. The spec says that a ModelForm built from a ForeignKey with blank=False and a RadioSelect widget should not render the '---------' blank choice. It describes only the symptom at the ModelForm level and names no API.\n2. What the graded tests require:\n- test_non_blank_foreign_key_with_radio: AwardForm with a RadioSelect on the non-blank `character` FK has choices of only [(pk, 'user')]. This is settled by the spec, which says there should be no blank option when blank is not a valid selection.\n- test_choices_radio_blank: it constructs `forms.ModelChoiceField(categories, widget=widget, blank=blank)` directly. This requires a new `blank` keyword argument on ModelChoiceField, with blank=False plus a RadioSelect dropping the empty choice. It also requires this for both a widget class and a widget instance. The spec never mentions a `blank` parameter on ModelChoiceField, so this is open.\n- test_clean_model_instance: it fails before the fix, probably because of the related model and __str__ changes. Likely incidental.\n3. Reasonable fixes that violate the open requirement:\n- Handle it in ForeignKey.formfield / fields_for_model: when the widget is a RadioSelect and the model field has blank=False, pass empty_label=None.\n- Handle it in ModelChoiceField.__init__ by checking `required` and the widget type, without adding a `blank` kwarg.\nBoth fix the reported ModelForm behavior and pass test_non_blank_foreign_key_with_radio. Both fail test_choices_radio_blank with a TypeError on the unexpected `blank` keyword, or with wrong semantics. The test depends on a new parameter name and an API design the spec never states.",
+    "score": 4,
+    "explanation": "test_choices_radio_blank requires ModelChoiceField to accept a new `blank` keyword argument. A correct fix that sets empty_label=None in ForeignKey.formfield (or keys off `required`) when the widget is a RadioSelect would raise a TypeError and fail.",
+    "overspecification_vector": "forms.ModelChoiceField(categories, widget=widget, blank=blank) in test_choices_radio_blank, which requires a new unspecified `blank` kwarg on ModelChoiceField"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR5nUfKRJz3BQuT3sfp",
+  "input_tokens": 4272,
+  "output_tokens": 1059,
+  "seconds": 10.0
+}

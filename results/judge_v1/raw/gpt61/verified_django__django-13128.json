@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13128",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13415,
+  "output": {
+    "reasoning": "1. The specification asks to “make temporal subtraction work without ExpressionWrapper,” illustrated by DateTimeField subtraction participating in duration arithmetic and incorrectly raising a mixed-types FieldError. This settles the need for temporal differences to resolve as durations automatically.\n2. The graded tests require unwrapped subtraction through QuerySet.annotate(): DateField, TimeField, and DateTimeField operands; field references, typed values, subqueries, and CASE-derived values; filtering by the resulting duration; propagation of typed NULLs; and preservation of microsecond precision. They assert existing date-filter memberships, zero differences for equal operands, a time difference of 1:15:15.002345, and the datetime difference of 8999999999999999 microseconds.\n3. Automatic duration typing is specified by the title and reproduction. The other temporal types and expression operands are closely related inputs. NULL propagation, arithmetic results, filtering, and precision preservation follow established behavior shown by the former ExpressionWrapper-based tests. Fixture names and annotation aliases impose no implementation requirements.\n4. No requirement selects an otherwise open behavior. A fix that only handles the literal compound datetime example while leaving ordinary temporal subtraction broken would not satisfy the stated task and closely related inputs. The tests require no private methods, new implementation names, or particular resolution strategy.\n5. These are reasonable extensions and regression checks rather than near-verbatim reproduction alone.",
+    "score": 2,
+    "explanation": "The tests reasonably extend automatic duration inference to related temporal operands and verify that removing ExpressionWrapper preserves existing subtraction results, NULL handling, filtering, and precision.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3018,
+  "output_tokens": 867,
+  "seconds": 25.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-13852",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10722,
+  "output": {
+    "reasoning": "1. The spec has two complaints. First, polylog(2, 1/2) should evaluate to -log(2)**2/2 + pi**2/12; the examples show both direct construction and expand(func=True) returning it unevaluated. Second, expand_func(polylog(1, z)) should not contain exp_polar.\n2. The graded test_polylog_values requires:\n   (a) `polylog(2, 2) == pi**2/4 - I*pi*log(2)` at construction time;\n   (b) `polylog(2, S.Half) == pi**2/12 - log(2)**2/2` at construction time, with no expand_func call;\n   (c) numeric agreement between evaluated and unevaluated forms for several golden-ratio-related arguments;\n   (d) numeric agreement for s in {-1, 0, 1} at random complex z.\n3. Settledness of each requirement:\n   (b) The value is settled by \"The answer should be -log(2)**2/2 + pi**2/12\". Whether it happens in eval or in expand_func is open. The title says \"Add evaluation\", and Out[1] is shown as unevaluated, but the issue explicitly frames the fix through expand(func=True).\n   (a) Open. The spec never mentions z=2.\n   (c) and (d) are tolerant. Unevaluated results compare equal trivially, and any correct evaluation passes numerically.\n4. Alternatives that fail:\n   - A developer who adds the special value of polylog(2, 1/2) only in `_eval_expand_func`, as In[2] suggests, fails (b), because the test expects automatic evaluation.\n   - A developer who adds automatic evaluation only for z=1/2 (plus perhaps -1 and 1, which already exist) fails (a). polylog(2, 2) is an additional special value the issue never mentions.\n   Both are reasonable fixes for the stated problem.\n5. The test pins observable values and an evaluation location beyond the spec, so the score is 3.",
+    "score": 3,
+    "explanation": "The test requires polylog(2, 2) to auto-evaluate to pi**2/4 - I*pi*log(2), a value the issue never mentions. It also requires polylog(2, 1/2) to evaluate at construction rather than via expand_func, so a fix adding only the 1/2 value or only expand_func evaluation fails.",
+    "overspecification_vector": "assert polylog(2, 2) == pi**2/4 - I*pi*log(2); assert polylog(2, S.Half) == pi**2/12 - log(2)**2/2 (automatic evaluation without expand_func)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRaLfwKFNcDDRSqhs1h",
+  "input_tokens": 4320,
+  "output_tokens": 1467,
+  "seconds": 14.6
+}

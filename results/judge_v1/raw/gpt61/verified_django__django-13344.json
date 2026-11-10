@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13344",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16239,
+  "output": {
+    "reasoning": "1. The specified defect is that, under ASGI, the first middleware's process_response() receives a coroutine rather than an HttpResponse. Correct response delivery through the middleware chain is settled by the reproduction; no constructor-time introspection behavior or deprecation behavior is specified.\n\n2. Both graded tests iterate over AuthenticationMiddleware, BrokenLinkEmailsMiddleware, CacheMiddleware, CommonMiddleware, ConditionalGetMiddleware, CsrfViewMiddleware, CurrentSiteMiddleware, FetchFromCacheMiddleware, FlatpageFallbackMiddleware, GZipMiddleware, LocaleMiddleware, MessageMiddleware, RedirectFallbackMiddleware, RemoteUserMiddleware, SecurityMiddleware, SessionMiddleware, UpdateCacheMiddleware, XFrameOptionsMiddleware, and XViewMiddleware. test_coroutine constructs each with an async callback returning HttpResponse and requires asyncio.iscoroutinefunction(instance) to be exactly True; with a synchronous callback returning HttpResponse, it requires exactly False. It never invokes the middleware or its response hooks. test_deprecation constructs each without arguments and requires RemovedInDjango40Warning with 'Passing None for the middleware get_response argument is deprecated.' There are no mocks or patched attributes.\n\n3. The callback inputs are reasonable related inputs, but the required constructor-time coroutine classification is open: the specification requires resolved responses, not a particular mechanism for recognizing asynchronous middleware. The warning category and message follow existing tests, but extending that requirement to every listed constructor is not required by the reported response-delivery defect.\n\n4. A reasonable alternative is to repair async dispatch and chain adaptation: use an async wrapper at the handler boundary and dispatch middleware according to its downstream callable, ensuring response hooks receive awaited responses. Such a fix need not make every middleware instance itself pass asyncio.iscoroutinefunction immediately after construction. It would therefore fail test_coroutine despite resolving the reported bug. A response-chain fix could also leave unrelated constructor-warning gaps unchanged.\n\n5. The strongest mismatch is an assertion about intermediate callable classification rather than response delivery, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix could repair async wrapping and awaiting in the middleware chain without marking every constructed middleware instance as a coroutine function. It would still fail test_coroutine, which checks that classification instead of checking that process_response() receives an HttpResponse.",
+    "overspecification_vector": "test_coroutine: middleware_instance = middleware(async_get_response); self.assertIs(asyncio.iscoroutinefunction(middleware_instance), True), and the corresponding False assertion for sync_get_response, applied to every class in self.middlewares. Additionally, test_deprecation expands the no-argument constructor warning requirement to the entire middleware list."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3514,
+  "output_tokens": 1584,
+  "seconds": 35.2
+}

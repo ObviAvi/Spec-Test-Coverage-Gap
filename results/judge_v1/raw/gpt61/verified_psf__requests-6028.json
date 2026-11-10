@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/psf__requests-6028",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9119,
+  "output": {
+    "reasoning": "1. The specification reports that requests.get('https://example.org/', proxies=proxies) produces HTTP 407 on Python 3.8.12 instead of the expected 200. It specifies successful authenticated proxy use, but does not name a URL-normalization helper or prescribe where authentication must be preserved.\n2. The graded tests directly call prepend_scheme_if_needed(value, 'http'). They require exact identity for 'http://user:pass@example.com/path?query' and 'http://user@example.com/path?query', including credentials, path, and query. There are no mocks, required new names, or exception assertions.\n3. Preserving proxy authentication is settled by the reported authentication failure and expected successful response. Leaving an already-schemed URL unchanged is conventional behavior for a scheme-prepending utility, and the context establishes that this utility already exists. However, requiring the proxy fix to establish that behavior in this particular utility is open: the specification never mentions it.\n4. A reasonable alternative is to repair proxy connection setup so that it uses credential-preserving URL normalization, or retains authentication from the original proxy URL rather than losing it during normalization. Such a fix can handle both username/password and username-only proxies, resolving the reported problem and related inputs, while leaving prepend_scheme_if_needed unchanged. It would therefore fail these direct helper tests.\n5. The tests constrain an intermediate helper rather than verifying successful authenticated proxy use through the reported entry point, so the score is 4.",
+    "score": 4,
+    "explanation": "A correct fix could preserve proxy credentials in request/proxy connection setup without changing prepend_scheme_if_needed. The tests would still fail because they require that particular helper to return both authenticated URLs unchanged.",
+    "overspecification_vector": "The direct assertion `assert prepend_scheme_if_needed(value, 'http') == expected` applied to the added identity mappings for `http://user:pass@example.com/path?query` and `http://user@example.com/path?query`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2169,
+  "output_tokens": 899,
+  "seconds": 19.6
+}

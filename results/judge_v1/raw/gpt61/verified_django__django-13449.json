@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13449",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16042,
+  "output": {
+    "reasoning": "1. The specification identifies a SQL-generation bug in Window(expression=Lag(...)) on a DecimalField: SQLite rejects CAST(LAG(...) AS NUMERIC) OVER (...). The requested behavior is successful evaluation with correct lagged values, without requiring the FloatField workaround.\n2. The graded test uses Employee.bonus, a nullable DecimalField(decimal_places=2, max_digits=15), populated with Decimal(salary) / 400. It calls annotate(), Window(), Lag('bonus', offset=1), and F() expressions, partitions by department, and explicitly orders both the window and queryset by bonus and name. It asserts the twelve fixture rows' names, bonuses, departments, and lag values, including None at each partition's start. There are no mocks or required implementation names.\n3. DecimalField support through Window/Lag is settled by the reported failure. Offset 1, different decimal precision, department partitions, and multiple ordering keys are closely related inputs rather than new behavior. The exact row order is settled by the explicit order_by clauses; previous-row values and initial None are conventional LAG semantics. Expected bonuses follow from the fixture arithmetic. The numeric literals do not require float results: these integer and half-integer values compare equally to their Decimal equivalents.\n4. No asserted requirement admits a reasonable alternative that would still correctly implement the reported behavior. The test does not inspect generated SQL, CAST placement, internal methods, or the chosen repair strategy.\n5. Score 2: this is a behavioral regression test using related inputs rather than the reproduction verbatim.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should evaluate the DecimalField Window/Lag query and return the preceding bonus within each explicitly ordered department partition, with None for the first row.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4099,
+  "output_tokens": 694,
+  "seconds": 17.7
+}

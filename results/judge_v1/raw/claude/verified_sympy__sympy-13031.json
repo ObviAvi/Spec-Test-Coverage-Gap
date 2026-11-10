@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-13031",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8306,
+  "output": {
+    "reasoning": "1. The spec reports that `Matrix.hstack` on 0×n matrices returns (0, 3) instead of (0, 6). The title also mentions vstack. The only class named is `sy.Matrix`, which is the mutable dense matrix.\n2. The graded test requires:\n   - `SparseMatrix.hstack(*[SparseMatrix.zeros(0, n) for n in range(4)]) == Matrix(0, 6, [])`.\n   - `SparseMatrix.vstack(*[SparseMatrix.zeros(n, 0) for n in range(4)]) == Matrix(6, 0, [])`.\n3. Settlement of each requirement:\n   - The expected shape (0, 6) for hstack is settled by the spec (\"returns (0, 6)\" in 1.0).\n   - The vstack analogue (6, 0) is settled by symmetry and the title (\"hstack and vstack\").\n   - The matrix class under test is open. The spec only shows dense `sy.Matrix`; the test exercises `SparseMatrix`. That class has its own `row_join`/`col_join` implementation, and that is where the original fix went.\n4. Plausibly, dense `Matrix` already handles null-matrix stacking at the base commit, via the earlier #10770 handling. In that case a developer following the spec sees the dense example work, or patches only the dense or common path, and never touches `sparse.py`. Either way the sparse test fails. A fix that corrects the dense `Matrix` behavior the issue describes, for both hstack and vstack, is reasonable and would still fail.\n5. The assertion is on public, observable behavior (shape and equality via the public `hstack`/`vstack`). It just targets a matrix class the spec never mentions. That points to 3 rather than 4, since no private API or internal state is involved, but the test does reject a reasonable fix scoped to the class the issue names.",
+    "score": 3,
+    "explanation": "The issue only demonstrates the bug with dense `sy.Matrix`, but the graded test checks `SparseMatrix.hstack`/`vstack` on 0×n and n×0 matrices. A fix that corrects only dense Matrix stacking, the class named in the issue, leaves SparseMatrix's separate `row_join`/`col_join` broken and fails.",
+    "overspecification_vector": "sparse_matrices = [SparseMatrix.zeros(0, n) for n in range(4)]; assert SparseMatrix.hstack(*sparse_matrices) == Matrix(0, 6, []); sparse_matrices = [SparseMatrix.zeros(n, 0) for n in range(4)]; assert SparseMatrix.vstack(*sparse_matrices) == Matrix(6, 0, [])"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRZb17UW9RK3E1drB6V",
+  "input_tokens": 3336,
+  "output_tokens": 2164,
+  "seconds": 22.0
+}

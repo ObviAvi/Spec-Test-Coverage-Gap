@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13346",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9133,
+  "output": {
+    "reasoning": "1. The specification identifies the public ORM key-transform `__in` lookup as broken and explicitly expects membership in `[0]` to agree with equality to `0`.\n2. The added test calls `NullableJSONModel.objects.filter()` using key transforms `c`, `0`, `foo`, `bar`, and `bax`. It checks numeric, string, array, and object values, with both singleton and multiple-candidate RHS lists, against fixture objects in their normal query order.\n3. The lookup behavior is settled by the specification; the broader inputs are settled by standard IN semantics and JSONField's value types. An array-index transform is a closely related key-transform input. Arrays and objects remain individual membership candidates, rather than introducing containment semantics. The particular fixture values are examples, not implementation constants. Sequence comparison does not demand a new ordering policy beyond preserving ordinary queryset behavior.\n4. No reasonable alternative behavior is rejected by these assertions: restricting the fix to numeric values or singleton lists would leave the same lookup bug on closely related inputs. No private method, new implementation name, SQL structure, or error message is required. Although `test_key_iregex` is listed, its body is not supplied, so its name alone establishes no additional asserted requirement.\n5. The supplied assertions are reasonable extensions of the reported case, warranting score 2.",
+    "score": 2,
+    "explanation": "The tests require key-transform `__in` to perform ordinary membership matching for numbers, strings, arrays, and objects, reasonably extending the specification's expectation that `key__in=[value]` agrees with `key=value`.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2157,
+  "output_tokens": 1330,
+  "seconds": 36.6
+}

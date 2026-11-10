@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-20859",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10189,
+  "output": {
+    "reasoning": "1. The specification says `SubFigure.legend()` raises `TypeError: Legend needs either Axes or Figure as parent` because `Legend.__init__` checks only for `Figure`. It names the fix: change the isinstance check at L437 to `FigureBase`. The entry point is `subfig.legend()`.\n2. The test requires two things:\n   - `subfig.legend()` succeeds on the reproduction example (line data changed slightly).\n   - `leg.figure is subfig`.\n3. Settlement of each requirement:\n   - Success is settled by the spec: \"I'd expect this to work and produce a legend\".\n   - `leg.figure is subfig` is settled by existing code and convention. The existing figure branch calls `self.set_figure(parent)`. Widening the check to `FigureBase`, as the issue suggests, leaves `figure` as the subfigure. In this codebase, artists added to a subfigure also carry that subfigure as `.figure`.\n4. One conceivable alternative would set the legend's figure to the root figure (`parent.figure`). That would depart from the issue's suggested one-line fix and from how other subfigure artists behave, so it is not a natural, reasonable choice. Any fix that treats `SubFigure` like `Figure` in the existing branch passes.",
+    "score": 2,
+    "explanation": "Every reasonable fix that accepts `FigureBase` in the legend parent check, as the issue suggests, passes. The assertion `leg.figure is subfig` follows from the existing `set_figure(parent)` path and the convention that subfigure artists carry the subfigure as their figure.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRKn9hUFEU9hwLgc7a8",
+  "input_tokens": 3850,
+  "output_tokens": 1009,
+  "seconds": 10.4
+}

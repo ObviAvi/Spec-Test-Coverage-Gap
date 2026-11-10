@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-9658",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10623,
+  "output": {
+    "reasoning": "1. The specification describes a symptom only: for a class whose base is mocked, autodoc's \"Bases\" line shows `torch.nn.` instead of `torch.nn.Module`. It names no function. In Sphinx, the Bases line is built by passing each base through `sphinx.util.typing.restify`. The truncated output shows that restify joins `__module__` with an empty `__qualname__` on mock objects.\n2. The graded test requires that, inside `mock(['unknown'])`, `restify(unknown.secret.Class)` returns ':py:class:`unknown.secret.Class`'. It uses only the public `mock` context manager and the existing `restify` function.\n3. Each requirement:\n - The expected value, the full dotted name of the mocked object, is settled by the spec: \"should report `torch.nn.Module` not `torch.nn.`\".\n - The ':py:class:`...`' wrapping is settled by convention; it is restify's existing output format for classes.\n - The entry point is `restify`, the existing function that renders bases. It is the direct cause of the bug, not a new name.\n4. Reasonable fixes:\n - Special-casing mocks in restify (via `__display_name__` or module + name) passes.\n - Fixing `_MockObject`/`_make_subclass` so mocks carry a proper `__qualname__` also passes, because restify would then produce the full name.\n - The only failing alternative is a hack confined to ClassDocumenter's bases rendering that bypasses restify. That would leave the same bug wherever restify/stringify render mocked types, such as typehints, so it is a narrow patch of the literal example rather than a correct fix.\n5. The test checks the spec's expected output through the function that produces it. Score 2.",
+    "score": 2,
+    "explanation": "The test asserts that restify, the function that renders the Bases line, returns the full dotted name of a mocked class (`unknown.secret.Class`), which is exactly the spec's expected `torch.nn.Module` behavior; both a restify-level fix and a mock-level `__qualname__` fix pass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRZALK1Wcv9Vv3939Uw",
+  "input_tokens": 4200,
+  "output_tokens": 2311,
+  "seconds": 23.3
+}

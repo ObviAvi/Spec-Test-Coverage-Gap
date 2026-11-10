@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15127",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10402,
+  "output": {
+    "reasoning": "1. The specification explicitly reports that \"LEVEL_TAGS [is] not updated when using @override_settings\" and identifies stale Message.level_tag results as its consequence. 2. The graded test applies override_settings(MESSAGE_TAGS=message_tags) and requires base.LEVEL_TAGS to equal that mapping, including custom level 12 and empty-string tags. 3. Updating LEVEL_TAGS under the override is settled by the issue title. The existing code confirms the association between MESSAGE_TAGS and base.LEVEL_TAGS: the removed workaround refreshed that constant after changing settings.MESSAGE_TAGS. The supplied mapping covers all standard levels, so equality introduces no additional requirement about unspecified default entries. 4. No implementation mechanism is required. Changing only Message.level_tag while leaving LEVEL_TAGS stale would leave the explicitly reported defect unresolved, rather than constitute an alternative complete fix.",
+    "score": 1,
+    "explanation": "The assertion self.assertEqual(base.LEVEL_TAGS, self.message_tags) directly checks the explicitly reported failure to update LEVEL_TAGS under @override_settings, without prescribing how the update is implemented.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2340,
+  "output_tokens": 1599,
+  "seconds": 34.5
+}

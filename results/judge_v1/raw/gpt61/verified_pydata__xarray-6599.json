@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-6599",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11867,
+  "output": {
+    "reasoning": "1. The specification identifies `polyval` and reports incorrect results with timedelta64 coordinates, requesting that stable and latest versions return the same results. The reproduction uses nanosecond-resolution time values and supplies expected polynomial results.\n2. The added graded case supplies a DataArray containing `[1000, 2000, 3000]` as `timedelta64[ns]`, dimension `x`, and coefficients `[0, 1]` indexed by degrees `[0, 1]`. It expects an x-dimensional numeric DataArray containing `[1000.0, 2000.0, 3000.0]`.\n3. Correct timedelta handling by the same public `polyval` entry point is settled by the issue. Using a simpler timedelta input is a related-input regression check. The coefficients define the identity polynomial by standard polynomial convention; interpreting the durations numerically in nanoseconds is consistent with the reproduction's units and expected numerical scale.\n4. The test adds no private API, implementation requirement, arbitrary ordering, or message constraint. There is no reasonable alternative result for this identity polynomial that would both preserve the requested timedelta polynomial behavior and fail the added case.",
+    "score": 2,
+    "explanation": "The test checks the same public polynomial-evaluation behavior on a related, simpler timedelta64 input: the identity polynomial must return the durations' numeric nanosecond values.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3363,
+  "output_tokens": 805,
+  "seconds": 19.2
+}

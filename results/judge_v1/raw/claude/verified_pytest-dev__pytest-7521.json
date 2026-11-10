@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7521",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11483,
+  "output": {
+    "reasoning": "1. Spec: capfd.readouterr() converts \\r to \\n (a regression); it should preserve \\r as pytest 5 did. Entry point: the capfd fixture plus readouterr.\n2. Tests: print('test', end=nl) for nl in \\r\\n and \\r (the graded cases), then assert out.endswith(nl). Inputs, function and assertion all mirror the reproducer.\n3. The \\r case is settled verbatim by the spec's reproducer. The \\r\\n case is the same newline-translation bug on a closely related input. Any fix that stops universal-newline translation (e.g. newline='' on the tmpfile TextIOWrapper) preserves both. A fix that special-cases only \\r would patch the literal example while leaving the related input broken, so it doesn't count.\n4. No reasonable correct fix fails. Preserving raw output is the only reasonable reading of 'preserve like pytest 5'.",
+    "score": 1,
+    "explanation": "The graded test is essentially the issue's reproducer (print with end='\\r', assert out.endswith('\\r')), extended to '\\r\\n', which any fix disabling newline translation also handles.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRShLv2qFnPC1kkXsa7",
+  "input_tokens": 4357,
+  "output_tokens": 414,
+  "seconds": 5.5
+}

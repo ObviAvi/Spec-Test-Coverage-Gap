@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-6938",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10605,
+  "output": {
+    "reasoning": "The specification identifies Dataset.swap_dims() as the entry point and explicitly expects it \"not to modify the original object,\" particularly a variable's dimensions. The graded test instead constructs IndexVariable(\"x\", [\"a\"]), calls to_index_variable(), requires a distinct object via `assert a is not b`, assigns `b.dims = (\"y\",)`, and requires `a.dims == (\"x\",)`. Nonmutation by swap_dims is settled; a copying contract for IndexVariable.to_index_variable(), distinct object identity, and isolation under direct dimension assignment are open. Neither the specification nor the provided existing-code context establishes those requirements. A reasonable fix could make swap_dims copy variables before changing their dimensions, protecting the original dataset for the reported case and related inputs while leaving to_index_variable() unchanged. Such a fix would resolve the issue but fail the graded identity assertion and potentially the dimension-isolation assertion. The test therefore mandates a particular lower-level fix rather than testing the specified entry point.",
+    "score": 4,
+    "explanation": "A correct fix could copy variables within swap_dims before modifying their dimensions without changing IndexVariable.to_index_variable(). The test bypasses swap_dims and would reject that fix because it requires to_index_variable() itself to return a distinct, independently mutable object.",
+    "overspecification_vector": "b = a.to_index_variable(); assert a is not b; b.dims = (\"y\",); assert a.dims == (\"x\",)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2688,
+  "output_tokens": 504,
+  "seconds": 11.1
+}

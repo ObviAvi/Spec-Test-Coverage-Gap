@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-15100",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9923,
+  "output": {
+    "reasoning": "1. The specification says `strip_accents_unicode` returns NFKD-form strings unchanged instead of removing their combining accents. Its example is 'n' + U+0303, which should become 'n'. The function is named directly.\n2. The graded test requires:\n   - `strip_accents_unicode(\"o\\u0308\") == \"o\"`;\n   - `strip_accents_unicode(\"\\u0300\\u0301\\u0302\\u0303\") == \"\"`;\n   - `strip_accents_unicode(\"o\\u0308\\u0304\") == \"o\"`.\n3. Each requirement against the specification:\n   - The first case is the same scenario as the issue's example (base letter plus combining mark), so it is settled by the spec.\n   - The second and third cases test closely related inputs. Stripping accents means removing combining characters, so a string of only combining marks becomes empty and stacked marks are all removed. This follows from the function's existing approach of decomposing and then filtering combining characters; the only fault was an early return when the string was already NFKD.\n4. A reasonable fix either removes the early-return shortcut or always filters `unicodedata.combining`. Either way all three asserts pass. I can't see a reasonable fix that strips accents correctly yet keeps lone combining marks or leaves a second stacked mark in place, since that would be the same bug on closely related inputs.\n5. Score 2.",
+    "score": 2,
+    "explanation": "Every reasonable fix that strips combining characters regardless of whether the input is already NFKD passes; the asserts check the spec's decomposed-accent case (\"o\\u0308\" -> \"o\") plus natural variants (lone marks, stacked marks).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRU6m6oKM43u3sXvf6Y",
+  "input_tokens": 3799,
+  "output_tokens": 754,
+  "seconds": 8.8
+}

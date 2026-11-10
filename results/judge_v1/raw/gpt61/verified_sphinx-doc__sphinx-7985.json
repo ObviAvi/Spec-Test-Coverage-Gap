@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7985",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11328,
+  "output": {
+    "reasoning": "The specification asks linkcheck to validate local links: “Also a check for the local link.” The graded tests exercise this through the normal builder, adding an existing relative target, conf.py, and a nonexistent one, path/to/notfound. Reporting the nonexistent target as '[broken] path/to/notfound' follows the existing broken-link reporting convention. Adding that target to test_anchors_ignored's existing exclusion setup likewise reasonably preserves filtering behavior. However, the exact six-line report requirement is open: it requires the valid local target to contribute no report entry. The specification does not require suppressing successful local-link entries or replacing the existing local reporting category with ordinary working-link reporting. A reasonable fix could check existence, classify the missing target as broken, and continue reporting the existing target separately as local; that would resolve the issue but add another report line. The modified JSON assertions are not graded and do not affect this assessment.",
+    "score": 3,
+    "explanation": "A correct fix could flag path/to/notfound as broken while retaining a local-status report entry for the successfully checked conf.py. The exact six-line assertion rejects that reasonable reporting choice, although the issue only requests that local links be checked.",
+    "overspecification_vector": "assert len(content.splitlines()) == 6 — combined with the added valid local target `Example valid local file <conf.py>`, this requires successful local links to contribute no report entry."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2704,
+  "output_tokens": 3413,
+  "seconds": 73.9
+}

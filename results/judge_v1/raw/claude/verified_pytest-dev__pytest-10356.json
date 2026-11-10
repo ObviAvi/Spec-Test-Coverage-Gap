@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-10356",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12962,
+  "output": {
+    "reasoning": "1. What the spec asks for: when a class inherits from multiple marked base classes, its tests should get the marks from all of them, considering the MRO. The spec describes the symptom through test collection (test_dings should have both foo and bar). It does not name any function or parameter.\n\n2. What the test requires:\n- It calls get_unpacked_marks(C) from _pytest.mark.structures and asserts the result is exactly [c, a, b], i.e. the class's own mark first, then the bases in MRO order.\n- It calls get_unpacked_marks(C, consider_mro=False) and asserts the result is [c].\n\n3. Settledness of each requirement:\n- get_unpacked_marks exists in the repository already (private helper); using it is plausible but it is internal.\n- The consider_mro keyword argument is a new name that the spec never mentions. It is open.\n- The order [c, a, b] is partially suggested by \"deduplicating by MRO\", but other orders are plausible. For example, a fix iterating reversed(__mro__) yields [b, a, c], which is a valid ordering for applying marks. It is open.\n- Placing the fix in get_unpacked_marks, rather than, for example, in the Class collector or in store_mark/node marker collection, is open.\n\n4. Reasonable fixes that fail:\n- A correct fix that merges marks in python.py's Class/PyobjMixin collection without changing get_unpacked_marks fails the first assertion, because get_unpacked_marks(C) would still return only C's own marks.\n- Any fix that does not add a `consider_mro` keyword fails the second assertion with a TypeError.\n\n5. The test depends on a new unspecified parameter name and on a private helper, so the score is 4.",
+    "score": 4,
+    "explanation": "The test calls the private helper get_unpacked_marks with a new keyword argument `consider_mro=False` that the spec never mentions, and expects MRO merging to happen inside that helper with exact ordering [c, a, b]. A correct fix that merges marks elsewhere, for example in class node collection, or that has no such keyword fails.",
+    "overspecification_vector": "get_unpacked_marks(C, consider_mro=False) == [xfail(\"c\").mark]; assert get_unpacked_marks(C) == [xfail(\"c\").mark, xfail(\"a\").mark, xfail(\"b\").mark]"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRRt644dQfnXjgwAAhM",
+  "input_tokens": 4763,
+  "output_tokens": 811,
+  "seconds": 9.0
+}

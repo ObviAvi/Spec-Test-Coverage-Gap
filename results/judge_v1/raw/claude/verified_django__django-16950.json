@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16950",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10055,
+  "output": {
+    "reasoning": "1. The specification says that when a new Thing is added in the admin with an inline SubThing, the parent's UUID alternate key (to_field='id', default=uuid.uuid4) ends up null and saving crashes. It describes a symptom through the admin, but the admin builds inlines with inline formsets. In those formsets, the code that clears a parent's auto-generated key for new objects is what nulls the value.\n\n2. The graded test requires:\n   - Building `inlineformset_factory(ParentWithUUIDAlternateKey, ChildRelatedViaAK)` with bound data for a new parent: one child with a name, two empty extra forms.\n   - `is_valid()` is True.\n   - `formset.instance.uuid` is not None.\n   - `formsets.forms[0].instance.parent_id == formset.instance.uuid`.\n\n3. How each requirement is settled:\n   - Parent alternate key not nulled when submitting with inline data: settled by the spec (\"value of 'id' in the Thing model is being set to null\" is the bug).\n   - Child FK equals the parent key: the natural consequence and the purpose of a to_field FK. Settled by convention.\n   - Formset API as entry point: the admin uses inline formsets for this, so it is the same code path that produces the bug.\n   - Validity: basic regression.\n\n4. Alternatives:\n   - Never nulling non-pk to_field defaults passes.\n   - Re-applying the default when bound also passes, since the child FK is read from the parent afterwards.\n   - A fix that only regenerates the key at parent save time in the admin would not be a reasonable place for the fix. The nulling happens at formset construction, and the parent is saved before the formsets, so such a fix would be a hack around the real cause.\n   - Assertions on unchanged pk-default behavior were added to a non-graded test, so they don't matter.\n\nEvery reasonable fix keeps a non-null parent UUID consistent with the child's FK after validation.",
+    "score": 2,
+    "explanation": "The graded test checks that a bound inline formset for a new parent keeps the parent's auto-generated UUID alternate key (not None) and that the child's FK matches it, which is exactly the reported bug of the id being set to null.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRK6f9Uk9GycBTgigD8",
+  "input_tokens": 3816,
+  "output_tokens": 2875,
+  "seconds": 29.5
+}

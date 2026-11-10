@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10435",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9739,
+  "output": {
+    "reasoning": "1. The issue reports that the LaTeX writer, when highlighting inline `code` role content, puts a newline after `\\sphinxupquote{` and before `}}`. LaTeX renders each newline as a space. The issue states the intended markup outright: `Inline \\sphinxcode{\\sphinxupquote{%` + newline + highlighted content + `%` + newline + `}} code block`.\n2. The test requires the generated .tex to contain exactly `Inline \\sphinxcode{\\sphinxupquote{%\\n` + common_content + `%\\n}} code block`. The input is the same reproduction RST from the issue, which is already in the test root. The `\\begin{sphinxVerbatim}` assertion is unchanged.\n3. The `%` before each newline is settled by the spec, which says: \"a priori, mark-up should be: Inline \\sphinxcode{\\sphinxupquote{%\\n\\PYG{k}{def} ... \\PYG{k}{pass}%\\n}} code block\". The highlighted content is unchanged from existing behavior.\n4. A developer could instead strip the newlines entirely. That would remove the spaces too, but it departs from the markup the spec explicitly states. A developer following the spec writes the `%` form, and the test asserts that form verbatim.",
+    "score": 1,
+    "explanation": "The graded assertion checks, verbatim, the exact `\\sphinxupquote{%\\n...%\\n}}` markup that the issue gives as the expected output.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRUojCxXKnYe2u7mVfR",
+  "input_tokens": 3937,
+  "output_tokens": 1051,
+  "seconds": 11.3
+}

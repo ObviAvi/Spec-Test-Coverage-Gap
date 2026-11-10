@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8269",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10618,
+  "output": {
+    "reasoning": "The specification concerns the linkcheck entry point: HTTP errors must take precedence over missing-anchor errors when linkcheck_anchors=True. The graded test builds documentation containing one anchored HTTP URL, serves a 500 response, and requires one broken-link entry in output.txt. The enabled anchor setting and HTTP 500 case are settled by the issue, which explicitly mentions “404, 500.” Reporting the HTTP error rather than “Anchor ... not found” is directly required. The exact error text follows the specification’s instruction to produce the “Same as when linkcheck_anchors=False,” using the standard 500 counterpart of its illustrated 404 message. Keeping the fragment in the reported link but omitting it from the HTTP error’s request URL also follows the example. The filename, line number, localhost address, and single output entry follow from the one-link fixture and normal linkcheck output conventions. HttpServerThread and InternalServerErrorHandler are test infrastructure, not required production APIs. No open implementation choice is constrained: a fix can detect and propagate the HTTP failure through any implementation that preserves the requested reporting behavior.",
+    "score": 2,
+    "explanation": "The assertion checks the requested HTTP-error reporting on the explicitly mentioned 500 case, using the standard error-message pattern illustrated by the specification rather than imposing a particular implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2549,
+  "output_tokens": 947,
+  "seconds": 26.5
+}

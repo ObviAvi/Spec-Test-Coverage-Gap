@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16569",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9452,
+  "output": {
+    "reasoning": "1. The spec says add_fields() raises a TypeError when index is None, can_delete=True and can_delete_extra=False. This happens, for example, through FormSet.empty_form. The spec names the faulty line and proposes a fix: `if self.can_delete and (self.can_delete_extra or (index is not None and index < initial_form_count))`.\n2. The test needs `formset.empty_form` to build without error. It then asserts `\"DELETE\" not in formset.empty_form.fields` for a formset with can_delete_extra=False.\n3. Not crashing is settled directly by the spec's reproduction case. The absence of DELETE is settled by the spec's proposed condition, since index None makes the clause False. It is also settled by meaning: empty_form is the template for new extra forms, and can_delete_extra=False means extra forms get no delete field.\n4. The only alternative would be a fix that treats None as deletable and adds DELETE to empty_form. That contradicts both the spec's suggested fix and the purpose of can_delete_extra, so it is not a reasonable correct fix.",
+    "score": 2,
+    "explanation": "The assertion `assertNotIn(\"DELETE\", formset.empty_form.fields)` follows from the spec's proposed condition (`index is not None and index < initial_form_count`) and from the meaning of can_delete_extra=False for the extra-form template, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRJMueekxsvgDXBGitA",
+  "input_tokens": 3572,
+  "output_tokens": 760,
+  "seconds": 7.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pylint-dev__pylint-4551",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11928,
+  "output": {
+    "reasoning": "1. Spec: pyreverse should read type hints so that attributes like `a: str = None` appear as something like `a : String` in the UML. It describes only the symptom and names no function.\n\n2. Graded tests require:\n- New functions `get_annotation` and `infer_node` in `pylint.pyreverse.utils`. These names are never mentioned in the spec.\n- `get_annotation(node)` must return an object with a `.name` attribute.\n- For `a: str = None` that name must be 'Optional[str]', a specific label choice. The issue itself suggested `a : String`.\n- `infer_node` must call the module-level `pylint.pyreverse.utils.get_annotation`, since the test patches it, and must call `NodeNG.infer`.\n- `infer_node` must return `set()` when inference raises `InferenceError`, and `set(node.infer())` otherwise.\n- The dot-file tests likely expect specific output labels in the fixture files.\n\n3. Status of each requirement:\n- All of these are open. The spec gives no function names.\n- 'Optional[str]' for a None default is one valid choice. A fix could plausibly show 'str' instead.\n- The dot fixtures pin an exact output format.\n\n4. Reasonable alternatives that would fail:\n- A developer could implement annotation reading inside `ClassDiagram.get_attrs` or `inspector.Linker` without creating `utils.get_annotation` or `utils.infer_node`. That fix fails on import.\n- A fix rendering `a : str` for `a: str = None` fails the Optional label assertion.\n\nThe tests require unspecified new helper names and their internal return shapes, so this is a 4.",
+    "score": 4,
+    "explanation": "The tests import and directly unit-test new helper functions `get_annotation` and `infer_node` from `pylint.pyreverse.utils`, which the spec never mentions, and mock their internal interaction. A correct fix that reads annotations elsewhere, for example directly in diagrams.py or inspector.py, fails at import. The tests also pin the label 'Optional[str]' for `a: str = None`, whereas the issue suggested a plain type label.",
+    "overspecification_vector": "from pylint.pyreverse.utils import get_annotation, get_visibility, infer_node; get_annotation(node.value).name == 'Optional[str]'; @patch(\"pylint.pyreverse.utils.get_annotation\"); assert infer_node(node) == set()"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRQh3GPJD9XboumFW8E",
+  "input_tokens": 4716,
+  "output_tokens": 839,
+  "seconds": 9.3
+}

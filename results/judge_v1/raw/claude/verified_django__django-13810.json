@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13810",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10491,
+  "output": {
+    "reasoning": "1. The spec says that when a middleware raises MiddlewareNotUsed in load_middleware, `handler` has already been overwritten by `self.adapt_method_mode()`. That poisons the chain under ASGI, so an async request ends up with a sync HttpResponse and fails with \"can't be used in 'await' expression\". It names the code location (base.py load_middleware). The natural fix is to keep the adapted handler in a temporary variable and only assign it to `handler` once instantiation succeeds, or to restore `handler` on MiddlewareNotUsed.\n\n2. The test needs the following:\n- An async client GET with MIDDLEWARE = [SyncAndAsyncMiddleware, MyMiddleware], where MyMiddleware is a sync-only middleware raising MiddlewareNotUsed. Both appear to be existing test fixtures.\n- Response content b'OK' and status 200.\n- Debug log records[0] equal to 'Asynchronous middleware middleware_exceptions.tests.MyMiddleware adapted.'\n- Debug log records[1] equal to \"MiddlewareNotUsed: 'middleware_exceptions.tests.MyMiddleware'\".\n\n3. Each requirement:\n- Response OK/200: settled by the spec, since this is exactly the reported symptom.\n- The log messages: settled by existing code. adapt_method_mode already logs 'Asynchronous %s adapted.' with name='middleware <path>' when DEBUG is on, and load_middleware already logs the MiddlewareNotUsed message.\n- Log order (adapt before MiddlewareNotUsed): settled by necessity. The middleware factory must receive an adapted handler before anyone can know it will raise MiddlewareNotUsed, so adaptation, and its log line, always comes first.\n\n4. Is there a reasonable fix that fails? Any fix, whether it uses a temp variable or restores the saved handler on exception, still calls adapt_method_mode before instantiation and leaves the existing log messages unchanged. The final handler adaptation in load_middleware passes no name/debug, so it adds no log record. Only a fix that added unrelated extra debug logs would break the record indices, and that is not a reasonable fix.",
+    "score": 2,
+    "explanation": "The test checks that an async request through a chain containing an unused sync-only middleware returns 200/'OK', which is the reported bug. The log messages it asserts come from existing Django code and appear in a fixed order for any reasonable fix.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR9vZSZok3EZ6vNAcZY",
+  "input_tokens": 3834,
+  "output_tokens": 1895,
+  "seconds": 18.4
+}

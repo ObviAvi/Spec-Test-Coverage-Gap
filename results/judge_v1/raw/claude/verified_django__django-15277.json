@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15277",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10983,
+  "output": {
+    "reasoning": "1. The specification says `Value('test')._resolve_output_field()` returns a `CharField()` with no max_length. That field still gets a `MaxLengthValidator(None)`, so `clean()` raises a TypeError. The proposed fix is explicit: in `CharField.__init__`, only add `MaxLengthValidator` when `max_length is not None`, as `BinaryField` already does. It names `Value._resolve_output_field` and `CharField.__init__` directly.\n2. The graded test requires that, for each of 11 value types, `Value(value)._resolve_output_field()` returns a field whose `clean(value, model_instance=None)` does not raise. The types are str, bool, int, float, date, datetime, time, timedelta, Decimal, bytes and UUID.\n3. Status of each requirement:\n   - The private method `_resolve_output_field` is settled: the spec uses it in the reproduction (`y = x._resolve_output_field()`).\n   - `clean(..., model_instance=None)` not raising is settled: the spec shows `y.clean('1', model_instance=None)` raising a TypeError as the bug.\n   - The other value types are only a regression check. Their fields already clean fine before the fix: `BinaryField` already guards its validator, and `DecimalValidator` handles None. Only the str case fails before the fix.\n4. Any reasonable fix makes the str case clean without error. That includes the suggested `CharField.__init__` guard, and also an alternative such as making `MaxLengthValidator` tolerate None. No test asserts on the validators list or on internals, so no reasonable fix fails.",
+    "score": 2,
+    "explanation": "The graded test only checks that `Value(value)._resolve_output_field().clean(value, model_instance=None)` does not raise, which is exactly the reproduction in the spec; the extra value types are regression checks that already pass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtREn9ZYPibSaAjkF4Dm",
+  "input_tokens": 4039,
+  "output_tokens": 1228,
+  "seconds": 11.9
+}

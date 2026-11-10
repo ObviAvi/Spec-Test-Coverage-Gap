@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11211",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10551,
+  "output": {
+    "reasoning": "1. The spec says that prefetch_related on a GenericForeignKey returns None when the target model has a UUID primary key and the object_id field is a CharField. It gives a reproduction: Bar.objects.all().prefetch_related('foo').\n\n2. What the graded test requires:\n- It adds an Article model with a UUID primary key and adds content_type_uuid, object_pk_uuid and content_object_uuid fields to Comment. These are all test fixtures, not names the fix must introduce.\n- It creates a Comment pointing at an article.\n- It calls Comment.objects.prefetch_related('content_object_uuid').\n- It asserts that the list of content_object_uuid values equals [article].\n\n3. Settlement of each requirement:\n- The behavior (the prefetched GFK returns the correct object) is settled directly by the spec: prefetch \"return None for attribute foo\" should instead return the object.\n- The object field is a TextField rather than a CharField. That is a closely related input, and the fix naturally lives in GenericForeignKey.get_prefetch_queryset / gfk_key, which converts the pk with the model pk's to_python or get_prep_value. That covers both field types.\n- Equality of model instances compares pk and model, which is standard.\n\n4. Any reasonable fix makes the prefetch keys match, for example by normalizing the pk via to_python. The test checks only observable results through the public entry point. I can see no reasonable fix that fails it.",
+    "score": 1,
+    "explanation": "The test reproduces the issue almost verbatim: it prefetches a GFK pointing at a UUID-pk model through a text object_id and asserts the related object is returned rather than None, so every correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR2KpwiiZV1nGmpGtiU",
+  "input_tokens": 4066,
+  "output_tokens": 590,
+  "seconds": 7.2
+}

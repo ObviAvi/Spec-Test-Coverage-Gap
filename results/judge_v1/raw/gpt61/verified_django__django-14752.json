@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14752",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11456,
+  "output": {
+    "reasoning": "1. The issue requests a specific extension point: replace the inline result dictionary with `self.serialize_result(obj, to_field_name)`, with the default method returning `{'id': str(getattr(obj, to_field_name)), 'text': str(obj)}`.\n2. The graded test subclasses AutocompleteJsonView, overrides that exact method and signature, calls the superclass implementation, and adds a string-valued `posted` field. It invokes the existing view through `as_view()` using an authenticated autocomplete request and asserts HTTP 200, the original string-valued id/text fields, the added posted values, result ordering, and unchanged pagination.\n3. The method name, signature, default serialization, and use of the override are explicitly settled by the specification's proposed implementation. Extending the superclass dictionary is directly demonstrated by the customization example. Using `posted` instead of `notes` merely exercises the same customization on another model field. Successful request handling and pagination preserve the existing behavior shown in `get()`. Result ordering likewise remains the ordering of `context['object_list']`, which the requested refactor explicitly retains; it does not introduce a new sorting requirement for the serialization hook.\n4. There are no open implementation choices that the test unnecessarily pins down. A reasonable implementation of the specified extraction preserves the existing request/queryset/pagination behavior and includes the subclass's extra field, so it passes.",
+    "score": 1,
+    "explanation": "The test directly exercises the explicitly requested serialize_result(obj, to_field_name) override and verifies that its extra field appears alongside the specified default id and text fields.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2574,
+  "output_tokens": 708,
+  "seconds": 17.5
+}

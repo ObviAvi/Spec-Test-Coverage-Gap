@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15127",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10402,
+  "output": {
+    "reasoning": "1. The title says \"LEVEL_TAGS not updated when using @override_settings\". The visible symptom is that Message.level_tag returns '' for tags added via override_settings(MESSAGE_TAGS=...).\n\n2. The graded test applies @override_settings(MESSAGE_TAGS=message_tags). It then asserts `base.LEVEL_TAGS == self.message_tags`, reading the module-level variable in django.contrib.messages.storage.base. It never checks Message.level_tag.\n\n3. Requirements:\n- The tags must reflect overridden settings. Settled by the spec.\n- The module attribute `base.LEVEL_TAGS` must itself be refreshed on settings change, for example through a setting_changed receiver. Partly suggested by the title, which names LEVEL_TAGS, but open as to mechanism. The description frames the bug through the level_tag property.\n- The equality value is settled: message_tags covers every default level, so merging DEFAULT_TAGS with MESSAGE_TAGS (get_level_tags) equals message_tags.\n\n4. Alternative fix: make Message.level_tag compute tags lazily, calling utils.get_level_tags() on each access or using a cached accessor cleared on setting_changed. A developer might then drop or ignore the module constant. That fix fully solves the reported symptom: level_tag returns the custom tag under override_settings. But base.LEVEL_TAGS stays stale or no longer exists, so the graded assertion fails.\n\nThe test checks module-level internal state rather than the observable level_tag. The variable is named in the issue title, which tempers this from a 4 to a 3.",
+    "score": 3,
+    "explanation": "A fix that makes Message.level_tag read settings dynamically (e.g., calling get_level_tags() in the property) resolves the reported symptom, but fails because the test asserts the module-level constant base.LEVEL_TAGS is reassigned under override_settings. To pass, the fix must also update base.LEVEL_TAGS itself on setting change, for example via a setting_changed receiver for MESSAGE_TAGS.",
+    "overspecification_vector": "self.assertEqual(base.LEVEL_TAGS, self.message_tags) — asserts the module attribute django.contrib.messages.storage.base.LEVEL_TAGS rather than Message.level_tag"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRDyVALAkAsQXJnR6B8",
+  "input_tokens": 3971,
+  "output_tokens": 1622,
+  "seconds": 15.6
+}

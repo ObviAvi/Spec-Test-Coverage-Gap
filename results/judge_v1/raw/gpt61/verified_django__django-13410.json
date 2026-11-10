@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13410",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9689,
+  "output": {
+    "reasoning": "1. The issue identifies incorrect return values in POSIX lock() and unlock(): fcntl.flock() returns None on success and raises OSError on failure. The supplied implementation explicitly returns True on success and False on OSError for both functions. 2. The tests call locks.lock() with file objects and LOCK_EX, LOCK_SH, and LOCK_NB, and call locks.unlock(). They require literal True for successful acquisition/release and literal False for unsuccessful nonblocking acquisition. There are no mocks or implementation-detail assertions. 3. The exact boolean values and both functions are settled by the supplied diff. Exclusive-lock conflicts and compatible shared locks follow the existing POSIX flock semantics; opening the same file twice provides ordinary success and contention cases. 4. No tested requirement leaves a meaningful implementation choice open: a reasonable fix can change how errors are handled internally, but must report these successful and failed operations with the specified booleans.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the assertions directly check the specified True return on successful locking/unlocking and False return on failed nonblocking acquisition.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2321,
+  "output_tokens": 773,
+  "seconds": 20.0
+}

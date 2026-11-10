@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11179",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8225,
+  "output": {
+    "reasoning": "1. Spec: calling delete() on an instance of a model with no dependencies (the fast-delete path) doesn't set the PK to None, and it should; it points to the fast-delete branch in deletion.py. 2. The test requirements are as follows. It uses Collector(using='default') and can_fast_delete(u), both existing APIs. Collector.can_fast_delete is a sanity check on existing behavior, and the context lines show the module imports already exist. It calls u.delete() and then asserts u.pk is None. 3. Setting the PK to None after delete() is settled by the spec text: \"It should be set to None after .delete() call.\" Using the User model and the can_fast_delete check rely on existing code and existing behavior, and the fix doesn't change them. 4. There is no open requirement. Any fix that sets the PK to None in the fast-delete path passes, including a setattr(instance, model._meta.pk.attname, None) in the early-return branch. A fix that made the instance no longer fast-deletable would be contrived. 5. The test mirrors the spec almost verbatim.",
+    "score": 1,
+    "explanation": "The test checks exactly that u.pk is None after delete() on a fast-deletable model, which the spec directly states.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR1whBE3d5eerbvTs8f",
+  "input_tokens": 3069,
+  "output_tokens": 422,
+  "seconds": 5.8
+}

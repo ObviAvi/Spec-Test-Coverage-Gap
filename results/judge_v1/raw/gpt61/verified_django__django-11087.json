@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11087",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18866,
+  "output": {
+    "reasoning": "The specification identifies .delete() fetching unnecessary fields and requires avoiding those reads: the reported text field is \"not actually needed for the .delete()\" and \"Django shouldn't be fetching that field.\" Restricting cascade queries to necessary keys is therefore settled. The test's Origin/Referrer/SecondReferrer relationships reasonably extend this to references targeting both the primary key and a unique non-primary-key field.\n\nThe graded test additionally requires exactly two queries, with the first SQL string exactly matching Referrer.objects.only('id', 'unique_field').filter(origin__in=[origin]).query. Those details are open: the specification does not settle projection order, equivalent predicate syntax, or query count. A reasonable implementation could collect the necessary key values through an explicit values_list() projection in a different order, adapting the collector accordingly. It would avoid every unnecessary field and preserve cascades but fail the SQL equality assertion. An equivalent singleton equality predicate rather than IN would also fail.\n\nThe signal cases require large_field to appear in the first SELECT whenever either pre_delete or post_delete has a listener. Preserving signal receivers' access to instance data is conventional, but eager loading in that particular query is not uniquely required. For example, a correct implementation could defer non-key fields for pre_delete-only listeners, allowing receivers to load them while the row still exists, while eagerly loading fields when post_delete listeners require that protection.\n\nThe tests exercise the intended deletion entry point, but constrain observable SQL choices beyond the requested optimization.",
+    "score": 3,
+    "explanation": "A correct fix can select only the necessary keys using a different projection order or an equivalent WHERE predicate, yet fail the exact SQL comparison. The fixed query count and mandatory eager selection for no-op signal receivers also go beyond the specified behavior.",
+    "overspecification_vector": "self.assertEqual(ctx.captured_queries[0]['sql'], expected_sql), where expected_sql is built with Referrer.objects.only('id', 'unique_field').filter(origin__in=[origin]).query; both occurrences of with self.assertNumQueries(2) as ctx:; self.assertIn(connection.ops.quote_name('large_field'), ctx.captured_queries[0]['sql']) for both pre_delete and post_delete."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4644,
+  "output_tokens": 2474,
+  "seconds": 59.5
+}

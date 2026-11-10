@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11265",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11437,
+  "output": {
+    "reasoning": "1. The issue reports a FieldError when exclude() references an annotated FilteredRelation, and explicitly reproduces it with book_alice__isnull=False. It suggests lost query metadata in split_exclude(), but does not require that implementation approach.\n2. The test uses Author.objects.annotate(), FilteredRelation('book'), Q(book__title__iexact='poem by alice'), and exclude(book_alice__isnull=False). These inputs and the public entry point are settled by the reproduction. It asserts the resulting sequence is [self.author2], without inspecting SQL, private methods, or intermediate state.\n3. The expected author2 is not literally specified: the report's example says []. However, ordinary exclude() semantics require retaining authors outside the filtered match, and the supplied positive example identifies author1 as the sole match. The singleton expectation introduces no ordering choice.\n4. A fix returning [] merely to follow the report's illustrative expectation would not be a reasonable general fix if the fixture contains a nonmatching author2; it would violate exclude() semantics. No reasonable implementation alternative would produce a different result for this query and fixture.\n5. The test therefore adds only the conventional result semantics to the reported reproduction.",
+    "score": 2,
+    "explanation": "Every reasonable fix must make the reported exclude() query work and preserve normal exclusion semantics, which retain the nonmatching author2 rather than raising FieldError.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2807,
+  "output_tokens": 756,
+  "seconds": 20.4
+}

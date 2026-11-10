@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13023",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8793,
+  "output": {
+    "reasoning": "1. Spec: `DecimalField.to_python()` raises TypeError when given a dict; it should raise ValidationError so the bad field can be traced. The entry point is named.\n2. Test requirements: `field.clean(value, None)`, which calls `to_python`, must raise ValidationError with the message '“%s” value must be a decimal number.' for these inputs: (), [], {}, set(), object(), complex(), a non-numeric string and a non-numeric bytestring.\n3. Status of each requirement:\n- ValidationError type: settled by the spec ('produces TypeError instead of ValidationError').\n- Message: settled by existing code. The removed test lines show `to_python('abc')` already raises '“abc” value must be a decimal number.' via the field's 'invalid' error with a value param. Reusing that existing invalid error is the only natural choice, and the test formats the value the same way the existing params do.\n- Input set: dict is from the spec. The other inputs are closely related non-decimal values. Decimal() raises TypeError for set, object, complex and bytes, and ValueError for () and [], whose length is not 3.\n4. Could a reasonable fix fail?\n- A fix catching only TypeError would miss the ValueError from tuples and lists. Under the rules that counts as fixing only the literal case while leaving the same bug in closely related inputs. The natural fix catches (InvalidOperation, TypeError, ValueError).\n- A fix that invents a new error message for non-string types is unlikely, since the existing 'invalid' message already covers 'value must be a decimal number'.\n- test_lookup_really_big_value is listed as graded but its code is not shown. It presumably passes with any fix that makes to_python robust.",
+    "score": 2,
+    "explanation": "Every reasonable fix catches the conversion errors in `to_python` and re-raises the field's existing 'invalid' ValidationError. That yields the asserted '“%s” value must be a decimal number.' message for dicts and other non-decimal inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR6sAhmBSmqhU31FdoJ",
+  "input_tokens": 3236,
+  "output_tokens": 1766,
+  "seconds": 17.3
+}

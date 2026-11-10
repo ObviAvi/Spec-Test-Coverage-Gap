@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-10554",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11800,
+  "output": {
+    "reasoning": "The specified defect is mutation of an ordered union through a derived queryset: the report says that `.order_by().values_list('pk', flat=True)` \"causes re-evaluation of the original qs to break.\" Preserving the original queryset is therefore settled. The added test uses the same public union(), order_by(), and values_list() APIs, with filters and ReservedName fields supplying ordinary related inputs. Its exact ascending, descending, and multicolumn expected sequences follow conventional ordering semantics and are not arbitrary. However, every added case also requires an explicitly projected union to retain ordering by columns omitted from that projection: values_list('order') is sorted by 'pk', or by 'name' and 'pk'. Unlike the reproduction, these cases do not clear ordering before projection. Supporting that additional operation is open: a reasonable fix could clone the union operands before changing their selected fields, preventing derived querysets from corrupting the original, without adding support for ordering projected unions by unselected columns. Such a fix would resolve the reported mutation bug but fail these assertions. The annotated/unannotated test appears only as unchanged context and supplies no additional added requirement.",
+    "score": 3,
+    "explanation": "A reasonable fix could isolate the union's component queries so that deriving an unordered values_list() queryset no longer corrupts the original. The tests additionally require ordering a projected union by omitted columns to succeed, so a fix preserving restrictions on that operation would fail.",
+    "overspecification_vector": "All six expressions in test_union_with_values_list_and_order: union_qs.order_by('-pk').values_list('order', flat=True); union_qs.order_by('pk').values_list('order', flat=True); union_qs.values_list('order', flat=True).order_by('-pk'); union_qs.values_list('order', flat=True).order_by('pk'); union_qs.order_by('-name', 'pk').values_list('order', flat=True); union_qs.values_list('order', flat=True).order_by('-name', 'pk'). Each is required by self.assertEqual(list(qs), expected_result) to support ordering by columns absent from the explicit projection."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2951,
+  "output_tokens": 3793,
+  "seconds": 85.0
+}

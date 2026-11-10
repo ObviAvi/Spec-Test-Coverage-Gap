@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13109",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13026,
+  "output": {
+    "reasoning": "1. The specification explicitly requires: \"ForeignKey.validate() should validate using the base manager instead of the default manager,\" and reproduces the failure using a ModelForm whose foreign-key queryset includes archived records. 2. The graded tests require an archived Author excluded by its default manager to pass Article.full_clean(), and an archived Writer explicitly included through Writer._base_manager.all() to produce a valid ModelForm that saves the selected relationship. They introduce no mocks or required implementation names. 3. Accepting these archived related objects is directly settled by the quoted requirement and the form example. full_clean() returning None on success, form.is_valid() returning True, and form.save() preserving the selected foreign key are standard existing API contracts, not arbitrary implementation choices. The fixture names and sample strings do not constrain the fix. The ungraded test's exact error message is irrelevant. 4. There are no open requirements for which a reasonable correct fix would fail: both graded tests exercise the requested validation behavior through its ordinary callers. 5. The tests directly reproduce the specified bug without prescribing how the fix is implemented.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix allows base-manager-visible archived objects to pass foreign-key validation, satisfying both the full_clean() assertion and the explicitly expanded ModelForm queryset example.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2959,
+  "output_tokens": 621,
+  "seconds": 15.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13516",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8729,
+  "output": {
+    "reasoning": "The specification explicitly identifies broken \"flush() on self.stdout/stderr management commands\" and expects progress output to become visible before migration work finishes. The test exercises that same API through a BaseCommand whose handle() writes 'Working...', calls self.stdout.flush(), and writes 'OK'. It supplies StringIO as stdout through management.call_command(). Using a supplied stream is a conventional related case, not a different function requiring another fix. The 'Working...' assertion checks preservation of the command's own output; that text comes from the test fixture and imposes no production message requirement. The mocked_flush.called assertion checks that the supplied stream's public flush() is invoked. This is settled by standard stream semantics: flushing the management output wrapper must propagate flushing to its underlying stream. The test requires neither a particular call count nor an implementation-specific helper. The fixture command's name likewise imposes no naming requirement on the fix. There are no open requirements for which a reasonable correct fix would fail; fixing only migrate while leaving management-command stdout.flush() broken would not satisfy the stated issue.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix passes: invoking the supplied stream's flush() is the standard behavior implied by fixing self.stdout.flush(), and the test otherwise only checks that ordinary command output is preserved.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1981,
+  "output_tokens": 947,
+  "seconds": 24.0
+}

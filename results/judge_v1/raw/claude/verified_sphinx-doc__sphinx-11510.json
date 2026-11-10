@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-11510",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15158,
+  "output": {
+    "reasoning": "1. The spec says that when an extension modifies text in a `source-read` handler, the change is lost for files pulled in with `.. include::`. The handler does run for the included file, but the include directive re-reads the raw file. Expected: replaced text appears in the including document's output. No implementation mechanism is prescribed.\n2. Test requirements:\n(a) While parsing 'index', the `source-read` event fires for the included rst file with docname 'baz/baz', the path converted to a docname.\n(b) It does not fire for a `:literal:` include of text.txt.\n(c) The source passed to the handler is exactly \"\\nBaz was here.\": the content after `:start-line: 4` slicing, with no trailing marker lines and no trailing newline.\n(d) Nested includes (baz includes foo) also pass through the event, so the paragraph rawsource becomes \"The amazing foo.\"\n3. Settled vs open:\n(d) and the general replacement behavior are settled by the spec's expected output.\n(a) Docname via path2doc is fairly conventional.\n(b) Skipping literal includes is reasonable, though not stated.\n(c) is open. The spec never says whether the handler sees the full included file or the post-option slice. A natural alternative is to emit `source-read` on the whole raw file, matching the event's existing semantics of receiving a document's full source, and then apply start-line/end-line. Under that fix the handler receives \"Baz\\n===\\n\\n.. include:: foo.rst\\n\\nBaz was here.\", so `sources_reported[\"baz/baz\"] == \"\\nBaz was here.\"` fails even though replacements work correctly.\n   Another plausible alternative caches each document's `source-read` output and has Include use the cached text. That fix would not emit the event during the index parse, so `\"baz/baz\" in sources_reported` fails.\n4. These are observable choices about what the extension event receives, not private APIs, but they pin one of several valid designs.",
+    "score": 3,
+    "explanation": "A correct fix that emits source-read with the full included file content and then applies start-line/end-line options, or that reuses cached source-read output, makes replacements work. It still fails the exact assertion that the handler received only the sliced text \"\\nBaz was here.\" for docname 'baz/baz' during the index parse.",
+    "overspecification_vector": "assert \"baz/baz\" in sources_reported; assert sources_reported[\"baz/baz\"] == \"\\nBaz was here.\" (requires the event to fire inside Include with post-:start-line: sliced text, without the docutils marker lines)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRV3YuoWyiZquFoJuUs",
+  "input_tokens": 6018,
+  "output_tokens": 2216,
+  "seconds": 25.3
+}

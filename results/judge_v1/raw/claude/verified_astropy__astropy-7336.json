@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-7336",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20459,
+  "output": {
+    "reasoning": "1. The spec says quantity_input crashes when a function has a `-> None` return annotation. It calls `.to` on the None return value. The fix should skip the unit conversion for None. The entry point is u.quantity_input.\n\n2. The graded test test_return_annotation_none does three things:\n- It decorates a plain function annotated `solarx: u.arcsec` and `-> None`.\n- It calls the function with 1*u.arcsec.\n- It asserts the result is None.\n\n3. Each requirement:\n- Decorating with `-> None` without crashing is settled by the issue title and reproducer.\n- Returning None is settled: the function returns None and the spec suggests \"check whether None is returned and then omit the unit check\".\n- The test file was renamed from py3_test_quantity_annotations.py. This affects only the test infrastructure, not the fix.\n- The test uses a plain function rather than an __init__ method. That is the same decorator code path.\n\n4. Could a reasonable fix fail? Two plausible fixes are checking `return_annotation is None` or checking `return_ is None`. Either way, None is returned unchanged and the test passes. A fix that only handled methods named __init__ would be contrived and would not count. No reasonable correct fix fails.\n\nThe test closely mirrors the reproducer.",
+    "score": 1,
+    "explanation": "The test decorates a function with `-> None` and asserts that it returns None without error, which is exactly the reproducer's scenario.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtQzK9xDeGf3B6sVdQ4E",
+  "input_tokens": 8668,
+  "output_tokens": 515,
+  "seconds": 5.8
+}

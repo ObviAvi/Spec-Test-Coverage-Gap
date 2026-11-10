@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14434",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8416,
+  "output": {
+    "reasoning": "1. Spec: statement from _create_unique_sql has references_column always false because a Table instance is passed to Columns instead of a string. The bug is located in _create_unique_sql and the symptom is references_column.\n\n2. What the test requires:\n- It calls constraint.create_sql(Author, editor). This already exists and routes to _create_unique_sql.\n- It asserts sql.references_table(table) is True. This presumably already passes and is a regression check.\n- It asserts sql.references_column(table, 'name') is True. This is exactly the reported symptom.\n- It also runs add_constraint and remove_constraint, and checks the constraint no longer exists. These are basic regression checks.\n\n3. Each requirement:\n- The references_column assertion is settled by the spec (\"makes references_column always false\").\n- The other checks are settled by existing behavior.\n\n4. Any reasonable fix passes. Passing the table name string to Columns, or adjusting _index_columns or Columns to accept the Table, both make references_column return True. No arbitrary choice is asserted.\n\nThe fix touches _create_unique_sql, and create_sql calls it, so it is the same code path.",
+    "score": 1,
+    "explanation": "The test asserts sql.references_column(table, 'name') is True on the statement produced via _create_unique_sql, which is exactly the reported symptom; any fix that passes the correct table name to Columns passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRC2MF7N2c2TtPJFVCt",
+  "input_tokens": 3089,
+  "output_tokens": 494,
+  "seconds": 5.3
+}

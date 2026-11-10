@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/psf__requests-2317",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8751,
+  "output": {
+    "reasoning": "1. The specification identifies incorrect conversion of a bytes HTTP method: `b'GET'` becomes the literal text `\"b'GET'\"`, producing a 404. It asks Requests to handle a binary method correctly and identifies the conversion in requests/sessions.py.\n2. The added graded test calls the public API `requests.request(b'GET', httpbin('get'))` and asserts `r.ok`. It requires no particular decoding implementation, internal state, exception message, or new symbol.\n3. The bytes input `b'GET'` is explicitly specified. Successfully requesting a GET endpoint rather than receiving the reported 404 directly checks the requested correction. The public request API is the natural entry point for that behavior; the endpoint merely supplies a reproduction target.\n4. There is no open implementation choice constrained by this assertion: a reasonable fix that correctly handles bytes methods will satisfy it. The other listed graded tests have no bodies shown, so their names alone provide no evidence of additional constraints.\n5. The visible test directly reproduces the reported bug.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix makes `requests.request(b'GET', httpbin('get'))` perform a valid GET request, satisfying `assert r.ok` without requiring a particular implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2017,
+  "output_tokens": 605,
+  "seconds": 14.5
+}

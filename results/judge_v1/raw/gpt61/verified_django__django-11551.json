@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11551",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13765,
+  "output": {
+    "reasoning": "1. The specification identifies incorrect admin.E108 validation when a list_display field exists in model metadata but its descriptor raises AttributeError on class access. It explicitly says that hasattr(model, item) being false must not prevent attempting model._meta.get_field(item).\n2. The graded test constructs a PositionField subclass of Field, registers it through contribute_to_class(), and installs it as a descriptor whose __get__ raises AttributeError when instance is None. A Model contains that field, a ModelAdmin lists it in list_display = ('field',), and assertIsValid requires validation to produce no errors. There are no mocks, exact error-message assertions, or requirements on the fix's implementation.\n3. The descriptor's class-access failure and successful metadata registration directly reproduce the specified condition: 'False / ok / False / False' must yield '[]'. Using Model, Field, and ModelAdmin constructs the reported scenario; assertIsValid is the existing validation-test helper. The fixture names and tuple spelling impose no additional behavioral requirement.\n4. No asserted requirement remains open. A fix that still rejects this registered field because class attribute access fails would retain the exact reported bug, rather than represent a reasonable alternative correct fix.\n5. The test is a minimal reproduction of explicitly specified behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must make this ModelAdmin valid because its list_display field exists in model metadata despite raising AttributeError on class access—the precise case the specification says must return no errors.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3160,
+  "output_tokens": 639,
+  "seconds": 14.2
+}

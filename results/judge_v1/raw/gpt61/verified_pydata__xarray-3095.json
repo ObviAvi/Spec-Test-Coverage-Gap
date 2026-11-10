@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-3095",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10439,
+  "output": {
+    "reasoning": "The specification identifies Dataset.copy(deep=True), DataArray.copy(deep=True/False), and the standard copy hooks as losing Unicode index dtype. The graded str-True case instead constructs an IndexVariable containing stringified numbers and calls its own copy(deep=True). It requires the same concrete class and an identical result, including preserved dtype, dimensions, values, and attributes. String inputs beyond the example are reasonably covered, and preservation of class and content follows existing copying conventions. The open requirement is that standalone IndexVariable.copy must be repaired: the specification mentions IndexVariable as the affected representation but does not name that method as an entry point. A reasonable fix could introduce dtype-preserving coordinate cloning in Dataset.copy and DataArray.copy, also covering their standard copy hooks, while leaving standalone IndexVariable.copy unchanged. That would resolve the reported behavior generally but fail this lower-level test.",
+    "score": 4,
+    "explanation": "The test requires standalone IndexVariable.copy(deep=True) to preserve Unicode dtype. A reasonable fix confined to dtype-preserving coordinate copying in Dataset and DataArray, including their standard copy hooks, could satisfy the specification while still failing this test.",
+    "overspecification_vector": "TestIndexVariable::test_copy[str-True]: w = v.copy(deep=deep), followed by assert_identical(v, w), directly tests IndexVariable.copy rather than the specified Dataset/DataArray copy entry points."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2310,
+  "output_tokens": 1657,
+  "seconds": 35.7
+}

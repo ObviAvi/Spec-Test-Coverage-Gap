@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-25960",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9161,
+  "output": {
+    "reasoning": "The specification says that “wspace and hspace in Figure.subfigures do nothing,” demonstrated by rendering a figure with plt.show(). The test calls the same entry point on a related 2×3 grid with hspace=0.5 and wspace=1/6. Its equal-sized cells, top-to-bottom row ordering, and gaps proportional to subfigure dimensions follow the conventional meaning of these spacing parameters; the 640×480 dimensions reflect the default figure configuration. However, the test additionally requires every subfigure's bbox.min and bbox.max to contain the final spaced geometry immediately after subfigures() returns, without drawing the figure. That timing requirement is open: neither the report nor its rendering example requires eager layout. A reasonable fix could apply the requested spacing during the figure's draw/layout phase, correctly fixing the displayed output for the reported and related inputs while leaving pre-draw bounding boxes unchanged. Such a fix would fail these intermediate-state assertions.",
+    "score": 4,
+    "explanation": "A correct fix could update subfigure geometry during drawing, so that plt.show() renders the requested gaps. The test instead requires final bounding boxes before any draw, rejecting that reasonable implementation.",
+    "overspecification_vector": "The immediate assertions on sub_figs[row, col].bbox.min and .bbox.max without a preceding draw, beginning with np.testing.assert_allclose(sub_figs[0, 0].bbox.min, [0., h * 0.6])."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2335,
+  "output_tokens": 1354,
+  "seconds": 33.6
+}

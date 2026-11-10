@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/mwaskom__seaborn-3187",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9685,
+  "output": {
+    "reasoning": "1. The spec says legend entries for large-valued continuous variables (pointsize/hue) drop the ScalarFormatter offset, which is wrong both in Plot (objects) and in relplot/scatterplot. It names no entry point beyond the formatter and suggests the offset \"can be used to create the legend title and/or labels.\"\n\n2. Requirements of the graded tests:\n(a) Plot(color=x+1e8).add(MockMark()).plot() produces a figure legend with texts.\n(b) relplot(hue=z+1e8) produces g.legend.\n(c) Every legend text string is parseable by float().\n(d) Each parsed value is > 1e7.\n\n3. Status of each:\n(a) and (b) are settled by the spec, which mentions both the objects interface and scatterplot.\n(c) and (d) are open. The spec explicitly allows the offset to go into \"the legend title and/or labels.\"\n\n4. Fixes that violate the open requirements:\n- Fix A keeps the offset-relative tick labels (e.g. \"2\", \"4\") and appends the offset to the legend title, e.g. \"z (+1e8)\" or \"×1e6\". It fails (d), since the labels are small numbers. In the Plot case the title may not even be among the legend texts checked.\n- Fix B applies the offset but formats labels in scientific/mathtext style, e.g. \"$1.0\\times10^{8}$\" when useMathText is set. It fails (c).\nOnly fixes that disable the offset and render each label as a plain number pass. This is one valid observable choice among several the spec itself offers.",
+    "score": 3,
+    "explanation": "The tests require every legend label to be a plain float-parseable number greater than 1e7, i.e. the full value baked into each label. A fix that follows the spec's own suggestion of putting the offset/multiplier in the legend title (keeping short labels), or that renders labels with mathtext/sci notation, would fail.",
+    "overspecification_vector": "for text in legend.texts: assert float(text.get_text()) > 1e7 (test_plot.py TestLegend::test_legend_has_no_offset); for text in g.legend.texts: assert float(text.get_text()) > 1e7 (test_relational.py test_legend_has_no_offset)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRNVg65xy2KFPkFRBCt",
+  "input_tokens": 3722,
+  "output_tokens": 1358,
+  "seconds": 14.4
+}

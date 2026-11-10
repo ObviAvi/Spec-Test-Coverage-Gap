@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12754",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9395,
+  "output": {
+    "reasoning": "The issue concerns autodetection when a field moves from an existing base model to a newly created subclass. It explicitly requests ordering the removal before creation: \"Reversing the order of the migration operations makes it pass.\" The test's ModelState inputs, title CharField(max_length=200), readable/book names, and inheritance reproduce the example; the AutoField and app label are ordinary test-state scaffolding. Requiring RemoveField for readable.title before CreateModel for book is therefore settled. The test additionally requires exactly one migration, containing exactly those two operations. That packaging is open: the specification requires the ordering, not a particular number of migration files. A reasonable alternative would have the autodetector place the removal in a prerequisite migration and create the subclass in a subsequent dependent migration. This preserves the requested ordering and prevents the clash, including for analogous field moves, but fails the single-migration assertion. No mocks or implementation-specific new names are required.",
+    "score": 3,
+    "explanation": "A correct autodetector fix could emit a prerequisite migration removing the base field, followed by a dependent migration creating the subclass. The tests reject this valid ordering because they require both operations in exactly one migration.",
+    "overspecification_vector": "self.assertNumberMigrations(changes, 'app', 1)\nself.assertOperationTypes(changes, 'app', 0, ['RemoveField', 'CreateModel'])"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2154,
+  "output_tokens": 1639,
+  "seconds": 38.4
+}

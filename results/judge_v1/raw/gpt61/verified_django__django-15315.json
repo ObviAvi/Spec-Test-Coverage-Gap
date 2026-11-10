@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15315",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8611,
+  "output": {
+    "reasoning": "1. The specification explicitly identifies the problem: “Field.__hash__ changes value when a field is assigned to a model class,” and requires hash immutability. 2. The graded test constructs models.IntegerField(), records hash(field), assigns that field as MyModel.rank, and asserts that hash(field) remains equal to the recorded value. It requires no particular numeric hash, implementation, message, or helper. 3. The before/after equality is directly settled by the specification. IntegerField is covered by the general Field requirement; using it instead of the example’s CharField does not introduce a distinct behavioral requirement. The model and attribute names are merely test setup. 4. No requirement is open: a fix that still changes this field’s hash on model assignment would leave the reported bug unresolved for a closely related input. 5. The test directly checks the requested invariant.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because assertEqual(field_hash, hash(field)) directly checks the specified requirement that a field’s hash remain unchanged when it is assigned to a model class.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1957,
+  "output_tokens": 426,
+  "seconds": 9.5
+}

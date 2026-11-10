@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13363",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10414,
+  "output": {
+    "reasoning": "The specification explicitly requests tzinfo support for TruncDate and TruncTime, describing the bug as discarding the supplied timezone in favor of the current timezone. The added annotations exercise those same public functions with Melbourne and Pacific timezone objects. The four added assertions require results equal to the supplied-timezone conversion followed by date() or time() extraction. Honoring the supplied timezone is explicitly settled; converting before extraction is necessary to fix the reported incorrect grouping. Testing two other timezones, including a date boundary, covers closely related inputs. Returning date and time values follows the existing functions' purposes and normal extraction conventions; astimezone() is only the test oracle, not a required implementation. Existing year assertions are unchanged. There are no mocks, required internal methods, or open choices for which a reasonable correct fix would produce different results.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix will make TruncDate and TruncTime extract the date or time after conversion to the supplied timezone, matching all four added assertions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2385,
+  "output_tokens": 941,
+  "seconds": 23.9
+}

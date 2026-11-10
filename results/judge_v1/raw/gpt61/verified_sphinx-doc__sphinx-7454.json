@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7454",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10594,
+  "output": {
+    "reasoning": "1. The specification requires that “None in a type hint links to the documentation for the None singleton” in both description and signature modes. It does not name an internal parser or require a particular reference role.\n2. The added assertions require _parse_annotation('int') to produce a pending_xref with refdomain='py', reftype='class', and reftarget='int'. They also require _parse_annotation('None') to produce a pending_xref displaying 'None', with refdomain='py', reftype='obj', and reftarget='None'. No mocks or patched attributes are involved.\n3. Preserving ordinary int references follows the existing parser tests and the reproducer's working int link. Linking None is explicitly settled, but its intermediate node structure and exact 'obj' role are open implementation choices.\n4. A reasonable fix could emit a 'py:data' reference for None, resolving it to the Python constant's documentation, rather than emit a 'py:obj' reference. That would satisfy the requested linking behavior but fail the exact reftype assertion.\n5. The tests therefore constrain an internal representation through a private parser rather than only checking the requested result.",
+    "score": 4,
+    "explanation": "A correct fix could represent None using a Python data reference and still link to the singleton's documentation in both modes. The test would reject it because it directly requires the private parser to emit reftype='obj'.",
+    "overspecification_vector": "doctree = _parse_annotation(\"None\"); assert_node(doctree[0], pending_xref, refdomain=\"py\", reftype=\"obj\", reftarget=\"None\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2595,
+  "output_tokens": 1102,
+  "seconds": 25.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13128",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13415,
+  "output": {
+    "reasoning": "1. The specification asks that subtracting one temporal expression from another (for example F('end') - F('start') on DateTimeFields) work without ExpressionWrapper. The result should resolve to a DurationField, so it can be combined with durations, filtered against timedeltas and returned as a timedelta. It describes a symptom in the ORM's combined-expression handling, not a specific function.\n\n2. The graded tests:\n- annotate with F - F on DateField, DateTimeField and TimeField;\n- subtract Value(None, output_field=<temporal type>) and expect None;\n- subtract a Subquery from F;\n- subtract a Case-derived DateField from F;\n- filter the result with __gte/__lt/= against timedelta values;\n- compare annotated values against timedelta, including a large microsecond delta.\n\n3. Settlement of each requirement:\n- Temporal subtraction yielding a duration is settled by the title, \"make temporal subtraction work without ExpressionWrapper\".\n- Covering Date, Time and DateTime is settled because \"temporal subtraction\" covers all of them, and the repo already supports all three via TemporalSubtraction when wrapped.\n- Subquery and Case operands are related inputs that expose their output_field the same way. A general fix in CombinedExpression that resolves output_field / dispatches to TemporalSubtraction based on operand output types handles them naturally.\n- The None result is existing NULL semantics.\n- The value assertions are exactly what the old ExpressionWrapper-based tests already asserted. Only the wrapper is removed.\n\n4. No open requirements remain. A fix handling only DateTimeField would ignore the general 'temporal subtraction' scope and is not reasonable. No private names, messages or arbitrary values are asserted.",
+    "score": 2,
+    "explanation": "The tests simply drop the ExpressionWrapper from existing temporal-subtraction tests and assert the same timedelta results, which is exactly what the issue requests for date, time and datetime operands.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR7Q3La73b9JQNQ1bao",
+  "input_tokens": 5120,
+  "output_tokens": 1269,
+  "seconds": 14.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15104",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12893,
+  "output": {
+    "reasoning": "1. The spec says the autodetector's only_relation_agnostic_fields crashes with KeyError when a custom FK's deconstruct omits 'to'. The reporter suggests using pop('to', None). The entry point is MigrationAutodetector change detection.\n2. The graded test defines a HardcodedForeignKey identical in design to the reproduction's CustomFKField. It uses get_changes (which runs the autodetector) and asserts: one migration for testapp, operation types ['CreateModel'], and name='Book'.\n3. Each requirement:\n- No crash: settled by the spec.\n- One migration: settled, since the spec's own test asserts len(changes['testapp']) == 1.\n- CreateModel named Book: settled by convention. Adding a new model to the after-state always produces a CreateModel, and the name comes from the model state.\n4. Any reasonable fix (pop with a default, or a membership check before deleting) yields this result. A fix that instead resolved 'to' from field.remote_field would also still produce a single CreateModel. No open details remain.",
+    "score": 1,
+    "explanation": "The test mirrors the issue's reproduction: a hardcoded-to FK with 'to' removed from deconstruct must not crash the autodetector and must yield one CreateModel migration, which any fix to the KeyError produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRDead4NtXnz4u7zKri",
+  "input_tokens": 4890,
+  "output_tokens": 459,
+  "seconds": 5.5
+}

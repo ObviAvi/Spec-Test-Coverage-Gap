@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/psf__requests-1142",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7964,
+  "output": {
+    "reasoning": "1. The issue says GET requests always get a 'Content-Length' header, and some servers (amazon.com) reject such requests with 503. The reporter states the right behavior is not to add this header automatically in GET requests. The opt-out idea is offered only as a fallback, and an opt-in flag would leave the reported default behavior broken.\n2. What the test requires: build `requests.Request('GET', url).prepare()` and `requests.Request('HEAD', url).prepare()`, then assert 'Content-Length' is not in `.headers` for either.\n3. Settled requirements:\n - GET without Content-Length is settled by the spec: \"the right behavior is not to add this header automatically in GET requests.\"\n - HEAD is a closely related input. Both are bodyless methods, and the natural fix (skip Content-Length when there is no body) covers both.\n - Checking the PreparedRequest headers is convention. `prepare()` is the public step where requests builds its headers, and the context test `test_basic_building` already inspects prepared requests.\n4. Possible failing alternatives:\n - A fix hardcoded to GET only would fail the HEAD check. That is a narrow patch of the literal example, leaving the same bug for closely related bodyless requests.\n - A fix that keeps adding the header by default but adds an opt-out flag ignores the stated correct behavior and leaves the reported case broken.\n - The natural fix (only set Content-Length when a body exists) passes.",
+    "score": 2,
+    "explanation": "The test asserts that prepared GET (and the closely related bodyless HEAD) requests carry no Content-Length header, which is exactly the behavior the issue says is correct.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRNc1b3oxdpjqAZytLC",
+  "input_tokens": 2915,
+  "output_tokens": 1081,
+  "seconds": 12.2
+}

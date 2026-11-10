@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16429",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9401,
+  "output": {
+    "reasoning": "1. The spec says timesince() raises TypeError (offset-naive vs offset-aware subtraction) when given an aware datetime with an interval of a month or more under USE_TZ=True. The cause is the pivot datetime being built without d.tzinfo. Entry point: timesince()/timeuntil().\n2. The graded tests are the existing TimesinceTests (test_depth, test_depth_invalid, other units, test_thousand_years_ago), rerun in a subclass where self.t is made aware in the default timezone with USE_TZ=True. They assert the same outputs as the naive case: strings like \"1000\\xa0years\", depth formatting, and ValueError \"depth must be greater than 0.\" test_thousand_years_ago now uses self.t.replace(year=...) so both datetimes share a tzinfo.\n3. Settled. The spec requires aware datetimes with intervals over a month not to crash and to give correct results. The expected strings and the error message already exist in the naive tests (convention/existing code). No new names, private APIs or messages are introduced.\n4. Alternatives:\n- Attaching d.tzinfo to the pivot: passes.\n- Normalizing both datetimes to UTC or naive before computing: yields the same month/year counts for these inputs.\n- The depth ValueError message is pre-existing behavior.\nNo reasonable correct fix would produce different strings.",
+    "score": 2,
+    "explanation": "The tests just rerun the existing timesince test suite with timezone-aware datetimes, which is exactly the reported scenario on related inputs, and any fix that makes aware datetimes behave like naive ones passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRHTm6pgA4B1B51idD5",
+  "input_tokens": 3600,
+  "output_tokens": 1250,
+  "seconds": 14.1
+}

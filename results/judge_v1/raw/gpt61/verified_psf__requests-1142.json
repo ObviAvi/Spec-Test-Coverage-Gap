@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/psf__requests-1142",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7964,
+  "output": {
+    "reasoning": "The issue names requests.get and objects to sending Content-Length, requesting either automatic omission for GET or 'the possibility to not send it.' The test constructs requests.Request objects for GET and HEAD, calls prepare(), and requires 'Content-Length' to be absent from each prepared headers mapping without any opt-out. No mocks or error messages are involved. GET omission is a specified remedy, but mandatory omission by default is open because an opt-out is explicitly allowed. HEAD is a related bodyless-method case, but its default behavior is not explicitly specified. Most importantly, omission during Request.prepare() is open: the issue concerns transmitted requests, not prepared intermediate state. A reasonable fix could remove automatically generated Content-Length for bodyless GET/HEAD requests in the normal sending path while leaving preparation unchanged; that fixes the reported behavior but fails these assertions. An explicit header-suppression option could also satisfy the specification while failing the unconditional default-absence checks.",
+    "score": 4,
+    "explanation": "A reasonable fix could strip the automatically generated header immediately before transmission, resolving requests.get while leaving Request.prepare().headers unchanged. The tests require omission at the preparation stage and also reject the specification's explicitly permitted opt-out-only solution.",
+    "overspecification_vector": "get_req = requests.Request('GET', httpbin('get')).prepare(); self.assertTrue('Content-Length' not in get_req.headers); head_req = requests.Request('HEAD', httpbin('head')).prepare(); self.assertTrue('Content-Length' not in head_req.headers)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1811,
+  "output_tokens": 1056,
+  "seconds": 27.2
+}

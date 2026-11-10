@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11138",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14099,
+  "output": {
+    "reasoning": "The specification identifies incorrect timezone handling in ORM date lookups and explicitly requires conversion \"from the database timezone tz2 to the django app one tz1,\" with no conversion when they are equal. The graded test requires: (1) creating an Event in Africa/Nairobi and finding it by its unchanged local date when the connection timezone is also Africa/Nairobi; and (2) creating an Event at 03:10 in Asia/Bangkok and finding it under the previous day's date in Africa/Nairobi, reflecting the four-hour difference. Both are settled directly by those requirements; the particular dates and timezone names merely instantiate them. Event creation, date filtering, and model equality use the ordinary ORM entry point illustrated in the issue. The timezone override helper reuses an existing test setup pattern, including clearing existing cached connection properties; it does not require a new implementation API or assert internal state. There are no open behavioral choices, exact SQL requirements, or other implementation constraints that would reject a reasonable correct fix.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix should pass both assertions: preserving the date for equal database/current timezones and converting from Bangkok to Nairobi before applying the date lookup.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3412,
+  "output_tokens": 1095,
+  "seconds": 28.6
+}

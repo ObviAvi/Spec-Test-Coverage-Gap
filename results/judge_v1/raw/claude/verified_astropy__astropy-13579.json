@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-13579",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13118,
+  "output": {
+    "reasoning": "1. The specification says `SlicedLowLevelWCS` (accessed through `HighLevelWCSWrapper`) returns a wrong `world_to_pixel` result when the PC matrix couples spectral and spatial axes. It names `SlicedLowLevelWCS` as the culprit, so the bug lies in how that class fills in the dropped world dimension when it maps world to pixel.\n2. What the test requires:\n   - It uses the same header as the issue.\n   - It builds `SlicedLowLevelWCS(fits_wcs, 0)`, the same as the issue.\n   - It gets world values from `fits_wcs.pixel_to_world_values(0,0,0)`.\n   - It calls `sl.world_to_pixel_values(world[0], world[1])` and asserts the first pixel output is close to 0.\n3. How each requirement is settled:\n   - The class and slicing come straight from the issue.\n   - `world_to_pixel_values` is the low-level method that the high-level `world_to_pixel` in the issue delegates to. It is the natural entry point and the same code path.\n   - The input pixel (0,0,0) differs from the issue's central pixel, but it is a closely related input. A correct fix must round-trip any pixel on the slice.\n   - Asserting `out_pix[0] ≈ 0` is the only correct answer for a round trip.\n4. No reasonable correct fix fails. Any fix that correctly handles coupled dropped world dimensions inside `SlicedLowLevelWCS` gives 0 here. A fix that patched only `HighLevelWCSWrapper` would not count as reasonable, because the issue blames `SlicedLowLevelWCS`.",
+    "score": 2,
+    "explanation": "Every correct fix to `SlicedLowLevelWCS` makes the world-to-pixel round trip work on the slice, so asserting `out_pix[0] ≈ 0` for pixel (0,0,0) follows directly from the reported bug.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtQy1igSe3GdJaWw6SMz",
+  "input_tokens": 5563,
+  "output_tokens": 972,
+  "seconds": 10.4
+}

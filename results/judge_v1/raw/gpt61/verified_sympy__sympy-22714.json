@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-22714",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9280,
+  "output": {
+    "reasoning": "The specification reports that sympifying Point2D(Integer(1), Integer(2)) inside evaluate(False) raises unexpectedly. The test requires evaluate(False) and the same integer coordinates, which are settled by that reproduction, but calls Point(1, 2) directly and requires only that no exception occur. Standalone Point construction is an open scope requirement: Point appears in the traceback as Point2D's delegate, but is not the reported entry point. A reasonable fix could make Point2D locally enable evaluation while delegating to Point, restoring the ambient setting afterward. That would repair the reported case and related Point2D inputs while leaving direct Point construction unchanged and failing this test.",
+    "score": 4,
+    "explanation": "The test requires direct Point construction to work, rather than the reported Point2D entry point. A reasonable fix in Point2D that guards its delegation to Point against disabled evaluation would resolve the issue but still fail the test's standalone Point call.",
+    "overspecification_vector": "with evaluate(False):\n    Point(1, 2)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2262,
+  "output_tokens": 1481,
+  "seconds": 35.9
+}

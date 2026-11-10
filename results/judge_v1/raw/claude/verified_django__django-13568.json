@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13568",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10813,
+  "output": {
+    "reasoning": "1. Specification: auth.E003 fires even when USERNAME_FIELD is made unique through a Meta.constraints UniqueConstraint. The check should look in Model._meta.constraints for USERNAME_FIELD. It names the check (auth.E003) and the reproduction case.\n2. The graded test test_username_unique_with_model_constraint requires:\n - A model like the one in the spec, with UniqueConstraint(fields=['username'], name='username_unique').\n - run_checks must return [] under the default auth backend, so E003 must not fire.\n - run_checks must also return [] with a custom backend, so W004 must not fire either.\n3. Settlement:\n - Suppressing E003 is settled directly by the spec: \"The system check should be extended to check for the presence of USERNAME_FIELD in Model._meta.constraints.\"\n - Suppressing W004 is settled by convention. W004 is the same uniqueness check, just applied when custom backends are configured, so the field is equally unique in that case. A reasonable fix would change the single 'is unique' condition, which covers both E003 and W004.\n - Edge cases are not graded here. Conditional constraints are handled by the partial test, which is not graded. Multi-field constraints are not tested.\n4. Possible failing fix: one that only suppressed E003 but left W004 firing. That would be an inconsistent, half fix, not a reasonable one.\n - A fix that accepts any UniqueConstraint containing the field passes the graded test.\n - A fix requiring exactly fields == (USERNAME_FIELD,) also passes.\n - Whether a fix excludes conditions does not matter for the graded test.",
+    "score": 2,
+    "explanation": "The graded test is the spec's own example: a total UniqueConstraint on the username field. It asserts no E003 and, consistently, no W004, which any reasonable fix to the uniqueness condition produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR9JfgsGH8Tk7LXJ1EN",
+  "input_tokens": 4019,
+  "output_tokens": 654,
+  "seconds": 7.4
+}

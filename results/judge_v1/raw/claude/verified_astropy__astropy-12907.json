@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-12907",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9694,
+  "output": {
+    "reasoning": "1. The spec says separability_matrix gives the wrong answer for nested CompoundModels built with '&'. The expected result is block-diagonal, matching the flat case. Entry point: separability_matrix.\n\n2. Graded tests are test_separable parametrized cases 6 and 9 (0-indexed), which map to cm7 and cm10.\n- cm7 is an existing case (map2 | p2 & sh1). The test patch only adds a trailing comma there, so its index shifts. Possibly it now has a new id, or the ids shifted so that index 6 now refers to cm8.\n- Counting cm1..cm11 from index 0: index 6 is cm7 and index 9 is cm10. Hmm, but cm7 already existed and presumably passed. Perhaps the original dict had cm1, cm2, cm3, cm4, cm5, cm7 (no cm6), which would put cm8 at index 6.\n- Either way, the failing tests involve nesting via '&': cm8 is rot & (sh1 & sh2), cm11 is rot & sh1 & (scl1 & scl2).\n- These check both is_separable and separability_matrix, and expect a block diagonal.\n\n3. Settlement of each requirement:\n- The expected matrices are exactly the nested-case analogue of the spec's example. Settled.\n- The is_separable vector follows from the matrix. Convention.\n- Both functions are existing public APIs.\n\n4. Any correct fix, for example copying the right matrix in _cstack instead of filling it with 1s, produces these results. No alternative correct outputs exist.",
+    "score": 1,
+    "explanation": "The graded cases assert the correct block-diagonal separability matrix for nested & compound models, which is exactly what the issue asks for; every correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtQy223uhYPi4zJjyNEm",
+  "input_tokens": 3592,
+  "output_tokens": 617,
+  "seconds": 7.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14999",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8904,
+  "output": {
+    "reasoning": "The specification identifies RenameModel with an explicit db_table as incorrectly performing database work: it 'must be a noop,' rather than rebuilding tables or foreign-key constraints. The test creates Rider with db_table='rider' and a referencing Pony foreign key, updates migration state for Rider → Runner, and requires zero queries from database_forwards and database_backwards. The forward no-query assertion is settled by the requested database no-op; the foreign key reproduces the explicitly reported constraint-related case. Applying the same requirement when reversing the rename is a conventional implication of a reversible migration whose database table name remains unchanged. ProjectState, CreateModel, state_forwards, schema_editor, and the particular model/app names are fixture machinery, not additional implementation requirements. There are no mocks, required helper names, or internal-state assertions. No open requirement rejects a reasonable correct fix.",
+    "score": 2,
+    "explanation": "The zero-query assertions implement the requested database no-op, with the backward assertion reasonably extending that requirement to reversing the same rename.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2005,
+  "output_tokens": 752,
+  "seconds": 18.7
+}

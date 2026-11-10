@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16560",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19726,
+  "output": {
+    "reasoning": "The specification asks to customize the \"code attribute of ValidationError raised by BaseConstraint.validate\", alongside the existing custom message. The graded validation tests directly exercise that requirement: CheckConstraint must preserve the supplied message and code, and conditional UniqueConstraint must use the configured code. The violation_error_code name and public configuration follow the existing violation_error_message pattern; the description's repeated reference to a new message parameter is evidently a typo. BaseConstraint's storage assertion, deconstruction with the new keyword, and equality distinguishing differently configured constraints are reasonable extensions of the existing configuration and serialization patterns. The open requirement is representation: two graded tests require separate __repr__ implementations to include violation_error_code in exact strings, after the name. Neither representation changes nor these strings are requested. A reasonable implementation could accept and preserve the parameter, serialize and compare it correctly, and propagate it into ValidationError while leaving both existing representations unchanged. That implementation would solve the issue but fail both representation tests. Those tests require changes on a separate, unrequested code path, rather than merely checking another input to validation. The ungraded PostgreSQL tests and unconditional uniqueness test do not affect the score.",
+    "score": 4,
+    "explanation": "A correct fix could implement configurable validation codes, including serialization and equality support, without changing CheckConstraint.__repr__ or UniqueConstraint.__repr__. The graded tests nevertheless require those separate representation methods to expose the new option in exact strings.",
+    "overspecification_vector": "CheckConstraintTests.test_repr_with_violation_error_code: repr(constraint) must equal \"<CheckConstraint: check=(AND: ('price__lt', 1)) name='price_lt_one' violation_error_code='more_than_one'>\"; UniqueConstraintTests.test_repr_with_violation_error_code: repr(constraint) must equal \"<UniqueConstraint: expressions=(F(baz__lower),) name='unique_lower_baz' violation_error_code='baz'>\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4303,
+  "output_tokens": 1931,
+  "seconds": 50.4
+}

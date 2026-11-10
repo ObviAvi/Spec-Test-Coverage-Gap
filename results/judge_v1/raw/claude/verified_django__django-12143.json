@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12143",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9932,
+  "output": {
+    "reasoning": "1. The specification identifies a specific line in admin/options.py: `pk_pattern = re.compile(r'{}-\\d+-{}$'.format(prefix, ...))`. Regex special characters in the formset prefix break matching, and it proposes `re.escape()` as the fix. This line lives in `ModelAdmin._get_list_editable_queryset`.\n\n2. What the test requires:\n- It calls `m._get_list_editable_queryset(request, prefix='form$')`.\n- The POST data uses keys like `form$-0-uuid`.\n- It asserts `queryset.count() == 1`.\n\n3. Each requirement against the specification and existing code:\n- The method `_get_list_editable_queryset` already exists. The context lines show an existing test calling it with `prefix='form'`. It is the function containing the line the spec cites, so it is settled by the spec plus existing code.\n- The `$` character in the prefix is an instance of the spec's \"special regex characters\" in the prefix. Settled.\n- Count == 1 means only the submitted pk is selected. Unescaped, `form$` never matches, so the result falls back to the full queryset (2 objects). Any correct fix, whether `re.escape`, string-based parsing, or another non-regex approach, yields exactly the submitted pk. Settled.\n\n4. Open requirements: none. The private method is the exact location the spec names and is not introduced by the fix. Different arguments to the same function are the same code path.",
+    "score": 2,
+    "explanation": "Any fix that escapes or otherwise correctly handles special characters in the prefix inside `_get_list_editable_queryset` (the function the spec's quoted line lives in) makes the `form$` prefix match only the submitted pk, so `queryset.count() == 1` passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR4wtfgXvcxXZZvJUfU",
+  "input_tokens": 3737,
+  "output_tokens": 918,
+  "seconds": 9.2
+}

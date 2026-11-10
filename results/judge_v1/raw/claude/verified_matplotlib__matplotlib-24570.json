@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24570",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10605,
+  "output": {
+    "reasoning": "1. The spec says that in `HPacker`, `align='top'` and `align='bottom'` produce swapped placements. It names `HPacker`'s `align` parameter and describes the symptom.\n2. The graded tests are `test_packers[bottom]` and `test_packers[top]`. Each builds an HPacker and a VPacker from two DrawingAreas, calls the public `get_extent_offsets`, and checks extents and offsets.\n   - HPacker: `bottom` gives y-offset 0 for the shorter child; `top` gives `y2 - y1`.\n   - VPacker: `bottom` gives x-offset 0; `top` gives `x2 - x1`, i.e. `top` behaves like `right`.\n3. Settlement:\n   - HPacker offsets are settled by the spec. Bottom-aligned means the bottoms coincide; top-aligned means the shorter child is raised by the height difference.\n   - The extents (width, height, descents) are existing behavior, unchanged by the fix.\n   - VPacker `top`/`bottom` behavior is not stated in the spec. However, both packers share one alignment helper, which pairs align keywords as (\"left\",\"top\") and (\"right\",\"bottom\"). The natural fix regroups them as (\"left\",\"bottom\") and (\"right\",\"top\"). That fixes HPacker and gives exactly the VPacker behavior the test expects.\n4. Possible alternative: a fix that remaps top and bottom only inside HPacker would leave VPacker `top` behaving like `left` and fail. That would be a contrived workaround, though; the bug clearly lives in the shared keyword pairing, so a competent developer fixes it there. No other reasonable fix diverges.\n5. Score 2.",
+    "score": 2,
+    "explanation": "The graded assertions check HPacker offsets for top and bottom alignment through the public `get_extent_offsets`, which map directly to the reported reversal. The VPacker checks follow automatically from the natural fix of regrouping (left, bottom) and (right, top) in the shared alignment helper.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRLn6FJNtBGQdmqGL3J",
+  "input_tokens": 4270,
+  "output_tokens": 1800,
+  "seconds": 18.3
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15973",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14818,
+  "output": {
+    "reasoning": "1. What is wrong: the generated migration for 'fonte' depends only on 'variavel', not on the app holding the through model ('fonte_variavel'). Applying it then crashes because the through model is still an unresolved string. The root cause is that the migration autodetector does not add a dependency on the through model when it lives in another app.\n\n2. What the test requires: it calls the autodetector via get_changes with three models in three apps (Author with an M2M through 'contract.Contract', Publisher, Contract). It asserts:\n- testapp, contract and authors get 1, 1 and 2 migrations;\n- the second authors migration depends on exactly {authors auto_1, contract auto_1, testapp auto_1};\n- the operations are CreateModel for Publisher, Contract and Author, then AddField for publishers.\n\n3. Which requirements are settled:\n- Dependency on the through model's app: settled. The issue shows the missing dependency in the generated migration ('dependencies = [('variavel', '__first__')]').\n- Splitting Author into CreateModel plus AddField: settled by existing autodetector machinery. Contract has an FK to Author, so the new dependency is circular, and the existing logic breaks cycles by deferring the related field into a second migration.\n- The authors auto_1 and testapp auto_1 dependencies: produced automatically by the existing migration chaining and the 'to' model dependency.\n\n4. Alternatives: a fix that only patches schema_editor.create_model to tolerate a string through model would hide the crash without fixing the wrong migration ordering. That is not a correct fix of the reported problem. Any fix that adds the through dependency in the autodetector yields this structure through the existing cycle-resolution logic.",
+    "score": 2,
+    "explanation": "The test asserts that the autodetector adds a dependency on the separate-app through model, which is exactly the missing dependency the issue shows. The resulting split and dependency set follow deterministically from the existing autodetector cycle handling.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRGZ1M1631Etw4cQcYT",
+  "input_tokens": 5819,
+  "output_tokens": 1553,
+  "seconds": 16.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14725",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10813,
+  "output": {
+    "reasoning": "1. The specification requests a way for model formsets to prevent new-object creation, including creation attempted through additional POST data. It does not name a configuration option, mandate factory signatures, or specify whether attempted additions should be ignored or rejected.\n2. The tests require modelformset_factory(..., edit_only=True) and inlineformset_factory(..., edit_only=True). They construct Author and Book formsets using management fields, submitted model fields and IDs, an inline parent instance, and a restricted queryset. They require is_valid() to return True, save() to preserve legitimate edits, and database contents to exclude all attempted additions. The queryset test also requires a submitted ID outside the queryset to leave both existing objects unchanged. Names, titles, IDs, and counts serve as fixtures; no messages or mocks are asserted.\n3. Preventing insertion is settled by “disallow new object creation,” and permitting existing-object edits follows from “edit only.” Exercising additional submitted forms directly addresses the reported problem. However, the exact new keyword edit_only and its availability through both factories are open interface choices. Likewise, successful validation followed by silently ignoring additions or out-of-queryset submissions is not specified.\n4. A reasonable implementation could provide can_create=False or another documented configuration interface, preserving edits while preventing inserts, yet fail every test because edit_only is unsupported. Even with the tested keyword, a reasonable implementation could report validation errors for attempted additions or unauthorized IDs, failing the is_valid() assertions. The unspecified new interface name makes the strongest mismatch a score of 4.",
+    "score": 4,
+    "explanation": "The tests require the previously unspecified keyword edit_only=True on both factories; a correct feature exposed through another reasonable configuration name would fail. They also require attempted additions and out-of-queryset IDs to validate successfully and be ignored, rather than allowing a correct implementation to reject them with validation errors.",
+    "overspecification_vector": "modelformset_factory(Author, fields='__all__', edit_only=True); inlineformset_factory(Author, Book, can_delete=False, fields='__all__', edit_only=True); self.assertIs(formset.is_valid(), True) for submitted additions and an object outside the queryset."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2571,
+  "output_tokens": 988,
+  "seconds": 24.5
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12713",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8929,
+  "output": {
+    "reasoning": "The specification explicitly requires honoring the widget parameter in formfield_for_manytomany(), consistently with formfield_for_foreignkey(). The test configures Band.members with filter_vertical and supplies CheckboxSelectMultiple through formfield_overrides for ManyToManyField, then obtains the field through formfield_for_dbfield(..., request=None). This is the conventional admin route for supplying widget kwargs to the many-to-many handler. Giving that supplied widget precedence over the automatically selected filter widget is reasonably implied by the issue. The assertion requires the supplied CheckboxSelectMultiple instance inside the normal related-field widget wrapper; the particular widget type is determined by the test input, not an arbitrary output choice. The fixture names and request=None introduce no additional behavioral requirement. No reasonable alternative fix to widget precedence would distinguish directly supplied widget kwargs from the same kwargs supplied through formfield_overrides or require changing the existing wrapper.",
+    "score": 2,
+    "explanation": "The assertion checks that an explicitly supplied widget wins over the automatic many-to-many filter widget, using the conventional admin overrides route; a reasonable fix to the reported widget-precedence bug passes it.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2017,
+  "output_tokens": 2064,
+  "seconds": 48.8
+}

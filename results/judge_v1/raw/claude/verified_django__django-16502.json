@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16502",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12200,
+  "output": {
+    "reasoning": "1. The spec says runserver (Django's WSGIRequestHandler/ServerHandler in basehttp) returns a response body for HEAD requests. RFC 2616 §4.3 says it must not. The fix is to strip the body for HEAD in runserver. Nothing is said about headers; the expected output in the issue merely lists the headers that were present.\n\n2. What the test requires:\n- (a) GET still returns the body as the last line. Settled: this is a regression check.\n- (b) GET includes `Content-Length: <len>` and does not include `Connection: close`. This matches existing behaviour with a ThreadingMixIn server stub, so it is convention / existing code.\n- (c) HEAD output ends in a bare `\\r\\n`, i.e. no body. Settled by the spec: \"response bodies must not be returned for HEAD requests.\"\n- (d) The HEAD response contains NO `Content-Length` header at all. Open.\n- (e) The HEAD response has no `Connection: close`. Open; it interacts with (d), because the existing cleanup_headers logic adds `Connection: close` when Content-Length is missing.\n\n3. Analysis of the open items:\n- A natural fix overrides ServerHandler.write/finish_response to skip writing body bytes when REQUEST_METHOD is HEAD, while still sending headers.\n- With wsgiref, the single-chunk result would then get `Content-Length` set to the body length, as for GET. That is RFC-compliant: a HEAD response may carry the Content-Length the GET would have.\n- It also resolves the issue's symptom completely, yet it fails `assertIs(any(line.startswith(b\"Content-Length:\") ...), False)`.\n- Likewise, a fix that strips the body but leaves Content-Length handling alone, or emits `Content-Length: 0` via finish_content, fails.\n- The upstream choice to omit Content-Length is one valid option among several (RFC 9110 permits either). It is observable header behaviour, not internal state.\n\nResult: score 3.",
+    "score": 3,
+    "explanation": "A correct fix that suppresses the body for HEAD but still sends the Content-Length header the GET would have had (or Content-Length: 0 from wsgiref's finish_content) fails the test. The test asserts that no Content-Length header appears at all in the HEAD response, which the issue never requires.",
+    "overspecification_vector": "self.assertIs(any([line.startswith(b\"Content-Length:\") for line in lines]), False) in the HEAD portion of test_no_body_returned_for_head_requests (and the related self.assertNotIn(b\"Connection: close\\r\\n\", lines) for HEAD, which depends on how missing Content-Length is handled)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRHqRqvRmT1rBsFX67P",
+  "input_tokens": 4817,
+  "output_tokens": 2801,
+  "seconds": 26.4
+}

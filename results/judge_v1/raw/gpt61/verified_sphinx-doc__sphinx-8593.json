@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8593",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9962,
+  "output": {
+    "reasoning": "1. The issue identifies automodule member selection: `_foo = None  #: :meta public:` must appear with `:members:` despite its leading underscore. 2. The graded tests run module autodoc on `target.private` and require `_PUBLIC_CONSTANT = None` with that same annotation to appear, both with ordinary members selection and with an explicit private-members list. They expect the normal data directive, module and value fields, metadata text, and placement before the existing function. They also require the fixture's `PRIVATE_CONSTANT`, annotated `:meta private:`, to remain excluded. There are no mocks or required new implementation symbols. 3. Inclusion of `_PUBLIC_CONSTANT` is directly settled by the reported example. Inclusion when explicitly selected is ordinary member-selection behavior. Applying the complementary private annotation to variables follows the existing public/private metadata convention demonstrated by the function fixtures. Directive formatting, metadata preservation, and member ordering follow existing autodoc output rather than introducing a new formatting requirement. The changes to `test_private_field_and_private_members` are not graded. 4. No materially open requirement rejects a reasonable fix: these assertions extend established metadata-based visibility to variable documentation while preserving normal output.",
+    "score": 2,
+    "explanation": "The tests require the reported public-marked variable to appear and extend existing public/private metadata and member-selection conventions to closely related variable inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2328,
+  "output_tokens": 1606,
+  "seconds": 43.8
+}

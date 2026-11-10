@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11532",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10844,
+  "output": {
+    "reasoning": "The specification identifies Message-ID generation as the failing path and explicitly requests converting the hostname to punycode in either django.core.mail.utils or django.core.mail.message. The test constructs EmailMessage, sets encoding to 'iso-8859-1', calls message(), and checks Message-ID: these are settled by the supplied reproduction. The hostname '漢字' and expected punycode 'xn--p8s937b' also appear explicitly in that reproduction. Requiring '@xn--p8s937b>' simply checks that the converted hostname occupies the domain portion of a normal Message-ID. Patching socket.getfqdn and deleting DNS_NAME._fqdn simulate the non-ASCII computer hostname while invalidating the existing hostname cache; they do not assert where conversion occurs or require a new implementation interface. Conversion in either location permitted by the specification can pass. The nonempty body does not introduce a distinct requirement. There is no open behavioral choice here that a reasonable correct fix would resolve differently.",
+    "score": 1,
+    "explanation": "The assertion that an iso-8859-1 email's Message-ID contains '@xn--p8s937b>' directly checks the specification's requested punycode conversion using its own example hostname.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2554,
+  "output_tokens": 1526,
+  "seconds": 40.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13401",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9856,
+  "output": {
+    "reasoning": "1. Spec: fields inherited from an abstract model compare equal across models because `__eq__` uses only `creation_counter`. It asks that `__eq__` take `field.model` into account. It says it is \"probably wise\" to adjust `__hash__` and `__lt__` to match, with `__lt__` ordering first by `creation_counter`.\n2. Test requirements:\n(a) The abstract, inherit1 and inherit2 fields are pairwise not equal.\n(b) `abstract < inherit1`, `abstract < inherit2` and `inherit1 < inherit2`, all with equal creation_counter. This pins a tie-break order by model.\n(c) `hash()` differs pairwise.\n3. Settled vs open:\n(a) Settled: \"adjust __eq__ so that if the field.model is different, they will compare unequal.\"\n(b) Partly settled: \"order first by self.creation_counter.\" The secondary key is open. The test needs AbstractModel < InheritAbstractModel1 < InheritAbstractModel2. Alphabetical name or label order passes, and so does definition order. A tie-break on `id(model)` or `hash(model)` gives arbitrary order and could fail; that is plausible but less natural.\n(c) Open: unequal hashes are not needed for correctness. Equal hashes with unequal `__eq__` already fix the set dedup the issue complains about. The spec only says \"probably wise\" to adjust `__hash__`. A careful developer may keep `__hash__` based solely on `creation_counter`, because including `model` makes the hash change when the field is attached to a class. Django itself later reverted to this. Such a fix satisfies the issue (the set length becomes 2) but fails the hash `assertNotEqual` lines.\n4. So a reasonable correct fix fails on the hash assertions, and possibly on the tie-break order. These assert observable behavior, but they pin one choice among several valid ones.",
+    "score": 3,
+    "explanation": "A correct fix that makes `__eq__` model-aware but keeps `__hash__` based only on `creation_counter` fails the test. That fix is still valid, since equal hashes are allowed and sets no longer dedupe the fields, and it avoids a hash that changes when the field is attached to a model. The test also pins a specific model tie-break order in `__lt__` (abstract < inherit1 < inherit2), which the spec leaves open.",
+    "overspecification_vector": "self.assertNotEqual(hash(abstract_model_field), hash(inherit1_model_field)); self.assertNotEqual(hash(abstract_model_field), hash(inherit2_model_field)); self.assertNotEqual(hash(inherit1_model_field), hash(inherit2_model_field)); and the assertLess tie-break ordering lines"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR8hCVKaCe2NmcdxwdU",
+  "input_tokens": 3629,
+  "output_tokens": 2305,
+  "seconds": 22.1
+}

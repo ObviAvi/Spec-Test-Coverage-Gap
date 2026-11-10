@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-8399",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10385,
+  "output": {
+    "reasoning": "1. The issue: since pytest 6.2.0, the auto-generated unittest setUpClass fixture is named `unittest_setUpClass_fixture_Tests`. It shows up in `pytest --fixtures` with 'no docstring available'. The issue states the expected behavior: 'this fixture's name would start with an underscore, and would therefore only get printed if the additional `-v` flag was used.'\n\n2. What the graded test requires:\n- Running `pytest --fixtures` on a TestCase with setUpClass/tearDownClass exits with 0.\n- That output contains no 'no docstring available' line.\n- Running `pytest --fixtures -v` exits with 0.\n- That output does contain a 'no docstring available' line.\n\n3. How each requirement is settled:\n- Hidden without -v: settled by the spec ('would start with an underscore ... only get printed if the additional -v flag was used').\n- Shown with -v and no docstring: settled by the spec's 'only get printed if ... -v'. The fixture is generated and has no docstring, so pytest prints 'no docstring available' for it under -v.\n- Exit code 0: convention.\n\n4. Alternative fixes:\n- Adding a docstring instead of renaming would not meet the stated expected behavior, so it is not a reasonable fix for this spec.\n- Any underscore-prefix rename (the exact prefix doesn't matter) passes. The test does not check the fixture name itself.\n- The tearDownClass in the test input goes through the same generated fixture, so it adds no new requirement.",
+    "score": 2,
+    "explanation": "The test checks exactly the behavior the issue asks for: the generated setUpClass fixture is hidden from `--fixtures` and shown (undocumented) only with `-v`. Any underscore-prefix rename passes, because the fixture's exact name is never asserted.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRSwrJUTcM23a6AdPYD",
+  "input_tokens": 3909,
+  "output_tokens": 864,
+  "seconds": 9.2
+}

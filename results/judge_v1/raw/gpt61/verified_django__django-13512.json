@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13512",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8802,
+  "output": {
+    "reasoning": "1. The specification reports an admin presentation problem: “when we edit a JsonField which contains Chinese character in Django admin,it will appear in ASCII characters.” It names json.dumps() as the cause but does not require changing a particular Django method.\n2. The additions require forms.JSONField.prepare_value() itself to return literal Unicode for a Chinese string, a dictionary containing emoji, and a list containing Chinese and Polish text. They also add an admin-display case requiring {'a': '你好 世界'} to display as '{\"a\": \"你好 世界\"}'. No added assertion for test_label_for_field is visible, so no further requirement can be inferred from its name alone.\n3. Settled by the specification: admin users should see Chinese characters rather than ASCII escape sequences. Reasonably inferred: the same treatment should apply to other Unicode characters and nested JSON values. Convention/existing behavior: JSON quoting and ordinary serialization spacing are supported by the unchanged prepare_value examples. Open: literal Unicode must already appear in the generic form field's prepare_value() return value, rather than being produced at the admin rendering layer.\n4. A reasonable admin-scoped fix could use an admin-specific JSON form field or widget to render JSON with ensure_ascii=False, and similarly fix admin display formatting, without changing the generic forms.JSONField.prepare_value() result. That would resolve the reported admin symptom for Chinese, emoji, and other Unicode inputs but fail the added prepare_value assertions. Those tests therefore constrain an intermediate serialization layer beyond the reported presentation behavior.\n5. The strongest gap is testing a particular underlying method rather than requiring the admin output to be correct, warranting score 4.",
+    "score": 4,
+    "explanation": "An admin-specific JSON field or widget could correctly render Unicode while leaving generic forms.JSONField.prepare_value() ASCII-escaped. The added tests reject that reasonable fix because they require literal Unicode in prepare_value() itself, not just in the admin output.",
+    "overspecification_vector": "field.prepare_value('你好，世界') == '\"你好，世界\"'; field.prepare_value({'a': '😀🐱'}) == '{\"a\": \"😀🐱\"}'; field.prepare_value([\"你好，世界\", \"jaźń\"]) == '[\"你好，世界\", \"jaźń\"]'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2063,
+  "output_tokens": 1523,
+  "seconds": 35.5
+}

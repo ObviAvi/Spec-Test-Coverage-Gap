@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16569",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9452,
+  "output": {
+    "reasoning": "1. The specification identifies add_fields(index=None) as crashing when can_delete=True and can_delete_extra=False, and explicitly names empty_form as an affected entry point. 2. The only added assertion requires accessing formset.empty_form.fields successfully and finding no \"DELETE\" field; both graded tests run this same assertion. 3. Successful empty_form access is directly specified by the reproduction. Omitting deletion for index=None follows directly from the proposed condition, '(index is not None and index < initial_form_count)', which is false for None when can_delete_extra=False. The existing assertions establish \"DELETE\" as the deletion field and its absence on extra forms. 4. No requirement is open: adding DELETE to the empty extra-form template would contradict the stated condition and the existing no-deletion behavior for extra forms. The test imposes no particular implementation.",
+    "score": 1,
+    "explanation": "The assertion that empty_form.fields excludes \"DELETE\" directly exercises the reported failure and the behavior of the specification’s proposed None guard.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2156,
+  "output_tokens": 754,
+  "seconds": 20.7
+}

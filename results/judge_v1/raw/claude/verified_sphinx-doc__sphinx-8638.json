@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8638",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11179,
+  "output": {
+    "reasoning": "1. The issue says variables documented inside a class (via autodoc/apidoc docstrings) get auto-linked to unrelated same-named variables elsewhere in the project. Expected: \"That the class variable documentation not be linked to any other.\" It describes only the symptom. It names no entry point, and the info-field mechanism (`:var:`/`:ivar:`) is never mentioned.\n\n2. What the test requires:\n- Parse `.. py:class:: Class` with `:var int attr: blah blah`.\n- A field list labelled \"Variables\" exists.\n- The paragraph is exactly `[literal_strong 'attr', ' (', pending_xref[literal_emphasis 'int'], ')', ' -- ', 'blah blah']`.\n- The type `int` is a pending_xref with `refdomain=py`, `reftype=class`, `reftarget=int` and `py:class=Class`.\n\n3. How each requirement is settled:\n- The \"Variables\" label and the type xref for `int` already existed (convention, existing behaviour).\n- That the variable name `attr` is a bare `literal_strong` with no pending_xref wrapper is open. The spec says the name should not link to unrelated objects. It does not say how to achieve that.\n\n4. Alternative correct fixes that would fail:\n- Change the resolution heuristic instead of removing the xref. For example, keep the `obj` role on the variable name but make it non-fuzzy/refspecific-off, or scope it to the current class. Unrelated globals or other classes' attributes would then never be matched, which fixes the reported symptom. The name would still be wrapped in a `pending_xref`, so the exact node-structure assertion fails.\n- Use a custom role or a self-anchor for the variable name. This also yields a different node structure and fails.\n\nThe test pins one implementation choice: dropping the cross-reference role for the variable name entirely. It checks the observable doctree output, not private state.",
+    "score": 3,
+    "explanation": "The test requires the `:var:` field name to be rendered as a plain `literal_strong` node with no `pending_xref`, i.e. the cross-reference is removed entirely. A fix that keeps the xref but restricts its resolution so it can't hit unrelated same-named objects (e.g. scoped or non-fuzzy lookup) fixes the reported symptom yet fails the exact node-structure assertion.",
+    "overspecification_vector": "assert_node(doctree[1][1][0][0][1][0], ([addnodes.literal_strong, \"attr\"], \" (\", [pending_xref, addnodes.literal_emphasis, \"int\"], \")\", \" -- \", \"blah blah\"))"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRXgqJstpDwgc18odSe",
+  "input_tokens": 4098,
+  "output_tokens": 2002,
+  "seconds": 20.0
+}

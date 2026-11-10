@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12406",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11371,
+  "output": {
+    "reasoning": "1. The specification concerns ModelForms rendering foreign keys with RadioSelect: they “should not present a blank option if blank=False on the model,” and a new form should have no checked radio. It does not request a new standalone form-field API.\n2. test_non_blank_foreign_key_with_radio constructs a ModelForm using RadioSelect and requires its choices to contain only the Character's primary key and username label. Excluding the blank choice is settled by the specification; the label follows the supplied __str__ implementation and ordinary model-choice behavior.\n3. test_choices_radio_blank separately constructs forms.ModelChoiceField(categories, widget=widget, blank=blank), testing both widget classes and instances and both boolean values. It requires a leading ('', '---------') exactly when blank=True, followed by the category choices. Preserving category labels and ordering is conventional existing-choice behavior. However, requiring ModelChoiceField to accept a blank keyword and implement this standalone behavior is open: the specification only describes blank on the model and rendering through ModelForm.\n4. A reasonable fix could use the model foreign key's blank setting during form-field construction to set empty_label=None for a nonblank RadioSelect field, preserving other widgets and blank-enabled fields. That fixes the reported case and closely related ModelForm cases without adding a blank argument to ModelChoiceField. It would fail the direct ModelChoiceField construction test.\n5. This is significant overspecification because a graded test requires an unspecified API on a different entry point. test_clean_model_instance is listed but its implementation is not provided, so no additional requirements can be inferred from it.",
+    "score": 4,
+    "explanation": "A correct fix could suppress the empty choice when constructing a ModelForm field from a nonblank foreign key, without changing the standalone ModelChoiceField API. The tests nevertheless require ModelChoiceField to accept a new blank keyword and control its choices accordingly.",
+    "overspecification_vector": "test_choices_radio_blank: f = forms.ModelChoiceField(categories, widget=widget, blank=blank), followed by self.assertEqual(list(f.choices), [('', '---------')] + choices if blank else choices)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2570,
+  "output_tokens": 974,
+  "seconds": 23.7
+}

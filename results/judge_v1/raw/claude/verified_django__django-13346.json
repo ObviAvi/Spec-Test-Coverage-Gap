@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13346",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9133,
+  "output": {
+    "reasoning": "1. What is wrong: on MySQL, Oracle and SQLite, the `__in` lookup on a JSONField key transform (`field__key__in=[...]`) returns no rows, while the equivalent exact lookup (`field__key=value`) does match. The specification names the entry point (QuerySet filter with `key__in`) and the expected behaviour: `__in` should match the same rows as exact equality on each listed value.\n\n2. What the graded tests require: `test_key_in` filters `NullableJSONModel` through the public queryset API with these inputs:\n- an integer key, `value__c__in` with [14] and [14, 15];\n- an array index, `value__0__in` with [1] and [1, 3];\n- a string key, `value__foo__in` with ['bar'] and ['bar', 'baz'];\n- a list value, `value__bar__in` with [['foo', 'bar']] and with a second candidate list;\n- a dict value, `value__bax__in` with [{'foo': 'bar'}, {'a': 'b'}].\nEach case asserts the same rows that the equivalent exact key lookup would return. `test_key_iregex` already exists in the file (it is not shown in the patch). Presumably it only needs key-transform lookups to keep working through the public API; no new names or behaviour are visible for it.\n\n3. Settled or open:\n- Integer and string cases: settled by the specification, which says it expects `our_field__key__in=[0]` to match the same rows as `our_field__key=0`.\n- Index, list and dict cases: settled by convention. These are the same function on related inputs, and existing key-exact lookups already match JSON arrays and objects. The only reasonable meaning of `__in` is \"exact equality against any listed value\", for every JSON type.\n- Nothing private, no new names, no messages, no ordering beyond the existing fixture order used throughout the file.\n\n4. Open requirements: none. A fix that handled only scalar values would leave the same bug in closely related inputs, so it does not count as a correct fix.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes because the graded assertions only check that `key__in` returns the same rows as exact key matching, through the public filter API, for ints, strings, array indexes, lists and dicts.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR89TGf7utYfLwyEGjj",
+  "input_tokens": 3466,
+  "output_tokens": 1387,
+  "seconds": 15.6
+}

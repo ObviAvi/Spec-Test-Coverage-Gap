@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12273",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10366,
+  "output": {
+    "reasoning": "1. The spec says that setting a child (multi-table inheritance) instance's primary key to None and calling save() overwrites the existing row instead of creating a new one. It describes the symptom through the public save() path. It does not name an internal function.\n2. The graded tests use existing models (Profile/User, Congressman/Politician/Person). Each test fetches the child through the parent's reverse accessor, as the spec does with `item.derived`. It then sets pk and all parent-link ids to None and calls save(). The tests assert three things: the child count is 2, the original parent row keeps its old field values, and in the multi-inheritance case the intermediate parent keeps its old values too.\n3. The core behavior is settled by the spec: after resetting the pk, save() should not overwrite the existing object ('so that the existing object is overwritten on save()' is reported as the bug). The tests explicitly null every pk and parent pointer. That is the most explicit way to request a fresh insert, and any fix that makes the spec's scenario work must handle it. Running the same check on a two-level inheritance chain is a closely related input. The models already exist in the test models file, so no new names are needed. No messages, private APIs, or internal state are asserted; only row counts and field values read from the database.\n4. Open requirements: none meaningful. A fix that makes resetting only the parent pk work would still work when all link fields are also set to None, because that is a superset of the reset. A fix that requires the user to clear the ptr fields would also pass, since the tests clear them.",
+    "score": 2,
+    "explanation": "The tests only check observable outcomes after resetting all pk and parent-link fields and calling save(): a new child row is created (count == 2) and the original parent rows keep their old values. This is exactly the behavior the issue asks for, applied to a single-level and a multi-level inheritance chain.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR5WzF3exnq6QyHq9wz",
+  "input_tokens": 4052,
+  "output_tokens": 2370,
+  "seconds": 25.3
+}

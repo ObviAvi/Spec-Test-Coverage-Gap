@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24177",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12041,
+  "output": {
+    "reasoning": "1. The spec reports a symptom: `ax.hist(..., density=True, histtype='step')` does not autoscale the y-axis to fit the histogram, while other histtypes do. It names `Axes.hist` as the entry point but not the root cause. hist with histtype='step' builds its outline as a Polygon patch, and that patch's data limits come from `Path.get_extents`. In 3.6, the bezier-based extents computation dropped small-valued vertices.\n\n2. What the test requires:\n- Build a `PathPatch` from a `Path` whose vertices are exactly a step-histogram outline with small y-values.\n- `add_patch` it, then call `ax.autoscale()`.\n- Assert the x and y limits enclose the min and max of the vertices.\n\n3. Settlement of each requirement:\n- Limits containing the data: settled by the spec (\"density axis ... is not automatically adjusted to fit the whole histogram\"). The assertions are only containment inequalities, with no exact limit values.\n- Use of `PathPatch` + `add_patch` instead of `hist`: this is the same autoscale mechanism hist step relies on, since its outline is a patch whose limits come from path extents. A fix at the root (patch extents / `Path.get_extents`) passes.\n\n4. Possible alternative fix: special-casing `hist` to call `update_datalim` with its bins and heights. That is a workaround. It leaves the identical bug for any other patch or fill with the same step-shaped vertices (e.g. `ax.fill` of the same data), so it fails on closely related inputs and does not count as a reasonable correct fix. Any fix that correctly computes extents for such paths passes these loose inequality assertions.\n\n5. Score: 2.",
+    "score": 2,
+    "explanation": "The test adds a step-histogram-shaped path patch and asserts only that the autoscaled limits contain all vertices, which is the issue's \"autoscale should fit the whole histogram\" behavior through the same patch-extents mechanism hist relies on.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRLYWgpeamXTGreXPfq",
+  "input_tokens": 5239,
+  "output_tokens": 1804,
+  "seconds": 19.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15268",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11774,
+  "output": {
+    "reasoning": "1. The specification asks to collapse redundant remove-and-readd AlterUniqueTogether/AlterIndexTogether operations when no intervening field alteration requires the split. Its example explicitly replaces four operations with one final AlterUniqueTogether followed by one final AlterIndexTogether.\n2. The graded tests require that same reduction for ordering changes, field removal, and field renaming. They assert the final constraint tuples, the model name 'book', and operation positions: the two constraint updates alone; the updates followed by RemoveField('newfield'); or RenameField followed by the updates. No mocks, new interfaces, private hooks, or implementation-specific values are required.\n3. Settled by the specification: retaining only the final constraint-setting operation of each kind, with AlterUniqueTogether before AlterIndexTogether, as shown in the expected output. Settled by existing behavior and related-input correctness: preserving the final constraint values already asserted in the original tests, removing a field after updating constraints that reference it, and renaming a field before applying constraints using its new name. The changed operation indices simply account for eliminating the redundant empty-set operations.\n4. These field-removal and field-renaming cases are closely related applications of the requested optimization, not separate functionality. They preserve the surrounding operation order already present in the tests. There is no open implementation choice that the added assertions require a fix to resolve in an otherwise unspecified way.\n5. Score 2: the tests extend the explicit example to related migration scenarios while checking the same observable optimization.",
+    "score": 2,
+    "explanation": "The tests require the specified four-to-two constraint-operation reduction on closely related inputs, preserving final constraint values and the existing field-operation dependencies. They do not require a particular implementation of the optimization.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2790,
+  "output_tokens": 1576,
+  "seconds": 39.6
+}

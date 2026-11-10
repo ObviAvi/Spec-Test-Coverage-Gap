@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14500",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8480,
+  "output": {
+    "reasoning": "1. Spec: when a squashed migration is unapplied and its replaced migration files still exist, MigrationExecutor should mark the squash migration itself as unapplied, not just the replaced migrations. The wording is a bit garbled, but the title makes the intent clear. The entry point is MigrationExecutor's unapply path.\n2. Test requirements:\n- MigrationExecutor(connection) and migrate([('migrations','0001_squashed_0002')]): existing API.\n- Asserts the squash migration is recorded as applied: existing behavior.\n- Calls loader.build_graph(), then migrate([('migrations', None)]): existing public API.\n- Asserts ('migrations','0001_squashed_0002') is not in recorder.applied_migrations().\n- Uses the existing test_migrations_squashed fixture.\n3. Settlement:\n- 'Squashed migration is not marked as unapplied' settles that the squash record should be removed after unapplying. This is exactly the final assertion.\n- The other calls are existing public APIs.\n4. A fix in unapply_migration would record the replacement itself as unapplied alongside the replaced ones. Any correct fix makes the recorder no longer list the squash migration, so no reasonable fix fails.",
+    "score": 1,
+    "explanation": "The graded assertion checks that the squashed migration is no longer recorded as applied after unapplying, which is exactly what the issue title states.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRCCj5WCkYYFVpZMSPQ",
+  "input_tokens": 3104,
+  "output_tokens": 495,
+  "seconds": 5.9
+}

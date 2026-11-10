@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-14365",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9475,
+  "output": {
+    "reasoning": "1. The spec says ascii.qdp requires QDP commands such as 'READ SERR 1 2' to be upper case, while QDP itself is case-insensitive. Lowercase commands like 'read serr 1 2' should parse. It describes a symptom through Table.read / ascii.qdp and asks that the 'expectation that all commands be all-caps should be removed.'\n\n2. The graded test test_roundtrip[True] takes the existing example QDP and lowercases every non-comment line. It then reads it with _read_table_qdp (existing function), writes it, reads it back, and compares values and masks. The lowercased input contains:\n- the command lines 'read terr 1' and 'read serr 3';\n- the table-separator line 'no no no no no';\n- data rows with 'no' as the masked-value token (e.g. 'no 1.14467592592593e-05 ... no');\n- possibly lowercase 'nan'.\n\n3. Settlement:\n- Lowercase READ SERR/TERR commands: settled ('read serr 1 2' should work).\n- Lowercase 'no' as a separator line and as a masked data value: not settled. The spec talks only about 'commands' and never mentions the NO missing-value marker. It does say 'QDP itself is not case sensitive', which hints at broader case-insensitivity, but the explicit request is about commands.\n- Read/write roundtrip semantics: existing behavior.\n\n4. Open requirement and a failing fix: a competent developer could make only command recognition case-insensitive, e.g. matching the command regex with re.IGNORECASE or uppercasing just command lines. That fully resolves the issue as described, including closely related command inputs like 'read terr'. Against the test it fails because:\n- 'no no no no no' is not recognized as a new-table line, so it raises 'Unrecognized QDP line'.\n- Even if the whole line-type regex were made case-insensitive, the data parser's check v == 'NO' would not treat 'no' as masked, and float('no') would raise.\n\nSo the test requires case-insensitive handling of the NO data token, which goes beyond the stated scope. The assertion is about externally observable parsing behavior, not internals, so this is a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "The graded test lowercases the entire example file, including the 'NO NO NO NO NO' separator line and the 'NO' masked-value tokens in data rows. A fix that makes only QDP commands (READ SERR/TERR) case-insensitive, as the issue requests, still fails on 'no' lines or 'no' data values.",
+    "overspecification_vector": "lowercase_header(example_qdp) applied to the whole example in test_roundtrip[True], which turns 'NO NO NO NO NO' and data-row 'NO' tokens into lowercase 'no' that must be parsed as table separators and masked values."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtQyUHrLCtHM3zci854d",
+  "input_tokens": 3724,
+  "output_tokens": 2363,
+  "seconds": 24.5
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-23950",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8393,
+  "output": {
+    "reasoning": "The specification identifies Contains.as_set() returning a Boolean instead of a set, with Contains(x, Reals) as the reproduction. The tests call that same public method and require exact equality to Reals, Integers, and FiniteSet(y). Returning Reals is settled by the reported behavior and the meaning of membership; Integers is a straightforward related case. Requiring Contains(x, FiniteSet(y)).as_set() to return FiniteSet(y), however, adds support for a predicate with two free symbols. That support is not specified, and the previous test explicitly expected NotImplementedError for this input. A reasonable fix could correctly convert single-free-symbol membership predicates to sets while continuing to raise NotImplementedError for ambiguous multivariate predicates. It would resolve the reported failure and related concrete-domain cases but fail the new FiniteSet(y) assertion. This is an externally observable result requirement, not an implementation-detail requirement.",
+    "score": 3,
+    "explanation": "The tests require newly supporting the two-free-symbol predicate Contains(x, FiniteSet(y)). A reasonable fix could return proper sets for single-variable membership predicates while preserving NotImplementedError for this previously unsupported symbolic case.",
+    "overspecification_vector": "assert Contains(x, FiniteSet(y)).as_set() == FiniteSet(y)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1979,
+  "output_tokens": 1318,
+  "seconds": 31.6
+}

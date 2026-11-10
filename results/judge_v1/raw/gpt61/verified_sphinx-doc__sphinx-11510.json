@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-11510",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15158,
+  "output": {
+    "reasoning": "1. The specification requires modifications made through `source-read` to affect included reStructuredText in the final output: both occurrences should become `REPLACED`. It names the event and mutable `source[0]`, but does not define its interaction with include slicing options.\n2. The tests connect handlers with `app.connect`, discover files with `app.env.find_files`, and exercise include parsing through `restructuredtext.parse`. They require notifications for `index` and `baz/baz`, no notification keyed `text.txt` for a literal include, and exactly `\"\\nBaz was here.\"` as the reported source for an include using `:start-line: 4`. The nested-include test requires replacement of `#magical` with `amazing`, producing a document with three children whose second child is a paragraph with raw source `The amazing foo.`\n3. Applying handler modifications to nested includes is a reasonable related-input requirement. Extensionless document names and the ordinary document/paragraph structure follow the existing event and parsing conventions. However, whether source-read receives the entire included file or only the portion selected by include options is open. Literal-include notification policy is also not expressly specified; skipping it is a plausible parsing convention, but not an explicit requirement.\n4. A reasonable correct fix could emit `source-read` on the complete included file, consume the modified source, and then apply `:start-line:` and other include filters. This resolves the reported bug and supports nested includes, yet the recorded source would contain the complete Baz file rather than exactly `\"\\nBaz was here.\"`. Thus the tests pin an unspecified ordering in the public event behavior, rather than merely confirming that replacements reach the output.",
+    "score": 3,
+    "explanation": "A correct fix could run `source-read` on the complete included file before applying include slicing options. It would resolve the reported replacement bug but fail the assertion requiring the callback to receive exactly the already-sliced text.",
+    "overspecification_vector": "Input `:start-line: 4` combined with `assert sources_reported[\"baz/baz\"] == \"\\nBaz was here.\"`"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3870,
+  "output_tokens": 1739,
+  "seconds": 41.1
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11179",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8225,
+  "output": {
+    "reasoning": "The specification identifies instance delete() as the entry point and explicitly requires that the PK 'should be set to None after .delete() call.' The test's u.delete(); assertIsNone(u.pk) directly checks that requirement. User.objects.create() and Collector(using='default') provide ordinary fixture/database setup. However, assertTrue(collector.can_fast_delete(u)) additionally requires preserving the instance's eligibility for an internal deletion optimization. That requirement is open: neither the requested PK behavior nor the reference to deletion.py requires retaining that optimization. A reasonable alternative fix could restrict fast deletion to queryset/bulk inputs and route individual model instances through the ordinary deletion path, where instance PK cleanup occurs. Such a fix would resolve the reported bug and related instance cases but fail the can_fast_delete(u) assertion before delete() is called.",
+    "score": 4,
+    "explanation": "A reasonable fix could disable the instance-specific fast-delete shortcut and use ordinary deletion cleanup to clear the PK. The test would reject it because it separately requires Collector.can_fast_delete(u) to remain True, an internal optimization requirement not stated in the specification.",
+    "overspecification_vector": "self.assertTrue(collector.can_fast_delete(u))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1868,
+  "output_tokens": 1294,
+  "seconds": 30.9
+}

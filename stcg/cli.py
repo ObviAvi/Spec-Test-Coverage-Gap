@@ -85,6 +85,16 @@ def cmd_evaluate(args):
     print(f"report: {run_dir(args.prompt) / f'eval_{name}.md'}")
 
 
+def cmd_prevalence(args):
+    from .evaluate import _fmt_rate
+    from .judging import run_dir
+    from .prevalence import prevalence
+
+    rep = prevalence(args.judges.split(","), args.prompt)
+    print(f"flagged: {_fmt_rate(rep['flag_rate'])}")
+    print(f"report: {run_dir(args.prompt) / 'prevalence_verified.md'}")
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(prog="stcg", description="Spec-Test Coverage Gap judge pipeline")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -109,9 +119,13 @@ def main(argv=None):
             j.add_argument("--dry-run", action="store_true", help="print the call/token estimate only")
             j.add_argument("--allow-test-rerun", action="store_true")
 
+    v = sub.add_parser("prevalence", help="Step 3: flag rate on Verified and its relation to agent resolve rates")
+    v.add_argument("--judges", default=",".join(config.PANEL))
+    v.add_argument("--prompt", default="judge_v1", help="prompt version in prompts/")
+
     args = p.parse_args(argv)
-    {"build": cmd_build, "split": cmd_split,
-     "judge": cmd_judge, "evaluate": cmd_evaluate}[args.cmd](args)
+    {"build": cmd_build, "split": cmd_split, "judge": cmd_judge, "evaluate": cmd_evaluate,
+     "prevalence": cmd_prevalence}[args.cmd](args)
 
 
 if __name__ == "__main__":

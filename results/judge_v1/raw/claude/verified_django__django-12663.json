@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12663",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11916,
+  "output": {
+    "reasoning": "1. Spec: filtering on a nested Subquery annotation with a SimpleLazyObject value raises a TypeError in get_prep_value. The fix must let the lazy object resolve to a model instance (and its pk) so the filter works. The issue gives a reproduction through the natural entry point, QuerySet.filter().\n2. Test requirements:\n   - It adds a Manager model and an Employee.manager FK. These are test fixtures only; the fix does not need to introduce them.\n   - It annotates Company with a Subquery over Employee.values('manager') using an OuterRef, which mirrors the nested-subquery case in the issue.\n   - It filters by a SimpleLazyObject wrapping a Manager instance.\n   - It asserts qs.get() returns gmbh, i.e. the correct result row.\n3. Classification:\n   - Filtering must not crash. Settled by the spec's traceback.\n   - Filtering must return the correct match. Settled by convention, since filtering should behave as if the unwrapped model instance had been passed.\n   - Uses only public API (filter, Subquery, OuterRef).\n4. Possible alternative fixes:\n   - Unwrap the lazy object in Lookup or get_prep_value.\n   - Fix Subquery/Query output_field so it resolves to the FK target field.\n   Either approach makes the filter work and return the correct row. Any correct fix must handle a model instance wrapped in a lazy object and compare by pk. No open detail is pinned.\n5. Score 2: the test is essentially the issue reproduction with a correctness assertion added.",
+    "score": 2,
+    "explanation": "The graded test reproduces the issue's scenario (filtering a nested Subquery annotation by a SimpleLazyObject) through public QuerySet APIs and asserts the correct row is returned, which any correct fix achieves.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR5pA79T92LbyJkCBAG",
+  "input_tokens": 4710,
+  "output_tokens": 640,
+  "seconds": 8.0
+}

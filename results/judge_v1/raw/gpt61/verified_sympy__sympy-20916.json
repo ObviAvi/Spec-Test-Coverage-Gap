@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-20916",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8876,
+  "output": {
+    "reasoning": "1. The specification reports a Unicode pretty-printing symptom: \"pprint unicode does not format subscripts on Greek letters,\" illustrated by ω0 instead of a subscripted index. It does not name split_super_sub or prescribe where to implement the fix.\n2. All added graded assertions call split_super_sub directly. They require exact (base, superscripts, subscripts) tuples for w1, w11, w𝟙, w𝟙𝟙, w𝟙2𝟙, w1^a, ω1, ω11, ω1^a, ω𝟙^α, and ω𝟙2^3α. Numeric suffixes must become singleton subscript lists, and text after ^ must become a singleton superscript list, preserving the original characters.\n3. Settled: Greek-letter numeric indices must render as subscripts in Unicode pprint. Convention: the existing tests establish split_super_sub's tuple/list structure and explicit underscore parsing. Open: requiring this particular helper to recognize implicit indices, supporting mathematical double-struck digits, and the exact helper-level decomposition of combined superscripts and subscripts.\n4. A reasonable fix could recognize trailing numeric indices in the Unicode pretty-printer's symbol-rendering path, covering Greek letters and multi-digit indices, while leaving split_super_sub unchanged. That resolves the reported rendering problem but fails the new helper assertions. Double-struck digit parsing is also not established by the report.\n5. The strongest gap is testing an unspecified lower-level function rather than the reported printing behavior, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix could handle Greek-letter numeric suffixes within Unicode pretty-printing without changing split_super_sub. It would fix the reported output but fail direct assertions such as split_super_sub(\"ω1\") == (\"ω\", [], [\"1\"]), which require the change to occur in a particular helper.",
+    "overspecification_vector": "Direct split_super_sub assertions, especially assert split_super_sub(\"ω1\") == (\"ω\", [], [\"1\"]), assert split_super_sub(\"ω11\") == (\"ω\", [], [\"11\"]), assert split_super_sub(\"ω𝟙^α\") == (\"ω\", [\"α\"], [\"𝟙\"]), and assert split_super_sub(\"ω𝟙2^3α\") == (\"ω\", [\"3α\"], [\"𝟙2\"])."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2249,
+  "output_tokens": 1051,
+  "seconds": 22.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-21596",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9584,
+  "output": {
+    "reasoning": "The specification identifies incorrect real intersection of an integer-indexed ImageSet and explicitly requires S1.intersect(Reals) to be {-1, 1}, with membership of 2 false. The first added assertion directly checks that specified intersection.\n\nThe remaining assertions use the same public imageset/Lambda/intersect entry points. They require: {1} for imaginary part (n-1)*(n+1/2) over Integers; {1} after adding a factor (n+1) over Naturals0; a particular ImageSet over a ConditionSet when the real part is n/2; {1/2} for real part n/(1/n-1); {-1} for real part n/(n-6) with the supplied rational imaginary part; and S.EmptySet when the real part is n/(n**2-9). Filtering imaginary-part roots by the indexing domain and excluding undefined values are reasonable mathematical extensions of the reported bug. FiniteSet results and the canonical empty-set singleton are consistent with the specified output and normal set conventions.\n\nHowever, the exact ImageSet/ConditionSet representation is open. The test requires ImageSet(Lambda(x, x/2), ConditionSet(n, Eq(n**2 - n/2 - S(1)/2, 0), S.Integers)), including its unsolved polynomial condition. The specification does not require retaining this representation. A reasonable fix could solve the imaginary-part equation, retain its only integer root n=1, and return FiniteSet(S.Half). That is the mathematically correct intersection but does not structurally equal the required unevaluated ImageSet. This is an externally observable representation restriction, not an internal implementation assertion.",
+    "score": 3,
+    "explanation": "The n/2 case requires a specific unevaluated ImageSet over a ConditionSet. A correct fix that solves the polynomial condition and returns FiniteSet(S.Half) would fail that equality despite computing the correct real intersection.",
+    "overspecification_vector": "assert imageset(Lambda(n, n/2 + im.expand()*I), S.Integers\n        ).intersect(S.Reals) == ImageSet(Lambda(x, x/2), ConditionSet(\n        n, Eq(n**2 - n/2 - S(1)/2, 0), S.Integers))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2540,
+  "output_tokens": 1539,
+  "seconds": 32.5
+}

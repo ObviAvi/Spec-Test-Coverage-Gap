@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15277",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10983,
+  "output": {
+    "reasoning": "1. The specification identifies an unnecessary, broken MaxLengthValidator on CharField instances whose max_length is None. It explicitly names Value._resolve_output_field(), demonstrates field.clean(..., model_instance=None) raising TypeError, and proposes adding the validator only when max_length is not None.\n2. The added test calls Value(value)._resolve_output_field() and then field.clean(value, model_instance=None), requiring no exception for a string, boolean, integer, float, date, datetime, time, timedelta, Decimal, bytes, and UUID. It asserts no particular validator identity, return value, message, or implementation.\n3. The string case and both method calls are settled by the specification's reproduction. The other types are reasonable regression coverage of the same output-field resolution operation. Their precise sample values are not specified, but introduce no alternative behavior that a correct fix needs to choose between.\n4. No reasonable fix to the described unnecessary CharField validator would need to break cleaning for the other supported value types. The private method is not an extra constraint here because the specification explicitly uses it. The listed test_raise_empty_expressionlist has no body in the supplied patch, so there is no additional assertion to evaluate from that name alone.",
+    "score": 2,
+    "explanation": "The string field.clean() call directly checks the reported broken-validator behavior, while the remaining inputs provide ordinary regression coverage without imposing an implementation choice.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2561,
+  "output_tokens": 816,
+  "seconds": 19.8
+}

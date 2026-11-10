@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14534",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10267,
+  "output": {
+    "reasoning": "1. The specification says BoundWidget.id_for_label ignores self.data['attrs']['id'] and builds 'id_%s_%s' itself. It proposes `return self.data['attrs']['id']`.\n\n2. What the graded tests require:\n(a) With auto_id='prefix_%s' and CheckboxSelectMultiple, subwidgets[0].id_for_label == 'prefix_field_0' and subwidgets[1].id_for_label == 'prefix_field_1'.\n(b) With auto_id=False and a Select widget, fields[0].id_for_label is None.\n\n3. Status of each requirement:\n(a) Settled. The spec says the method should render \"that string as specified through the auto_id format-string\".\n(b) Open. The spec never says what happens when no id is present. For Select, options do not inherit attrs, and with auto_id=False there is no id at all, so data['attrs'] has no 'id' key.\n\n4. Fixes that violate (b):\n- The spec's own suggested code, `self.data['attrs']['id']`, raises KeyError here, so the verbatim fix fails.\n- A backward-compatible fix might fall back to the old 'id_%s_%s' format when attrs has no id. That keeps existing behavior for Select options, but it returns 'id_name_0' instead of None and fails.\n- Returning '' instead of None also fails.\n\nThe test pins one choice, `.get('id')` returning None, among several reasonable ones. What it checks is observable public behavior, so this is a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "test_iterable_boundfield_select requires id_for_label to be None for Select options when auto_id=False. The spec's literal fix `self.data['attrs']['id']` raises KeyError there, and a fix that falls back to the old 'id_name_0' format (or returns '') also fails.",
+    "overspecification_vector": "self.assertEqual(fields[0].id_for_label, None)  # in test_iterable_boundfield_select with BeatleForm(auto_id=False)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRCR7yDPTQBdPJHVQ72",
+  "input_tokens": 3875,
+  "output_tokens": 1257,
+  "seconds": 13.0
+}

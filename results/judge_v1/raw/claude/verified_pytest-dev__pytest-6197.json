@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-6197",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11460,
+  "output": {
+    "reasoning": "1. The specification describes a symptom with no named entry point. Since 5.2.3, pytest imports `__init__.py` files under the current directory even when they hold no tests, which causes collection errors. The expected behavior is the 5.2.2 behavior: do not import or collect such packages eagerly.\n2. The graded tests require the following.\n(a) `test_does_not_eagerly_collect_packages`: a test file plus a package `foopkg/__init__.py` containing `assert False`; `runpytest` must exit OK. This is near-verbatim the reproduction in the issue.\n(b) `test_does_not_put_src_on_path`: an empty `src/nope/__init__.py`; a test asserts that `import nope` raises ImportError; `runpytest` must exit OK. Before the fix, eagerly collecting the `nope` package imports it, which inserts `src` into `sys.path`. Once pytest stops eagerly importing package `__init__` files, `src` stays off the path.\n3. Settlement of each requirement.\n- (a) is settled directly by the reproduction: `echo 'assert False' > foobar/__init__.py` must not break the run.\n- (b) is a closely related consequence of the same bug. If a fix does not import or collect stray `__init__.py` files, it also never inserts their base directory into `sys.path`. No new names, messages, or private APIs are involved; the test only checks the exit code.\n4. Could a reasonable alternative fail? Swallowing the import error would not count as a correct fix, because the issue complains that the file is imported at all. A fix that keeps package-level marks but imports `__init__.py` only when the package actually contains collected tests still passes both tests, since neither package contains tests. The removed `test_skip_package` is not graded. No reasonable correct fix is rejected.",
+    "score": 2,
+    "explanation": "Both graded tests only check that pytest exits OK when non-test packages exist. One reproduces the issue's `assert False` `__init__.py`; the other checks a direct side effect of eagerly importing packages (`src` added to `sys.path`). Any fix that stops eagerly collecting `__init__.py` files passes both.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRSSQExH8uz4baLNcgK",
+  "input_tokens": 4553,
+  "output_tokens": 1230,
+  "seconds": 14.7
+}

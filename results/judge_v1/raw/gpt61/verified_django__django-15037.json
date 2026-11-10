@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15037",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8892,
+  "output": {
+    "reasoning": "1. The specification identifies inspectdb as the entry point and says a foreign key referencing foo(other_id) is incorrectly generated as a foreign key to foo's default primary key. Preserving the actual referenced non-primary-key field is settled by that description.\n2. The fixture adds ForeignKeyToField.to_field_fk referencing PeopleMoreData.people_unique with CASCADE. The graded test, conditional on can_introspect_foreign_keys, captures call_command('inspectdb', 'inspectdb_foreignkeytofield') using StringIO. It requires an exact substring containing the generated field name, the quoted model reference 'InspectdbPeoplemoredata', positional models.DO_NOTHING, and to_field='people_unique_id' immediately before the closing parenthesis. There are no mocks or required new implementation APIs.\n3. Testing another non-primary-key foreign key through inspectdb is reasonably specified. The fixture-specific identifiers and referenced column follow the schema being introspected; preserving existing model naming and deletion-policy output is conventional. However, the exact textual serialization of the newly added to_field option—particularly its quotation marks—is open: the issue requires the correct relationship, not one particular spelling of equivalent Python source.\n4. A reasonable fix could emit to_field=\"people_unique_id\" while otherwise producing the expected ForeignKey declaration. That generated model preserves the correct target field but fails the single-quoted substring assertion.\n5. This is mild overspecification of observable generated output, not a requirement on private implementation details.",
+    "score": 3,
+    "explanation": "A correct inspectdb fix could generate the same ForeignKey with to_field=\"people_unique_id\" instead of to_field='people_unique_id'. The generated Python would have identical behavior, but the exact substring assertion would reject it.",
+    "overspecification_vector": "self.assertIn(\"to_field_fk = models.ForeignKey('InspectdbPeoplemoredata', \" \"models.DO_NOTHING, to_field='people_unique_id')\", out.getvalue()) — especially the required single-quoted serialization of to_field='people_unique_id'."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2052,
+  "output_tokens": 1380,
+  "seconds": 33.0
+}

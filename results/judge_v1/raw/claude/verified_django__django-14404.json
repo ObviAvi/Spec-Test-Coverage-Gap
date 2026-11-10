@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14404",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9270,
+  "output": {
+    "reasoning": "Step 1: The spec names catch_all_view(). It currently redirects to request.path_info + '/', which drops the script name. The fix is to use request.path, which includes the script name.\n\nStep 2: The graded tests GET the changelist URL without its trailing slash, once with SCRIPT_NAME='/prefix/' and once with FORCE_SCRIPT_NAME='/prefix/'. Both assert a 301 redirect to '/prefix' + known_url, with fetch_redirect_response=False.\n\nStep 3: Checking each requirement.\n- The redirect includes the script prefix. This is settled by the spec: \"'%s/' % request.path (with the script name)\".\n- The 301 status already exists, as the context test test_missing_slash_append_slash_true shows.\n- The exact URL form '/prefix/admin/...' follows from request.path. Django's WSGI handling collapses the trailing slash of the script name, so request.path is '/prefix/admin/...'. This holds for any fix based on request.path or get_full_path.\n- Exercising FORCE_SCRIPT_NAME is directly what the issue title names.\n\nStep 4: A possible alternative is to also preserve the query string with get_full_path(). That would still pass, since there is no query string in these tests. Using reverse or get_script_prefix would also yield '/prefix/...'. No reasonable fix produces a different URL.",
+    "score": 1,
+    "explanation": "Both tests directly check that catch_all_view's slash-append redirect includes the script name (SCRIPT_NAME or FORCE_SCRIPT_NAME prefix), exactly what the issue describes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRBw8UmGE12QSohEZzf",
+  "input_tokens": 3447,
+  "output_tokens": 570,
+  "seconds": 7.1
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11119",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7879,
+  "output": {
+    "reasoning": "1. Spec: Engine.render_to_string creates a Context without the engine's autoescape attribute, so an engine built with autoescape=False still autoescapes. It names the entry point Engine.render_to_string.\n2. The test builds Engine(dirs=[TEMPLATE_DIR], autoescape=False) and calls engine.render_to_string('test_context.html', {'obj': '<script>'}). It asserts the output is 'obj:<script>\\n'.\n3. Requirements:\n- The Engine constructor with autoescape already exists; the spec says \"if you create en engine with autoescape=False\". Settled.\n- render_to_string is the named entry point. Settled.\n- The template file test_context.html already exists; the context test_basic_context uses it, and its output format 'obj:...\\n' is shown there. Settled by existing code.\n- The output must not be escaped. Settled by the spec: \"the result will always be autoescaped\" is the bug.\n4. Any fix passes self.autoescape into the Context created by render_to_string, and every such fix yields this output. No reasonable alternative fails.",
+    "score": 1,
+    "explanation": "The test calls Engine.render_to_string on an autoescape=False engine and asserts the output is unescaped, which is exactly the behavior the issue describes, so every correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR1GyGKmVY4NHNsEivv",
+  "input_tokens": 2903,
+  "output_tokens": 461,
+  "seconds": 5.2
+}

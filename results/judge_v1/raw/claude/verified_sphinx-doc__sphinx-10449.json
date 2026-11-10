@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10449",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11945,
+  "output": {
+    "reasoning": "1. The spec says that with autodoc_typehints='description', autoclass wrongly adds a 'Return type: None' field to the class description, taken from __init__'s `-> None`. Expected: no return type listed for the class. It names autoclass behaviour, not a specific function.\n2. The graded test is test_autodoc_typehints_description_with_documented_init. It renders a class with a documented __init__ under the description typehints mode and compares the full output. The only change from the existing expectation is that the 'Return type:\\n      None\\n' block is gone from the class-level field list. The parameters field and the __init__ entry stay as they were.\n3. Requirements:\n   - No 'Return type' field on the class description. Settled by the spec: \"I expected there to be no return type listed for the class.\"\n   - Everything else in the output unchanged. Settled by existing behaviour; these are context lines.\n   - The test case (documented __init__) differs slightly from the repro (undocumented __init__). It is the same code path, merging recorded typehints into the class description, so it is a closely related input any correct fix must handle.\n4. Any reasonable fix passes. One option skips the return annotation when merging typehints into a class object. Another avoids recording the return annotation for classes. Either removes exactly that block. A fix that also dropped the parameter types would be incorrect, since the spec only objects to the return type. No reasonable alternative output exists.",
+    "score": 2,
+    "explanation": "The test only asserts that the 'Return type: None' block no longer appears in the class description, which is exactly what the spec asks for, checked on a closely related input (a class with a documented __init__).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRUupKaxiHzAMDK9a1t",
+  "input_tokens": 4319,
+  "output_tokens": 871,
+  "seconds": 10.0
+}

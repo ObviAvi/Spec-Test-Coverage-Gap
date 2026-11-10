@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-9258",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9531,
+  "output": {
+    "reasoning": "1. The spec asks that `:type x: bytes | str` in info field lists be understood as a union. That means each type should be cross-referenced separately, just as the existing `int or str` syntax already is. It describes the feature and gives the reproduction docstring.\n2. The test parses `:type age: int | str` inside a py:class and requires:\n   - a paragraph containing `literal_strong 'age'`, then ' (';\n   - `pending_xref`(`literal_emphasis 'int'`);\n   - `literal_emphasis ' | '`;\n   - `pending_xref`(`literal_emphasis 'str'`);\n   - ')', then ' -- ', then the description;\n   - both xrefs with refdomain py, reftype class, the right reftarget and the module/class context.\n3. Status of each requirement:\n   - Splitting into two separate xrefs is settled by the spec: 'multiple types acceptable', in the style already used for 'or'.\n   - The xref attributes and context are settled by existing behavior; they are identical to the existing test_info_field_list for single types.\n   - The delimiter rendered as `literal_emphasis` with the source text ' | ' is settled by convention. Existing PyXrefMixin.make_xrefs splits on a delimiter regex (`\\s+or\\s+`, brackets, commas) and emits each delimiter verbatim as an emphasis node. Adding `\\s*\\|\\s*` to that regex is the natural fix, and it preserves ' | '.\n4. Alternative fixes:\n   - Rewriting '|' into ' or ' text, or stripping the spaces around it, would change the delimiter text. These are unlikely deviations from the existing pattern of echoing source delimiters.\n   - A fix that splits on '|' without consuming whitespace would leave 'int ' as a broken xref target, so it is not correct.\n   - Every reasonable fix following the established delimiter mechanism produces exactly this node tree.",
+    "score": 2,
+    "explanation": "The test checks that `int | str` yields two pending_xrefs separated by a verbatim ' | ' emphasis node. That is exactly what extending the existing delimiter-splitting used for 'or' produces, so it is the only reasonable rendering.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRYDJNqrGQgYToaqDzi",
+  "input_tokens": 3484,
+  "output_tokens": 1617,
+  "seconds": 17.9
+}

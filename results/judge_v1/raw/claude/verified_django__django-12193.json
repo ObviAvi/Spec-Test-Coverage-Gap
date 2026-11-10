@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12193",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9284,
+  "output": {
+    "reasoning": "1. The spec describes a symptom: SplitArrayField with BooleanField shows every widget after the first True as checked. It also names the root cause directly: \"This is caused by the CheckboxInput widget's get_context() modifying the attrs dict passed into it. This is the only widget that modifies the attrs dict passed into its get_context().\"\n\n2. The graded test requires one thing. Calling CheckboxInput().get_context('name', True, {'checked': False}) must leave the caller's attrs dict unmutated, so attrs['checked'] stays False.\n\n3. That requirement is settled by the spec, which states CheckboxInput.get_context mutating its attrs argument is the cause. It is a public widget method in the same code path the spec names.\n\n4. The one alternative is patching only SplitArrayWidget to copy attrs on each loop iteration. That would fail the test. However, it leaves the root-cause mutation the spec explicitly identifies in place, so any other caller reusing an attrs dict still breaks. It counts as patching the literal example rather than the named cause, so it is not a qualifying fix. Any fix that copies attrs inside CheckboxInput.get_context, or otherwise avoids mutating it, passes.",
+    "score": 2,
+    "explanation": "The graded assertion checks that CheckboxInput.get_context no longer mutates the passed attrs dict, which is exactly the root cause the specification names.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR4zrGdc7HrYQzzHBZV",
+  "input_tokens": 3463,
+  "output_tokens": 1005,
+  "seconds": 10.2
+}

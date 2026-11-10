@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-14976",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9153,
+  "output": {
+    "reasoning": "1. The spec says lambdify with mpmath prints rationals as plain Python division (232/3), which loses precision. It names lambdify(modules='mpmath'), whose printing goes through MpmathPrinter. It does not say how rationals should be wrapped.\n\n2. The only graded test is test_MpmathPrinter. It requires `p.doprint(Rational(1, 2)) == 'mpmath.mpf(1)/mpmath.mpf(2)'`. The nsolve test is not graded.\n\n3. Which printer gets the fix is settled by convention: MpmathPrinter is what lambdify uses for mpmath. The exact output string is open. Several reasonable spellings preserve full precision:\n   - 'mpmath.mpf(1)/mpmath.mpf(2)'\n   - 'mpmath.mpf(1)/2'\n   - 'mpmath.mpf(\"1/2\")' (mpf accepts fraction strings)\n   - 'mpmath.mpq(1, 2)'\n   - 'mpmath.fraction(1, 2)'\n   Each fixes the precision bug. The test pins one exact string, so a fix that prints 'mpmath.mpf(1)/2' would fail.\n\n4. The assertion is on printer output, which is the observable behavior of the natural entry point (lambdify's generated source goes through this printer). That makes this a pinned choice among several valid outputs, not a check on internals.",
+    "score": 3,
+    "explanation": "The graded test requires MpmathPrinter to print Rational(1,2) as exactly 'mpmath.mpf(1)/mpmath.mpf(2)'. Equally precise alternatives such as 'mpmath.mpf(1)/2' or 'mpmath.mpf(\"1/2\")' would fail the string comparison.",
+    "overspecification_vector": "assert p.doprint(Rational(1, 2)) == 'mpmath.mpf(1)/mpmath.mpf(2)'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRbBvrHRszfTajF47ex",
+  "input_tokens": 3686,
+  "output_tokens": 674,
+  "seconds": 7.3
+}

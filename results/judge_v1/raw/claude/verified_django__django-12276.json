@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12276",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10744,
+  "output": {
+    "reasoning": "1. The spec names a specific change: move ClearableFileInput.use_required_attribute() to FileInput.use_required_attribute(), so a FileInput that already has a file does not output `required`.\n\n2. What the graded tests require:\n- FileInput().use_required_attribute(None) must return True.\n- FileInput().use_required_attribute('resume.txt') must return False.\n- A form with FileField(widget=FileInput) must render `required` when there is no initial value and omit it when initial is 'resume.txt'.\n\n3. How each requirement is settled:\n- The method name and its location are settled by the spec: \"should be moved to FileInput.use_required_attribute()\".\n- The return values follow from the existing ClearableFileInput logic, `super().use_required_attribute(initial) and not initial`, which gives True for None and False for a truthy value. The spec states the behavior directly: \"required is not output ... when a file is already set\".\n- The form rendering is the observable effect of that change.\n\n4. Is there a reasonable fix that fails? One alternative would handle this somewhere else, such as in BoundField. But the spec explicitly asks for FileInput.use_required_attribute, so that alternative ignores the spec's directive. The tests use the Python-level `assertIs` with True/False. That matches the existing method's return type, though `and not initial` could return a non-bool. With initial=None, `not None` is True, and the super method returns a bool, so the result is fine.",
+    "score": 1,
+    "explanation": "The spec explicitly says to move use_required_attribute to FileInput so `required` is omitted when initial data exists, and the tests check exactly that method and the resulting rendered HTML.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR5dXecyenTjCb2i5h4",
+  "input_tokens": 4125,
+  "output_tokens": 578,
+  "seconds": 6.7
+}

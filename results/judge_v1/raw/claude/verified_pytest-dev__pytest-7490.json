@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7490",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 31309,
+  "output": {
+    "reasoning": "1. The spec says that adding an xfail marker during the test with `request.node.add_marker(pytest.mark.xfail(...))` should make pytest treat the test as if it were statically marked xfail, as it did in 5.x. In 6.0 the failing test is reported as a failure instead. The spec describes a symptom and gives a reproduction.\n2. What the graded tests require:\n - (a) The verbatim reproduction (`add_marker(xfail(reason='xfail'))` followed by `assert 0`) must give `xfailed=1`.\n - (b) A dynamic `xfail(strict=True)` added to a test that passes must give `failed=1`.\n3. Settlement:\n - (a) is settled directly by the issue's example and its 5.x output ('1 xfailed').\n - (b) is settled by the spec's statement that the test should be 'treated like a test marked statically with an xfail'. A static strict xfail that passes is reported as failed (XPASS(strict)); this is existing pytest semantics.\n4. A correct fix re-evaluates xfail marks after the test call (or at report time). Doing so naturally honors all the marker's parameters, including `strict`. A fix that special-cased only the failing outcome would not treat the dynamic marker like a static one, so it ignores part of the spec. Both assertions check outcome counts only; there are no messages or internal state checks.",
+    "score": 2,
+    "explanation": "Both tests check outcome counts only: the issue's own reproduction must report xfailed, and a dynamic strict xfail that passes must fail exactly as a static strict xfail does, which follows directly from 'treated like a test marked statically with an xfail'.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRSf9xNoBo9X9AXA8ig",
+  "input_tokens": 8782,
+  "output_tokens": 780,
+  "seconds": 9.1
+}

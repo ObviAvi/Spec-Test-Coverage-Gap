@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pytest-dev__pytest-10356",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12962,
+  "output": {
+    "reasoning": "1. The specification describes lost inherited class markers and expects both `foo` and `bar` on `test_dings`. It discusses `pytestmark` but does not name an implementation helper or require a configurable MRO lookup API.\n2. The test decorates A, B, and C(A, B) with `xfail` marks carrying arguments \"a\", \"b\", and \"c\". It directly imports `_pytest.mark.structures.get_unpacked_marks`, requires its default result to equal exactly [c, a, b], and requires `get_unpacked_marks(C, consider_mro=False)` to return exactly [c]. There are no mocks or patched attributes.\n3. Combining markers across multiple bases is settled by \"This test should have both markers, foo and bar.\" Extending the example to a decorated subclass is a reasonable related case. However, implementing this behavior in that internal helper, accepting the `consider_mro` keyword, and providing its opt-out behavior are open. Retaining all three same-name marks is also not settled: the issue explicitly allows \"possibly deduplicating marker names by MRO.\"\n4. A reasonable fix could gather class-local markers across the MRO during class/item collection, without changing this helper's signature or making its direct return value perform that aggregation. Such a fix could resolve inherited marker behavior but fail these direct helper assertions. A name-deduplicating implementation could also fail the exact three-element list.\n5. The strongest gap is an unspecified internal API requirement, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix could merge inherited markers during class/item collection without adding MRO aggregation or a `consider_mro` option to `get_unpacked_marks`. The test instead directly requires that internal helper and its unspecified opt-out behavior, so such a fix would fail despite resolving the reported bug.",
+    "overspecification_vector": "from _pytest.mark.structures import get_unpacked_marks; all_marks = get_unpacked_marks(C); assert all_marks == [xfail(\"c\").mark, xfail(\"a\").mark, xfail(\"b\").mark]; assert get_unpacked_marks(C, consider_mro=False) == [xfail(\"c\").mark]"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3018,
+  "output_tokens": 969,
+  "seconds": 21.5
+}

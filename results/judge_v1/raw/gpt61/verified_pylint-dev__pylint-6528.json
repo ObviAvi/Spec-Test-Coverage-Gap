@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pylint-dev__pylint-6528",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15521,
+  "output": {
+    "reasoning": "1. The specification describes a CLI bug: recursive linting must respect --ignore, --ignore-patterns, and --ignore-paths, including excluding files beneath ignored directories. It does not specify where filtering must occur internally.\n2. The graded CLI tests invoke recursive Run with directory-name and filename ignores, including regex variants, and require exit code 0. These are settled by the documented ignore semantics and closely related inputs. The singular --ignore-pattern spelling uses the existing CLI parser rather than requiring a new interface.\n3. The two graded parameterized cases additionally call run.linter._discover_files directly, feed its results into _iterate_file_descrs, inspect each descriptor's filepath, and require the ignored file's absolute path to be absent while a nonignored module remains present. Preserving nonignored modules is reasonably implied; requiring this private-method composition to perform the exclusion is open. The specification only requires correct recursive linting through the CLI.\n4. A reasonable fix could filter recursively discovered files inside the public lint/check orchestration, checking ancestor directory names and paths before passing files onward for linting. It could leave discovery and descriptor iteration unchanged. That fixes the reported behavior and related filename, directory, and regex cases, and passes the CLI assertions. However, the tests' direct composition bypasses that filtering stage and can still return ignored_subdirectory/failing.py.\n5. Thus the graded tests impose an internal implementation boundary not settled by the specification.",
+    "score": 4,
+    "explanation": "A correct fix could apply ignore filtering in the public lint/check orchestration after recursive discovery. The direct _discover_files-to-_iterate_file_descrs assertions bypass that stage and would reject the fix even though recursive CLI linting correctly skips ignored directories.",
+    "overspecification_vector": "run.linter._iterate_file_descrs(tuple(run.linter._discover_files([join(REGRTEST_DATA_DIR, \"directory\")]))); linted_file_paths = [file_item.filepath for file_item in linted_files]; assert ignored_file not in linted_file_paths"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3632,
+  "output_tokens": 1472,
+  "seconds": 42.2
+}

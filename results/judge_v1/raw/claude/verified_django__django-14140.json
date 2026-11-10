@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14140",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12121,
+  "output": {
+    "reasoning": "1. The spec says Q.deconstruct() crashes when a single-child Q holds a non-subscriptable child such as Exists, because of the special case `kwargs = {child[0]: child[1]}`. It names two fixes. One is to remove the special case, so single-child Qs go into args, as in PR 14126. The other is \"A more backward-compatible approach would be to keep the special case and explicitly check that the child is a length-2 tuple.\"\n\n2. What the graded tests require:\n- test_deconstruct_boolean_expression: Q(Exists(tagged)).deconstruct() gives args=(Exists(tagged),) and kwargs={}. Either fix produces this, since the child is not a tuple and falls into args. Settled.\n- test_boolean_expression_combined_with_empty_Q: Q(Exists) & Q() and similar combinations filter correctly. Combining with an empty Q goes through deconstruct, so either fix passes. Settled.\n- test_deconstruct: Q(price__gt=F(...)).deconstruct() gives args=(('price__gt', F(...)),) and kwargs={}. This is open. The backward-compatible fix the spec explicitly offers keeps kwargs={'price__gt': F(...)} and args=(), so it fails this test.\n- test_deconstruct_negated: same issue. It expects args=(('price__gt', ...),) and kwargs={'_negated': True}, while the backward-compatible fix yields kwargs={'price__gt': ..., '_negated': True}.\n\n3. The issue itself proposes the backward-compatible fix as a valid alternative. That fix resolves the crash for the reported case and related inputs, yet it fails two graded tests. The tests pin one of two explicitly offered choices for the observable deconstruct output. That is public behavior, not internal state, so this is a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "The spec offers keeping the single-child kwargs special case guarded by a length-2 tuple check as a valid fix. That fix makes Q(price__gt=F(...)).deconstruct() return kwargs={'price__gt': ...}, but test_deconstruct and test_deconstruct_negated require args=(('price__gt', F('discounted_price')),) with kwargs={} or {'_negated': True}, so it fails.",
+    "overspecification_vector": "test_deconstruct: `self.assertEqual(args, (('price__gt', F('discounted_price')),))` / `self.assertEqual(kwargs, {})`; test_deconstruct_negated: `self.assertEqual(args, (('price__gt', F('discounted_price')),))` / `self.assertEqual(kwargs, {'_negated': True})`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRBAqTDvjfKFCZvR9kc",
+  "input_tokens": 4791,
+  "output_tokens": 1122,
+  "seconds": 10.4
+}

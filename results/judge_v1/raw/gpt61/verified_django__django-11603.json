@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11603",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8639,
+  "output": {
+    "reasoning": "1. The specification explicitly requests “DISTINCT support for Avg and Sum” and says these classes should allow DISTINCT; Min and Max are optional. 2. The added test calls Book.objects.aggregate(ratings=aggregate('rating', distinct=True)) for Avg, Count, and Sum, asserting 4.125, 4, and 16.5 respectively. It requires no private APIs, mocks, new names, ordering, or exception messages. 3. Avg and Sum accepting distinct=True and computing distinct-value aggregates are settled by the specification. Their numerical results follow standard aggregate semantics applied to the fixture, rather than an arbitrary implementation choice. Count returning 4 is settled by existing behavior: the removed test already asserted Count('rating', distinct=True) == 4. The alias and result-dictionary access follow the existing aggregate API shown in context. 4. No open requirement admits a reasonable correct fix that would fail these assertions. The listed test_empty_aggregate has no supplied body or added assertions to assess. 5. The visible requirements are the requested behavior plus an existing Count regression check, warranting score 2.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix must compute DISTINCT Avg and Sum correctly, yielding the asserted fixture results, while preserving the already-supported DISTINCT Count behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1956,
+  "output_tokens": 810,
+  "seconds": 19.1
+}

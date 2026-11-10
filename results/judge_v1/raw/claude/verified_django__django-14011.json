@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14011",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15614,
+  "output": {
+    "reasoning": "1. The specification says that ThreadedWSGIServer, as used by LiveServerThread, does not close database connections opened in its request threads. It describes a symptom and names the class, but proposes no API.\n\n2. The test patch also changes django/test/testcases.py so that LiveServerThread._create_server calls `self.server_class(..., connections_override=connections_override)`. Every graded live-server test (LiveServerViews, LiveServerAddress, LiveServerDatabase, etc.) builds its server through this path. So every graded test requires ThreadedWSGIServer.__init__ to accept a new `connections_override` keyword argument. The new test classes also reference `_close_connections` and `_make_connections_override`, but test_closes_connections is not in the graded list.\n\n3. The `connections_override` constructor kwarg on ThreadedWSGIServer is open. The specification never mentions it, and no existing pattern makes it the only choice.\n\n4. A natural correct fix fails here. For example, override `process_request_thread` in ThreadedWSGIServer to call `connections.close_all()` in a `finally` block, or close connections in the handler. Such a fix resolves the race but leaves the constructor signature unchanged. The modified `_create_server` would then raise `TypeError: unexpected keyword argument 'connections_override'`, and every graded test would fail.\n\n5. The graded tests depend on a new parameter name the fix must introduce, which the specification never mentions. That is score 4.",
+    "score": 4,
+    "explanation": "The test patch makes LiveServerThread._create_server pass `connections_override=...` to the server class, so every graded test requires ThreadedWSGIServer.__init__ to accept a `connections_override` keyword. A correct fix that simply closes connections after each request thread, for example by overriding process_request_thread to call connections.close_all(), would hit a TypeError on startup and fail all tests.",
+    "overspecification_vector": "testcases.py `_create_server(self, connections_override=None)` passing `connections_override=connections_override` to `self.server_class(...)`; tests' CloseConnectionTestServer relying on `_close_connections` and LiveServerTestCase `_make_connections_override`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRAkm7EUDCzfEaRWocR",
+  "input_tokens": 5772,
+  "output_tokens": 1249,
+  "seconds": 12.0
+}

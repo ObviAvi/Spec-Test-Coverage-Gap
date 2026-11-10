@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-10908",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10643,
+  "output": {
+    "reasoning": "1. The spec says `get_feature_names` should not raise NotFittedError when a `vocabulary` parameter is given but the vectorizer is unfitted. It points to `transform` calling `_validate_vocabulary`, which sets `vocabulary_`, as the model to follow.\n\n2. What the graded test requires:\n(a) Unfitted `CountVectorizer()` with no vocabulary: `get_feature_names` raises ValueError. Settled: this is existing behavior, and NotFittedError subclasses ValueError.\n(b) Then `assert_false(cv.fixed_vocabulary_)`. Open. Before the fix, `get_feature_names` only calls `_check_vocabulary`, so `fixed_vocabulary_` is never set and the assertion raises AttributeError. To pass, `get_feature_names` must call `_validate_vocabulary` even when `vocabulary=None`, setting `fixed_vocabulary_=False` before the error is raised.\n(c) With `vocabulary=vocab`: `get_feature_names` returns the list in vocab order. Settled by the spec.\n(d) `assert_true(cv.fixed_vocabulary_)`. Mostly settled if `_validate_vocabulary` is reused, as the spec suggests.\n(e) `cv.vocabulary_.get(name) == idx`, i.e. `vocabulary_` is populated as a side effect of `get_feature_names`. Strongly suggested by the spec's mention of `_validate_vocabulary`.\n\n3. Requirement (b) is the gap. A reasonable fix such as `if self.vocabulary is not None and not hasattr(self, 'vocabulary_'): self._validate_vocabulary()` resolves the issue exactly as described. But it leaves `fixed_vocabulary_` unset on the no-vocabulary error path, so the test fails with AttributeError. The assertion checks intermediate state left behind by a call that raised, which depends on whether validation runs unconditionally. That is an implementation detail, not the observable behavior the spec describes.",
+    "score": 4,
+    "explanation": "The test asserts `cv.fixed_vocabulary_` is False after `get_feature_names()` raises on an unfitted vectorizer with no vocabulary, which requires `_validate_vocabulary` to be called unconditionally. A correct fix that validates only when `self.vocabulary is not None` fails with AttributeError.",
+    "overspecification_vector": "assert_false(cv.fixed_vocabulary_)  # after assert_raises(ValueError, cv.get_feature_names) on CountVectorizer() with no vocabulary"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRT6wW4Pn3bNo6cQThT",
+  "input_tokens": 4119,
+  "output_tokens": 2111,
+  "seconds": 18.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13809",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9438,
+  "output": {
+    "reasoning": "The specification requests an optional '--skip-checks' flag for runserver so developers can avoid system-check execution and its delay. The graded test invokes runserver through call_command with skip_checks=True and False, disables reloading, and captures stdout. The keyword form is a standard management-command convention; skipping checks when true and retaining checks when false follow the requested behavior. BaseCommand.check is mocked to observe execution, while check_migrations and run are patched only for isolation. The test additionally requires the exact banner 'Performing system checks...' to disappear when checks are skipped and appear otherwise. Suppressing that banner is open: the specification does not establish an output contract. A reasonable minimal fix could condition only the actual self.check() invocation while retaining the startup banner. That would eliminate system checks and their delay but fail the negative output assertion. The ungraded autoreload test change does not affect the assessment.",
+    "score": 3,
+    "explanation": "A reasonable fix could skip the actual system-check invocation while leaving the existing startup banner unchanged. It would implement the requested option but fail the assertion that 'Performing system checks...' must be absent from stdout.",
+    "overspecification_vector": "self.assertNotIn('Performing system checks...', self.output.getvalue())"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2103,
+  "output_tokens": 1827,
+  "seconds": 44.6
+}

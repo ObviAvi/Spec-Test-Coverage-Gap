@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/mwaskom__seaborn-3187",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9685,
+  "output": {
+    "reasoning": "1. The specification identifies missing magnitude/offset information in numeric legends, demonstrated through objects Plot and also reported for scatterplot. It explicitly allows the formatter offset to be used in the legend \"title and/or labels\".\n2. The tests create an objects Plot with color=np.add(xy[\"x\"], 1e8), add MockMark, and inspect p._figure.legends[0].texts; they also create relplot with hue=long_df[\"z\"] + 1e8 and inspect g.legend.texts. The objects test requires nonempty legend texts. Both require every inspected label to parse with float() and exceed 1e7.\n3. Correctly conveying the large numeric values is settled by the reported bug. Testing large shifted values and numeric color/hue legends is a reasonable extension of the reported inputs. The figure and legend accesses merely inspect displayed output; they do not require a particular implementation. However, requiring each individual label to contain a standalone, float-parseable absolute value is open: the specification expressly permits putting offset information in the title.\n4. A reasonable fix could retain compact ScalarFormatter labels and append the shared additive offset or multiplicative scale to the legend title. That would correctly convey the values but fail the per-label magnitude assertion. Another valid presentation could use mathematical scientific notation that float() cannot parse.\n5. The tests therefore select one externally observable presentation among several explicitly permitted ones, warranting score 3.",
+    "score": 3,
+    "explanation": "A correct fix could display the shared offset or multiplier in the legend title while retaining compact numeric labels, as the specification explicitly permits. These tests reject that fix because every label must independently parse as a float greater than 1e7.",
+    "overspecification_vector": "In both graded tests: `assert float(text.get_text()) > 1e7`"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2340,
+  "output_tokens": 908,
+  "seconds": 20.9
+}

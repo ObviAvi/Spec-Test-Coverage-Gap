@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11964",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9939,
+  "output": {
+    "reasoning": "1. The reported bug is inconsistent behavior of a model field before and after retrieval: the reproduction requires str(my_object.my_str_value) == 'first' for both instances. Both TextChoices and IntegerChoices fields are explicitly in scope.\n2. The added test iterates Gender, Suit, YearInSchool, and Vehicle, retrieves each member by name, and asserts str(enum_member) == str(enum_member.value), without constructing or accessing a model field. There are no message, ordering, mock, or implementation-name requirements. No added assertions for the listed test_textchoices are shown.\n3. Covering multiple members and both choice families is reasonably inferred from the specification. The underlying-value string representation is explicitly required for field values. Requiring standalone enum members themselves to provide that representation, independently of model-field handling, is open: the report identifies the problem through field values and does not require preserving enum objects in those fields.\n4. A reasonable correct fix could normalize enum assignments and defaults to their underlying str/int values during model-field handling. Fresh and retrieved field values would then have consistent types and string representations, including the reported example and related inputs. Standalone enum members could retain their existing __str__ behavior, failing the added test.\n5. The tests therefore require the fix to affect the enum API directly rather than allowing a fix through the reported model-field entry point.",
+    "score": 4,
+    "explanation": "A reasonable fix could normalize enum values through model-field handling, making freshly created and retrieved field values stringify identically. The test bypasses model fields and requires standalone enum members to stringify as their underlying values, so that fix would fail.",
+    "overspecification_vector": "self.assertEqual(str(test[member.name]), str(member.value)) in test_str, applied directly to members of Gender, Suit, YearInSchool, and Vehicle without model-field interaction."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2250,
+  "output_tokens": 1831,
+  "seconds": 43.1
+}

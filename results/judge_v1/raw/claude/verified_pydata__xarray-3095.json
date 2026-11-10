@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-3095",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10439,
+  "output": {
+    "reasoning": "1. The specification says that `Dataset.copy(deep=True)`, `DataArray.copy` (deep or shallow), `copy.copy` and `copy.deepcopy` cast unicode IndexVariables (`<U*`) to object dtype. It explicitly names IndexVariable as the affected object.\n2. The graded test is `TestIndexVariable::test_copy[str-True]`. It builds an IndexVariable with str dtype, calls `v.copy(deep=True)`, and asserts:\n   - the copy has the same type as the original;\n   - `assert_identical(v, w)`, which fails when the dtype becomes object.\n3. Every requirement is settled:\n   - The object under test is settled by the spec: \"accidentally cast IndexVariable's with dtype='<U*' to object\".\n   - Dtype preservation on deep copy is settled by the spec, which calls the cast a regression.\n   - Using `IndexVariable.copy` as the entry point is settled by convention. Dataset and DataArray deep copy delegate to the variable's `copy`, so any reasonable fix repairs the root cause there, whether in `IndexVariable.copy` or in the PandasIndexAdapter's copy path. Both pass.\n4. No open requirements remain. A fix that only patched Dataset/DataArray and left IndexVariable broken would be contrived and would leave the same bug on closely related inputs.",
+    "score": 2,
+    "explanation": "The graded check, that `IndexVariable.copy(deep=True)` stays identical (dtype preserved) for str data, is the root of the reported regression, and the spec names IndexVariable, so any reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRPSKxAFzWbgKGBVSJP",
+  "input_tokens": 3756,
+  "output_tokens": 887,
+  "seconds": 9.0
+}

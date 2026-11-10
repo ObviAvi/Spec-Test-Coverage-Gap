@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-10051",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9627,
+  "output": {
+    "reasoning": "1. Spec: after `caplog.clear()`, `caplog.get_records(\"call\")` is frozen. It should match `caplog.records`, emptying on clear and picking up new records. Cause: `clear()` replaces the handler's list instead of clearing it in place.\n2. Test requirements:\n   (a) Before clear, `get_records(\"call\")` contains the call log and `get_records(\"setup\")` contains the setup log.\n   (b) After `clear()`, `get_records(\"call\") == []`.\n   (c) `get_records(\"setup\")` is unaffected by clear.\n   (d) New logs after clear appear in `get_records(\"call\")`.\n   (e) `set(caplog._item.stash[caplog_records_key]) == {\"setup\",\"call\"}` throughout.\n3. Status of each:\n   (a) Existing behavior.\n   (b) and (d) Settled by the spec's repro (`caplog.get_records(\"call\") == caplog.records` after clear). They follow from \"does not get cleared, nor does it get new records\".\n   (c) Convention. `clear()` concerns the current records, and the spec never suggests wiping other phases. Setup records already live in a separate list.\n   (e) Internal stash, but the same assertion appears in the existing context test `test_caplog_captures_for_all_stages`. Any natural fix keeps both keys:\n      - clearing the list in place;\n      - reassigning `stash[key][\"call\"]`;\n      - having `get_records` return `handler.records` for the current phase.\n4. Fixes that would fail:\n   - Deleting the \"call\" key from the stash. This is contrived.\n   - Clearing all phases' records. That changes unrelated semantics and goes beyond the spec.\n   No reasonable fix fails.",
+    "score": 2,
+    "explanation": "The core assertions (`get_records(\"call\") == []` after clear, and new records showing up afterwards) are the spec's repro. The setup-records and stash-key checks hold for any natural fix and mirror an existing test.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRRocRQFhaExcJCyGQt",
+  "input_tokens": 3691,
+  "output_tokens": 1242,
+  "seconds": 12.1
+}

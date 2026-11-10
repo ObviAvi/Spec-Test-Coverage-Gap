@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12273",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10366,
+  "output": {
+    "reasoning": "1. The specification identifies inherited-model saving as the entry point: after resetting the primary key to None, save() overwrites the existing object instead of creating another one. Its reproduction explicitly requires the original parent's field value to remain unchanged.\n2. The first test creates a Profile/User instance, retrieves it through the reverse inheritance relation, clears pk and user_ptr_id, changes username, and calls save(). It requires two Profiles and preservation of the original username. The second does the analogous operation for Congressman with Person and Politician parents, clearing pk, id, and politician_ptr_id; it requires two Congressmen and preservation of both original parent records' values. There are no mocks, private-method calls, required implementation names, or intermediate-state assertions.\n3. Creating a new child without overwriting the original is settled by the reported failure and reproduction. Applying this behavior to other inherited models, including multiple inheritance, is a reasonable generalization to closely related inputs. The fixture names, field names, and sample strings establish test data rather than prescribe a fix's implementation. Preserving 'john', 'John', and 'senator 1' checks precisely the non-overwrite behavior illustrated by assertTrue(obj.f).\n4. There is no material open choice in these assertions: after clearing the relevant primary-key fields and saving changed data as a new object, overwriting an original parent or failing to create a second child would retain the reported bug in a closely related case. The tests do not require any particular mechanism for achieving that result.",
+    "score": 2,
+    "explanation": "The tests reasonably generalize the reported inheritance bug: saving after clearing primary-key fields must create a second child while leaving the original parent records unchanged.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2438,
+  "output_tokens": 1263,
+  "seconds": 30.7
+}

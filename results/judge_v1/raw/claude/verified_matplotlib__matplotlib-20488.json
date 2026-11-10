@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-20488",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10373,
+  "output": {
+    "reasoning": "1. The spec says `test_huge_range_log` fails with `ValueError: Invalid vmin or vmax`. The error is raised in `LogNorm.__call__`, called from `_make_image` while drawing an imshow image. The data spans -1 to 1e20 under LogNorm, and resampling or rescaling pushes the temporary vmin to a non-positive value, so the log transform is not finite. The spec names the failing test and the code path (`image.py` `_make_image` calling `self.norm`).\n2. The graded test (x=-1) draws an imshow of a 5x5 array: rows 0-1 are 1e20, the rest -1, with `LogNorm(vmin=1, vmax=1e20)`, viridis, nearest interpolation. It must not raise, and its pixels must match a reference: 1000 and -1 under `Normalize(vmin=1, vmax=1000)` with under='w'. So 1e20 must map to the top color, and -1 (invalid for log, hence masked or bad, so transparent over a white background) must look white.\n3. Settled vs. open:\n- Not raising is settled by the spec: the test must stop failing with this ValueError.\n- The rendered output is settled by existing semantics: values at vmax map to the top color, and non-positive values under LogNorm are masked. The reference figure encodes exactly what a correct render looks like.\n- The vmin change from 100 to 1 is just test input. A fix that handles the huge-range case in general handles either vmin.\n4. Any reasonable fix produces the same pixels: values sit exactly at vmax or are masked. Such fixes include clamping the scaled vmin to a small positive epsilon for LogNorm, avoiding rescaling vmin/vmax for log norms, or computing in a way that keeps vmin positive. No intermediate state, private API, or message is asserted. Only the public imshow/draw path is used, and the test is a regression check of the exact test named in the issue.\n5. Score 2.",
+    "score": 2,
+    "explanation": "The graded test is the failing test named in the issue, run through the public imshow/draw path with a pixel comparison. Any fix that keeps LogNorm from receiving a non-positive vmin during resampling renders 1e20 as the top color and -1 as masked, which matches the reference.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRKcwKQWdzXzTmLGmg2",
+  "input_tokens": 4097,
+  "output_tokens": 2100,
+  "seconds": 22.3
+}

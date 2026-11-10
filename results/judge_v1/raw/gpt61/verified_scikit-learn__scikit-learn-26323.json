@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-26323",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11135,
+  "output": {
+    "reasoning": "1. The issue identifies `ColumnTransformer.set_output` as ignoring an estimator supplied as `remainder`, causing incorrect combined output. It explicitly expects the reproduction to preserve boolean column `a` and integer column `b` in a pandas DataFrame.\n2. The test uses the same DataFrame, `VarianceThreshold` transformers, boolean column selector, estimator remainder, and `verbose_feature_names_out=False`. It calls `set_output(transform=\"pandas\")` and `fit_transform`, then requires frame equality with the input. These requirements are settled by the reproduction and its Expected Results, including column order, values, index, and preserved dtypes.\n3. The test additionally calls `set_output(transform=\"default\")`, repeats `fit_transform`, and requires an `np.ndarray`. This is not explicitly demonstrated in the issue, but is a conventional regression check for the same API: selecting default output must restore the standard NumPy output rather than leave pandas output enabled. It introduces no private APIs, mocks, or implementation requirements.\n4. There are no open arbitrary choices. A fix that fails the default-output assertion would break the existing output-selection contract, rather than represent a reasonable alternative solution. The additional mode-reset check makes this reasonably specified rather than entirely verbatim.",
+    "score": 2,
+    "explanation": "The frame-equality assertion directly checks the reported expected output, while the NumPy assertion is a standard regression check that switching back to default output still works.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2760,
+  "output_tokens": 673,
+  "seconds": 16.4
+}

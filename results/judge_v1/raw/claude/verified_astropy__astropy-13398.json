@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-13398",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20193,
+  "output": {
+    "reasoning": "1. The spec proposes direct ITRS<->AltAz and ITRS<->HADec transforms that stay within ITRS. Its sample code treats ITRS input as geocentric and subtracts `observed_frame.location.get_itrs().cartesian` to get a topocentric vector. Refraction is described as not yet added and optional. The spec never mentions giving the ITRS frame a `location` attribute or a topocentric ITRS concept.\n\n2. What the graded tests require:\n- `ITRS(location=loc)` and `ITRS(itrs_repr, obstime=t, location=home)` must be constructible. ITRS needs a new `location` frame attribute. Open: not in the spec.\n- `test_cirs_itrs_topo`: CIRS(location=loc) -> ITRS(location=loc) -> CIRS must round-trip. This needs CIRS<->ITRS to handle topocentric ITRS. Open.\n- `test_itrs_straight_overhead`: a topocentric ITRS vector (geocentric object position minus observer position) tagged `location=home` must transform to alt=90. Under the spec's own code, ITRS input is geocentric and gets the observer position subtracted again. That would give the wrong answer, so the test contradicts the spec's design. Open.\n- `test_itrs_topo_*_with_refraction`: ICRS -> topocentric ITRS -> AltAz/HADec must match ICRS -> AltAz within 0.1 mas, including with refraction (pressure=1000 hPa). Refraction is described as optional (\"I have yet to add refraction\"), and topocentric ITRS is required. Open.\n\n3. A fix that implements exactly the spec's code, even with refraction added, fails every graded test. `ITRS(location=...)` raises because the attribute does not exist. Even if the attribute were accepted, the straight-overhead test would fail because the observer location is subtracted twice. The tests depend on a new frame attribute and a topocentric-ITRS semantics the spec never states.",
+    "score": 4,
+    "explanation": "The tests construct `ITRS(location=loc)` and treat ITRS coordinates carrying a location as already topocentric, including a topocentric CIRS<->ITRS transform. That is a new frame attribute and new semantics the spec never mentions; a fix implementing the spec's code verbatim, which treats ITRS as geocentric and subtracts the observer location, fails every graded test.",
+    "overspecification_vector": "ITRS(location=loc); ITRS(itrs_repr, obstime=t, location=home) in test_itrs_straight_overhead; cirs.transform_to(ITRS(location=loc)).transform_to(cirs) in test_cirs_itrs_topo; refraction comparisons with pressure=1000.0*u.hPa via ITRS"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtQy26FrWSMfySgzfrG9",
+  "input_tokens": 8725,
+  "output_tokens": 1754,
+  "seconds": 17.9
+}

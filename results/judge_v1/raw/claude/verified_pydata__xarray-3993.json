@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-3993",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8891,
+  "output": {
+    "reasoning": "1. The spec says DataArray.integrate takes 'dim' while Dataset.integrate takes 'coord', and DataArray should use 'coord'. It explicitly leaves open 'whether it requires a deprecation cycle?'\n2. The graded test test_integrate requires that da.integrate(dim=\"x\") still works and emits a FutureWarning (`with pytest.warns(FutureWarning)`). The other changed test, test_units, is not graded.\n3. Settled: renaming the parameter to coord ('It should definitely be `coord`'). Open: whether to keep 'dim' as a deprecated alias, which the spec poses as an unanswered question. Open: which warning category to use, FutureWarning, DeprecationWarning or PendingDeprecationWarning. xarray often uses FutureWarning, but the spec does not settle it.\n4. Two reasonable correct fixes fail:\n(a) A clean rename with no deprecation cycle. da.integrate(dim='x') then raises TypeError and the test fails.\n(b) A deprecation shim that emits DeprecationWarning. That class is not a subclass of FutureWarning, so pytest.warns(FutureWarning) fails.\nBoth resolve the issue as stated. The test checks observable behavior, the warning category, but pins one choice among several.",
+    "score": 3,
+    "explanation": "The test requires calling da.integrate(dim=\"x\") to emit specifically a FutureWarning. A fix that simply renames dim to coord without a deprecation shim (TypeError) fails, and so does one that deprecates with DeprecationWarning. The spec explicitly leaves the deprecation question open.",
+    "overspecification_vector": "with pytest.warns(FutureWarning):\n        da.integrate(dim=\"x\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRPW8eDbrzyQGA2HcYC",
+  "input_tokens": 3310,
+  "output_tokens": 921,
+  "seconds": 9.8
+}

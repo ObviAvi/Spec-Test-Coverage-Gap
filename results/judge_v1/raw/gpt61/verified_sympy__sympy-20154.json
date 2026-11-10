@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-20154",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9382,
+  "output": {
+    "reasoning": "1. The issue identifies partitions() reusing yielded dictionaries, making list(partitions(...)) incorrect, and suggests copying before yielding. Stable results after iteration are therefore specified.\n2. The added assertions collect partitions without copying for (n=6, k=2), (6, k=3), (8, k=4, m=3), (S(3), m=2), and (4, k=3). They require the expected partition dictionaries and their existing order, including equivalent filtered results. test_uniq also requires uniq(partitions(4)) to preserve all five distinct partitions in their existing order. No new names, messages, mocks, or implementation details are required.\n3. Independence from later iterator updates is settled by the complaint that 'list(partitions()) will give an apparently wrong result.' Exact partition contents, constraints, and ordering are established by the previous assertions, which expected the same results with caller-side .copy(). The additional parameter combinations and uniq consumer are ordinary related-input and downstream regression checks.\n4. There is no open choice that rejects a reasonable correct fix: the tests do not require copying specifically, only stable partition values while preserving existing behavior. Passing the results through uniq does not require a separate change to uniq.",
+    "score": 2,
+    "explanation": "Every reasonable fix that stops yielded partitions from changing while preserving existing partition behavior passes these assertions, which simply remove caller-side copies from established collection and uniq checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2470,
+  "output_tokens": 747,
+  "seconds": 18.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16560",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19726,
+  "output": {
+    "reasoning": "1. The spec asks to let users customize the `code` of the ValidationError that BaseConstraint.validate raises. It proposes adding a parameter to BaseConstraint, but the text says \"violation_error_message\", a typo for a code parameter. Subclasses CheckConstraint, UniqueConstraint and ExclusionConstraint raise these errors.\n\n2-3. Requirements of the graded tests:\n- Constructor kwarg and attribute named `violation_error_code` on BaseConstraint, CheckConstraint and UniqueConstraint. Not literally stated, since the spec has a typo. By analogy with `violation_error_message` it is the obvious name, so it is settled by convention.\n- `deconstruct()` includes `violation_error_code`. Settled by convention: Django constraints must deconstruct for migrations, and the existing message kwarg is deconstructed.\n- `__eq__` considers the code. Settled by convention, matching how the message is handled.\n- `validate` raises ValidationError with `code=violation_error_code`, for CheckConstraint and for conditional UniqueConstraint. Settled by the spec.\n- `repr()` must include ` violation_error_code='...'` after `name=...`, for CheckConstraint and UniqueConstraint (test_repr_with_violation_error_code). Open: the spec never mentions repr.\n\n4. A competent developer could add the parameter and wire it through validate, deconstruct and __eq__ (all needed for correct behavior and migrations) but leave __repr__ untouched, since repr is cosmetic and unmentioned. That fix fully resolves the issue yet fails both graded test_repr_with_violation_error_code tests. The exact repr format also follows the existing message pattern but is still the author's choice. These are observable outputs, not internals, so the gap is mild.",
+    "score": 3,
+    "explanation": "The graded tests require `repr()` of CheckConstraint and UniqueConstraint to include `violation_error_code='...'` in a specific position, but the spec only asks for a customizable error code. A correct fix that adds the parameter to validate, deconstruct and __eq__ without changing __repr__ fails test_repr_with_violation_error_code.",
+    "overspecification_vector": "CheckConstraintTests.test_repr_with_violation_error_code asserting \"<CheckConstraint: check=(AND: ('price__lt', 1)) name='price_lt_one' violation_error_code='more_than_one'>\"; UniqueConstraintTests.test_repr_with_violation_error_code asserting \"<UniqueConstraint: expressions=(F(baz__lower),) name='unique_lower_baz' violation_error_code='baz'>\""
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRJCDzEUezmZFXQ34hy",
+  "input_tokens": 7402,
+  "output_tokens": 1780,
+  "seconds": 17.5
+}

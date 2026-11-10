@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11951",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8610,
+  "output": {
+    "reasoning": "The issue identifies bulk_create() as the entry point and explicitly proposes selecting the minimum of the requested batch size and the backend-compatible maximum. The test creates 1,000 Country objects, calculates that backend maximum using bulk_batch_size(), and passes batch_size=max_batch_size + 1. These are ordinary reproduction inputs for the specified oversized-batch case; the field names and max(..., 1) establish the fixture's applicable limit rather than require a particular implementation. The assertion requires ceil(len(objs) / max_batch_size) queries. That count follows from the proposed minimum-selection behavior and the existing bulk-insert efficiency pattern visible in the surrounding test. The has_bulk_insert guard restricts the assertion to supporting backends. No open requirement rejects a reasonable correct implementation.",
+    "score": 2,
+    "explanation": "The exact query count is a natural consequence of clamping the requested batch size to the compatible maximum while preserving existing bulk-insert behavior, so every reasonable correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1982,
+  "output_tokens": 875,
+  "seconds": 25.3
+}

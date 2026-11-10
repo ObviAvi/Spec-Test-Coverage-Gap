@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13195",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13021,
+  "output": {
+    "reasoning": "The issue identifies HttpResponseBase.delete_cookie() as the entry point and says deletion headers should preserve SameSite and avoid insecure SameSite=None cookies. The graded tests require: delete_cookie('c', samesite='lax') to emit SameSite; samesite='none' to set Secure=True; message deletion to use SESSION_COOKIE_SAMESITE; and session deletion to include that setting while retaining the existing expiry, domain, and path behavior. These requirements are specified or reasonably inferred: the report explicitly discusses SameSite=None requiring Secure, demonstrates the existing set_cookie(samesite=...) convention, and implicates deletion of configured cookies generally. Existing header fields and their serialization are established by the unchanged test context. One detail remains open: the exact capitalization of the emitted SameSite value. The test requires the literal string 'lax', but SameSite values are case-insensitive, and the report itself shows 'SameSite=Lax'. A reasonable implementation could accept case-insensitive input, normalize it to the conventional spellings 'Lax', 'Strict', and 'None', propagate settings at the callers, and ensure Secure for None. This fixes the reported behavior and related inputs but fails the lowercase equality assertion.",
+    "score": 3,
+    "explanation": "A correct fix could normalize SameSite values to conventional capitalization, emitting 'Lax' for samesite='lax'. The test rejects that semantically equivalent deletion cookie by requiring the exact lowercase spelling.",
+    "overspecification_vector": "self.assertEqual(response.cookies['c']['samesite'], 'lax') in test_delete_cookie_samesite"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3002,
+  "output_tokens": 3971,
+  "seconds": 92.6
+}

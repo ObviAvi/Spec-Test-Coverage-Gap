@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16263",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9988,
+  "output": {
+    "reasoning": "1. The spec asks that queryset.count() strip annotations not referenced by filters, other annotations or ordering, using the example Book.objects.annotate(Count('chapters')).count(). It names count() as the entry point and describes the symptom in terms of the generated SQL.\n\n2. The graded tests capture the SQL from count() and check two things:\n- (a) The annotation name is absent from the SQL. Settled by the spec: \"stripping out any annotations that are not referenced\".\n- (b) The exact number of SELECT keywords:\n  - alias(Count('authors')).count() must emit 1 SELECT (no subquery).\n  - annotate(Lower('name')).count() must emit 1 SELECT.\n  - annotate(Count('authors')).count() must emit exactly 2 SELECTs (\"Subquery wrapping required\").\n\n3. Requirement (a) is settled. Requirement (b) is open. The spec never says whether a subquery wrapper should remain once the annotation is removed. The spec itself says the annotated query \"produces the same results as Book.objects.count()\", which invites removing the aggregate entirely.\n\n4. Two reasonable correct fixes fail (b):\n- A fix that strips the unused Count aggregate together with its join and GROUP BY, so the query collapses to a plain single-SELECT COUNT(*), returns correct results. It fails test_unreferenced_aggregate_annotation_pruned, which demands 2 SELECTs.\n- A more conservative fix that keeps subquery wrapping whenever any aggregate annotation exists, including unselected alias() aggregates, also returns correct results and strips the name. It fails test_unused_aliased_aggregate_pruned, which demands 1 SELECT.\n\nThe tests pin upstream's particular structure: alias aggregates are inlined, annotate aggregates keep a GROUP BY subquery. That is one valid choice among several. It is observable in the SQL, but the spec does not prescribe it.",
+    "score": 3,
+    "explanation": "The tests assert an exact count of SELECT keywords: 2 for annotate(Count).count() and 1 for alias(Count).count(). A correct fix that fully collapses the annotated Count case to a single SELECT, or that keeps a subquery for the unused alias aggregate, strips the annotation as asked but fails these structural assertions.",
+    "overspecification_vector": "self.assertEqual(sql.count(\"select\"), 2, \"Subquery wrapping required\") in test_unreferenced_aggregate_annotation_pruned; self.assertEqual(sql.count(\"select\"), 1, \"No subquery wrapping required\") in test_unused_aliased_aggregate_pruned"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRHNQ928TzVxqDzg2FQ",
+  "input_tokens": 3772,
+  "output_tokens": 2433,
+  "seconds": 25.6
+}

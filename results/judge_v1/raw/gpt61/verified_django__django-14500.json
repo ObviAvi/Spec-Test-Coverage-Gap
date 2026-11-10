@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14500",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8480,
+  "output": {
+    "reasoning": "The specification identifies a bookkeeping bug in MigrationExecutor: when unapplying a squashed migration while the replaced files remain, it must mark the squash as unapplied as well as the replaced migrations. The test uses MigrationExecutor.migrate() to apply the fixture migration '0001_squashed_0002', checks its presence in recorder.applied_migrations(), rebuilds the loader graph, and migrates the app to None to unapply everything. The initial presence check establishes existing applied-state behavior, consistent with the neighboring replacement-applied test. The final absence check directly implements the requested behavior: the squash must no longer be recorded as applied. The fixture name, graph rebuild, and None target are reproduction setup, not requirements for a particular implementation. Although the assertion inspects migration records, those records are precisely the state the issue asks to correct. No open implementation choice is constrained, and no reasonable correct fix would leave the squash recorded as applied after this reversal.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the final assertNotIn directly checks that unapplying the migrations also marks the squashed migration as unapplied.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1917,
+  "output_tokens": 616,
+  "seconds": 16.2
+}

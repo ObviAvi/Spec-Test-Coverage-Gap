@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13794",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9157,
+  "output": {
+    "reasoning": "1. The specification describes a symptom in the `add` template filter: concatenating a str with a lazy string (`__proxy__`) raises a TypeError, and the filter returns ''. The only entry point named is the add filter.\n2. What the graded tests require:\n   - test_add08: `{{ s1|add:lazy_s2 }}` with a str and a gettext_lazy value renders 'stringlazy'.\n   - test_add09: two lazy strings render 'stringlazy'.\n   - test_lazy_add: `lazy(lambda: 4, int)() + lazy(lambda: 5, int)() == 9`. This uses the Python `+` operator directly on two lazy proxies with int result classes. It never touches the template filter and never involves strings.\n3. Settlement:\n   - test_add08 and test_add09 are settled by the spec: \"concatenate a string with a lazy string with the add template filter\". The lazy+lazy case is closely related.\n   - test_lazy_add is open. It requires the `__proxy__` class in django.utils.functional to support `__add__`/`__radd__` between proxies, here for lazy ints. The spec only names the add filter and lazy strings.\n4. A reasonable fix that fails: change only `django.template.defaultfilters.add`, e.g. detect `Promise` instances and coerce them with `str()` before concatenating, or retry with `str(value) + str(arg)` on TypeError. That fixes the reported bug and the lazy+lazy case, so test_add08 and test_add09 pass. But lazy-int proxies still raise TypeError on `+`, so test_lazy_add fails. The test exercises a different function and code path (Promise operator overloading) than the one the spec implicates.",
+    "score": 4,
+    "explanation": "A fix made entirely inside the `add` template filter (coercing lazy Promise objects to str before concatenating) resolves the reported issue but fails test_lazy_add. That test requires the lazy proxy class itself to implement `__add__`, and checks it with lazy ints rather than strings, which the spec never mentions.",
+    "overspecification_vector": "tests/utils_tests/test_functional.py::test_lazy_add — `lazy_4 = lazy(lambda: 4, int); lazy_5 = lazy(lambda: 5, int); self.assertEqual(lazy_4() + lazy_5(), 9)`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR9Z9KqKi2EEDJ4stKa",
+  "input_tokens": 3526,
+  "output_tokens": 1387,
+  "seconds": 13.3
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11790",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8552,
+  "output": {
+    "reasoning": "1. The specification reports that AuthenticationForm's username field no longer renders with a maxlength HTML attribute. It specifies the rendered behavior, not how the attribute must be stored or generated.\n2. The added assertions require form.fields['username'].widget.attrs.get('maxlength') to equal the integer 255 for the custom email user model and the integer 254 for the integer-username model. The existing max_length and form.errors assertions are unchanged context.\n3. Using AuthenticationForm is settled by the specification. Matching maxlength to the field's existing max_length is reasonably inferred, and the existing assertions establish 255 and 254 for these scenarios. However, storing maxlength directly in widget.attrs before rendering, specifically as an integer, is open.\n4. A reasonable fix could assign str(field.max_length) to the widget attribute. This produces the same correct HTML but fails both added assertions because strings do not equal integers. A fix that supplies maxlength during rendering rather than storing it in widget.attrs could also resolve the reported symptom without satisfying these checks.\n5. The tests therefore constrain intermediate representation rather than only checking that the missing HTML attribute is restored.",
+    "score": 4,
+    "explanation": "A correct fix could store maxlength as '255' or '254', producing the required HTML. The tests instead require integer values in the pre-render widget.attrs dictionary, rejecting that valid implementation.",
+    "overspecification_vector": "self.assertEqual(form.fields['username'].widget.attrs.get('maxlength'), 255)\nself.assertEqual(form.fields['username'].widget.attrs.get('maxlength'), 254)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1925,
+  "output_tokens": 1109,
+  "seconds": 24.3
+}

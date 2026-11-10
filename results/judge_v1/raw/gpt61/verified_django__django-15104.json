@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15104",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12893,
+  "output": {
+    "reasoning": "The issue is a KeyError in migration autodetection when a custom ForeignKey hardcodes its target and removes 'to' from its deconstructed kwargs. The specification explicitly supplies this field pattern and a reproduction using ProjectState/ModelState, an existing target model, and a newly added model containing that field. The test repeats that scenario with Author and Book instead of HardcodedModel and TestModel; these are input names, not names a fix must introduce. Successful autodetection and exactly one migration are directly settled by the reproduction's `_detect_changes()` call and `assertEqual(len(changes['testapp']), 1)`. The assertions that the migration contains a CreateModel operation named Book express the ordinary migration semantics of adding the sole new model; they do not impose a distinct implementation choice. The get_changes and assertion helpers merely exercise and inspect this same behavior. There are no mocks, required new APIs, exact error messages, or assertions requiring the suggested `pop('to', None)` implementation. No open requirement rejects a reasonable correct fix: guarding deletion, using a safe pop, or otherwise correctly accommodating omitted relation targets would all satisfy the test.",
+    "score": 1,
+    "explanation": "The test closely reproduces the supplied example and verifies its intended result: adding the model with a hardcoded-target ForeignKey produces one migration creating that model without a KeyError.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3022,
+  "output_tokens": 637,
+  "seconds": 16.3
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-23299",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9447,
+  "output": {
+    "reasoning": "1. The specification says calling `get_backend()` after a figure is created inside `rc_context()` must not remove it from `Gcf.figs`: \"The figure should not be missing from Gcf.\" It does not prescribe backend-configuration restoration semantics. 2. The test checks that `mpl.rcParams['backend']` initially differs from `'module://aardvark'`, assigns that string inside `mpl.rc_context()`, and requires the assignment to survive context exit. It neither creates a figure nor calls `get_backend()`. 3. Using `rc_context()` is settled by the reproduction. The initial inequality is a setup assumption. The dummy backend input and, critically, persistence of an explicit backend override are open: neither follows from preserving registered figures. 4. A reasonable fix could prevent restoration of unresolved automatic-backend state after backend initialization, while retaining restoration of explicit backend overrides. This would address the reported figure loss and related lazy-initialization cases, but restore the original backend in this test and fail its final assertion. 5. The test therefore enforces a particular backend-restoration mechanism through a configuration-only path rather than checking the reported behavior.",
+    "score": 4,
+    "explanation": "A correct fix could preserve the automatically initialized backend without changing how rc_context restores explicit backend overrides. Such a fix would prevent get_backend() from clearing figures but fail the test's requirement that an arbitrary explicit backend assignment persist after context exit.",
+    "overspecification_vector": "with mpl.rc_context():\n    mpl.rcParams['backend'] = 'module://aardvark'\nassert mpl.rcParams['backend'] == 'module://aardvark'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2236,
+  "output_tokens": 1394,
+  "seconds": 29.4
+}

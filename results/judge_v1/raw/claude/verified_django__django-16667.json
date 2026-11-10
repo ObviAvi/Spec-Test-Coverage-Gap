@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16667",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10946,
+  "output": {
+    "reasoning": "1. The specification says SelectDateWidget.value_from_datadict crashes with OverflowError when y/m/d are huge integers, because `datetime.date(int(y), int(m), int(d))` is not guarded against OverflowError. The expected outcome is no crash and the form simply being invalid. It names the method value_from_datadict.\n\n2. The graded tests require:\n(a) test_form_field: a form with month=str(sys.maxsize+1) gives is_valid() False and errors {'mydate': ['Enter a valid date.']}.\n(b) test_value_from_datadict: value_from_datadict with year=str(sys.maxsize+1), month '12', day '1' returns exactly \"0-0-0\".\n\n3. Status of each requirement:\n(a) Settled. The spec says the form should not crash, and 'Enter a valid date.' is the existing DateField invalid message, so this is convention.\n(b) Open. The spec never says what value_from_datadict should return on overflow. The existing ValueError handler returns a pseudo-ISO string built from the user inputs (e.g. '%s-%s-%s' with y, m, d, or 0 for missing parts). The most natural fix is `except (ValueError, OverflowError):`, which reuses that path and returns '9223372036854775808-12-1'. That still fails DateField validation ('Enter a valid date.'), so test (a) passes, but test (b) fails because it demands the sentinel \"0-0-0\". Other reasonable fixes, such as returning None or the raw string, also fail (b).\n\n4. The \"0-0-0\" return value is an arbitrary sentinel tied to internal widget output, not externally observable behavior that the spec describes.",
+    "score": 4,
+    "explanation": "A natural fix that catches OverflowError alongside ValueError and returns the existing pseudo-ISO string ('9223372036854775808-12-1') makes the form invalid correctly, but fails test_value_from_datadict. That test requires value_from_datadict to return the exact sentinel \"0-0-0\" for overflow inputs.",
+    "overspecification_vector": "((str(sys.maxsize + 1), \"12\", \"1\"), \"0-0-0\") in test_selectdatewidget.py test_value_from_datadict"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRJWKB4iSCkHbWhLE6p",
+  "input_tokens": 4182,
+  "output_tokens": 1100,
+  "seconds": 10.1
+}

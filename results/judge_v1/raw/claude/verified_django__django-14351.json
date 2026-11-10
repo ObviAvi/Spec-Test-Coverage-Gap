@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14351",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16245,
+  "output": {
+    "reasoning": "1. Spec: Using a queryset of models with __in inside a Q OR'd with an aggregate reference makes the subquery select every default column when it is copied into GROUP BY. That raises a 'subquery must return only one column' error. A fix should make this query work, as it did in 2.2.5.\n\n2. Test requirements:\n- Book.objects.annotate(Count('authors')).filter(Q(authors__in=authors) | Q(authors__count__gt=2)).\n- This mirrors the issue's pattern: annotate a count over an m2m, then filter with Q(m2m__in=qs) | Q(m2m__count...).\n- The test asserts the resulting set equals {b1, b4}.\n- It uses only public API, existing fixtures, and the existing skipUnlessDBFeature.\n\n3. Settlement:\n- The query must execute without error and return the correct rows. This follows from the spec ('was working in 2.2.5').\n- The expected set comes from SQL semantics plus the fixture data, so it is not an arbitrary choice.\n- One open question is whether the fix keeps the subquery in GROUP BY. Any correct fix, whether it limits the subquery to one column or drops it from GROUP BY, gives the same semantic result. Results should be identical because HAVING handles the filtering either way.\n\n4. No reasonable correct fix would produce a different result set.",
+    "score": 1,
+    "explanation": "The test runs the issue's reproduction pattern (annotate Count over an m2m, then filter with Q(m2m__in=queryset) | Q(m2m__count...)) and checks that the correct rows come back, which is what any correct fix produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRBduPDYeHUnhzXRs1X",
+  "input_tokens": 6696,
+  "output_tokens": 573,
+  "seconds": 7.7
+}

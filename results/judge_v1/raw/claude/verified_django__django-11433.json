@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11433",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9003,
+  "output": {
+    "reasoning": "1. The spec says that when a field with a model default is omitted from the submitted data, construct_instance skips it. A value placed in cleaned_data, for example in clean(), therefore cannot override the default. The fix should let a cleaned_data value override the default. It names the behavior but not the exact rule for when the default still applies.\n2. The test requires that:\n   - PubForm({}) with cleaned_data['mode']='de' saves mode 'de'.\n   - For every value in `fields['mode'].empty_values` (None, '', [], (), {}), cleaned_data['mode'] set to that value still produces the model default 'di'.\n3. The 'de' override is settled by the spec ('cannot be overwritten with self.cleaned_data').\n   - Falling back to the default for '' is settled by existing behavior: the existing test test_default_populated_on_optional_field must keep passing, and an optional CharField cleans omitted data to ''.\n   - Falling back for None, [], (), {} is open. The spec never says which cleaned_data values count as 'not provided'.\n4. A reasonable alternative overrides the default whenever the cleaned value differs from what the form field produces for missing input, i.e. compares against the field's own empty value (''). This preserves the existing omitted-field default behavior and fully resolves the issue. But setting cleaned_data['mode']=None, [], () or {} would then be an explicit override: pub.mode would become None or [] instead of 'di', failing the subTest loop.\n   - Another alternative keys off whether clean() changed cleaned_data relative to the initial cleaned value. It also rejects the empty-values loop.\n   - The upstream choice (`cleaned_data.get(name) in field.empty_values`) is idiomatic but is one of several valid policies. The assertion checks observable save() output, not internals.",
+    "score": 3,
+    "explanation": "The test requires that every value in field.empty_values (None, '', [], (), {}) placed in cleaned_data still falls back to the model default. A correct fix that treats any explicitly changed cleaned_data value (e.g. None) as an override, only keeping the default when the value equals the field's normal empty result (''), would save None instead of 'di' and fail.",
+    "overspecification_vector": "for empty_value in pub_form.fields['mode'].empty_values: ... pub_form.mocked_mode = empty_value ... self.assertEqual(pub.mode, default_mode)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR2yJC9Fv245tNC59vZ",
+  "input_tokens": 3326,
+  "output_tokens": 1435,
+  "seconds": 15.7
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-23299",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9447,
+  "output": {
+    "reasoning": "1. The spec reports a symptom: calling `get_backend()` after the first figure was created inside `rc_context()` empties `Gcf.figs`. It names `get_backend` and `rc_context` but does not say how either should behave about the 'backend' rcParam. The root cause is that `rc_context` restores the backend param to the auto-backend sentinel on exit, so `get_backend()` re-resolves the backend and calls `switch_backend`, which closes all figures.\n2. What the test requires:\n   - The backend is not 'module://aardvark' initially.\n   - Inside `rc_context()`, the test sets `rcParams['backend'] = 'module://aardvark'`.\n   - After the context exits, `rcParams['backend']` must still be 'module://aardvark'. In other words, `rc_context` must never restore the 'backend' key on exit, even when the original value was a concrete backend such as 'agg' in the test environment.\n   - The test never checks `get_backend()` or `Gcf.figs`, which is the reported symptom.\n3. Status of that requirement: it is open. The spec only says figures should not vanish from Gcf. Nothing says that a backend set explicitly inside `rc_context` must persist after the context ends. That is a design choice of the upstream fix (deleting 'backend' from the saved copy).\n4. Reasonable correct fixes that fail the test:\n   - (a) Make `get_backend()` or `switch_backend` avoid closing figures when the resolved backend is the one already in use. This fixes the reported bug, but `rc_context` still restores 'backend' to its original value, so the assertion fails.\n   - (b) In `rc_context`, skip restoring 'backend' only when the saved value is the auto sentinel and the backend has since been resolved. This is a targeted fix that preserves normal rc_context semantics for explicit values. In the test the original is 'agg', not the sentinel, so it gets restored and the test fails.\n   Both fixes fully resolve the reported symptom and closely related inputs, yet fail. The test exercises a different behavior (explicit backend assignment inside `rc_context`) than the one the spec describes (`get_backend()` clearing figures).",
+    "score": 4,
+    "explanation": "The test does not check that `get_backend()` preserves `Gcf.figs`. Instead it requires that `rc_context` never restores the 'backend' rcParam, even when it was set explicitly inside the context. A fix that stops `get_backend`/`switch_backend` from closing figures, or that skips restoring only the auto-backend sentinel, resolves the issue but fails.",
+    "overspecification_vector": "with mpl.rc_context():\n    mpl.rcParams['backend'] = 'module://aardvark'\nassert mpl.rcParams['backend'] == 'module://aardvark'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRL7tM9tVHpRqkDiALc",
+  "input_tokens": 3647,
+  "output_tokens": 1573,
+  "seconds": 15.1
+}

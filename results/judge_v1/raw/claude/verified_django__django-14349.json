@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14349",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10474,
+  "output": {
+    "reasoning": "1. Spec: on Python builds patched for bpo-43882, urlsplit strips LF, CR and tab before splitting, so URLValidator no longer rejects URLs containing them. Two existing test cases (trailing '\\n') now fail. The issue names the characters 'LF, CR and tab' and suggests rejecting URLs that contain them early.\n2. Graded test requirements: URLValidator() raises ValidationError for URLs containing '\\n', '\\r' or '\\t', whether trailing, inside the host, or right after the scheme, for both a domain host and an IPv6 host.\n3. Settled vs. open:\n- The trailing '\\n' cases are settled by the existing tests (context lines '# Trailing newlines not accepted') and by the issue's failing output.\n- The '\\r' and '\\t' cases are settled by the issue text: 'strip all instances of LF, CR and tab characters', with the proposed fix 'reject URLs containing the forbidden characters early'.\n- ValidationError is the validator's standard exception, so it follows from existing code.\n4. Alternatives:\n- The issue also floats silently accepting/stripping. That would contradict the existing tests that explicitly reject trailing newlines. A validator also cannot strip the stored value, so 'stripping' would really mean accepting input with control characters. That is not a reasonable correct fix for an issue framed as 'tests failing'.\n- A fix rejecting only '\\n' would ignore the issue's explicit mention of CR and tab, so it does not count.\n- Any fix that rejects all three characters anywhere in the URL, whether by an early check or a regex change, passes every new case.",
+    "score": 2,
+    "explanation": "The graded assertions only require URLValidator to raise ValidationError for URLs containing LF, CR or tab anywhere, which is exactly the set of characters the issue names and the existing test expectation of rejection.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRBcGefCdGAKogUfwsp",
+  "input_tokens": 3974,
+  "output_tokens": 1539,
+  "seconds": 16.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15629",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15798,
+  "output": {
+    "reasoning": "1. The specification says that when a PK has db_collation, FK columns referencing it are not given the same collation, so ADD CONSTRAINT fails on MySQL. It states the general rule: \"The collation of the pk must match the collation of the fk otherwise an error will occur.\" The title is \"no propagation to foreignkeys.\" It describes a symptom, not a specific function.\n\n2. What the graded tests require:\n- (a) AlterField that adds db_collation to a PK must update the collation of the FK column (rider.pony_id) and the M2M through-table FK column (stable_ponies.pony_id). It also checks the PK column itself.\n- (b) CreateModel of a model with a ForeignKey or OneToOneField to a collated PK must create the FK column with that collation.\n- Both checks read the column collation through database introspection, using a helper built on get_table_description. That is observable DB state, not internal code.\n\n3. How each requirement is settled:\n- (a) is the exact reported scenario: changing the PK and getting MODIFY statements on the FK columns. The M2M through-table FK is a closely related input under \"pk must match the fk\". Django's existing PK alter-propagation code already handles through-table FKs alongside regular FKs.\n- (b) follows from the general rule that FK collation must match PK collation. A new FK to a collated PK would otherwise hit the same constraint failure.\n\n4. Alternatives considered:\n- A fix that patched only _alter_field's related-column update would fail (b). But it would leave the same bug for a closely related input: creating an FK to a collated PK. So it does not count as a full fix.\n- The natural fix makes the FK's db parameters inherit the target's collation, which covers both cases.\n- No names, messages, or internal state are asserted.",
+    "score": 2,
+    "explanation": "The tests check that FK columns (including M2M through-table and O2O columns) end up with the PK's collation after AlterField or CreateModel, which is the specification's stated rule that \"the collation of the pk must match the collation of the fk\", verified through database introspection.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRFtWLDAcJ2PHir8qYc",
+  "input_tokens": 5916,
+  "output_tokens": 1232,
+  "seconds": 13.2
+}

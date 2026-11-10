@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14140",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12121,
+  "output": {
+    "reasoning": "1. The specification identifies Q.deconstruct() treating a single child as a subscriptable lookup pair, causing Q(Exists(...)).deconstruct() to crash. It also identifies combining Q objects with boolean expressions as the affected behavior.\n2. The graded tests require: (a) Q(price__gt=F('discounted_price')) to deconstruct with its lookup pair in args and empty kwargs; (b) the negated equivalent to put the lookup pair in args and only '_negated': True in kwargs; (c) Q(Exists(Tag.objects.filter(category=OuterRef('pk')))) to deconstruct with the Exists expression as its sole positional argument and empty kwargs; and (d) combining Q(Exists(is_poc)) with Q(), using either operand order and either & or |, to filter Employee objects to [self.max].\n3. Requirement (c) directly addresses the reported non-subscriptable-child reproduction. Requirement (d) exercises the stated combination problem on closely related inputs; preserving the boolean condition when combined with an empty Q is consistent with the existing test cases. The canonical Q path and negation marker follow existing behavior. However, the positional-versus-keyword representation of ordinary lookup children in (a) and (b) is open: the specification explicitly says, 'A more backward-compatible approach would be to keep the special case and explicitly check that the child is a length-2 tuple.' The linked patch's representation is described, not mandated as the only acceptable fix.\n4. A reasonable fix would preserve keyword deconstruction for a sole length-two tuple while falling back to positional children for Exists and other non-lookup children. This resolves the reported crash and related combinations but fails both ordinary and negated lookup deconstruction tests.\n5. This is score 3: the tests select one externally observable serialization representation among explicitly acknowledged valid alternatives, rather than requiring an unspecified internal implementation.",
+    "score": 3,
+    "explanation": "A correct backward-compatible fix can retain kwargs for single lookup-pair children while safely handling boolean-expression children positionally. It would fail test_deconstruct and test_deconstruct_negated because those tests require ordinary lookup pairs to move into args, even though the specification explicitly acknowledges retaining the special case as an alternative.",
+    "overspecification_vector": "test_deconstruct: self.assertEqual(args, (('price__gt', F('discounted_price')),)); self.assertEqual(kwargs, {}). test_deconstruct_negated: self.assertEqual(args, (('price__gt', F('discounted_price')),)); self.assertEqual(kwargs, {'_negated': True})."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2852,
+  "output_tokens": 1070,
+  "seconds": 24.2
+}

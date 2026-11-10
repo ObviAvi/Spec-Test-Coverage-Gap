@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pytest-dev__pytest-10051",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9627,
+  "output": {
+    "reasoning": "The issue explicitly requires get_records() to remain consistent with current captured records after clear(): old records must disappear and new records must appear. The call-stage message assertions directly test this. Preserving the earlier setup log is a reasonable regression requirement: clearing current capture should not erase completed stages. The supplied log-message strings merely identify the records emitted by the test. However, the assertions that set(caplog._item.stash[caplog_records_key]) remains exactly {'setup', 'call'} impose an internal storage requirement not settled by the specification. Although the context shows this storage layout already exists, retaining it is not necessary to fix the public behavior. A reasonable alternative is to track the active phase explicitly, invalidate its cached stash entry on clear(), and have get_records() obtain active-phase records from the live handler while retaining completed-stage records in the stash. That resolves clearing and subsequent logging, preserves setup records, and nevertheless fails the post-clear stash-key assertions.",
+    "score": 4,
+    "explanation": "A correct fix could invalidate the active phase's cached stash entry and serve its records directly from the live capture handler. The tests reject that implementation by requiring the private stash to retain a 'call' key after clear(), even though all specified public behavior works.",
+    "overspecification_vector": "The post-clear assertions: assert set(caplog._item.stash[caplog_records_key]) == {\"setup\", \"call\"}"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2354,
+  "output_tokens": 1860,
+  "seconds": 44.1
+}

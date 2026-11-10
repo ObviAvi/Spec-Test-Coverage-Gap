@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13449",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16042,
+  "output": {
+    "reasoning": "1. The specification says that on SQLite, Window(Lag(decimal_field)) generates `CAST(LAG(...) AS NUMERIC) OVER (...)`, which is a syntax error. The CAST should wrap the whole window expression. The entry point is the public Window/Lag annotation API.\n2. What the test requires:\n- A new nullable DecimalField `bonus` on the test model. This is added by the test patch itself.\n- An annotation with Window(Lag('bonus', offset=1), partition_by, order_by) through the public API.\n- The rows come back in an explicit order_by.\n- Each lag value equals the previous bonus in the partition, or None for the first row. Values are compared to ints and floats such as 92.5 and 112.5.\n3. Each requirement against the specification:\n- The query must execute without a syntax error. Settled: the issue says the CAST \"should be around the whole statement up until \\\"w\\\"\".\n- Lag must return the correct values. Settled by Lag's semantics.\n- The comparison type. Settled in practice: whether a fix returns Decimal (through the DecimalField converter) or float, `Decimal('92.5') == 92.5` and `Decimal('85') == 85` are both true.\n- None for the first row of each partition. This is standard Lag behavior.\n- Ordering is fixed explicitly by the queryset.\n4. Any reasonable fix makes the query valid and returns correct lagged values, so it passes. This holds whether it moves the CAST outside the OVER clause, drops the CAST for window expressions, or casts on the Window instead. The test touches no private APIs or exact SQL strings.",
+    "score": 2,
+    "explanation": "The test runs the reported scenario (Lag over a DecimalField inside a Window on SQLite) through the public API and checks only that the lagged values are correct, which any fix producing valid SQL satisfies regardless of whether results come back as Decimal or float.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR8rcHKh5KeGhjEWw1Z",
+  "input_tokens": 6511,
+  "output_tokens": 1303,
+  "seconds": 14.5
+}

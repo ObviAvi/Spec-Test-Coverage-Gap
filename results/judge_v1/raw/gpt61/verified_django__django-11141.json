@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11141",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9262,
+  "output": {
+    "reasoning": "The specification identifies rejection of migration packages without __init__.py as the bug: the '__file__ check is no longer needed' and 'prevents migrate from working on namespace packages.' The graded test supplies exactly such a package through MIGRATION_MODULES, containing a single 0001_initial migration, and constructs MigrationLoader(connection). Supporting that namespace-package input is directly specified. The assertion that graph.forwards_plan(('migrations', '0001_initial')) equals [('migrations', '0001_initial')] verifies successful discovery using existing migration-graph behavior: the supplied migration declares no dependencies, so its forward plan contains only itself. The module name, app label, and migration name identify the supplied fixture; they do not require the fix to introduce any particular names. There are no mocks, required implementation calls, or arbitrary error messages. No open choice rejects a reasonable correct fix: a fix that supports namespace migration packages must discover this migration and make it available for migration planning.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the single-node migration-plan assertion directly verifies that a migration directory without __init__.py is loaded, exactly as requested.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2085,
+  "output_tokens": 624,
+  "seconds": 16.8
+}

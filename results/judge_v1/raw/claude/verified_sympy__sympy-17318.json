@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-17318",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10218,
+  "output": {
+    "reasoning": "1. The spec says sqrtdenest raises IndexError (originating in _split_gcd via split_surds via _sqrt_match) and that an expression that cannot be denested should be returned unchanged. Its 'New Result' shows `sqrtdenest((3 - sqrt(2)*sqrt(4 + 3*I) + 3*I)/2)` returning `3/2 - sqrt(2)*sqrt(4 + 3*I)/2 + 3*I/2`, the expression unchanged.\n\n2. Requirements of the graded test:\n(a) `_sqrt_match(4 + I) == []`. This calls a private helper directly and asserts a specific empty-list return value.\n(b) `sqrtdenest((3 - sqrt(2)*sqrt(4 + 3*I) + 3*I)/2) == I`.\n(c) `sqrtdenest(3 - sqrt(2)*sqrt(4 + I) + 3*I) == e`, i.e. returned unchanged.\n\n3. Status of each:\n(c) is settled by the spec: \"If an expression cannot be denested it should be returned unchanged.\"\n(a) is open. The spec never says what _sqrt_match should return. A reasonable fix could guard in _split_gcd or split_surds, or catch IndexError in sqrtdenest. Such a fix might leave _sqrt_match returning something else, e.g. `[4, I, 1]`-style or other non-empty output, or still raising if the guard sits higher up. That fix fails this assertion.\n(b) contradicts the spec's stated new result. The spec says the output is the unchanged expression. The test requires full denesting to `I`, since sqrt(2)*sqrt(4+3I) = sqrt(8+6I) = 3+I. A fix that faithfully produces the spec's 'New Result' fails.\n\n4. Both open assertions reject reasonable fixes. One goes through a private function with a specific sentinel value; the other demands behavior the spec explicitly contradicts.",
+    "score": 4,
+    "explanation": "The test calls the private `_sqrt_match(4 + I)` and requires it to return `[]`, which a fix guarding at split_surds/_split_gcd or catching the error in sqrtdenest need not satisfy. It also requires the reported expression to denest to `I`, whereas the spec states the expected result is the unchanged expression `3/2 - sqrt(2)*sqrt(4 + 3*I)/2 + 3*I/2`.",
+    "overspecification_vector": "assert _sqrt_match(4 + I) == []; assert sqrtdenest((3 - sqrt(2)*sqrt(4 + 3*I) + 3*I)/2) == I"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRcGPmCbhvcczR2gu62",
+  "input_tokens": 4335,
+  "output_tokens": 1194,
+  "seconds": 11.3
+}

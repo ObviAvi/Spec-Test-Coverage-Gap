@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15161",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10276,
+  "output": {
+    "reasoning": "1. The spec says F() already deconstructs to 'django.db.models.F' (PR #14047). The same technique, changing the deconstruct path to the shorter public import location, should be applied to other expressions. The entry point is deconstruct(). The aim is simpler generated migrations using `from django.db import models`.\n\n2. What the graded tests require:\n- `Value('name').deconstruct()` returns path 'django.db.models.Value'.\n- The same holds when `output_field` is given.\n- `MigrationWriter.serialize` of an Index built from Func, Case, When, Value, ExpressionWrapper, F and OrderBy produces only `models.X` references.\n- The serialized imports are exactly {'from django.db import models'}.\n\n3. Settled or open:\n- The path form 'django.db.models.<Name>' is settled by the spec: \"changed it to deconstruct to django.db.models.F()\" and \"the same technique can be applied to other expressions\".\n- Which expressions are covered is open on its face (\"other expressions\"). The natural reading is every expression importable from django.db.models. Value, Func, Case, When, ExpressionWrapper and OrderBy are all public exports of django.db.models. A fix that converts the public expressions is the reasonable one; one that skipped some would leave the same problem in closely related inputs.\n- The nested `models.OrderBy(models.OrderBy(...))` shape comes from existing Index/OrderBy behavior, not from the fix.\n- The imports set follows directly once every path is simplified.\n\n4. A fix that only rewrote paths in the migration serializer would not change deconstruct(). It would contradict the spec's stated technique (\"deconstruct to\"), so it is not a reasonable alternative. No reasonable fix applying the technique to the public expressions fails.",
+    "score": 2,
+    "explanation": "The tests check that public expressions such as Value, Func, Case, When, ExpressionWrapper and OrderBy deconstruct to 'django.db.models.<Name>', which is exactly the technique the spec describes for F, applied to other expressions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtREFoBUAubwVDLbyyCb",
+  "input_tokens": 3776,
+  "output_tokens": 1559,
+  "seconds": 15.1
+}

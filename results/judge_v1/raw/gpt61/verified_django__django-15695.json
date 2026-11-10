@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15695",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9105,
+  "output": {
+    "reasoning": "The specification identifies RenameIndex's backward/forward cycle and explicitly reproduces reapplication with database_forwards(app_label, editor, project_state, new_state). The added requirements that reapplication not raise and that \"new_pony_test_idx\" exist afterward are settled by that example. However, the test instead calls database_forwards(app_label, editor, new_state, project_state), reversing the migration states. Successful execution with this reversed state pair is not specified. A reasonable fix could retrieve the target index from to_state before checking whether its name already matches the database index's name. That fixes reapplication with the specified state ordering, but the test's original project_state need not contain the renamed target index, so its lookup can fail. The no-op comment adds no independently asserted query-count or implementation requirement.",
+    "score": 3,
+    "explanation": "The test reverses the from_state and to_state arguments relative to the specification's reproduction. A correct fix that retrieves the target index from to_state before detecting an unnecessary rename can pass the specified reapplication but fail this test because the original state lacks that target index.",
+    "overspecification_vector": "operation.database_forwards(app_label, editor, new_state, project_state)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2077,
+  "output_tokens": 2501,
+  "seconds": 52.1
+}

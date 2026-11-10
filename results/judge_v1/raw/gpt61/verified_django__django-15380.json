@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15380",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9900,
+  "output": {
+    "reasoning": "1. The specification reports that the migration autodetector crashes when 'renaming a model and field in a single step,' with a KeyError in generate_renamed_fields. Correctly detecting both renames without crashing is settled; their operation order is not stated.\n2. The test uses get_changes() with self.author_name and a target RenamedAuthor containing an AutoField primary key and renamed_name CharField(max_length=200). MigrationQuestioner approves both renames. It requires one migration containing exactly RenameModel followed by RenameField, and checks their old/new names at fixed operation indices.\n3. Exercising the autodetector through get_changes() addresses the specified subsystem. The alternative model/field names and basic field definitions are ordinary related inputs. Affirmative rename answers and the asserted old/new names follow from the requested rename behavior. A single migration is conventional packaging for these same-app changes. However, requiring the model rename before the field rename is open: neither the description nor the traceback establishes that order as a contract.\n4. A reasonable alternative fix could detect and emit RenameField against the original Author model first, followed by RenameModel to RenamedAuthor. This produces the requested final schema while preserving data and avoiding the stale-model lookup, but fails the exact operation-order assertion and indexed attribute checks.\n5. The test therefore mildly overspecifies the observable migration plan rather than requiring a particular internal implementation.",
+    "score": 3,
+    "explanation": "A correct fix could generate RenameField on Author before RenameModel to RenamedAuthor. The tests reject that valid migration because they require RenameModel first and RenameField second.",
+    "overspecification_vector": "self.assertOperationTypes(changes, 'testapp', 0, ['RenameModel', 'RenameField']); the assertOperationAttributes() calls additionally require the model-rename attributes at operation index 0 and field-rename attributes at index 1."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2334,
+  "output_tokens": 1682,
+  "seconds": 41.2
+}

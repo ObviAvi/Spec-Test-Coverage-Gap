@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11163",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8165,
+  "output": {
+    "reasoning": "1. The specification says model_to_dict(instance, fields=[]) should return an empty dict but returns all fields. It names the function and the exact fix: change the check to `fields is not None`.\n2. The graded tests require:\n- model_to_dict(bw, fields=[]) returns an empty result. This is settled verbatim by the specification.\n- fields=['id','name'] returns ['id','name']. This is existing behavior and a regression check.\n- exclude=[] returns all fields. This is existing behavior, because an empty exclude list is falsy and excludes nothing.\n- exclude=['id','name'] returns ['score','writer_ptr']. This is existing behavior.\n3. The only open question is whether a fix might also change exclude handling to `exclude is not None`. Even then, `f.name in []` is False, so exclude=[] still returns all fields. Every reasonable fix passes.\n4. No reasonable correct fix fails these assertions.",
+    "score": 1,
+    "explanation": "The key assertion, model_to_dict(bw, fields=[]) == {}, is exactly the behavior the issue describes, and the other assertions check existing behavior that any reasonable fix preserves.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR1vor2RbRcCDw3Q6e9",
+  "input_tokens": 3060,
+  "output_tokens": 410,
+  "seconds": 5.4
+}

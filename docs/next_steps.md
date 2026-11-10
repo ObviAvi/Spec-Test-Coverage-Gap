@@ -26,6 +26,8 @@ Keep the pipeline, data, prompts and results in git.
 
 ### 2. Step 3 on Verified: how common is overspecification (RQ2)
 
+Done. The panel flags 117 of 500 tasks (23%, CI 20-27%); 85% of the tasks no top-30 agent resolves are flagged, against 5% of the tasks at least 90% resolve. Report: `results/judge_v1/prevalence_verified.md` (`python -m stcg prevalence`).
+
 Run the frozen judge on all 500 Verified tasks:
 
 ```bash

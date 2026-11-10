@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-9591",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10399,
+  "output": {
+    "reasoning": "The specification describes a rendered-documentation symptom: a documented type in a property's annotation should be cross-referenced. The added assertions require both abstract and class properties with type `str` to have a `desc_annotation` containing exactly the text `\": \"` followed by a `pending_xref` displaying `str`. Covering property variants and another type is a reasonable extension of the issue; the existing names and prefixes are regression context. However, the exact doctree nesting is open: the specification does not require the separator and reference to share one annotation node. A reasonable fix could emit `\": \"` in one `desc_annotation` and the parsed, cross-referenced type in a sibling annotation node, preserving the displayed annotation and working links. That fix would fail these structural assertions.",
+    "score": 4,
+    "explanation": "The tests require a particular intermediate doctree structure, not merely a working type cross-reference. A correct fix that places the separator and linked type in separate sibling annotation nodes would fail despite resolving the reported bug.",
+    "overspecification_vector": "Both added assertions require `[desc_annotation, (\": \", [pending_xref, \"str\"])]`, fixing the reference's exact parentage and placement alongside the separator."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2317,
+  "output_tokens": 1305,
+  "seconds": 35.5
+}

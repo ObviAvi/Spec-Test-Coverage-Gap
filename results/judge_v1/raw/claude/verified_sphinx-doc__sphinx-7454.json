@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7454",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10594,
+  "output": {
+    "reasoning": "1. The spec says that with autodoc_typehints='signature', `None` in a return annotation is not rendered as a working link to Python's None docs, while 'description' mode does produce one. It describes a symptom in the final HTML output and names no function. The cause is that the signature xref is created with reftype 'class', and intersphinx cannot resolve that because None is inventoried as py:data.\n2. What the graded test requires:\n   - It calls the private helper `sphinx.domains.python._parse_annotation(\"None\")` directly.\n   - It asserts the result is a single pending_xref with text 'None'.\n   - It asserts the node attributes refdomain='py', reftype='obj', reftarget='None'.\n   - It also asserts reftype='class' for 'int' (existing behavior).\n3. Status of each requirement:\n   - The single pending_xref with text 'None' is settled by existing behavior.\n   - reftype='class' for int is settled by existing behavior.\n   - reftype='obj' for None is open. The spec only asks that None link correctly; it says nothing about the reftype on the unresolved node.\n   - Testing via the private parse step is open. The spec's observable behavior is the resolved link in the HTML.\n4. Reasonable correct fixes that fail:\n   - Emit reftype='data' for None in _parse_annotation. None is py:data in the Python inventory, so this resolves to the same link, but the test requires 'obj'.\n   - Fix resolution instead of node creation. For example, make the Python domain or intersphinx's missing_reference fall back to object/data lookups when a py:class target like None is not found. The rendered signature then links to None's docs, but the pending_xref still has reftype='class', failing the assertion.\n   Both fixes produce the HTML output the spec asks for. The test checks the intermediate pending_xref state of a private function rather than the final link.\n5. Because it asserts intermediate internal node state with a pinned value, this scores 4.",
+    "score": 4,
+    "explanation": "The test calls the private `_parse_annotation` and requires the unresolved pending_xref for 'None' to carry reftype='obj'. A fix that uses reftype='data', or one that leaves reftype='class' and fixes resolution in the Python domain or intersphinx, produces the correct clickable None link in signatures but fails.",
+    "overspecification_vector": "doctree = _parse_annotation(\"None\"); assert_node(doctree[0], pending_xref, refdomain=\"py\", reftype=\"obj\", reftarget=\"None\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRVKwPtCPofYCeQ5Cpz",
+  "input_tokens": 4053,
+  "output_tokens": 1597,
+  "seconds": 16.1
+}

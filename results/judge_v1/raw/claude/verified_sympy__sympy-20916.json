@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-20916",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8876,
+  "output": {
+    "reasoning": "1. The spec says unicode pprint fails to render trailing digits as subscripts when the symbol name is a Greek letter: 'ω0' prints as ω0, while 'w0' prints as w₀. It names no function and describes only the symptom.\n\n2. The tests call `sympy.printing.conventions.split_super_sub` directly and assert:\n- 'ω1', 'ω11' and 'ω1^a' split into a Greek base plus digit subscripts.\n- 'w𝟙', 'w𝟙𝟙' and 'w𝟙2𝟙' split with Unicode non-ASCII decimal digits (U+1D7D9 MATHEMATICAL DOUBLE-STRUCK DIGIT ONE) treated as subscript digits.\n- 'ω𝟙^α' gives (\"ω\", [\"α\"], [\"𝟙\"]).\n- 'ω𝟙2^3α' gives (\"ω\", [\"3α\"], [\"𝟙2\"]).\n\n3. Status of each requirement:\n- Greek letter followed by ASCII digits splits correctly: settled by the spec (\"does not format subscripts on Greek letters\"; ω0 should behave like w0).\n- Using `split_super_sub` as the location of the fix: convention. It is the existing public helper whose ASCII-only `[a-zA-Z]+[0-9]+` regex causes the bug, so it is the natural place to fix.\n- Treating non-ASCII Unicode decimal digits (𝟙) as subscript digits: open. The spec only mentions ordinary digits after Greek letters.\n\n4. A competent developer could widen only the letter class, e.g. `^([^\\W\\d_]+)([0-9]+)$` or `^([a-zA-Zα-ωΑ-Ω]+)([0-9]+)$`. That fully fixes ω0 → ω₀ and related Greek and Unicode-letter cases. However, split_super_sub('w𝟙') would still return ('w𝟙', [], []), so the 𝟙 assertions fail. These assertions check observable output of a public function and pin one extension (Unicode \\d digits) beyond what the spec asks.\n\n5. Score 3.",
+    "score": 3,
+    "explanation": "A fix that widens only the letter class of the name/digits regex (e.g. `[^\\W\\d_]+` with `[0-9]+`) correctly makes ω0 render as ω₀ but fails the assertions requiring Unicode mathematical digits like '𝟙' to be split off as subscripts, which the issue never mentions.",
+    "overspecification_vector": "assert split_super_sub(\"w𝟙\") == (\"w\", [], [\"𝟙\"]); assert split_super_sub(\"w𝟙𝟙\") == (\"w\", [], [\"𝟙𝟙\"]); assert split_super_sub(\"w𝟙2𝟙\") == (\"w\", [], [\"𝟙2𝟙\"]); assert split_super_sub(\"ω𝟙^α\") == (\"ω\", [\"α\"], [\"𝟙\"]); assert split_super_sub(\"ω𝟙2^3α\") == (\"ω\", [\"3α\"], [\"𝟙2\"])"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRdiJXS5bp69zddghYh",
+  "input_tokens": 3584,
+  "output_tokens": 1873,
+  "seconds": 17.6
+}

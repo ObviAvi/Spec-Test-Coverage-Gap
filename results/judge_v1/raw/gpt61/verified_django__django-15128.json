@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15128",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12607,
+  "output": {
+    "reasoning": "1. The specification reports an alias-collision AssertionError when combining querysets with `qs1 | qs2`, while `qs2 | qs1` works. It asks for the crash to be fixed and explicitly notes that the results should be the same despite potentially different generated queries.\n2. The test recreates the relationship pattern using BaseUser, Task, Annotation, and Note: a reverse-related queryset and a queryset filtered through two alternative relationships using Q and __in. The added fields and object creation supply fixtures, not implementation requirements. It asserts that the individual querysets return their matching users, that both operand orders produce equal collections, and that the combination contains both users.\n3. Avoiding the exception in both operand orders is directly settled by the reproduction. Equal result collections are settled by the specification's statement that 'the results are the same.' Returning both matching users follows standard QuerySet OR semantics. The individual-query assertions check ordinary existing filtering behavior. assertCountEqual does not require result ordering or identical SQL.\n4. There are no open implementation choices constrained by these assertions: they require neither a particular alias-renaming strategy nor specific internal aliases, comments, or documentation. No reasonable correct fix for the reported relationship pattern would fail these checks.",
+    "score": 1,
+    "explanation": "The test is a near-verbatim relational reproduction and checks that both queryset operand orders execute successfully and return the same correct OR results, without constraining the fix's implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3010,
+  "output_tokens": 843,
+  "seconds": 22.7
+}

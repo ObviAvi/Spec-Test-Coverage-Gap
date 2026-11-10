@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13810",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10491,
+  "output": {
+    "reasoning": "1. The specification identifies middleware-chain corruption: after MiddlewareNotUsed, the handler remains 'overwritten with output of self.adapt_method_mode()', so subsequent middleware can receive a handler with the wrong sync/async mode. The required behavior is that skipping middleware does not corrupt the ASGI chain.\n2. The test configures SyncAndAsyncMiddleware and MyMiddleware, makes an asynchronous request to /middleware_exceptions/view/, and requires status 200 and content b'OK'. It also captures django.request DEBUG logs and requires the first two records to contain two exact messages, in order: the adaptation announcement followed by the MiddlewareNotUsed announcement.\n3. Exercising an async request through mixed-capability middleware with an unused component is settled by the reported problem. The successful response assertions are a conventional regression check using the fixture endpoint. The fixture class names are inputs, not implementation names a fix must introduce. However, the specification does not settle the exact diagnostic wording, record positions, or whether provisional adaptation of middleware that is ultimately skipped must be announced. The surrounding context establishes some logging tests exist, but not these requirements.\n4. A reasonable fix could keep the original handler until middleware construction succeeds and defer announcing adaptation until that middleware is retained. This repairs the chain while logging only MiddlewareNotUsed for the skipped middleware, failing the required first adaptation message and two-record sequence.\n5. The gap is in externally observable diagnostic messages and ordering, rather than a private API or internal-state assertion.",
+    "score": 3,
+    "explanation": "A correct fix could defer adaptation logging until middleware construction succeeds, so middleware rejected with MiddlewareNotUsed would not produce the adaptation announcement. The request would succeed, but the test would reject the fix because it requires that announcement and the skip message at exact log-record positions.",
+    "overspecification_vector": "cm.records[0].getMessage() == 'Asynchronous middleware middleware_exceptions.tests.MyMiddleware adapted.'; cm.records[1].getMessage() == \"MiddlewareNotUsed: 'middleware_exceptions.tests.MyMiddleware'\""
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2310,
+  "output_tokens": 1060,
+  "seconds": 27.5
+}

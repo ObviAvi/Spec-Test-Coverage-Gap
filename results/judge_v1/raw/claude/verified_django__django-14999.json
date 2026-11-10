@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14999",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8904,
+  "output": {
+    "reasoning": "1. Spec: a RenameModel operation on a model with an explicit db_table must be a noop. Currently Postgres drops and recreates FK constraints and SQLite rebuilds the table. No function is named, but RenameModel's database operations are the obvious place.\n2. Test requirements: a Rider model with db_table='rider' and a Pony model with an FK to Rider. RenameModel('Rider','Runner') must run zero queries in database_forwards and zero in database_backwards.\n3. Zero queries is settled by the spec ('must be a noop'). The FK case is settled because the spec names FK constraints being dropped and recreated. Backwards being a noop follows by symmetry: backwards is the same rename in reverse, and RenameModel's backwards delegates to forwards with the names swapped.\n4. The natural fix is to return early in database_forwards when the old and new db_table are equal, which yields zero queries in both directions. A fix that skips only the table rename but still alters related FK fields is not a noop and contradicts the spec, so it doesn't count. Deferred SQL runs when the schema_editor exits, which is outside the assertNumQueries block, so it can't cause spurious failures. No reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "The test asserts zero queries on RenameModel forwards and backwards for a model with db_table and an FK pointing to it, which is the 'must be a noop' the spec demands; any fix that short-circuits when the table name is unchanged passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRDNjNvVmXttKecQXW7",
+  "input_tokens": 3267,
+  "output_tokens": 1080,
+  "seconds": 12.2
+}

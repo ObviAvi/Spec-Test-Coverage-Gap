@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-20154",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9382,
+  "output": {
+    "reasoning": "1. The spec says partitions() in sympy.utilities.iterables reuses the same dictionary object for every yield, so list(partitions()) gives wrong results. The fix is to yield a fresh dict, or a copy, each time.\n2. What the tests require:\n- list(partitions(...)) and plain comprehensions return the distinct expected dicts.\n- uniq over the partitions works without calling .copy().\n- The existing context lines also compare list(partitions(6, 2, 0, size=i)) == ans[i]. Under the size=True mode the yields are (M, dict) tuples. A correct fix would copy there too, which is natural. That line is unchanged, so it already passed before the fix, and copying does not break it.\n3. Each requirement maps directly to the spec: \"copy the dictionary before yielding it\" and \"list(partitions()) will give an apparently wrong result.\" The expected values and their order are the existing outputs of the algorithm, which a copy-based fix keeps unchanged.\n\nOne possible variation is a fix that yields a different type, such as a frozen mapping. That would be contrived; the natural fix is dict.copy(). Comparing a dict-like object to a dict would usually still work anyway. No open requirements remain.",
+    "score": 1,
+    "explanation": "The tests simply check that iterating partitions() without .copy() yields the correct distinct dicts, which is exactly the behavior the issue asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRdFiNh7G8aYi8E5KAi",
+  "input_tokens": 3729,
+  "output_tokens": 496,
+  "seconds": 6.2
+}

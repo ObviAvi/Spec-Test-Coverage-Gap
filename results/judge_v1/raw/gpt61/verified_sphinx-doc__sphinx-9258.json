@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-9258",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9531,
+  "output": {
+    "reasoning": "1. The specification requests support for multiple acceptable types written with '|', illustrated by ':type text: bytes | str'. It does not prescribe a doctree representation.\n2. The test parses a Python class in module 'example' with ':param age:' and ':type age: int | str'. It requires the surrounding target/index/class-signature/field-list structure; a paragraph containing strongly marked 'age', parentheses, two type cross-references separated by an emphasized ' | ', and ' -- blah blah'; and pending_xref nodes targeting 'int' and 'str', with refdomain='py', reftype='class', and the module/class context.\n3. Supporting this pipe-separated type field is settled by the specification; using int instead of bytes and placing the field in a class are reasonable related cases. Preserving ordinary directive layout and type-reference context is a conventional regression expectation. However, representing the separator specifically as addnodes.literal_emphasis, and requiring this exact intermediate node hierarchy, are open implementation choices, not specified behavior.\n4. A reasonable fix could split the union into independently cross-referenced types while inserting nodes.Text(' | ') between them. This preserves the union notation, type links, surrounding documentation, and applicability to related inputs, but fails the exact separator-node assertion.\n5. Because the rejecting assertion fixes an intermediate doctree representation rather than just successful support for union types, the score is 4.",
+    "score": 4,
+    "explanation": "A correct fix could render independently linked union members with an ordinary text separator. The test rejects that fix because it requires the separator to be an addnodes.literal_emphasis node in an exact intermediate doctree structure.",
+    "overspecification_vector": "The assert_node(doctree[3][1][0][0][1], ...) assertion, specifically [addnodes.literal_emphasis, \" | \"] in the exact paragraph child sequence."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2191,
+  "output_tokens": 1306,
+  "seconds": 35.4
+}

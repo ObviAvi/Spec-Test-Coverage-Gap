@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16642",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7817,
+  "output": {
+    "reasoning": "1. The spec says FileResponse wrongly sets Content-Type to text/html for files ending in .Z or .br. It names only the symptom and never says which MIME type is correct.\n2. The tests require Content-Type 'application/x-brotli' for '.tar.br' and 'application/x-compress' for '.tar.Z', through the existing test_compressed_response loop.\n3. Not text/html: settled by the spec. Following the existing pattern (encoding mapped to a specific mimetype such as gzip->application/gzip and bzip2->application/x-bzip): settled by convention. The exact strings: open.\n   - 'application/x-compress' for compress is the conventional choice, so it is fairly settled.\n   - Brotli has no registered IANA application type. A developer could reasonably pick 'application/br', 'application/brotli', or 'application/x-brotli'.\n   - A developer could also map unknown or compressed encodings to 'application/octet-stream'. That fixes the reported bug but fails both assertions.\n4. A fix mapping 'br' to 'application/brotli' resolves the issue (no longer text/html) but fails the subtest. The test pins one value among several plausible ones. This is observable behavior, so it is not a 4.",
+    "score": 3,
+    "explanation": "The spec only says .br and .Z files should not be served as text/html. The test pins the exact strings 'application/x-brotli' and 'application/x-compress', so a fix using 'application/brotli', 'application/br', or 'application/octet-stream' fails.",
+    "overspecification_vector": "(\".tar.br\", \"application/x-brotli\"), (\".tar.Z\", \"application/x-compress\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRJT8vvqZgTghMRFYmd",
+  "input_tokens": 2865,
+  "output_tokens": 871,
+  "seconds": 8.8
+}

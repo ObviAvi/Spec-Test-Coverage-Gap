@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11815",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13151,
+  "output": {
+    "reasoning": "1. The specification says enum defaults are serialized by value, as `Status('Good')`, which breaks when values are translated. It explicitly states the desired output: \"It should be: ('status', models.CharField(default=Status['GOOD'], max_length=128))\". The implicated entry point is migration serialization of Enum objects.\n2. What the graded tests require:\n - `MigrationWriter.serialize` output for TextEnum, BinaryEnum, IntEnum and a translated TextEnum must be `module.EnumClass['NAME']`, with imports unchanged.\n - The same format must appear inside field choices and defaults.\n - `re.S` must serialize as `re.RegexFlag['DOTALL']`.\n3. Settledness:\n - The `Enum['NAME']` subscript format is settled by the spec's explicit example `Status['GOOD']`.\n - Applying it to binary and int enums is the same serializer on related inputs. The spec's rationale (names are stable, values are changeable) applies to all enums, and the existing serializer already handles all Enum subclasses uniformly.\n - `RegexFlag` is an Enum subclass, so a uniform change yields `re.RegexFlag['DOTALL']` naturally.\n - The import set is unchanged from existing behavior.\n4. Possible alternatives:\n - Using `Status.GOOD` attribute syntax contradicts the spec's explicit \"should be\" format.\n - Changing only translated or string enums would be a partial fix that leaves the same fragility for related inputs.\n - Combined flags without a name are not tested.\n So no reasonable fix that follows the spec fails.",
+    "score": 2,
+    "explanation": "The spec explicitly states the desired output `Status['GOOD']`, and the tests assert exactly that `Enum['NAME']` format across text, translated, binary, int and RegexFlag enums, all handled by the same enum serializer.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR48XrduytaG4Fk2cxL",
+  "input_tokens": 4977,
+  "output_tokens": 1078,
+  "seconds": 11.8
+}

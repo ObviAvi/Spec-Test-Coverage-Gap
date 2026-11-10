@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14170",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10842,
+  "output": {
+    "reasoning": "1. The specification identifies incorrect filtering through '__iso_year': YearLookup applies calendar-year BETWEEN bounds even though ExtractIsoYear uses ISO week-numbering years. It explicitly reports that this returns the wrong records.\n2. The added assertions create three DTModel fixtures and call objects.filter() on start_datetime with '__iso_year=2015', '__iso_year__gt=2014', and '__iso_year__lte=2014'. They require the first two queries to return the two ISO-2015 objects and the last to return only the ISO-2014 object. Each query explicitly orders by start_datetime. The graded test also runs in the timezone-enabled test class. No SQL shape, internal method, mock, message, or new implementation name is required.\n3. Correct ISO-year equality filtering is settled by the specification's statement that filters using iso_year return wrong data. Applying that behavior to datetime boundary fixtures, timezone-aware inputs, and greater-than/less-than-or-equal comparisons is a reasonable extension to closely related inputs. The expected memberships follow ISO-year semantics and ordinary numeric comparison conventions; the existing ExtractIsoYear boundary assertions provide additional context. Result ordering is settled by the explicit order_by('start_datetime'), not an arbitrary implicit-order requirement.\n4. There is no open behavioral choice that rejects a reasonable correct fix. Disabling the faulty optimization or correcting it to use ISO-year boundaries would both satisfy these assertions.\n5. Score 2: the tests extend the reported equality example to related comparison lookups and boundary inputs without imposing an implementation.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix passes because the assertions require only correct ISO-year membership for equality and related comparisons, with ordering explicitly requested by the queries.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2613,
+  "output_tokens": 625,
+  "seconds": 15.3
+}

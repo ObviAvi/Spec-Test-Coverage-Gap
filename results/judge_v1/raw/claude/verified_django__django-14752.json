@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14752",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11456,
+  "output": {
+    "reasoning": "1. The spec asks for a new extension point: a method `serialize_result(self, obj, to_field_name)` on AutocompleteJsonView, called from get() to build each result dict. The spec gives the exact name, the exact signature, and the exact body: return {'id': str(getattr(obj, to_field_name)), 'text': str(obj)}.\n\n2. What the test requires:\n- The method name `serialize_result`. Settled: the spec says \"def serialize_result(self, obj, to_field_name)\".\n- The signature (obj, to_field_name). Settled by the same quote.\n- The base method returns a dict with 'id' and 'text'. Settled: the spec says it returns {'id': str(getattr(obj, to_field_name)), 'text': str(obj)}.\n- get() must call self.serialize_result for each object, so a subclass override takes effect. Settled by the spec's described get() change.\n- Ordering by '-posted' and pagination {'more': False}. Both come from existing behavior: the test's QuestionAdmin ordering and the existing pagination. Neither is introduced by the fix.\n\n3. Every requirement is settled by the spec or by existing code. No reasonable fix following the spec would fail. A fix that used a different method name would be ignoring the spec, so it does not count.",
+    "score": 1,
+    "explanation": "Every reasonable fix passes because the test overrides `serialize_result(obj, to_field_name)` and checks the 'id'/'text' dict, exactly as the specification names and defines it.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRCrzD9unrEgMyxvxhm",
+  "input_tokens": 4264,
+  "output_tokens": 526,
+  "seconds": 5.8
+}

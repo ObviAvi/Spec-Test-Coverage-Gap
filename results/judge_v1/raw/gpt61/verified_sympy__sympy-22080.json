@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-22080",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9670,
+  "output": {
+    "reasoning": "1. The specification reports incorrect evaluation by lambdify with modules=[]: an expression like 'expr * Mod(a, b)' is emitted with incorrect grouping. Its reproduction requires lambdify([x, y], -Mod(x, y), modules=[])(3, 7) to return -3, not 4.\n2. Settled: test_empty_modules compares default and empty-module lambdification at (3, 7), requiring both to return -3. This directly matches the reproduction.\n3. Open: test_PythonCodePrinter directly calls prntr.doprint and requires the exact strings '-(x % y)' and '(-x) % y'. Correct grouping is implied, but this precise formatting and direct printer behavior are not specified. Other equivalent generated expressions are possible; in particular, '-x % y' already correctly represents Mod(-x, y) under Python precedence.\n4. Open: test_create_expand_pow_optimization requires cc(-x**4), cc(x**4 - x**2), and cc(x**i - x**2), with integer i, to produce newly parenthesized C-code strings. These expressions contain no Mod, and the specification says nothing about C code generation or expanded-power formatting. The removed assertions show that equivalent unparenthesized forms were previously expected.\n5. A reasonable correct fix would repair Python Mod emission or precedence so that surrounding multipliers cannot enter the remainder operation, without changing generic multiplication printing or C expanded-power output. Such a fix resolves the reported bug and related inputs but fails the three changed C-code assertions. Those assertions exercise a different code path, making the strongest overspecification significant.",
+    "score": 4,
+    "explanation": "A correct fix confined to Python Mod grouping can make lambdify work for general multipliers while leaving C expanded-power output unchanged. The graded code-generation test nevertheless requires new parentheses in unrelated, Mod-free expressions, rejecting that reasonable fix.",
+    "overspecification_vector": "assert cc(-x**4) == '-(x*x*x*x)'\nassert cc(x**4 - x**2) == '-(x*x) + x*x*x*x'\nassert cc(x**i - x**2) == 'pow(x, i) - (x*x)'\nAdditionally, exact formatting is pinned by: assert prntr.doprint(-Mod(x, y)) == '-(x % y)' and assert prntr.doprint(Mod(-x, y)) == '(-x) % y'."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2494,
+  "output_tokens": 1353,
+  "seconds": 29.6
+}

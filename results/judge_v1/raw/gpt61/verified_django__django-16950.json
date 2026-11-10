@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16950",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10055,
+  "output": {
+    "reasoning": "The specification describes an admin add/save failure: adding a Thing together with a SubThing clears the parent's default-generated UUID, preventing a successful save. The graded test creates an inline formset for an equivalent alternate-key relationship, submits one populated child and two empty extras, and requires is_valid() to return True. These inputs and successful validation are reasonable generalizations of the report. It additionally requires formset.instance.uuid to be non-None and the child's parent_id to equal that UUID immediately after validation, without saving anything. That timing and intermediate model state are open: the specification requires the admin save to succeed using the UUID default, not that both attributes be populated at this stage. A reasonable fix could restore the parent's default in the save workflow before inserting it and let inline saving assign the saved parent's UUID to its children; that would resolve the reported failure but fail these intermediate-state assertions. The added assertions in the earlier test are not graded and do not affect the score.",
+    "score": 4,
+    "explanation": "A reasonable fix could restore the parent's UUID before saving the parent and propagate it to children during inline saving. The test instead requires the UUID and child foreign-key value to be populated immediately after formset validation, rejecting such a save-time fix.",
+    "overspecification_vector": "self.assertIsNotNone(formset.instance.uuid)\nself.assertEqual(formset.forms[0].instance.parent_id, formset.instance.uuid)\nThese assertions run immediately after formset.is_valid(), without saving the parent or formset."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2338,
+  "output_tokens": 1880,
+  "seconds": 50.4
+}

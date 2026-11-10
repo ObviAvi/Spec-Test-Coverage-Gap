@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-21568",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11103,
+  "output": {
+    "reasoning": "1. The specification says datetime tick labels look badly spaced under usetex in 3.4 compared with 3.3, and it wants the 3.3 spacing in TeX form. It describes only a visual symptom. It names no function and does not say how the TeX string should be built.\n2. The graded tests call DateFormatter/AutoDateFormatter and ConciseDateFormatter with usetex and assert exact label strings, for example `$\\mathdefault{01{-}01\\;%02d}$`, `$\\mathdefault{01\\;00{:}%02d}$` and `$\\mathdefault{04{:}00}$`. To pass, a fix must:\n   - wrap the whole label in a single `$\\mathdefault{...}$`;\n   - turn spaces into `\\;`;\n   - brace colons as `{:}` and hyphens as `{-}`.\n3. The formatter entry point is settled; it is the natural public path. The exact TeX markup is open. Nothing in the issue picks `\\;` over `\\ `, `~`, `\\,` or `\\text{}` for spaces. It also does not choose `{:}` over `\\colon` or over keeping letters and spaces outside math mode, which is how the old code handled 'Jan' + `$\\mathdefault{...}$`.\n4. Alternatives that would fail:\n   - A fix that renders spacing correctly using `\\ ` for spaces fails the string comparison.\n   - So does one that leaves colons unbraced but fixes spacing another way.\n   - So does one that wraps text in `\\text{}`.\n   All of these fix the visual problem. The tests compare public formatter output, but they pin one arbitrary TeX encoding.",
+    "score": 3,
+    "explanation": "The tests require one specific TeX encoding of the labels: the whole label inside `$\\mathdefault{...}$`, spaces as `\\;`, colons as `{:}` and hyphens as `{-}`. A correct fix that restores readable spacing with different markup, such as `\\ ` or `~` for spaces, unbraced colons, or `\\text{}`, would fail the exact string comparisons.",
+    "overspecification_vector": "Expected strings such as r'$\\mathdefault{01{-}01\\;%02d}$', r'$\\mathdefault{01\\;00{:}%02d}$', '$\\\\mathdefault{04{:}00}$', '$\\\\mathdefault{00{:}00}$'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRKqNv1CUPPHhfH1fkL",
+  "input_tokens": 4658,
+  "output_tokens": 1190,
+  "seconds": 12.8
+}

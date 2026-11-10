@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-6992",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16374,
+  "output": {
+    "reasoning": "1. The spec: after `set_index(z=['a','b']).reset_index('z', drop=True)`, `_coord_names` holds names that are no longer in `_variables`. `DataVariables.__len__` then goes negative and the repr breaks. The natural fixes are either making `DataVariables` iterate and count only names actually in `_variables`, or making `reset_index(drop=True)` remove the dropped names from `_coord_names`.\n\n2. What the graded tests require:\n- `test_reset_index` (DataArray and Dataset): `reset_index('x')` on a multi-index no longer keeps an 'x' coordinate holding tuple values. Previously expected `coords['x'] = mindex.values`.\n- `reset_index(['x','level_1'])` leaves no indexes at all; previously 'level_2' stayed indexed.\n- `reset_index(['level_1'])` renames the remaining level to the dimension coordinate 'x' with a PandasIndex.\n- `reset_index('x', drop=True)` drops all level coordinates too.\n- On a single index, the reset coordinate must become a base Variable rather than an IndexVariable.\n- `test_reset_index_drop_dims`: dropping a dimension coordinate leaves `len(dims) == 0`.\n- `test_reset_index_drop_convert` (8 cases): specific drop, convert and rename semantics. Its comment cites separate issues #6946 and #6989.\n- `test_groupby_drops_nans`: after `reset_index('id', drop=True)` the lon/lat level coords are already gone.\n\n3. Settledness:\n- Not crashing in the repr and len for the MVCE is settled by the spec.\n- Everything else is open. The spec never says `reset_index` should drop the multi-index dimension coordinate, rename a remaining level to the dimension, drop level coords when the dimension is dropped with drop=True, convert to base Variable, or remove dimensions.\n\n4. A competent fix that filters `DataVariables` by `self._dataset._variables`, or that discards dropped names from `_coord_names` in `reset_index`, fully resolves the reported bug and closely related inputs. It would fail nearly all graded tests, because they encode a redesign of `reset_index` semantics addressing other issues.",
+    "score": 4,
+    "explanation": "The tests require a redesign of `reset_index` semantics that the issue never mentions. They expect the multi-index dimension coordinate to be dropped and a remaining level renamed to the dimension. They also expect level coordinates to be dropped when drop=True, de-indexed coords converted to base Variables, and the dimension itself removed. A fix that only stops `DataVariables` from counting coord names missing from `_variables` (or cleans `_coord_names` on drop) resolves the reported crash but fails these tests.",
+    "overspecification_vector": "test_dataarray.py test_reset_index: removed `coords['x'] = ('x', self.mindex.values)`, `assert list(obj.xindexes) == ['x']`, `expected = DataArray(self.mda.values, dims='x')` for drop=True, `assert_equal(obj.x.variable, array.x.variable.to_base_variable())`; test_dataset.py test_reset_index (no 'x' coord); test_reset_index_drop_dims `assert len(reset.dims) == 0`; test_reset_index_drop_convert parametrized dropped/converted/renamed expectations (e.g. ('foo', False, [], [], {'bar': 'x'}), ('x', True, ['x','foo','bar'], [], {})); test_groupby_drops_nans removing `.drop_vars(['lon','lat'])`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRQLzFdQETuEGmpgpav",
+  "input_tokens": 6687,
+  "output_tokens": 1804,
+  "seconds": 17.9
+}

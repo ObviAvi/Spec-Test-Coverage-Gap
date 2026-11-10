@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-10880",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8228,
+  "output": {
+    "reasoning": "1. The specification says Count(Case(...), distinct=True) generates invalid SQL because no space is emitted after DISTINCT ('COUNT(DISTINCTCASE WHEN'). It names a symptom and the public API, Count with a Case expression and distinct=True.\n2. The graded test calls Book.objects.aggregate(distinct_ratings=Count(Case(When(pages__gt=300, then='rating')), distinct=True)) and asserts the result equals 4. It uses only public APIs (Case, When, Count). The value 4 comes from the existing test fixture data.\n3. Settled requirements:\n - The query must execute without a syntax error. This is the core of the spec ('produces a query error').\n - The result must be the correct count of distinct ratings. This is the semantic outcome of correct SQL generation and is determined by the data, not by any choice in the fix.\n - The test does not check SQL text, so a fix that puts the space in the template ('%(distinct)s %(expressions)s') and one that changes 'DISTINCT' to 'DISTINCT ' both pass.\n4. No reasonable correct fix produces valid SQL and a different count. The test exercises exactly the reported scenario.",
+    "score": 1,
+    "explanation": "The test runs the exact reported scenario, Count(Case(When(...)), distinct=True), and checks that it executes and returns the correct data-determined count, which every correct fix will produce.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtQzk2vmra39iFxdqdD9",
+  "input_tokens": 3056,
+  "output_tokens": 493,
+  "seconds": 5.7
+}

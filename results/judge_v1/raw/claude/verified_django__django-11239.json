@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11239",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11052,
+  "output": {
+    "reasoning": "1. The spec says dbshell ignores the PostgreSQL client SSL options (sslmode, sslrootcert, sslcert, sslkey) from OPTIONS, and should pass them on to psql. It names the dbshell command but not how the values reach psql.\n2. What the graded test requires:\n- `DatabaseClient.runshell_db(dbinfo)` must read the `sslmode`, `sslrootcert`, `sslcert` and `sslkey` keys from the conn params dict.\n- The psql argv must stay exactly `['psql','-U','someuser','-h','somehost','-p','444','dbname']`.\n- The subprocess env must contain exactly `PGSSLCERT`, `PGSSLKEY`, `PGSSLMODE` and `PGSSLROOTCERT` with those values, and no other PG* variables.\n3. Settled vs open:\n- Reading these keys from conn params is settled. The spec's OPTIONS example uses exactly these keys, and the existing code passes the merged params to runshell_db.\n- Using PG* environment variables is convention-guided. The existing code already passes PGPASSWORD through env, and psql has no CLI flags for sslcert or sslkey.\n- The transport mechanism is still open. psql also accepts a libpq conninfo string or URI as the dbname argument, e.g. `psql \"dbname=dbname sslmode=verify-ca sslcert=client.crt ...\"`.\n4. A competent developer could reasonably build a conninfo string carrying the SSL parameters. That fix fully resolves the issue, but it changes argv and leaves the env without PGSSL* variables, so the test fails. The env-var approach is the most natural choice, but it is one valid option among several, and the test pins the observable argv and env.\n5. Score 3.",
+    "score": 3,
+    "explanation": "The test requires the SSL options to be passed only as PGSSLMODE/PGSSLROOTCERT/PGSSLCERT/PGSSLKEY environment variables, with psql argv unchanged. A correct fix that passes them in a libpq conninfo string argument to psql (e.g. `sslcert=client.crt`) would fail.",
+    "overspecification_vector": "['psql', '-U', 'someuser', '-h', 'somehost', '-p', '444', 'dbname'], {'PGSSLCERT': 'client.crt', 'PGSSLKEY': 'client.key', 'PGSSLMODE': 'verify-ca', 'PGSSLROOTCERT': 'root.crt'} in test_ssl_certificate"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR2Nc8KSUNmDjv9Bcjc",
+  "input_tokens": 4233,
+  "output_tokens": 1367,
+  "seconds": 13.5
+}

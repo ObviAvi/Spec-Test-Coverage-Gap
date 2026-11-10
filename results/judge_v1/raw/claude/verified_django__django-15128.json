@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15128",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12607,
+  "output": {
+    "reasoning": "1. Spec: qs1 | qs2 raises AssertionError in Query.change_aliases during combine, because rhs aliases are relabeled so the change_map keys and values intersect. The expected fix is that the combine succeeds. The issue names Query.combine, Query.join and table_alias.\n2. Test requirements:\n- It uses the existing queries app models with new FKs: BaseUser.annotation and Task.note. These are model additions made in the test patch itself, not something the fix must add.\n- qs1 and qs2 must evaluate correctly on their own (existing behavior).\n- qs2 | qs1 must have the same members as qs1 | qs2 (assertCountEqual).\n- Both orders must give [base_user_1, base_user_2].\n3. Settled: the test mirrors the reproduction structure directly. A reverse FK queryset is OR'd with a queryset that has two parallel Q filters, each with an __in subquery. The spec says 'qs2 | qs1 works fine' and 'qs1 | qs2' raises, and says the results are the same even though the generated queries differ. So the assertion is simply that the combine works and gives correct results.\n4. Any correct fix, whether it bumps the alias suffix to avoid collisions or reorders the change_map, makes qs1 | qs2 work and return correct rows. Nothing in the tests checks alias names, SQL text, or the assertion message. The documentation and comment suggestions in the issue are not tested.",
+    "score": 1,
+    "explanation": "The test reproduces the issue's scenario (reverse-FK queryset OR'd with a queryset of two Q filters using __in subqueries) and only asserts that both OR orders return the correct users, which any correct fix satisfies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRE41XEFDSJoKAJBWHW",
+  "input_tokens": 4947,
+  "output_tokens": 595,
+  "seconds": 7.3
+}

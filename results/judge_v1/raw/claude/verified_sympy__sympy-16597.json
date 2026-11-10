@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-16597",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12604,
+  "output": {
+    "reasoning": "1. The specification says `Symbol('m', even=True).is_finite` returns None. It should be True, because even numbers are finite. It names no rule to change, only the symptom in the assumptions system.\n\n2–3. What the graded tests require, and whether each is settled:\n- Even/odd/integer symbols report `is_finite` True. Settled: the issue says \"a number should be finite before it can be even\". The natural fix is `integer -> finite`.\n- `odd=False` and `even=False` symbols report `is_finite` None. Settled: this follows automatically.\n- `oo.is_even`, `oo.is_odd`, `oo.is_integer` and `oo.is_composite` are False, and `oo.is_noninteger` is True. Settled by the contrapositive of `integer -> finite`, since `oo` is not finite.\n- `rational=True` and `irrational=True` symbols report `is_finite` True. Open: the issue never mentions rational or irrational numbers.\n- `oo.is_rational`, `oo.is_algebraic`, `oo.is_transcendental` and `oo.is_irrational` are False. Open: these are design decisions about whether infinity counts as irrational or transcendental, and the specification is silent. The same applies to `-oo`.\n- `rational=False` and `irrational=False` symbols report `is_real` None. Open, though it is likely a byproduct of the rule changes.\n\n4. A competent developer could add `integer -> finite` to the assumption rules. That fully resolves the reported case and related integer cases. But `oo.is_rational` would stay None, and so would `is_algebraic`, `is_transcendental` and `is_irrational`. A `Symbol(rational=True)` would also have `is_finite` None. So `test_infinity`, `test_neg_infinity` and `test_other_symbol` would fail.\n\nEven a developer who also adds `rational -> finite` faces a choice: under the existing rule `irrational == real & !rational`, `oo.is_irrational` would become True, not False. Getting False requires deliberately redefining irrational and transcendental as finite. These are observable public attribute values, but the tests pin one design choice among several.",
+    "score": 3,
+    "explanation": "A fix that only adds `integer -> finite` (or `even/odd -> finite`) resolves the issue. It still fails the tests, which also require rational, irrational, algebraic and transcendental to imply finite. They assert `oo.is_rational`, `oo.is_algebraic`, `oo.is_transcendental` and `oo.is_irrational` are False, and that `Symbol('x', rational=True)` and `Symbol('x', irrational=True)` have `is_finite` True.",
+    "overspecification_vector": "test_infinity/test_neg_infinity: `assert oo.is_rational is False`, `assert oo.is_algebraic is False`, `assert oo.is_transcendental is False`, `assert oo.is_irrational is False` (same for mm); test_other_symbol: `x = Symbol('x', rational=True); assert x.is_finite is True`, `x = Symbol('x', irrational=True); assert x.is_real is True; assert x.is_finite is True`, `x = Symbol('x', rational=False); assert x.is_real is None`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRbiuBnzWh3YPEwfhp6",
+  "input_tokens": 4790,
+  "output_tokens": 1704,
+  "seconds": 16.6
+}

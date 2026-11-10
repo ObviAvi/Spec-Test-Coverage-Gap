@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11734",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9589,
+  "output": {
+    "reasoning": "The specification identifies incorrect OuterRef resolution inside exclude() or negated Q(), illustrated by exclude() nested in Exists(). The graded test requires JobResponsibilities.objects.filter(Exists(Responsibility.objects.exclude(jobs=OuterRef('job')))) to execute with correct correlation. Nested Exists/exclude/OuterRef behavior is settled by the report; using existing models, a relationship lookup, and an outer foreign-key field instead of the example's primary key is a closely related input. Filtering directly on Exists and evaluating with qs.exists() are conventional ways to execute the same correlated exclusion, not requirements on the fix's implementation. The assertions require True with two responsibilities assigned to different jobs, then False after deleting the first responsibility. These values follow standard exclusion and relationship semantics: initially another responsibility exists for each job; afterward the remaining responsibility belongs to the remaining job and is excluded. Deletion and reevaluation use ordinary existing ORM behavior. There are no required new names, messages, internal states, or mocks, and no open choice for which a reasonable correct fix would produce different results.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should make this closely related correlated exclusion execute correctly, producing True initially and False after deletion according to ordinary relationship semantics.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2224,
+  "output_tokens": 629,
+  "seconds": 17.9
+}

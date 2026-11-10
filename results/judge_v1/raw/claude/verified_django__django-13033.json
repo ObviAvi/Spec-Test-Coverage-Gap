@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13033",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12068,
+  "output": {
+    "reasoning": "1. The specification: `order_by('record__root_id')` on a self-referential FK wrongly applies the related model's default ordering (`-id`), giving a DESC sort, and adds an extra LEFT OUTER JOIN. The expected behaviour is an ASC sort on the `root_id` column, the same as `order_by('record__root__id')`. The entry point is `QuerySet.order_by` with an `_id` attname lookup across a self-referential FK.\n\n2. What the tests require:\n(a) `order_by('author__editor_id')` returns Article 1 before Article 2, i.e. ascending by `editor_id`.\n(b) `order_by('author__editor')` returns Article 2 before Article 1, i.e. Author's default ordering `-pk` is applied to the relation.\n\n3. Status of each requirement:\n(a) Settled by the spec. The reporter expects the explicit order_by to take precedence and an ASC sort, as with `record__root__id`.\n(b) Settled by convention and existing behaviour. Ordering by a relation (not an attname) uses the related model's Meta.ordering, which is documented Django behaviour and is what the code already does. The spec mentions `order_by('record__root')` gives the same SQL but does not claim that is wrong. Its complaint centres on the `_id` form.\n\n4. Could a reasonable fix fail? Only a fix that also stopped applying default ordering for `order_by('author__editor')`. That would break documented Django semantics and likely existing tests, so a competent repo developer would not do it. The test does not check SQL or the join count, only result order, so any approach that treats the attname as a direct column passes.",
+    "score": 2,
+    "explanation": "The graded assertion that `order_by('author__editor_id')` sorts ascending by the FK column maps directly to the issue, and the other assertion just preserves the documented default-ordering behaviour for relation ordering.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR72K8ULRMwjTECUxa6",
+  "input_tokens": 4775,
+  "output_tokens": 1081,
+  "seconds": 10.9
+}

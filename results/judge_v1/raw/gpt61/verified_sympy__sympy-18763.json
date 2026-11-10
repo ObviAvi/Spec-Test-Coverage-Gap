@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-18763",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8023,
+  "output": {
+    "reasoning": "1. The specification identifies ambiguous LaTeX for a substituted sum multiplied by 3 and explicitly proposes `3 \\left. \\left(- x + y\\right) \\right|_{\\substack{ x=1 }}`.\n2. The graded test uses the existing public `latex` and `Subs` interfaces. It requires that exact output for `3*Subs(-x+y, (x,), (1,))`, and additionally requires parentheses around the product in standalone `Subs(x*y, (x, y), (1, 2))`.\n3. The sum example and its requested formatting are settled by the specification. The substitution notation and variable ordering are supported by the existing assertion. Requiring parentheses around the standalone product is open: the specification does not require every substituted expression to be parenthesized, and the removed assertion shows that this product previously printed without parentheses.\n4. A reasonable precedence-aware fix could parenthesize additive and other ambiguity-prone substituted expressions, resolving the reported case and related inputs, while leaving the already unambiguous standalone product unchanged. It would fail the modified product assertion.\n5. The extra constraint concerns observable formatting through the same public interface, so this is mild overspecification, not an implementation-level requirement.",
+    "score": 3,
+    "explanation": "A correct fix could add parentheses where the substituted expression needs them, including the reported sum, without changing standalone products. The tests reject that fix by additionally requiring parentheses around `x*y` in standalone `Subs(x*y, (x, y), (1, 2))`.",
+    "overspecification_vector": "assert latex(Subs(x*y, (x, y), (1, 2))) == r'\\left. \\left(x y\\right) \\right|_{\\substack{ x=1\\\\ y=2 }}'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1978,
+  "output_tokens": 744,
+  "seconds": 21.4
+}

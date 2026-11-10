@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11848",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9898,
+  "output": {
+    "reasoning": "1. The specification names django.utils.http.parse_http_date and requires replacing the fixed two-digit-year pivot with a current-date-dependent rule: timestamps appearing \"more than 50 years in the future\" must represent the corresponding past year.\n2. The graded RFC850 test calls that public function with seven dates. Its required year mappings are: with current year 2019, 69→2069, 70→1970, and 94→1994; with 2020, 70→2070 and 71→1971; with 2048, 00→2000 and 99→1999. It also requires preserving the supplied month, day, and time, checked through datetime.utcfromtimestamp(). Dynamic year interpretation is specified; preserving the other date components follows existing parsing behavior. No assertions for the separately listed test_parsing_year_less_than_70 are provided.\n3. Open implementation requirement: the test patches django.utils.http.datetime.datetime, supplies real datetime construction through side_effect, and injects the current time specifically through mocked_datetime.utcnow.return_value. The specification does not require this clock API. A reasonable fix could obtain the current UTC year from time.gmtime(), or obtain the current datetime using datetime.datetime.now(datetime.timezone.utc). The former bypasses the injected clock; the latter encounters an unconfigured mock rather than the supplied datetime. Either can implement the requested behavior correctly yet fail these tests.\n4. There is also an observable boundary choice: the tests expect December 31, 2069 when the clock is November 6, 2019, and December 31, 2070 when it is November 6, 2020. These select a whole-year cutoff. Although the description mentions comparing the current year, a reasonable implementation of the quoted timestamp rule could compare complete dates and interpret those inputs as 1969 and 1970, respectively, because they exceed fifty years into the future.\n5. The clock-API dependency is the strongest gap: it constrains how the implementation obtains the current time, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix that reads the current UTC year through time.gmtime() would not receive the mocked years, while one using datetime.datetime.now(datetime.timezone.utc) would receive an unconfigured mock. The tests therefore require the particular datetime.datetime.utcnow() clock dependency, which the specification never mandates.",
+    "overspecification_vector": "@mock.patch('django.utils.http.datetime.datetime'); mocked_datetime.utcnow = mock.Mock(); mocked_datetime.utcnow.return_value = utcnow. Additionally, the expectations datetime(2069, 12, 31, 8, 49, 37) under utcnow_1 and datetime(2070, 12, 31, 8, 49, 37) under utcnow_2 pin a whole-year rather than complete-timestamp cutoff."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2512,
+  "output_tokens": 1541,
+  "seconds": 31.8
+}

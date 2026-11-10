@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-13779",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9434,
+  "output": {
+    "reasoning": "The specification identifies a failure in voting-estimator fit when sample_weight is supplied and a component estimator is None. The classifier test reproduces the stated sequence: fit with np.ones(y.shape), set_params(lr=None), and fit again. These requirements are directly settled by the example. The regressor case uses LinearRegression and RandomForestRegressor with the same sequence; this is a reasonable related-input extension of the generic 'Voting estimator' issue. Using five trees does not impose any particular prediction values or implementation. Calling predict(X) afterward and asserting y_pred.shape == y.shape is a basic regression check of the fitted estimator's public contract, not an arbitrary choice about the fix. The tests require no exact predictions, messages, internal state, or new names. There is no open requirement for which a reasonable correct fix would fail.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should allow weighted fitting after a component is set to None for both voting variants, while preserving ordinary prediction behavior and its target-shaped output.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2200,
+  "output_tokens": 438,
+  "seconds": 12.2
+}

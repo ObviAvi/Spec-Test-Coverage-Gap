@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14034",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9620,
+  "output": {
+    "reasoning": "1. The specification says MultiValueField(required=False, require_all_fields=False) with a required subfield validates as True when all subvalues are empty. The reporter expects is_valid() to return False. It is purely a validation/clean() symptom and says nothing about HTML rendering.\n\n2. The graded test requires:\n- a form with an outer field required=True, require_all_fields=False, and subfields (required=True, required=False);\n- {'f_0': 'Hello', 'f_1': ''} is valid;\n- as_p() renders f_0 with the `required` HTML attribute and f_1 without it;\n- {'f_0': '', 'f_1': ''} is invalid.\n\n3. Settlement of each requirement:\n- Validity assertions: settled. They already hold before any fix, because the outer field is required, so empty input fails.\n- Per-subwidget `required` HTML attribute: open. The spec never mentions rendering or widget attributes. Before the fix, BoundField.build_widget_attrs adds `required` to every subwidget when the outer field is required. The original fix changed BoundField.build_widget_attrs to set `required` per subwidget based on each subfield.\n\n4. A reasonable fix of the reported bug changes MultiValueField.clean() so a required subfield is enforced even when the outer field is not required and all values are empty. That fix makes the reported case return False but never touches rendering, so the assertInHTML for f_1 (no `required`) fails. The test exercises a different code path (BoundField widget attribute rendering) than the one the spec implicates (MultiValueField.clean validation). It also uses required=True on the outer field, not the reported required=False.\n\n5. Score 4.",
+    "score": 4,
+    "explanation": "A fix that makes MultiValueField.clean() enforce the required subfield, which is what the issue asks for, still fails. The test instead checks HTML rendering: only the required subwidget may carry the `required` attribute, which requires changing BoundField.build_widget_attrs, something the issue never mentions.",
+    "overspecification_vector": "self.assertInHTML('<input type=\"text\" name=\"f_0\" value=\"Hello\" required id=\"id_f_0\">', form.as_p()); self.assertInHTML('<input type=\"text\" name=\"f_1\" id=\"id_f_1\">', form.as_p())"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRAuvGjPcqUM9YkWree",
+  "input_tokens": 3702,
+  "output_tokens": 1547,
+  "seconds": 15.1
+}

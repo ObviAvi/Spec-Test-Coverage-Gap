@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-13579",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13118,
+  "output": {
+    "reasoning": "The specification identifies an incorrect inverse transform in SlicedLowLevelWCS when a spectral pixel axis coupled to spatial axes is sliced away. The test uses the reproduction's WCS header and SlicedLowLevelWCS(fits_wcs, 0), both explicitly settled by the example. It obtains world coordinates with fits_wcs.pixel_to_world_values(0, 0, 0), passes the two spatial coordinates to sl.world_to_pixel_values, and requires the first returned pixel coordinate to be approximately zero. Using pixel zero instead of the example's central pixel is a closely related input; recovering that pixel is dictated by the requested inverse-transform consistency. The numeric low-level methods are the public coordinate-value interface of the class explicitly implicated by the issue, rather than an unspecified implementation helper. The test imposes no new names, messages, internal state, or algorithm. No open behavioral choice is pinned: a reasonable fix of the coupled-axis inversion should satisfy this round trip.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should satisfy assert np.allclose(out_pix[0], 0): it checks the reported sliced-WCS inversion behavior at another spatial pixel using the same WCS and wavelength slice.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3541,
+  "output_tokens": 791,
+  "seconds": 23.1
+}

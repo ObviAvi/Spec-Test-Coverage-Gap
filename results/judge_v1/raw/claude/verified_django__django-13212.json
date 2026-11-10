@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13212",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13294,
+  "output": {
+    "reasoning": "1. The spec asks that built-in validators pass the provided value to ValidationError, so custom messages can use %(value)s. It names validators generally, not any form field methods.\n\n2. The graded tests require that a %(value)s message renders the raw value for:\n- many django.core.validators classes and functions (email, slug, IP, URL, int list, min/max length, regex, min/max value, image file extension);\n- ProhibitNullCharactersValidator through CharField;\n- DecimalField with codes 'NaN'/invalid, max_digits, max_decimal_places and max_whole_digits.\n\n3. Settlement of each requirement:\n- Validators in django/core/validators.py including params={'value': value}: settled by 'making built-in validators provide value to ValidationError'.\n- The rendered value being the whole input, str() of an int, or the file name via str(UploadedFile): settled, because 'the provided value' means the value passed in.\n- The DecimalField 'NaN' case: open. The value is parsed by to_python into Decimal('NaN'). DecimalField.validate (a forms field method, not a validator) then raises 'invalid' for non-finite values before DecimalValidator ever runs. Passing that test requires also changing forms/fields.py DecimalField.validate.\n\n4. A developer who reads 'built-in validators' and changes every ValidationError in django/core/validators.py would handle all the validator cases. That fix still fails the NaN subtest of test_value_placeholder_with_decimal_field, because the error comes from a form field's validate method. The issue never mentions form field methods. The test checks observable behaviour, but it extends the scope beyond what the spec states.",
+    "score": 3,
+    "explanation": "A fix that adds params={'value': value} to every ValidationError in django/core/validators.py, as the issue asks for 'built-in validators', fails the DecimalField 'NaN' subtest. That error is raised by forms.DecimalField.validate, not by a validator, so the tests also require changing form field code the issue never mentions.",
+    "overspecification_vector": "test_value_placeholder_with_decimal_field case ('NaN', 'invalid') with error_messages={code: '%(value)s'} asserting form.errors == {'field': ['NaN']}"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR7gZWpKPKkXVGvScHa",
+  "input_tokens": 5001,
+  "output_tokens": 1874,
+  "seconds": 19.2
+}

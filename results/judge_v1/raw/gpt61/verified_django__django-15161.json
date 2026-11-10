@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15161",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10276,
+  "output": {
+    "reasoning": "1. The issue requests extending F's deconstruction-path simplification to other expressions, specifically replacing implementation-module paths with public django.db.models paths so migrations use 'from django.db import models' and 'models.X(...)'.\n2. The added Value assertions require 'django.db.models.Value', both with and without an output_field. This is settled by the requested technique applied to another publicly exported expression. The unchanged argument and output-field assertions preserve existing behavior.\n3. The writer test exercises Index containing Func, Case, When, Value, ExpressionWrapper, F, and nested OrderBy expressions. It requires models-qualified expression names and exactly {'from django.db import models'}. Those requirements follow from the stated migration-code goal. Although the specification does not enumerate every expression class, these are closely related applications of the same public-path simplification; fixing only an arbitrary subset would leave the described problem unresolved.\n4. The serialized string also preserves constructor inputs: field names, ABS, case values, IntegerField, descending=True, expression order, and the index name. These are ordinary input-preservation and existing serialization conventions, not new choices imposed on the fix. The nested OrderBy reflects the supplied nested input. Exact formatting does not require a different implementation of deconstruction or introduce an unrelated behavior requirement.\n5. No open requirement identifies a reasonable correct alternative that these assertions would reject. The tests extend the stated example to other expressions and verify its intended migration output.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix applies the public django.db.models deconstruction paths to these related expressions, producing the asserted models-qualified migration code and single models import.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2280,
+  "output_tokens": 1213,
+  "seconds": 33.1
+}

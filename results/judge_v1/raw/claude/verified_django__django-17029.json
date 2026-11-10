@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-17029",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8656,
+  "output": {
+    "reasoning": "Step 1: The specification says Apps.clear_cache() does not clear the lru_cache on get_swappable_settings_name. It proposes the exact fix: \"self.get_swappable_settings_name.cache_clear() line to def clear_cache\".\n\nStep 2: The test does four things:\n- Calls apps.get_swappable_settings_name(\"admin.LogEntry\") and expects None. This is existing behavior.\n- Calls apps.get_models(), which already exists.\n- Calls apps.clear_cache().\n- Asserts get_swappable_settings_name.cache_info().currsize == 0 and get_models.cache_info().currsize == 0.\n\nStep 3, how each requirement is settled:\n- cache_info() on get_swappable_settings_name: settled by the spec. It calls it \"a functools._lru_cache_wrapper\", so the lru wrapper must stay in place.\n- currsize == 0 after clear_cache: this is exactly the fix the spec describes.\n- get_models cache cleared: existing behavior. clear_cache already clears get_models' cache, so this is a regression check.\n\nStep 4, possible alternatives: one could drop lru_cache and use a different caching mechanism. That would break cache_info() and fail the test. However, the spec explicitly frames the bug as the lru wrapper not being cleared, so that alternative is contrived. Every natural fix that calls cache_clear() passes.",
+    "score": 1,
+    "explanation": "The test asserts that get_swappable_settings_name's lru cache is empty after apps.clear_cache(), which is exactly the behavior and fix the specification describes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRKFQWGHCXDRjmMMizb",
+  "input_tokens": 3274,
+  "output_tokens": 572,
+  "seconds": 6.3
+}

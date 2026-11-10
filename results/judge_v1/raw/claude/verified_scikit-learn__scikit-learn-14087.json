@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14087",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10870,
+  "output": {
+    "reasoning": "1. Spec: LogisticRegressionCV.fit with refit=False raises an IndexError. It should not raise. The entry point is fit(); the traceback points at the coefs_paths indexing in the refit=False branch. The penalty is the default l2, and the solver is saga or liblinear.\n\n2. What the tests require: LogisticRegressionCV(penalty='l2', solver='saga', l1_ratios=None, refit=False, multi_class in {ovr, multinomial, auto}).fit(X, y) on 3-class data must not raise. The pre-existing assertions (not shown in the diff) then check attribute shapes: C_ is (n_classes,), l1_ratio_ is (n_classes,), coef_ is (n_classes, n_features).\n\n3. Settled vs open:\n- No exception: settled by the spec (\"No error is thrown\").\n- Covering multinomial/auto and 3 classes: the same function run on closely related inputs, which a correct fix must handle.\n- Attribute shapes: settled by convention. The refit=True path already produces these shapes. For l2 it already stores None per class in l1_ratio_ and converts it with np.asarray. The existing elasticnet refit=False test already asserts these same shapes.\n- l1_ratio_ when the penalty is l2: a fix must avoid np.mean over None. The natural fix mirrors the refit=True path and appends None per class, giving shape (n_classes,). Leaving l1_ratio_ with an inconsistent shape would break the established attribute contract, so it is not a reasonable alternative.\n\n4. I see no reasonable correct fix that would raise or produce shapes different from the existing refit=True contract.",
+    "score": 2,
+    "explanation": "The graded tests run the issue's scenario (l2 penalty, refit=False) across multi_class settings and check only that fit succeeds and that attribute shapes match the contract the estimator already follows, which any correct fix preserves.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRTkw1Gkrkg1tJ5nuJP",
+  "input_tokens": 4351,
+  "output_tokens": 1587,
+  "seconds": 15.6
+}

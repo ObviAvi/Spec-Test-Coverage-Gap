@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13121",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9581,
+  "output": {
+    "reasoning": "1. The issue reports that duration-only addition fails on SQLite and MySQL, specifically `Experiment.objects.annotate(duration=F('estimated_time') + delta)` when evaluated.\n2. The graded test uses that same model, field, expression, annotation name, and queryset evaluation path. It repeats the operation for the existing `self.deltas` inputs and requires every returned object's `duration` to equal `obj.estimated_time + delta`. It asserts no ordering, error message, SQL representation, internal method, or implementation strategy.\n3. The model, field, annotation, and addition operation are settled by the reproduction example. Correct arithmetic results are settled by ordinary duration-addition semantics. Repeating the operation across duration inputs is a reasonable extension to closely related cases, rather than an arbitrary behavioral choice.\n4. There are no open requirements that distinguish reasonable correct fixes. A change that merely suppresses the exception but produces incorrect sums would not resolve the reported expression bug. The removed, ungraded backend test imposes no requirement.\n5. Every reasonable correct fix should pass; the test adds only related-input coverage and verifies the expected arithmetic result.",
+    "score": 2,
+    "explanation": "The assertion `obj.duration == obj.estimated_time + delta` checks the reported duration-addition operation, with reasonable coverage across related duration inputs and no implementation constraints.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2192,
+  "output_tokens": 671,
+  "seconds": 17.6
+}

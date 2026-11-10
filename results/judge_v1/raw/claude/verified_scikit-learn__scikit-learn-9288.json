@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-9288",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11039,
+  "output": {
+    "reasoning": "1. Spec: KMeans gives different results for n_jobs=1 vs n_jobs>1 with the same random_state; expected the clustering result to be identical regardless of n_jobs. Symptom only, through the public KMeans.fit entry point.\n2. Test requirements: KMeans(n_clusters=3, random_state=0, n_jobs=1).fit(X).labels_ must equal the same fit with n_jobs=2, on random normal data of shape (50, 10).\n3. Settled: identical clustering results across n_jobs (\"Should expect the clustering result (e.g. the inertia) to be the same regardless of how many jobs are run in parallel\"). Comparing labels_ instead of inertia_ is the same requirement, since identical runs give identical labels. The input differs from the example but is a closely related case of the same bug.\n4. Open requirements: none. Any correct fix makes the sequential and parallel paths deterministic and identical, for example by drawing the same per-init seeds in both paths. Such a fix yields identical labels for any data. A fix that only reduced the discrepancy would not resolve the spec.",
+    "score": 2,
+    "explanation": "The graded assertion that labels_ match between n_jobs=1 and n_jobs=2 is exactly the spec's requirement that results be the same regardless of n_jobs, checked on a related input, so every correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRUkF6iwRtBaRcA47D4",
+  "input_tokens": 4419,
+  "output_tokens": 754,
+  "seconds": 8.4
+}

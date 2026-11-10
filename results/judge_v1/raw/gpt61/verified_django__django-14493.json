@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14493",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9855,
+  "output": {
+    "reasoning": "The issue specifies that collectstatic must not crash when a ManifestStaticFilesStorage subclass sets max_post_process_passes = 0; it identifies an uninitialized substitutions variable. The test uses precisely that subclass configuration and runs collectstatic, so the backend setup, zero value, and successful command completion are settled by the reproduction. The test-only backend class name imposes no implementation requirement. Capturing stdout at verbosity=1 is a normal way to observe the command. However, assertIn('post-processed', stdout.getvalue()) additionally requires a particular processing summary, which the specification does not settle. A reasonable alternative is to treat zero passes as disabling post-processing, completing collection and maintaining necessary manifest mappings without rewriting files or reporting any files as post-processed. Such a fix resolves the crash and fits the stated motivation of avoiding invalid CSS, but a collection summary with no post-processed entry fails this assertion. The extra restriction concerns externally observable output, not implementation internals.",
+    "score": 3,
+    "explanation": "A reasonable fix could implement zero passes as a successful no-op for post-processing, while preserving usable manifest data. If collectstatic then reports only collection results and no post-processed files, it fails the required 'post-processed' substring despite resolving the reported crash.",
+    "overspecification_vector": "self.assertIn('post-processed', stdout.getvalue())"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2260,
+  "output_tokens": 2736,
+  "seconds": 68.1
+}

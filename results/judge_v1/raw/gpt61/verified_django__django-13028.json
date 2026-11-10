@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13028",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11986,
+  "output": {
+    "reasoning": "1. The specification identifies a false rejection of a model instance used as a filter RHS because that instance has a Boolean field named filterable set to False. Its entry point is QuerySet.filter(), illustrated by metadata_type=self.brand_metadata.\n2. The added graded test calls Author.objects.filter(extra=self.e2), where self.e2 is an ExtraInfo instance with filterable=False. It requires the queryset to return the two authors whose extra foreign key references that instance, [self.a3, self.a4], without raising NotSupportedError.\n3. Accepting that RHS is directly settled by the reported bug: “Queryset raises NotSupportedError when RHS has filterable=False attribute.” Returning both matching authors follows ordinary foreign-key filtering semantics and the supplied fixture relationships. The sequence assertion preserves normal queryset ordering; changing ordering is neither required nor reasonably motivated by this fix. The fixture class names, field default, and stored author references impose no implementation requirements on the fix.\n4. There is no open implementation choice that the shown test constrains: a fix may distinguish expressions from model instances or otherwise correct the validation, provided filtering works normally. No reasonable correct fix would reject this equivalent reproduction or return different matching records. test_ticket8439 is listed, but its body is not supplied and the patch adds no separate assertion for it; no additional constraint can be inferred from its name.\n5. The shown requirements directly reproduce the specified failure without prescribing how to fix it.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes the shown assertion that filtering a foreign key by a model instance with filterable=False returns the matching authors instead of raising NotSupportedError.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2885,
+  "output_tokens": 844,
+  "seconds": 22.2
+}

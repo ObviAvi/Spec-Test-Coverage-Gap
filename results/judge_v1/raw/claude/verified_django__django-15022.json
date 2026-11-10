@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15022",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11851,
+  "output": {
+    "reasoning": "1. What the spec says: the issue is about performance. Each search word adds another JOIN because the code chains `qs = qs.filter(...)` once per word, and the admin stalls on multi-word searches. It never asks for a change in which rows are matched.\n\n2. What the graded tests require:\n- `test_many_search_terms`: 80 repetitions of 'daniel' return a count of 1, and the captured SQL contains exactly one 'JOIN'.\n- `test_related_field_multiple_search_terms`: searching 'danielle 19' returns 0 and 'daniel 19' returns 1. In other words, all terms must match the same related child row.\n- `test_multiple_search_fields`: the expected count for 'Mary Jonathan Duo' changes from 1 to 0, the same semantic change.\n\n3. Settled or open:\n- Fewer joins: settled. The spec says each word leads to an additional JOIN.\n- Exactly one JOIN in the SQL: open. It depends on the fix building one combined filter that reuses a single join.\n- Same-row matching across multi-valued relations: open. The old behaviour let different terms match different related rows, and the spec never asks to change that.\n\n4. Reasonable fixes that fail:\n- Keep the old any-row semantics but avoid repeated joins, for example one `Exists`/`pk__in` subquery per term. This removes the join explosion, but the main query then has 0 JOINs (fails the `== 1` assertion), and 'Mary Jonathan Duo' still returns 1 and 'danielle 19' returns 1.\n- Deduplicate search terms. This passes the 80-'daniel' test but keeps the old semantics, so it fails the other two tests.\n\nThe tests pin both the single-filter join structure and a behaviour change the issue never requested.\n\n5. These are observable query results and SQL text, one valid choice among several, so score 3.",
+    "score": 3,
+    "explanation": "A fix that removes the join explosion while keeping the old any-row semantics (e.g. per-term Exists subqueries) fails two ways: 'Mary Jonathan Duo' and 'danielle 19' still return 1, and the SQL has 0 rather than exactly 1 JOIN. The tests require all terms to be combined into one filter() so they must match the same related row, a semantic change the issue never asks for.",
+    "overspecification_vector": "self.assertEqual(context.captured_queries[0]['sql'].count('JOIN'), 1); test_related_field_multiple_search_terms asserting 'danielle 19' -> 0; ('Mary Jonathan Duo', 0) in test_multiple_search_fields"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRDTvuyTAERPxb98zwC",
+  "input_tokens": 4631,
+  "output_tokens": 1739,
+  "seconds": 17.8
+}

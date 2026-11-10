@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-13372",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8516,
+  "output": {
+    "reasoning": "1. Spec: evalf of Mul(Max(0, y), x, evaluate=False) raises UnboundLocalError. The other argument order returns x*Max(0, y). The issue suggests adding `else: raise NotImplementedError` so evalf falls back.\n2. The test asserts NS(Mul(Max(0,y), x, evaluate=False).evalf()) == 'x*Max(0, y)'. That is the reproduction example, and the expected output matches what the working order prints in the spec.\n3. Requirements:\n- The input is the reproduction example verbatim (settled).\n- The expected string 'x*Max(0, y)' is settled by the spec's working-order output. Printing sorts Mul args canonically, so the print order does not depend on the fix. The natural fix of raising NotImplementedError makes evalf fall back to returning the expression with its args evalf'd, which yields the same printed form.\n4. Could another reasonable fix print differently? Initializing reprec/imprec to None or similar would still make evalf return an unevaluated expression, and it would print the same. Implementing Max evalf would not change Max(0, y), since y is symbolic. No reasonable alternative fails.",
+    "score": 1,
+    "explanation": "The test is the issue's reproduction example and expects the same output the spec shows for the working argument order, so every non-crashing fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRZpbgg38sCBJhJHgUZ",
+  "input_tokens": 3245,
+  "output_tokens": 469,
+  "seconds": 5.8
+}

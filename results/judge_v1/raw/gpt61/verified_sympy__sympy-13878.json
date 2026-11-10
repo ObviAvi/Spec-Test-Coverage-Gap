@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-13878",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18748,
+  "output": {
+    "reasoning": "Only test_arcsin is graded. The specification requests a precomputed CDF through cdf(Arcsin(...)) and says the CDF is 'basically the arcsin function'; testing symbolic real endpoints is a reasonable generalization of the reported example. The CDF's values, including 0 below the support and 1 above it, are settled by the distribution's definition. However, the added assertion requires structural equality to a particular Piecewise expression: 2*asin(sqrt((x-a)/(b-a)))/pi inside the support, with exactly the displayed branch conditions. That representation is open: neither the specification nor the provided existing code requires it. A reasonable correct implementation could instead use S.Half + asin((2*x-a-b)/(b-a))/pi inside the support. This is mathematically equivalent for valid real parameters but would not satisfy SymPy's structural == assertion. Equivalent endpoint branch arrangements are also unnecessarily constrained. These are public-output representation constraints, not internal implementation checks.",
+    "score": 3,
+    "explanation": "A correct precomputed Arcsin CDF using S.Half + asin((2*x-a-b)/(b-a))/pi within its support would fail the exact symbolic equality test despite returning the same mathematical CDF. The specification does not select the tested formula or Piecewise branch layout.",
+    "overspecification_vector": "assert cdf(X)(x) == Piecewise((0, a > x), (2*asin(sqrt((-a + x)/(-a + b)))/pi, b >= x), (1, True))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5402,
+  "output_tokens": 860,
+  "seconds": 18.3
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11095",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8966,
+  "output": {
+    "reasoning": "1. The specification explicitly requests a ModelAdmin.get_inlines(request, obj=None) hook for selecting inlines by request or model instance, avoiding replacement of get_inline_instances and its loop.\n2. The test defines a ModelAdmin subclass whose get_inlines override selects either MediaInline or AlternateInline from its inlines tuple using request.name, or returns an empty list. It calls get_inlines(request, None) and get_inline_instances(request), asserting empty results for no selection and an instance of the selected inline class otherwise. GenericTabularInline, Media, Episode, and self.site provide the test fixtures; there are no mocks or required messages.\n3. Consulting the override and respecting its selection are settled by the requested hook and the stated motivation involving get_inline_instances. Returning no instances for an empty selection and instantiating the selected inline class are the direct meaning of that integration. The request attribute names and tuple slices are test-owned override logic, not arbitrary details imposed on the implementation. Passing the effective obj value, including None, follows the specified hook signature.\n4. No open requirement rejects a reasonable correct fix: the assertions require only that the existing inline-instantiation behavior consume the new hook's result.\n5. The test directly exercises the requested extension point.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix would make get_inline_instances honor the get_inlines override, producing no instances for an empty selection and an instance of the selected inline class otherwise.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2005,
+  "output_tokens": 846,
+  "seconds": 21.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14434",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8416,
+  "output": {
+    "reasoning": "1. The specification identifies incorrect column-reference tracking in statements produced by `_create_unique_sql`: it \"makes references_column always false\" because a `Table` instance reaches `Columns` where a string is expected.\n2. The test creates an Author table, constructs `UniqueConstraint(fields=['name'], name='name_uq')`, adds it, and obtains its statement through `constraint.create_sql(Author, editor)`. It requires `references_table(table) is True`, `references_column(table, 'name') is True`, and successful removal of the named constraint.\n3. The positive column-reference assertion is settled directly by the reported bug. Obtaining the statement through unique-constraint SQL creation is the natural way to exercise that behavior. Accurate table-reference reporting and preserving constraint addition/removal are conventional regression requirements; the surrounding code also shows existing constraint-removal functionality. Returning actual booleans is conventional for these reference predicates. The field and constraint names are test inputs, not mandated implementation choices.\n4. No open requirement excludes a reasonable correct fix. The tests do not inspect whether the developer changes the argument passed to `Columns`, adjusts reference handling, or uses another sound implementation. A fix that resolves column-reference tracking while preserving existing unique-constraint behavior should pass all assertions.\n5. Score 2: the test checks the reported behavior plus ordinary related regression checks.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should make `sql.references_column(table, 'name')` return True while preserving table-reference tracking and normal unique-constraint addition/removal.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1871,
+  "output_tokens": 775,
+  "seconds": 19.9
+}

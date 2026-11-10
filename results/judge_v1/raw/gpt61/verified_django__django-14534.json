@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14534",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10267,
+  "output": {
+    "reasoning": "1. The issue names BoundWidget.id_for_label and says it must honor the ID in self.data['attrs']['id'], particularly IDs derived from a custom form auto_id. It explicitly says the reported error occurs with CheckboxSelectMultiple.\n2. The new checkbox test constructs a MultipleChoiceField with two choices and auto_id='prefix_%s', then requires 'prefix_field_0' and 'prefix_field_1'. These assertions are settled by the requested use of the generated widget ID and the existing indexed-ID pattern shown in the specification.\n3. The modified select test also requires fields[0].id_for_label to be None when auto_id=False, replacing the existing expectation 'id_name_0'. This is open: the specification describes honoring an available ID, but does not prescribe the return value when no ID is available or explicitly request changing that existing select behavior. The suggested dictionary lookup does not establish None as the missing-ID result either.\n4. A reasonable compatibility-preserving fix could return the generated attrs ID whenever available and otherwise retain the previous synthesized ID. That fixes custom auto_id values, explicit widget IDs, and other assigned-ID cases, but fails the new None assertion. Because this assertion pins an unspecified value of the same publicly exposed property, rather than an implementation detail or a separate function, the overspecification is mild.",
+    "score": 3,
+    "explanation": "A reasonable fix could honor every available widget ID while preserving the legacy synthesized ID when no widget ID exists. It would fix the reported bug but fail the select test's new requirement that id_for_label be None.",
+    "overspecification_vector": "self.assertEqual(fields[0].id_for_label, None) in test_iterable_boundfield_select, for BeatleForm(auto_id=False)['name']"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2353,
+  "output_tokens": 1701,
+  "seconds": 37.6
+}

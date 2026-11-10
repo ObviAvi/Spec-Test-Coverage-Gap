@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16454",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11018,
+  "output": {
+    "reasoning": "1. The specification identifies CommandParser subparsers losing error-formatting settings, causing CLI argument errors to produce tracebacks instead of normal usage messages. It explicitly names add_subparsers().add_parser() and proposes copying relevant arguments to constructed subparsers.\n2. The sole graded test invokes the management CLI with ['subparser', 'foo', 'twelve']. It requires no stdout, exactly two stderr lines, and the error line \"manage.py subparser foo: error: argument bar: invalid int value: 'twelve'\". The non-Django parser test is not graded.\n3. Human-facing usage/error output rather than a traceback is settled by the specification. Testing an invalid integer instead of a missing positional argument is a closely related input using the same parser-error behavior. The command prefix, invalid-integer wording, stderr destination, and short usage-plus-error layout follow standard argparse formatting—the formatting the issue asks to retain.\n4. The test imposes no internal implementation requirement. Although it checks an exact error line, that line is the existing parser's conventional diagnostic for this input, not newly invented wording. No reasonable alternative fix preserving the requested normal parser formatting would need to violate these assertions.",
+    "score": 2,
+    "explanation": "The test extends the reported missing-argument failure to an invalid integer and checks that the subparser retains normal argparse usage/error formatting rather than emitting a traceback.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2563,
+  "output_tokens": 809,
+  "seconds": 18.4
+}

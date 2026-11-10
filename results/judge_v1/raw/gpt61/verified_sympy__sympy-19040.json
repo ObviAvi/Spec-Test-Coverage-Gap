@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-19040",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9567,
+  "output": {
+    "reasoning": "1. The specification identifies factor() losing a polynomial factor when using an algebraic extension, explicitly reproducing factor(z, extension=[I]) and mentioning related issue #5786. 2. Removing XFAIL activates a regression requiring expand(factor(expand((x - I*y)*(z - I*t)), extension=[I])) to equal -I*t*x - t*y + x*z - I*y*z. It uses the same public factor entry point and extension argument, with a related multivariate polynomial containing complex coefficients. There are no mocks, private APIs, or required implementation names. 3. Using factor with extension=[I] is explicitly settled by the reproduction. The different polynomial is a reasonable related-input regression. Its expected value is settled by polynomial multiplication and the requirement that factoring preserve the original expression. Applying expand avoids requiring any particular factorization form or factor order. 4. No open requirement rejects a reasonable correct fix: the assertion requires only preservation of the input polynomial under the reported factoring operation.",
+    "score": 2,
+    "explanation": "The test checks the same factor(..., extension=[I]) operation on a closely related polynomial and asserts only that expanding the result preserves its mathematical value, which every reasonable correct fix should satisfy.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2193,
+  "output_tokens": 515,
+  "seconds": 13.5
+}

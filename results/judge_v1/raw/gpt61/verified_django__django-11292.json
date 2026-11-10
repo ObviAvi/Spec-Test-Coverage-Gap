@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11292",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8145,
+  "output": {
+    "reasoning": "The specification asks to expose the existing skip_checks behavior as the CLI option '--skip-checks', allowing management commands to run without system checks. The test uses write_settings() and run_manage() as existing test helpers, installs staticfiles and user_commands, and gives STATICFILES_DIRS the invalid value 'foo' to trigger a system check. These are fixture choices, not implementation requirements. Calling set_option with '--skip-checks --set foo' must bypass that check: this is directly settled by 'allow users to skip checks when running a command from the command line.' The assertions require empty stderr and stdout 'Set foo' after stripping whitespace. Empty stderr confirms that the skipped check does not report an error; 'Set foo' preserves the command behavior also shown in the unchanged test context. No internal state, new helper name, or implementation strategy is required. There is no open requirement for which a reasonable correct implementation would fail.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix would let '--skip-checks' bypass the invalid staticfiles system check while preserving the command's existing 'Set foo' output and producing no check error.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1839,
+  "output_tokens": 440,
+  "seconds": 10.5
+}

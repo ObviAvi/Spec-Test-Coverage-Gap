@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14349",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10474,
+  "output": {
+    "reasoning": "1. The issue concerns URLValidator behavior after bpo-43882 makes URL splitting strip LF, CR, and tabs. It explicitly leaves the policy open: \"One option is to reject URLs containing the forbidden characters early. Another is ... [they] are to [be] stripped silently.\" 2. The added assertions call URLValidator() and require ValidationError for six inputs: trailing CR on domain and IPv6 URLs, embedded CR in domain and IPv6 hosts, and tabs immediately before domain and IPv6 hosts. They assert no messages, internal state, or implementation details. 3. URLValidator is the specified entry point, and ValidationError follows the existing rejection convention shown in the report and surrounding tests. However, requiring rejection rather than normalization is open; the specification expressly permits either policy. 4. A reasonable fix could consistently strip LF, CR, and tabs before validating the resulting URL. All six added inputs would then become valid URLs and be accepted, violating the new assertions while implementing an explicitly proposed solution. 5. The tests therefore select one permissible externally observable behavior, warranting score 3.",
+    "score": 3,
+    "explanation": "A reasonable fix could silently strip LF, CR, and tabs before validation, as the specification explicitly proposes. That fix would accept the six added CR/tab-containing URLs after normalization, but the tests require ValidationError.",
+    "overspecification_vector": "(URLValidator(), 'http://www.djangoproject.com/\\r', ValidationError),\n(URLValidator(), 'http://[::ffff:192.9.5.5]\\r', ValidationError),\n(URLValidator(), 'http://www.django\\rproject.com/', ValidationError),\n(URLValidator(), 'http://[::\\rffff:192.9.5.5]', ValidationError),\n(URLValidator(), 'http://\\twww.djangoproject.com/', ValidationError),\n(URLValidator(), 'http://\\t[::ffff:192.9.5.5]', ValidationError)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2460,
+  "output_tokens": 905,
+  "seconds": 19.7
+}

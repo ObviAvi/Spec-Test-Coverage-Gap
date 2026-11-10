@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11138",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14099,
+  "output": {
+    "reasoning": "1. The spec says date lookups (e.g. `__date`) on MySQL, SQLite and Oracle convert stored datetimes from a hardcoded 'UTC' instead of from the database's TIME_ZONE setting. The conversion should go from the DB timezone (tz2) to the current timezone (tz1). When the two are equal, the result should need no conversion.\n2. What the test requires:\n- It uses a helper that sets `connection.settings_dict['TIME_ZONE']` and clears the cached `connection.timezone` and `connection.timezone_name`. The helper is moved from existing test code, so these cached properties already exist.\n- Case 1: DB tz = Nairobi = current tz. An event at 23:10 EAT on 2016-01-02 must match `dt__date=2016-01-02`.\n- Case 2: DB tz = Bangkok, current tz Nairobi. An event at 03:10 ICT on Jan 2 must match `dt__date=2016-01-01`, meaning the stored local value is converted from Bangkok to Nairobi.\n3. Settledness:\n- Both cases follow directly from the spec: \"conversion should go from the database timezone tz2 to the django app one tz1\", and when tz1 == tz2 no shift should occur.\n- The test goes through the public ORM `__date` lookup on the default backend.\n- Nothing pins internal names. Any fix that reads the connection's timezone setting at query time passes, whether it reads `connection.timezone_name` or `settings_dict['TIME_ZONE']`.\n4. A fix that snapshotted the DB timezone into some other structure at connection creation could miss the override. That is an unusual design, given that `timezone_name` is already the established cached property for this setting. Skipping CONVERT_TZ when the zones are equal versus converting identically gives the same observable result.",
+    "score": 2,
+    "explanation": "The test only checks, through the public `__date` lookup, that datetimes are interpreted in the connection's TIME_ZONE and converted to the current timezone (or left unshifted when the zones are equal), which is exactly what the issue requests.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR1UWoKcMYBkgPXHBEf",
+  "input_tokens": 5611,
+  "output_tokens": 1274,
+  "seconds": 13.4
+}

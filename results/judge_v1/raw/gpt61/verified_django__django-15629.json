@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15629",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15798,
+  "output": {
+    "reasoning": "1. The specification identifies missing propagation of a referenced primary key's db_collation to foreign-key columns, illustrated by an AlterField migration. It explicitly says the FK modification statements need COLLATE and that the PK and FK collations must match.\n2. The graded tests require actual database-column collation equality after changing a CharField primary key's collation, including an ordinary FK and an implicit many-to-many FK. They also require this equality when creating FK and primary-key OneToOneField columns referencing an already collated PK. Migration reversal must complete without error. There are no mocks, required implementation names, exact SQL strings, or error-message assertions.\n3. Matching the PK's configured collation is directly settled by the specification. Using a normal CharField instead of ShortUUIDField, changing collation without simultaneously changing type, and covering implicit many-to-many FKs are reasonable related cases of the same propagation requirement. Creation-time propagation follows from the general complaint about using db_collation with referenced PKs; OneToOneField is also explicitly present in the report. Successful reversal is a conventional migration regression check. Backend-selected non-default collations avoid prescribing an arbitrary collation value.\n4. No asserted detail selects among reasonable implementations. The tests inspect the resulting public database schema, not the mechanism used to produce it. An alteration-only fix that still creates mismatched FK columns would leave the same propagation defect in a closely related use case.",
+    "score": 2,
+    "explanation": "The tests reasonably extend the stated requirement that FK columns inherit the referenced PK's collation to creation, collation-only alterations, and implicit foreign keys, without constraining the implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3557,
+  "output_tokens": 1402,
+  "seconds": 33.5
+}

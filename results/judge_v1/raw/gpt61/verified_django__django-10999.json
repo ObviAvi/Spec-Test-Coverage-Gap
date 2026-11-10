@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-10999",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8567,
+  "output": {
+    "reasoning": "1. The specification identifies parse_duration() and a precise regex defect: the hours lookahead lacks '-?' before minutes and seconds. It explicitly proposes '(?=-?\\d+:-?\\d+)', allowing independently signed components.\n2. The added assertions require '-15:30' to produce timedelta(minutes=-15, seconds=-30), '-1:15:30' to produce timedelta(hours=-1, minutes=-15, seconds=-30), and both '-00:01:01' and '-01:01' to produce -61 seconds. They also require '-01:-01' to return None. No mocks or internal implementation details are asserted. No added assertions for test_parse_postgresql_format are shown.\n3. Fixing the lookahead to recognize negative components is settled by the specification. Applying a leading minus to the entire time portion is open: it is not requested, and the removed expectations demonstrate existing componentwise semantics for '-15:30' and '-1:15:30'. Rejecting '-01:-01' is also open: the supplied regex permits negative minutes and seconds independently.\n4. A reasonable correct fix is the exact lookahead correction supplied in the issue, preserving existing componentwise timedelta construction. It resolves the reported matching defect but retains the old results for '-15:30' and '-1:15:30', does not make a negative-zero component negate subsequent components, and continues accepting '-01:-01'. Thus it fails the added assertions despite implementing the stated fix.\n5. These are additional externally observable parsing-policy requirements, not internal implementation constraints, so the score is 3.",
+    "score": 3,
+    "explanation": "A developer could apply the issue's proposed lookahead correction while preserving independently signed duration components. That correct fix would fail tests requiring a leading minus to negate the entire time portion and requiring '-01:-01' to be rejected.",
+    "overspecification_vector": "('-15:30', timedelta(minutes=-15, seconds=-30)); ('-1:15:30', timedelta(hours=-1, minutes=-15, seconds=-30)); ('-00:01:01', timedelta(minutes=-1, seconds=-1)); ('-01:01', timedelta(seconds=-61)); ('-01:-01', None)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2046,
+  "output_tokens": 1000,
+  "seconds": 22.9
+}

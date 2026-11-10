@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-26291",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11639,
+  "output": {
+    "reasoning": "The specification reports that inset_axes(ax, width=1.3, height=0.9) fails during rendering, with the traceback explicitly passing through print_figure and _tight_bbox.adjust_bbox. The test requires plt.subplots(), that same inset_axes call, and fig.savefig(io.BytesIO(), bbox_inches=\"tight\") to complete without exception; it asserts no image contents, internal state, return value, or error message. The inset construction and absence of the reported exception are directly settled by the reproduction and expected outcome. Using one subplot rather than two is a closely related input. Saving to an in-memory buffer with tight bounding boxes is a standard, backend-independent way to exercise the rendering failure identified in the traceback. Although that invocation is inferred rather than copied literally from plt.show(), it introduces no unresolved behavioral choice: no reasonable fix that resolves the reported tight-bbox rendering bug would fail this test.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should allow the tested tight-bbox save to complete, because it exercises the same inset rendering failure shown in the specification’s traceback.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2826,
+  "output_tokens": 702,
+  "seconds": 18.8
+}

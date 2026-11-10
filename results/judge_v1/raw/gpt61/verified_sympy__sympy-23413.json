@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-23413",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8314,
+  "output": {
+    "reasoning": "The specification identifies hermite_normal_form called with a Matrix and reports loss of a nonzero-rank component during integer column reduction. The graded Matrix test requires HNF([[2, 7], [0, 0], [0, 0]]) == [[1], [0], [0]]. This is a closely related regression case, and its exact result is settled by standard HNF conventions: gcd(2, 7) is 1. The other graded test requires the corresponding result from the DomainMatrix-facing hermite_normal_form in the polys module, using DM and ZZ. That separate entry point is not specified. A reasonable general fix could route the Matrix-facing function through corrected column reduction, fixing rectangular and rank-deficient Matrix inputs while leaving the DomainMatrix entry point unchanged; it would fail that assertion. The added test_issue_23410 is not listed as graded.",
+    "score": 4,
+    "explanation": "The polys test additionally requires repairing the separate DomainMatrix-facing HNF API. A correct general repair made at the specified Matrix entry point could leave that API unchanged and therefore fail the graded DomainMatrix assertion.",
+    "overspecification_vector": "sympy/polys/matrices/tests/test_normalforms.py: hnf = DM([[1], [0], [0]], ZZ), asserted by assert hermite_normal_form(m) == hnf for m = DM([[2, 7], [0, 0], [0, 0]], ZZ)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2070,
+  "output_tokens": 2463,
+  "seconds": 55.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-12682",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9860,
+  "output": {
+    "reasoning": "The specification identifies missing configurability of Lasso's iteration limit through SparseCoder when using 'lasso_cd': it says there should be 'a way for the user to specify other parameters' of the underlying estimator. The tests instantiate SparseCoder with transform_algorithm='lasso_cd', call fit_transform on a 1024-feature wavelet example, and require a ConvergenceWarning with an iteration limit of 1 but no warnings with 2000. SparseCoder and 'lasso_cd' are explicitly specified; fit_transform and ConvergenceWarning are conventional public interfaces for exercising the reported convergence problem. The wavelet input and iteration values reasonably exercise whether the limit reaches Lasso. However, the tests also require the constructor keyword to be exactly transform_max_iter. That name is open: the specification names Lasso's max_iter but never prescribes SparseCoder's new interface. A reasonable fix could expose max_iter directly or accept an underlying-estimator parameter mapping and forward max_iter through it. Such fixes would resolve the reported problem but fail these tests with an unexpected-keyword error. Because the tests depend on an unspecified new name, the score is 4.",
+    "score": 4,
+    "explanation": "A correct fix could expose SparseCoder(max_iter=...) or provide an estimator-parameter mapping that forwards max_iter to Lasso. The tests reject those alternatives because both constructor calls require the unspecified keyword transform_max_iter.",
+    "overspecification_vector": "SparseCoder(D_multi, transform_algorithm=transform_algorithm, transform_max_iter=1) and SparseCoder(D_multi, transform_algorithm=transform_algorithm, transform_max_iter=2000)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2326,
+  "output_tokens": 833,
+  "seconds": 20.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13297",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10334,
+  "output": {
+    "reasoning": "1. The specification reports that TemplateView.get_context_data() receives lazy keyword values that crash ORM filtering unless explicitly converted to strings. It names TemplateView.as_view(), get_context_data(), and get_object_or_404() in the reproduction.\n2. The graded test invokes a TemplateView subclass through as_view(), supplies a string-valued artist_name keyword, consumes it in get_context_data(), queries Artist.objects.get(name=artist_name), and asserts that the returned context contains the matching artist. It suppresses deprecation warnings without asserting their content or occurrence.\n3. The view entry point and use of a supplied keyword in a database lookup are settled by the reproduction. Using a named keyword parameter instead of kwargs.get(), a name field instead of a slug field, and QuerySet.get() instead of get_object_or_404() are reasonably specified variations of the same string-filtering problem. Equality with the created artist is the conventional successful lookup result. The fixture name and template do not impose an implementation choice.\n4. No consequential requirement remains open. The test does not demand a particular keyword type, unwrapping mechanism, or fix location. A fix confined to get_object_or_404() that leaves ordinary ORM filtering broken would leave the reported bug unresolved for closely related uses.\n5. The test is reasonably specified rather than a near-verbatim reproduction.",
+    "score": 2,
+    "explanation": "Every reasonable complete fix should allow the string keyword received by get_context_data() to work in an ORM lookup, making response.context_data['artist'] equal the created artist.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2381,
+  "output_tokens": 864,
+  "seconds": 20.6
+}

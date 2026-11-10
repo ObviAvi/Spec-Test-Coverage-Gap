@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15022",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11851,
+  "output": {
+    "reasoning": "1. The specification reports a performance problem in admin changelist search: \"each word in the search query leads to additional JOIN\" because of the \"qs = qs.filter(...) pattern.\" It requests eliminating this unnecessary join growth, not changing which related rows may satisfy different search terms.\n2. The graded tests exercise ModelAdmin.get_changelist_instance() and the resulting queryset.count(). They require: searching for 'daniel ' repeated 80 times returns one parent; the captured count SQL contains exactly one 'JOIN'; searching child name and age for 'danielle 19' returns zero parents while 'daniel 19' returns one; and the existing 'Mary Jonathan Duo' expectation changes from one result to zero. ParentAdminTwoSearchFields and its fields are test setup, not required new production interfaces. There are no mocks.\n3. Settled by the specification: searches with many terms must avoid the reported join explosion. Convention: a parent matching the repeated term should remain a single search result despite multiple matching children. Open: the exact SQL structure and the requirement that all terms match the same related row. The issue neither requires exactly one JOIN nor requests stricter matching semantics; the changed existing expectation is evidence that the tests alter prior behavior.\n4. A reasonable fix could implement search using EXISTS or semijoin subqueries, avoiding join multiplication while emitting zero literal JOINs for this relationship. It would fail the exact JOIN-count assertion despite resolving the problem. Separately, an efficient implementation could preserve matching different terms against different related children; that would fail the new zero-result expectations without violating the performance specification.\n5. The exact SQL JOIN count checks implementation structure rather than merely successful, efficient search, making the strongest overspecification a 4.",
+    "score": 4,
+    "explanation": "An EXISTS-based search can eliminate the per-term join explosion but fail the requirement that the SQL contain exactly one JOIN. The tests also require same-related-row matching, rejecting a performance fix that preserves the previous cross-related-row search behavior.",
+    "overspecification_vector": "self.assertEqual(context.captured_queries[0]['sql'].count('JOIN'), 1); search 'danielle 19' followed by self.assertEqual(cl.queryset.count(), 0); changing ('Mary Jonathan Duo', 1) to ('Mary Jonathan Duo', 0)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2757,
+  "output_tokens": 1449,
+  "seconds": 37.0
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13809",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9438,
+  "output": {
+    "reasoning": "1. The specification asks for a `--skip-checks` option on `runserver`, consistent with other management commands that run system checks. When set, the system checks should not run.\n\n2. What the graded test requires:\n- It calls `call_command('runserver', use_reloader=False, skip_checks=True/False)`.\n- With `skip_checks=True`, the output must not contain 'Performing system checks...' and `BaseCommand.check` must not be called.\n- With `skip_checks=False`, the output must contain 'Performing system checks...' and `BaseCommand.check` must be called.\n- The test mocks `runserver.run` and `check_migrations`.\n\n3. Status of each requirement:\n- Option name `skip_checks`: settled by the spec's \"--skip-checks\", whose argparse dest is `skip_checks`. It also matches the existing `skip_checks` stealth option on `BaseCommand`.\n- The 'Performing system checks...' message: this is existing `runserver` output (in `inner_run`) that appears before `self.check`. Suppressing it when checks are skipped is the natural result of wrapping that block in a condition. Printing \"Performing system checks...\" while not performing them would be incorrect.\n- `self.check` being called or not called: the existing code already calls `self.check`, so gating that call is the obvious fix.\n- The `check_migrations` mock means a fix may either skip or keep migration checks; both pass.\n\n4. No reasonable alternative fails. A fix that prints a different message such as \"Skipping system checks\" still passes the `assertNotIn`. A fix that keeps the misleading 'Performing...' message would not be a correct fix.",
+    "score": 2,
+    "explanation": "The test only checks that `runserver` with `skip_checks=True` neither prints the existing 'Performing system checks...' line nor calls `self.check`, and does both when `skip_checks=False`; that is the direct meaning of adding --skip-checks, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR9rYLXa5ja1GkG71BZ",
+  "input_tokens": 3481,
+  "output_tokens": 1416,
+  "seconds": 14.4
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-25479",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14068,
+  "output": {
+    "reasoning": "The specification reports that registering a colormap under an alias and calling plt.set_cmap(alias) makes subsequent plotting look up the colormap's intrinsic name instead. The requested behavior is explicit: \"refer to my newly registered colormap by the name my_cmap_name.\"\n\nThe new test constructs viridis.with_extremes(over='r'), sets its name to 'test-cmap', registers it as 'wrong-cmap', and calls plt.set_cmap and plt.get_cmap with that alias. Successful alias use is settled by the specification; retaining the colormap's colors is a reasonable regression requirement. However, requiring cmap_returned.name == 'wrong-cmap' is open: the specification does not require registration to replace the intrinsic name. Requiring cmap_returned == cmap also constrains comparison behavior if registration renames a copy.\n\nSeparately, test_colormap_equals now requires a copy renamed 'Test' to compare equal to its original. This is open and exercises comparison semantics rather than the reported pyplot lookup failure. The unchanged context and removed assertion show that differing names previously made colormaps unequal; the specification never requests changing that contract.\n\nA reasonable fix would preserve the requested registry key when plt.set_cmap receives a string, rather than replacing it with the resolved object's intrinsic name. That handles mismatched registration names generally while preserving existing colormap names and equality semantics. It would fix the reported plotting failure but fail both the name-insensitive equality assertion and the returned-name assertion.",
+    "score": 4,
+    "explanation": "A correct fix could make plt.set_cmap retain the supplied registry alias while leaving colormap names and equality unchanged. The tests reject that fix, most significantly by independently requiring differently named colormaps to compare equal—a separate behavior the issue does not request.",
+    "overspecification_vector": "test_colormap_equals: cm_copy.name = \"Test\" followed by the added assert cm_copy == cmap; test_set_cmap_mismatched_name: assert cmap_returned.name == \"wrong-cmap\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3691,
+  "output_tokens": 1196,
+  "seconds": 27.6
+}

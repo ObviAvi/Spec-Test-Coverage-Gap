@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15280",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10961,
+  "output": {
+    "reasoning": "1. The issue: with a nested prefetch that points back to the parent model (outer `only('email')`, inner `Prefetch('user', queryset=User.objects.only('kind'))`), accessing the inner object's non-deferred field still runs a query. The cause is that the outer instance overwrites the inner prefetched instance. The spec says this also happens for the ForeignKey (reverse many-to-one) case.\n\n2. What the test requires:\n- The House/Room models (FK, related_name 'rooms') with `House.objects.only('name')` and a nested `Prefetch('house', queryset=House.objects.only('address'))`.\n- `queryset.first()` runs exactly 3 queries.\n- `Room.house.is_cached(self.room)` is True.\n- `house.rooms.first().house.address` runs 0 queries.\n\n3. Each requirement:\n- 3 queries: settled; the spec says \"with self.assertNumQueries(3)\" and lists the three queries.\n- 0 queries on access: settled; it is the core assertion of the spec, applied to the FK variant the spec explicitly mentions (\"also happens if the relationship ... is a ForeignKey\").\n- `is_cached(self.room)`: checked on the setUpTestData instance, whose house cache was already set at creation, so it is trivially true for any fix.\n- `.first()` on the prefetched manager: these test models have `Meta.ordering`, so it is served from the prefetch cache and adds no query.\n\n4. Any correct fix must keep the inner prefetched House (with address loaded) rather than overwrite it with the outer one. Otherwise address is deferred and a query fires. No reasonable fix that resolves the reported bug for the FK case would fail these assertions.",
+    "score": 2,
+    "explanation": "The graded assertions are the spec's own query counts (3, then 0) applied to the ForeignKey variant the issue explicitly mentions, so any fix that preserves the inner prefetched parent instance passes; the is_cached check on the setup instance is trivially true.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtREsajN2EhnCT7yL9ip",
+  "input_tokens": 4106,
+  "output_tokens": 1893,
+  "seconds": 17.9
+}

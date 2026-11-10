@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-7229",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12830,
+  "output": {
+    "reasoning": "1. Spec: with `keep_attrs=True`, `xr.where` overwrites coordinate attributes with the data variable's attributes; coordinate attributes should be preserved. The MVCE uses a scalar `cond` and `x is y`, so there is no conflict about which coordinate attrs win. The entry point is `xr.where`.\n\n2. Requirements of the test, with status:\n- Requirement: when cond, x and y all carry coord `a` with different attrs, the result's coord attrs are x's (`x_coord`). Status: open. The spec only says coordinate attrs should be \"preserved\". A fix that sets coordinates to `keep_attrs=\"override\"` would give cond's coord attrs (first argument). A fix using `drop_conflicts` would give `{}`. Both fail.\n- Requirement: `xr.where(cond, 0, y, keep_attrs=True)` gives coord `a` with no attrs, even though cond and y both have coord attrs. Status: open. A fix that preserves coordinate attrs from whichever input has them (cond or y) fails. That arguably satisfies \"coordinate attributes should be preserved\" better.\n- Requirement: `xr.where(cond, x, 0)` and `xr.where(True, x, y)` take x's data and coord attrs. Status: mostly settled. The existing docs say attrs come from x, and the second case is the MVCE pattern.\n- Requirement: Dataset cases. For `where(cond, ds_x, ds_y)`, global attrs come from ds_x, variable attrs from x, coord attrs from x. For `where(cond, x.rename('x'), ds_y)`, the result Dataset has empty global attrs while variable and coord attrs come from x. Status: open edge-case semantics. A fix that propagates ds_y's global attrs, or handles promotion differently, fails.\n\n3. These are all observable through the public `xr.where`, but the tests pin one specific policy (\"always take coordinate attrs from x, else none\") among several reasonable ones.",
+    "score": 3,
+    "explanation": "A reasonable fix that preserves coordinate attrs via override (first object, i.e. cond) or drop_conflicts semantics would fail. So would a fix that keeps cond's or y's coord attrs when x is a scalar. The tests require coord attrs to come exclusively from x, and to be empty when x is a scalar.",
+    "overspecification_vector": "expected[\"a\"].attrs = {\"attr\": \"x_coord\"} in the 3-DataArray case (cond/x/y coords all have different attrs); `actual = xr.where(cond, 0, y, keep_attrs=True); expected = xr.DataArray([0, 0], coords={\"a\": [0, 1]})` requiring no coord attrs; the mixed DataArray/Dataset expectations with empty global attrs"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRQRnjtnXmuGV3VFK8K",
+  "input_tokens": 5456,
+  "output_tokens": 2376,
+  "seconds": 22.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-9230",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10664,
+  "output": {
+    "reasoning": "1. The spec says that in `:param dict(str, str) opc_meta:`, the type/name split breaks on the first whitespace. This yields type `dict(str,` and name `str) opc_meta`. The expected rendering is name `opc_meta` with type `dict(str, str)`. The bug lies in how the info field argument is split into type and name (sphinx/util/docfields.py), reached through the normal `:param type name:` syntax.\n2. What the test requires:\n- The input `:param Dict[str, str] params: blah blah`, parsed as a py:method docstring.\n- Rendered output: `params` in literal_strong, then ` (`, then the type split into xref and emphasis pieces (`Dict`, `[`, `str`, `, `, `str`, `]`), then `)`, ` -- `, and the description.\n- Each xref has reftarget Dict/str with module and class context.\n3. How each part is settled:\n- That the name is the last word and everything before it is the type: settled by the spec's expected output `opc_meta (dict(str,str))`.\n- The tokenization of the type into xref and literal_emphasis pieces: settled by existing behavior, since the same file already asserts this split for `:type items: Tuple[str, ...]`. Once the field argument is split correctly, the type goes through the existing PyTypedField xref logic.\n- Brackets instead of parentheses: a closely related input. Any fix that splits the name off the end (e.g. `rsplit(None, 1)`, since parameter names never contain spaces) handles both.\n4. Possible alternatives:\n- A fix that balances only parentheses and not brackets would patch only the literal example, so it does not count as reasonable.\n- A fix that strips internal whitespace from the type would change the `, ` delimiter. That is an unnatural transformation beyond the spec, not a reasonable fix.\n- No reasonable fix diverges from the asserted output.",
+    "score": 2,
+    "explanation": "Any fix that separates the trailing parameter name from a multi-word type (e.g. rsplit) passes. The asserted node structure for `Dict[str, str] params` is just the existing typed-field xref rendering, already exercised for `Tuple[str, ...]`.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRYBJKhkUfyPnRFnq5P",
+  "input_tokens": 4088,
+  "output_tokens": 1348,
+  "seconds": 14.3
+}

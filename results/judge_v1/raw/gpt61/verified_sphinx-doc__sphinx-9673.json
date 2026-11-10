@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-9673",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9446,
+  "output": {
+    "reasoning": "1. The specification reports missing return annotations when autodoc_typehints='description' and autodoc_typehints_description_target='documented' are used with Napoleon's Google-style Returns section. It explicitly permits the type 'either as a rtype section or as part of the return description.'\n2. The added test writes an autofunction directive for target.typehints.decr with a hand-written ':returns: decremented number' field, builds the documentation with app.build(), and requires the resulting text to contain 'Returns: decremented number' followed by a separate 'Return type: int' section, with exact layout. Existing incr and tuple_args output remains regression context. There are no added mocks or private-method assertions.\n3. Showing the annotated return type for a documented return is settled by the expected behavior. Preserving the existing descriptions is a conventional regression requirement. However, requiring the fix to handle a directly supplied reST ':returns:' field independently of Napoleon's Google-style conversion is open. Requiring a separate Return type section is also open, and explicitly narrower than the specification's two permitted presentations.\n4. A reasonable fix could normalize Napoleon-generated return fields to a form autodoc already recognizes, resolving the reported case and related Google-style docstrings without changing handling of directly supplied ':returns:' fields. That fix could fail this test because its added input bypasses the conversion being repaired. Independently, a fix that renders the annotation within the return description would satisfy the specification but fail the exact separate-section assertion.\n5. The different-path requirement is the strongest gap, warranting score 4; the exact presentation requirement would independently warrant score 3.",
+    "score": 4,
+    "explanation": "A correct fix in Napoleon's Google-style return-field conversion could restore return annotations without fixing the test's directly supplied reST ':returns:' field. The test also rejects the explicitly permitted alternative of displaying the type within the return description.",
+    "overspecification_vector": "Added input: '.. autofunction:: target.typehints.decr\\n' with '   :returns: decremented number\\n', rather than a Google-style Returns section processed by Napoleon. Added exact output requirement: '   Returns:\\n' / '      decremented number\\n' / '\\n' / '   Return type:\\n' / '      int\\n'."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2226,
+  "output_tokens": 1535,
+  "seconds": 37.5
+}

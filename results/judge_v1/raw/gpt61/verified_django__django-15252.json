@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15252",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13183,
+  "output": {
+    "reasoning": "1. The specification identifies a routing violation: MigrationRecorder creates its table on connections where allow_migrate returns False. It explicitly discusses ensure_schema, record_applied, applied_migrations, and record_unapplied, and says the table should not be created on connections other than 'default' under the example router.\n2. The first graded test creates a test database with TEST['MIGRATE'] = False, mocks connection/database setup and MigrationRecorder.has_table, and patches MigrationRecorder.ensure_schema. It requires ensure_schema.assert_not_called(), while sync_apps must still receive {'app_unmigrated'}. The second constructs MigrationExecutor(connection), mocks MigrationRecorder.has_table to return False, calls migrate([], plan=[]), and requires exactly zero database queries.\n3. Settled: respecting the router's rejection of migration-table creation, including related recorder reads and writes. Existing context supports the test-creation APIs and continued synchronization of unmigrated apps. Open: TEST['MIGRATE'] = False must prevent even calling ensure_schema; an empty migration plan must avoid creating the recorder table on an otherwise permitted connection; and that execution must perform zero queries. The issue does not specify these requirements or equate an empty plan with router denial.\n4. A reasonable correct fix would make recorder schema creation and reads/writes honor allow_migrate, while retaining existing eager recorder initialization on permitted connections. This fixes the reported multi-database problem, but can still call ensure_schema during test database creation and create the recorder table when an allowed database has no migrations. It therefore fails the mocked call assertion and the zero-query assertion. In particular, putting a routing guard inside ensure_schema does not satisfy a test that forbids calling the method at all.\n5. The strongest mismatch concerns internal invocation and query behavior, so the score is 4.",
+    "score": 4,
+    "explanation": "A correct router-aware fix can preserve recorder initialization on permitted databases, including when the migration plan is empty. These tests instead require ensure_schema never to be called with TEST['MIGRATE'] = False and require zero queries for an empty plan, neither of which the specification requires.",
+    "overspecification_vector": "test_migrate_test_setting_false_ensure_schema: TEST['MIGRATE'] = False; @mock.patch('django.db.migrations.executor.MigrationRecorder.ensure_schema'); mocked_ensure_schema.assert_not_called(). test_migrate_skips_schema_creation: @mock.patch.object(MigrationRecorder, 'has_table', return_value=False); with self.assertNumQueries(0): executor.migrate([], plan=[])."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2941,
+  "output_tokens": 1034,
+  "seconds": 24.7
+}

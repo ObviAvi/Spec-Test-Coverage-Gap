@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-25102",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13849,
+  "output": {
+    "reasoning": "1. The issue concerns dtype loss when value-preserving transformers produce pandas output. It explicitly requests the ability to “optionally preserve the dtypes” and suggests preservation “if the dtypes is set to preserve in the config.” It does not require preservation to become the default whenever pandas output is selected.\n2. The tests require StepSelector.fit/transform to preserve float32, float64, and categorical dtypes with steps 2 and 3. They also require SelectKBest.fit_transform, with a custom scorer and k=3, to return the three selected columns in input order and preserve their numeric and interval-categorical dtypes. Dtype equality is specified; the different numeric widths and categorical representations are closely related inputs. Column selection and ordering follow normal selector semantics. The helper's _validate_data, n_features_in_, and _get_support_mask are fixture machinery, not requirements on how the fix must be implemented.\n3. The empty-selection test additionally requires an empty DataFrame with the original index and a UserWarning matching “No features were selected.” Shape and index preservation are conventional regression checks. The warning text is not specified by the issue; a direct DataFrame-slicing implementation could reasonably preserve the empty result without emitting that particular warning.\n4. Most importantly, both tests enable only set_output(transform=\"pandas\") and then require dtype preservation automatically. This activation policy is open. A reasonable fix could add an explicit dtype-preservation option or configuration flag, retain existing conversion behavior by default, and preserve all these dtypes when enabled. That implements the optional workflow described in the issue but fails these tests' unconditional dtype assertions. This is an externally observable policy choice, so the score is 3 rather than 4.",
+    "score": 3,
+    "explanation": "A reasonable fix could provide dtype preservation through an explicit opt-in configuration, as the specification proposes, while retaining existing pandas-output behavior by default. Both tests omit that opt-in and require dtype preservation after set_output(transform=\"pandas\") alone.",
+    "overspecification_vector": "sel = StepSelector(step=step).set_output(transform=\"pandas\") followed by assert dtype == X.dtypes[name]; univariate_filter = SelectKBest(selector, k=3).set_output(transform=\"pandas\") followed by assert dtype == X.dtypes[name]. Neither test enables a separate dtype-preservation option."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3322,
+  "output_tokens": 2572,
+  "seconds": 60.2
+}

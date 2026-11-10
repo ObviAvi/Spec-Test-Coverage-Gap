@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12713",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8929,
+  "output": {
+    "reasoning": "1. The specification says that passing `widget` to `formfield_for_manytomany()` has no effect, unlike `formfield_for_foreignkey()`. In Django the M2M method unconditionally replaces the widget when the field is listed in autocomplete_fields, raw_id_fields, filter_vertical or filter_horizontal, while the foreign-key method guards with `if 'widget' not in kwargs`.\n2. The test defines an admin with `filter_vertical=['members']` and a `formfield_overrides` entry giving ManyToManyField the CheckboxSelectMultiple widget. It calls `formfield_for_dbfield` and asserts `field.widget.widget` is a CheckboxSelectMultiple.\n3. `formfield_for_dbfield` already merges `formfield_overrides` into kwargs and then calls `formfield_for_manytomany(db_field, request, **kwargs)`. So the override reaches the M2M method as a `widget` kwarg, which is exactly the case the spec describes. This is settled by existing code.\n4. The RelatedFieldWidgetWrapper is applied afterwards in `formfield_for_dbfield` regardless of which widget was chosen, so `.widget.widget` holds for any fix that respects the kwarg. This is also existing behavior.\n5. The natural fix mirrors the foreign-key pattern: skip the special-widget assignment when 'widget' is already in kwargs. That passes. A fix that honors a direct widget argument but drops the same value arriving through `formfield_overrides` would be contrived, because both arrive identically as kwargs. Nothing is left open.",
+    "score": 2,
+    "explanation": "Any fix that makes `formfield_for_manytomany` respect a passed `widget` kwarg passes. `formfield_overrides` feeds into that same kwarg path, so the assertion that the wrapped widget is a CheckboxSelectMultiple follows directly from the spec.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR64KQDg7hDzXF9xeed",
+  "input_tokens": 3343,
+  "output_tokens": 1342,
+  "seconds": 13.1
+}

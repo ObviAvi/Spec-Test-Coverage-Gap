@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11239",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11052,
+  "output": {
+    "reasoning": "The specification asks dbshell to support PostgreSQL mutual TLS using sslmode, sslrootcert, sslcert, and sslkey. The graded test calls DatabaseClient.runshell_db() with those four options and mocks subprocess.run(), requiring the existing psql argument list unchanged and an environment containing exactly PGSSLMODE, PGSSLROOTCERT, PGSSLCERT, and PGSSLKEY with the supplied values. Supporting all four settings is settled by the specification's configuration example and request for the other SSL parameters. Calling runshell_db() and inspecting subprocess.run() follow the existing test convention. However, conveying SSL options specifically through environment variables, while retaining the exact positional database argument, is open: the specification does not prescribe that transport. A reasonable correct implementation could supply a properly escaped libpq connection string as psql's database argument, including the database name and all four SSL settings. This would support the requested connections and related inputs but fail both the exact argument-list and environment-dictionary assertions.",
+    "score": 3,
+    "explanation": "The test requires SSL configuration through PGSSL* environment variables rather than accepting other valid psql interfaces. A correct fix using a libpq connection string would establish the requested mutual-TLS connection but fail the asserted subprocess arguments and environment.",
+    "overspecification_vector": "test_ssl_certificate(): exact expected command ['psql', '-U', 'someuser', '-h', 'somehost', '-p', '444', 'dbname'] and exact expected environment {'PGSSLCERT': 'client.crt', 'PGSSLKEY': 'client.key', 'PGSSLMODE': 'verify-ca', 'PGSSLROOTCERT': 'root.crt'}."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2594,
+  "output_tokens": 1354,
+  "seconds": 30.4
+}

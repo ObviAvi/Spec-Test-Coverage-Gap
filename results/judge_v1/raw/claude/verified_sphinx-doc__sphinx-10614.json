@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10614",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18165,
+  "output": {
+    "reasoning": "1. Spec: SVG inheritance-diagram links are written relative to the embedding HTML page. Because the SVG is loaded via <object>, they are actually resolved relative to the SVG file in _images/. Pages in subdirectories therefore get 404 links. The fix is to make SVG hrefs correct relative to the image location. No API is named; only the symptom is described.\n\n2. Test requirements, with status:\n- (a) Every relative href in each SVG must resolve from outdir/_images/ to an existing file. This applies to diagrams in both index.html and subdir/index.html. Settled by the spec: \"links in the SVG file are relative to the SVG file.\"\n- (b) Intersphinx (absolute) hrefs in the SVG must start with https://example.org/ and must not be prefixed with ../. Open. The spec never mentions intersphinx or external links. The original code blindly prepended '../' to every refuri, absolute ones included.\n- (c) Intersphinx links appear in the diagram at all. This is pre-existing behaviour.\n- (d) Pattern match for the figure HTML in the root page. Pre-existing.\n- (e) Renamed test classes. These are test fixtures only.\n\n3. Requirement (b) is the open one. A competent developer could fix the reported problem this way: compute the relative path from the image directory to the current document's directory and prepend it to refuri, replacing the hardcoded '../'. That fix makes every internal link work for root and nested pages. If it does not special-case absolute URLs, it still produces '../https://example.org/...' for intersphinx links. The test would reject it via `assert href.startswith(\"https://example.org/\")`. The test assertions are on observable output (the SVG hrefs), not internals, so this is overspecification of an unmentioned edge case rather than an implementation detail.",
+    "score": 3,
+    "explanation": "A fix that correctly computes relative paths from _images/ for internal links fails if it keeps prepending a relative prefix to absolute intersphinx refuris. The graded test adds an intersphinx inventory and asserts external hrefs start with https://example.org/, a case the issue never mentions.",
+    "overspecification_vector": "Intersphinx setup in test_inheritance_diagram_svg_html (subdir_inventory, intersphinx_mapping {'subdir': ('https://example.org', ...)}, the root index.rst `.. inheritance-diagram:: subdir.other.Bob`) and the assertions `if '://' in href: assert href.startswith(\"https://example.org/\")` / `assert \"https://example.org\" in diagram_content`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRV22NkeJW5jR8nxKAN",
+  "input_tokens": 7497,
+  "output_tokens": 2807,
+  "seconds": 28.7
+}

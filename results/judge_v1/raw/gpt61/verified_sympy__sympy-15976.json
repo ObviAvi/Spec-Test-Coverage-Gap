@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-15976",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16352,
+  "output": {
+    "reasoning": "1. The specification reports invisible numbered symbols in presentation MathML, demonstrated through `sympy.mathml(y, printer='presentation')`. It requires visible, correctly rendered symbols; it does not prescribe an internal DOM representation.\n2. The graded additions call `mpp._print` directly for `x^2`, `x__2`, `x_2`, `x^3_2`, `x__3_2`, `x_2_a`, `x^2^a`, and `x__2__a`. They require the returned root to be exactly `msup`, `msub`, or `msubsup`, with immediate `mi` children containing the specified base and script text. Multiple scripts must use an `mrow` containing `mi`, a space-valued `mo`, and another `mi` in that order.\n3. Related subscript/superscript inputs are reasonable regression coverage. Their interpretation, text, and ordering follow the existing tests shown in the removed lines. However, requiring an unwrapped script element specifically from the private `_print` method is open: neither that method nor its return-tree shape is specified.\n4. A reasonable fix could normalize invalid identifier wrappers while producing the public presentation-MathML output, replacing an `mi` around structured content with a valid `mrow`. That fixes visibility consistently for numbered and otherwise scripted symbols while leaving the private intermediate tree unchanged. These tests would still fail. Even performing that replacement inside `_print` would fail the exact root assertions despite yielding valid, visible MathML.\n5. The strongest gap is testing a particular private intermediate representation rather than accepting fixes through the demonstrated public entry point.",
+    "score": 4,
+    "explanation": "A correct fix could replace invalid structured `mi` wrappers with `mrow` during public MathML serialization, restoring visibility while leaving `_print`'s intermediate tree unchanged. The tests instead call `_print` directly and require exact unwrapped `msub`, `msup`, and `msubsup` roots.",
+    "overspecification_vector": "Direct calls such as `mml = mpp._print(Symbol(\"x^2\"))`, followed by `assert mml.nodeName == 'msup'`; corresponding `assert mml.nodeName == 'msub'` and `assert mml.nodeName == 'msubsup'` assertions and their fixed immediate-child layouts."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4824,
+  "output_tokens": 1215,
+  "seconds": 28.0
+}

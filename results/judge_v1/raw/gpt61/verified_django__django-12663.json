@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12663",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11916,
+  "output": {
+    "reasoning": "1. The specification reports a regression when filtering a subquery annotation by a SimpleLazyObject wrapping a model instance: the demonstrated annotate(...).filter(owner_user=user) raises TypeError during lookup preparation.\n2. The test creates a Manager, assigns it through Employee.manager, and wraps a Manager.objects.get(pk=...) call in SimpleLazyObject. It uses Company.objects.annotate(), Subquery(), Employee.objects.filter(), OuterRef('ceo__lastname'), values('manager'), and filter(ceo_manager=max_manager), then requires qs.get() to equal self.gmbh.\n3. Settled by the reproduction: subquery annotations selecting foreign keys must accept lazy model instances as filter values. Reasonably inferred: this works for another model and foreign key, for a single subquery rather than nested subqueries, and when the resulting query is evaluated. Convention: equality filtering must select the company whose annotated manager matches the wrapped instance. The fixture names, manager name, and annotation alias are test inputs, not names or values the fix must introduce.\n4. No open implementation choice is constrained. Returning self.gmbh checks ordinary query correctness, not merely suppression of the exception. A fix limited to User or the exact nested example would leave the same bug in closely related inputs and would not qualify as a reasonable correct fix.\n5. The test is a related-input regression check with no implementation-specific assertions.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should allow filtering a foreign-key-valued subquery annotation by a lazy model instance and preserve normal equality semantics, as checked by qs.get() == self.gmbh.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2825,
+  "output_tokens": 657,
+  "seconds": 17.6
+}

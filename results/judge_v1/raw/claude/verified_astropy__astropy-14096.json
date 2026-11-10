@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-14096",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8954,
+  "output": {
+    "reasoning": "Spec: when a property on a SkyCoord subclass accesses a missing attribute, the AttributeError message should name the missing attribute (random_attr), not the property (prop). The test uses the exact reproduction example and asserts that an AttributeError is raised whose message matches the regex 'random_attr'.\n\nRequirements:\n(1) The exception type is AttributeError. This is settled by convention and by the issue's traceback.\n(2) The message contains 'random_attr'. This is settled: the issue says it \"should say `random_attr` doesn't exist\".\n(3) The input is verbatim from the issue.\n\nPossible fixes include:\n- having __getattr__ re-call __getattribute__ to re-raise the original error;\n- checking whether the attribute is defined on the type;\n- chaining the original exception.\n\nThe chaining option deserves a closer look. If the fix raises a new error naming 'prop' with the original error as __cause__, the test fails, because pytest's match only checks str(exc). But that fix does not resolve the issue, since the user still sees a top-level message about 'prop'. Any fix that resolves the issue as stated puts 'random_attr' in the raised AttributeError's message. Using pytest.raises with match is a loose check.",
+    "score": 1,
+    "explanation": "The test runs the issue's exact reproduction and only requires that an AttributeError mentioning 'random_attr' is raised, which is exactly what the issue asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtQy2GRioXkvKo1dCLmv",
+  "input_tokens": 3375,
+  "output_tokens": 504,
+  "seconds": 6.5
+}

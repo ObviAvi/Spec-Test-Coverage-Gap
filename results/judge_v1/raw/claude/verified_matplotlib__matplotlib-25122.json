@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-25122",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11737,
+  "output": {
+    "reasoning": "1. Spec: in `mlab._spectral_helper`, the window correction uses `np.abs(window).sum()**2`. The `np.abs` is wrong for windows with negative values such as flattop, and scipy's implementation (`window.sum()**2`) is cited as the reference. The entry point is named.\n2. What the tests require: the public `mlab.psd` is called with a real flattop window, once with `scale_by_freq=False` and once with the default. The assertion is `spec*win.sum()**2 == spec_a*Fs*(win**2).sum()`.\n   - The `scale_by_freq=False` path must divide by `window.sum()**2` rather than `np.abs(window).sum()**2`. Settled by the spec: \"The `np.abs` is not needed\".\n   - The `scale_by_freq=True` path divides by `Fs*(window**2).sum()`. For a real window this equals the existing `(np.abs(window)**2).sum()`, so it holds whether or not the abs is removed there.\n   - The window is real, so complex-window variants such as `np.abs(window.sum())**2` give the same value.\n3. No open requirements. The test is the public psd function run on a related input (a flattop window), checking exactly the normalization the issue describes. Any fix that removes the abs, or uses scipy's form, passes.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes: replacing `np.abs(window).sum()**2` with `window.sum()**2`, as the issue requests, satisfies the graded assertion `spec*win.sum()**2 == spec_a*Fs*(win**2).sum()` for a real flattop window through public `mlab.psd`.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRMEP3uVCvzxDaMk472",
+  "input_tokens": 4652,
+  "output_tokens": 1029,
+  "seconds": 11.1
+}

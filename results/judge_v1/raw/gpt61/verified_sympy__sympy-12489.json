@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-12489",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10204,
+  "output": {
+    "reasoning": "The specification identifies incorrect class selection during construction: `_af_new` ultimately calls `Basic.__new__(Perm, perm)`, so subclasses receive base-class instances. Its proposed principle is to use the class on which creation was requested. The test requires: constructing CustomPermutation([1, 2, 3, 0]); preserving its permutation data and custom __call__ behavior, producing [2, 3]; equality with the corresponding base permutation; retaining the base object's TypeError for iterable application; exact result types for both mixed multiplication orders; and running the existing test_Permutation with the class name rebound to the subclass. Subclass construction and dispatch are settled by the reported defect. Preserving data and existing base behavior, and exercising inherited functionality on the subclass, are reasonable regression requirements. The test's uses of _array_form and _hashable_content do not independently require a new implementation detail. However, the exact mixed-multiplication result policy is open: the specification never says that the left operand must determine the result class. A reasonable subclass-supporting fix could honor cls during construction and preserve the more-derived operand type when multiplying a base permutation and a subclass instance. That would resolve the construction defect but make q * p a CustomPermutation, failing the exact base-type assertion. The gap concerns a public result-type policy, rather than a mandated internal implementation.",
+    "score": 3,
+    "explanation": "The tests require mixed multiplication to select the left operand's exact class. A reasonable fix could correctly preserve subclasses during construction and promote mixed multiplication to the more-derived class, but would fail the assertion that q * p must be exactly Permutation.",
+    "overspecification_vector": "assert type(p * q) == CustomPermutation\nassert type(q * p) == Permutation  # True because q.__mul__(p) is called!"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2393,
+  "output_tokens": 1922,
+  "seconds": 51.0
+}

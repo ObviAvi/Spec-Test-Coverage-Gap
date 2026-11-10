@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13820",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10937,
+  "output": {
+    "reasoning": "1. The specification identifies MigrationLoader.load_disk() and its rejection of packages when getattr(m, '__file__', None) is false. It explicitly requests discovering existing migrations in regular, non-namespace packages without __file__, while retaining namespace-package rejection.\n2. The test uses the existing migrations.test_migrations package through MIGRATION_MODULES, constructs MigrationLoader(connection), deletes the package's __file__, clears __spec__.origin and __spec__.has_location, and calls load_disk(). It requires disk_migrations to contain '0001_initial' and '0002_second' for the app, without imposing order. The modified attributes are subsequently restored.\n3. Loading a regular package without __file__ is directly settled by the specification: 'Django will learn how to find existing migrations.' Clearing the import-spec location metadata makes the simulated package consistent with having no file location; the specification does not promise that such packages have an alternative origin available. The loader entry point is explicitly named in the issue. MIGRATION_MODULES, connection, disk_migrations, and the two migration names provide existing loader/fixture infrastructure rather than prescribing a new implementation detail.\n4. There is no open behavioral choice that excludes a reasonable correct fix. The assertion checks discovery of the existing fixture migrations, not the namespace-detection algorithm, an ordering, or a newly introduced helper.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must allow load_disk() to discover the existing migrations in this regular package after its __file__ and file-location metadata are removed, which is exactly what the unordered migration assertion checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2424,
+  "output_tokens": 749,
+  "seconds": 17.1
+}

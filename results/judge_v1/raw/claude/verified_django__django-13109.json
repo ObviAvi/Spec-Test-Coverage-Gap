@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13109",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13026,
+  "output": {
+    "reasoning": "1. Spec: ForeignKey.validate() uses _default_manager, so values that exist only via the base manager fail validation. The proposed fix is to use _base_manager instead. The spec names the method and the location in related.py.\n\n2. What the graded tests require:\n   (a) The validation test creates an archived Author and calls full_clean on an Article that points to it; this must not raise.\n   (b) The model_forms test builds a form whose queryset is Writer._base_manager.all(), selects an archived writer, and asserts is_valid() is True and that save() works.\n\n3. Whether each requirement is settled:\n   - Both are the spec's own scenario, near-verbatim. The spec says \"the ForeignKey validation should use the _base_manager instead which does not include the default filters.\"\n   - Test (a) calls full_clean directly on a model instance with no form involved. Any fix that switches ForeignKey.validate to _base_manager passes it.\n   - Some developer might have tried a form-only approach, such as passing the form's queryset into validation. That would not follow the spec's stated suggestion, and it would leave model.full_clean still failing. Model-level validation with the base manager is what the spec asks for.\n   - The non-graded test checks that the default form still rejects archived writers. This holds regardless, because the form field's queryset uses the default manager.\n\n4. No reasonable alternative fails. The spec explicitly pins the _base_manager approach.",
+    "score": 1,
+    "explanation": "Both tests directly reproduce the issue's scenario: full_clean on an FK pointing to an object hidden by the default manager, and a form whose queryset is _base_manager.all(). Switching ForeignKey.validate to _base_manager, as the spec suggests, passes both.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR78sH5iUj9fD9nFTkc",
+  "input_tokens": 4862,
+  "output_tokens": 606,
+  "seconds": 7.2
+}

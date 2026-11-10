@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-20859",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10189,
+  "output": {
+    "reasoning": "1. The specification reports that subfig.legend() raises TypeError and asks that it \"work and produce a legend,\" allowing \"a legend per subfigure.\" It suggests checking against FigureBase but does not mandate that implementation. 2. The test creates a SubFigure and Axes, plots a labeled line, calls subfig.legend(), and asserts leg.figure is subfig. 3. The setup and successful legend creation are settled by the reproduction; changing the plotted data and label is an ordinary related input. Returning a Legend follows the existing legend API convention. However, the exact identity of the returned legend's figure attribute is open: the specification never requires it to reference the SubFigure rather than the enclosing Figure. 4. A reasonable fix could construct the legend with the enclosing Figure as its figure, while using the SubFigure's coordinate transform and legend collection to provide correctly positioned, per-subfigure legends. That resolves the reported behavior but fails the identity assertion. 5. The test therefore constrains ownership state beyond the requested functionality.",
+    "score": 4,
+    "explanation": "A reasonable fix could associate the legend with the enclosing Figure while using the SubFigure's transform and legend collection for correct placement and rendering. It would fail the required identity leg.figure is subfig, which the specification does not settle.",
+    "overspecification_vector": "assert leg.figure is subfig"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2422,
+  "output_tokens": 846,
+  "seconds": 20.1
+}

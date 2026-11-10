@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-9229",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11703,
+  "output": {
+    "reasoning": "The specification requires source documentation for type aliases to appear instead of the default “alias of ...” text, demonstrated through generated HTML and next-line multiline strings. The graded test documents `OtherAlias = Bar`, using a preceding `#: docstring` comment, through `do_autodoc(app, 'class', ...)`. It requires an exact reStructuredText result: a `py:attribute` directive, module metadata, the comment text, and particular blank lines. Displaying the supplied documentation without the default alias message is settled by the expected behavior. Class aliases and source documentation comments are reasonably related coverage; the fixture names introduce no production API requirement. However, representing the documented alias specifically as `py:attribute` is open: neither the specification nor the supplied context establishes that this directive is mandatory. A reasonable fix could preserve a class representation, emit the source documentation under `py:class`, and omit the default alias text. That would satisfy the requested documentation behavior but fail the exact-list assertion. This is an observable output-format restriction, rather than a requirement for a particular internal implementation.",
+    "score": 3,
+    "explanation": "A correct fix could display the alias’s source documentation using a `py:class` directive instead of `py:attribute`, without showing the unwanted alias message. The test rejects that valid representation by requiring an exact directive and output list.",
+    "overspecification_vector": "The exact-list assertion `assert list(actual) == [...]`, specifically the required line `'.. py:attribute:: OtherAlias'`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2838,
+  "output_tokens": 2918,
+  "seconds": 67.0
+}

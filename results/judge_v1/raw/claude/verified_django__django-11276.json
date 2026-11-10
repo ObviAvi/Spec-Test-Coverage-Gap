@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11276",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 28954,
+  "output": {
+    "reasoning": "1. The spec asks for django.utils.html.escape() to be replaced with Python's stdlib html.escape(). It explicitly names the visible consequence: \"html.escape() converts ' to &#x27 rather than &#39\", accepted as a backwards-incompatible change.\n\n2. What the graded tests require:\n- escape(\"'\") returns '&#x27;' (test_escape). The other characters (&, <, >, \") are unchanged from before.\n- Downstream outputs (template filters, form rendering, widgets, model forms, CSRF failure page, debug exception reports, admin docs) show '&#x27;' wherever a single quote was autoescaped. All of these call escape/conditional_escape internally.\n- test_escapejs is listed but its diff is not shown. It most likely fails pre-fix only through module-level side effects, and is not an extra requirement.\n\n3. Settlement:\n- The &#x27; output is settled by the spec text: \"html.escape() converts ' to &#x27 rather than &#39 ... I'll mention it as a backwards incompatible change\".\n- The downstream changes follow by convention, since the existing code routes autoescaping through django.utils.html.escape.\n- Keeping the SafeString return and lazy handling is existing behavior that a natural wrapper such as mark_safe(html.escape(str(text))) preserves.\n\n4. Open requirements: none. A fix that post-processes &#x27; back to &#39; would contradict the spec's stated outcome and its performance motivation, so it is not a reasonable reading. Any fix delegating to html.escape(text, quote=True) produces exactly the asserted outputs.",
+    "score": 1,
+    "explanation": "The spec explicitly says to use stdlib html.escape() and notes that ' becomes &#x27;, which is exactly what test_escape and all the downstream rendering assertions check.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtR2SP66TFCGK1yb3MRT",
+  "input_tokens": 12261,
+  "output_tokens": 1259,
+  "seconds": 14.2
+}

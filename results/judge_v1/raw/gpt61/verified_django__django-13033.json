@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13033",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12068,
+  "output": {
+    "reasoning": "1. The issue concerns public QuerySet.order_by(): ordering through a self-referential foreign key's '_id' field incorrectly applies the related model's default descending ordering. The specification expects an 'ASCENDING sort' for order_by('record__root_id'), independent of that default ordering.\n2. The graded test creates Authors with a self-referential editor foreign key, assigns them to Articles, and checks two orderings. order_by('author__editor_id') must return Article 1 before Article 2; order_by('author__editor') must return Article 2 before Article 1. It uses ordinary model creation, saving, filtering, and queryset evaluation, without asserting SQL structure or implementation details.\n3. The editor_id assertion is settled by the specification: it reproduces the reported traversal with renamed models and fields. The editor assertion is settled by Django's conventional distinction between ordering by a relation and ordering by its stored foreign-key value: relation ordering applies the target model's Meta.ordering, shown in the patch as ('-pk',). It is a regression check that the fix preserves ordinary relation ordering. The article labels identify the resulting order rather than impose a new naming requirement on the implementation.\n4. No open requirement rejects a reasonable correct fix. Making both forms ascending would fail the first assertion, but would also improperly change ordinary relation-ordering behavior rather than correctly distinguish the relation from its '_id' field.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should make author__editor_id order ascending while preserving author__editor's conventional use of the related model's descending default ordering.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2961,
+  "output_tokens": 796,
+  "seconds": 18.7
+}

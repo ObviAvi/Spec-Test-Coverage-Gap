@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13012",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9220,
+  "output": {
+    "reasoning": "1. The specification identifies an SQL-generation bug: wrapping a constant such as Value(3) in ExpressionWrapper must not add that constant to GROUP BY. It demonstrates ExpressionWrapper, Value(3), and IntegerField(), but does not prescribe a grouping-method implementation.\n2. The tests directly require get_group_by_cols(alias=None) to return [] for ExpressionWrapper(Value(3), output_field=IntegerField()) and exactly [expr.expression] for ExpressionWrapper(Lower(Value('f')), output_field=IntegerField()).\n3. Omitting the wrapped Value(3) from generated SQL grouping is settled by the specification. Requiring that omission specifically through get_group_by_cols() is open. Lower(Value('f')) is a related expression, but requiring its grouping result to contain the inner expression rather than the wrapper is also open; neither the specification nor the provided existing-code context establishes that representation.\n4. A reasonable fix could return no grouping columns when the wrapped expression supplies none, while retaining normal wrapper-based grouping for nonaggregate expressions that do require grouping. This fixes the reported constant case and related inputs, but returns [expr] rather than [expr.expression] for the second test. Those representations can generate equivalent SQL, so the test rejects a correct implementation based on an internal choice.\n5. The strongest mismatch is therefore an assertion about internal grouping representation, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix could omit grouping for wrapped expressions with no grouping columns while retaining the wrapper itself for other expressions. That fixes the SQL bug but fails test_non_empty_group_by, which specifically requires the inner expression rather than the wrapper.",
+    "overspecification_vector": "self.assertEqual(expr.get_group_by_cols(alias=None), [expr.expression]) in test_non_empty_group_by; direct assertions on ExpressionWrapper.get_group_by_cols() rather than generated SQL."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2102,
+  "output_tokens": 916,
+  "seconds": 21.0
+}

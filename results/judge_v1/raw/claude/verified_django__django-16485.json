@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16485",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7799,
+  "output": {
+    "reasoning": "1. Spec: `floatformat('0.00', 0)` and `floatformat(Decimal('0.00'), 0)` raise `ValueError` (prec out of range). They should not crash. The entry point is named: `floatformat`.\n2. Tests require `floatformat(\"0.00\", 0) == \"0\"` and `floatformat(Decimal(\"0.00\"), 0) == \"0\"`.\n3. The inputs are exactly the spec's reproduction examples (settled). The output value \"0\" is not stated, but it follows from convention: `floatformat` with arg 0 rounds to an integer and shows no decimal places. For example, existing behavior gives `floatformat(7.7, 0) == \"8\"`, and other zero-value tests in this file expect plain zero strings.\n4. Alternatives considered:\n   - \"0.00\" would ignore the 0-decimal argument.\n   - \"-0\" makes no sense for a positive zero.\n   - Any correct fix to the precision computation, whether clamping prec to at least 1 or special-casing zero, yields \"0\".\n   No reasonable correct fix produces a different string.",
+    "score": 2,
+    "explanation": "The tests call `floatformat` with the spec's exact inputs and assert \"0\", which is the only sensible result of formatting zero to 0 decimal places under floatformat's existing conventions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtRHoMp8wrFKEqJe9jLb",
+  "input_tokens": 2892,
+  "output_tokens": 817,
+  "seconds": 8.8
+}

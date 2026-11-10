@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-10554",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11800,
+  "output": {
+    "reasoning": "1. The specification reports a bug in union querysets. A union is ordered with order_by('order'). A derived queryset is then made with qs.order_by().values_list('pk', flat=True). Afterwards, re-evaluating the original qs crashes with 'ORDER BY position 4 is not in select list'. The symptom is that building a derived queryset corrupts the original, presumably because the combined subqueries are shared and mutated. No function is named; only the observable symptom is described.\n\n2. What the graded tests require:\n- test_union_with_values_list_and_order: on a union, calling .order_by('-pk').values_list('order', flat=True), in either call order, must return rows ordered by pk while selecting only 'order'. The same holds for multi-column ordering ('-name', 'pk'). So ordering by columns that are NOT in the values_list selection must work on a combined query, and the results must be correct.\n- test_union_with_values_list_on_annotated_and_unannotated: an existing test that must now pass. It is presumably affected by how values_list is propagated to combined queries.\n\n3. Settled versus open:\n- Settled: re-evaluating the original queryset after deriving a values_list queryset must not break. The tests do not check this directly.\n- Open: ordering a union by a column absent from the values_list selection. The spec's derived queryset explicitly clears ordering (qs.order_by()), so the spec never asks for ordering by a non-selected column. Before the fix, Django's combinator compiler raises 'ORDER BY term does not match any column in the result set' in this case.\n\n4. A natural, reasonable fix is to deep-clone combined_queries in Query.clone(), or otherwise stop the derived queryset from mutating the shared subqueries. That fully resolves the reported scenario and related ones. It does not add the non-selected ordering column to the select list of the combined query (the upstream fix's add_select_col behavior). So union_qs.order_by('-pk').values_list('order', flat=True) would still raise DatabaseError, and the graded test fails. The test pins a broader behavior that the upstream fix happened to implement. It is observable behavior through the public API, not internals.\n\n5. Score 3.",
+    "score": 3,
+    "explanation": "A fix that stops derived querysets from mutating the original's shared combined queries (e.g., cloning combined_queries in Query.clone) resolves the reported crash. It still fails test_union_with_values_list_and_order, which requires a union to support ordering by columns not in the values_list selection (e.g., order_by('-pk').values_list('order', flat=True)). That feature requires auto-adding ORDER BY columns to the combined query's select list, which the issue never asks for.",
+    "overspecification_vector": "(union_qs.order_by('-pk').values_list('order', flat=True), [-1, 6, 5, 7]), (union_qs.values_list('order', flat=True).order_by('pk'), [7, 5, 6, -1]), (union_qs.order_by('-name', 'pk').values_list('order', flat=True), [-1, 5, 7, 6]) — ordering a union by columns not in the values_list selection"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtQzd9BRuXRAyvFZsLdz",
+  "input_tokens": 4760,
+  "output_tokens": 2929,
+  "seconds": 29.6
+}

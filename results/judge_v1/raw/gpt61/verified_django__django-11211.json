@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11211",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10551,
+  "output": {
+    "reasoning": "1. The specification reports that prefetch_related() returns None for a GenericForeignKey pointing to a model with a UUID primary key, and gives Bar.objects.all().prefetch_related('foo') as the entry point. 2. The graded test creates an Article with a UUIDField primary key, assigns it to Comment.content_object_uuid, calls Comment.objects.prefetch_related('content_object_uuid'), and asserts that accessing the relation returns [article]. It imposes no query count, implementation, private API, message, or identity requirement. 3. UUID primary keys and successful GFK prefetching are directly settled by the report. Equality with the associated model instance is the conventional meaning of resolving that relation. Custom GFK field names are already demonstrated in the specification. Using TextField rather than CharField for the stored object ID is a closely related textual-storage input, reasonably covered by the requested fix. The fixture names, strings, and additional unused nullable GFK are not prescribed, but no assertion requires the implementation to recognize them specially. With one result, ordering is immaterial. 4. No reasonable correct fix would fail these requirements: restricting the repair to CharField or the example's literal field names would leave the same bug in closely related inputs. 5. The test is reasonably specified, with only a minor input variation from the reproduction.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should make the prefetched UUID-backed GenericForeignKey resolve to the associated article, as asserted by self.assertEqual([c.content_object_uuid for c in qs], [article]); using TextField for the stored ID is a closely related variation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2423,
+  "output_tokens": 782,
+  "seconds": 20.7
+}

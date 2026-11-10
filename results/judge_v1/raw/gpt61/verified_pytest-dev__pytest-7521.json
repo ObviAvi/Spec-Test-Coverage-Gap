@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7521",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11483,
+  "output": {
+    "reasoning": "The issue identifies capfd.readouterr() converting carriage returns to newlines and reproduces it with print(..., end='\\r') followed by assert out.endswith('\\r'). The graded tests use the same entry point and assertion, with '\\r' and '\\r\\n' as terminators. Preserving '\\r' is directly settled by that reproducer. Preserving '\\r\\n' is reasonably settled as a closely related input: it contains the same carriage-return character, and normalizing it to '\\n' would leave the reported newline-conversion regression unresolved for that input. The printed text 'test' imposes no additional constraint because only the terminator is asserted. There are no required internals, mocks, new names, or implementation choices. No reasonable correct fix covering the reported case and closely related inputs would fail these assertions.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix would preserve the trailing '\\r' in the reproducer and in the closely related '\\r\\n' case, satisfying assert out.endswith(nl).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2823,
+  "output_tokens": 364,
+  "seconds": 9.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16631",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9429,
+  "output": {
+    "reasoning": "1. The issue reports that rotating SECRET_KEY logs users out despite keeping the old key in SECRET_KEY_FALLBACKS. It identifies salted_hmac and AbstractBaseUser.get_session_auth_hash as likely causes, but does not prescribe session-ID rotation or automatic migration of existing authentication hashes.\n2. The test creates and logs in a standard User, then calls get_user() with a new SECRET_KEY and the old key in SECRET_KEY_FALLBACKS. It requires the same authenticated user's type and username, a changed request.session.session_key, and continued authentication after removing the fallback.\n3. Settled: accepting authentication established under the fallback key directly addresses 'made the old one available in SECRET_KEY_FALLBACKS' but users being logged out. Convention: using get_user() and checking the returned User and username are natural checks of session authentication. The particular fixture credentials and secret value impose no implementation constraint. Open: changing the session identifier and upgrading the stored authentication hash immediately are not specified. The documentation even permits sessions still using an old key to expire when that fallback is removed.\n4. A reasonable fix can validate the session authentication hash against fallback keys and update that hash using the current secret without regenerating the session identifier. This preserves authentication during rotation and after fallback removal, but fails the session_key inequality assertion. Alternatively, accepting fallback hashes without upgrading them preserves sessions while the fallback remains, then expires them when it is removed, consistent with the quoted documentation.\n5. The most restrictive assertion inspects intermediate session state and requires an unspecified session-key regeneration strategy, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix could validate fallback authentication hashes and refresh the stored hash using the current secret while retaining the existing session identifier. It would resolve the reported logout problem but fail the test's requirement that request.session.session_key change.",
+    "overspecification_vector": "self.assertNotEqual(request.session.session_key, prev_session_key)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2115,
+  "output_tokens": 1320,
+  "seconds": 31.8
+}
