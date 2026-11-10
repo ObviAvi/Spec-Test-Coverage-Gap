@@ -5,8 +5,7 @@ Overspecified (judge should say 3-4)      Fine (judge should say 1-2)
   pro_narrow_original   (2.1b)
 
 The repaired SWE-Bench Pro Verified versions are not a fine set: the repairs fixed the reported narrow
-check only, so many still carry other overspecified checks. The 12 hand-labelled pilot tasks
-(data/pilot_labels.json) were used to write the rubric, so they are kept out of every set.
+check only, so many still carry other overspecified checks.
 """
 
 import json
@@ -27,7 +26,7 @@ def _num(x: str) -> float:
     return float(x) if x not in ("", None) else float("nan")
 
 
-def openai_excluded(full: dict[str, Task], exclude: set[str]) -> list[Task]:
+def openai_excluded(full: dict[str, Task]) -> list[Task]:
     """Tasks dropped from Verified where all 3 annotators rated false_negative >= 2 (tests may reject valid
     solutions), the issue itself was clear (ensembled underspecified <= 1), and nothing else was wrong.
     The last two filters keep the label about test overspecification rather than a vague issue."""
@@ -35,7 +34,7 @@ def openai_excluded(full: dict[str, Task], exclude: set[str]) -> list[Task]:
     out = []
     for iid, row in sorted(ensembled.items()):
         annots = per.get(iid, [])
-        if (iid in exclude or row["filter_out"] != "True" or len(annots) != 3
+        if (row["filter_out"] != "True" or len(annots) != 3
                 or not all(_num(a["false_negative"]) >= 2 for a in annots)
                 or _num(row["underspecified"]) > 1 or _num(row["other_major_issues"]) > 0
                 or iid not in full):
@@ -82,7 +81,7 @@ def mean_jaccard(sets: list[frozenset]) -> float:
     return sum(len(a & b) / len(a | b) if a | b else 1.0 for a, b in pairs) / len(pairs)
 
 
-def agent_consensus(verified: dict[str, Task], exclude: set[str]) -> list[Task]:
+def agent_consensus(verified: dict[str, Task]) -> list[Task]:
     """Verified tasks where all 3 OpenAI annotators rated false_negative 0 (tests accept every valid
     solution), almost every top public agent resolves it, and the resolving patches look different from
     each other. If very different fixes all pass, the tests are not pinning one implementation."""
@@ -93,7 +92,7 @@ def agent_consensus(verified: dict[str, Task], exclude: set[str]) -> list[Task]:
           f"({len(top[-1]['resolved'])}-{len(top[0]['resolved'])} resolved)")
     resolvers = {iid: [s for s in top if iid in s["resolved"]] for iid in verified}
     candidates = [iid for iid, rs in resolvers.items()
-                  if len(rs) / len(top) >= config.CONSENSUS_MIN_RESOLVE_RATE and iid not in exclude
+                  if len(rs) / len(top) >= config.CONSENSUS_MIN_RESOLVE_RATE
                   and len(per.get(iid, [])) == 3 and all(_num(a["false_negative"]) == 0 for a in per[iid])]
     print(f"  agent_consensus: {len(candidates)} tasks with unanimous false_negative 0 and resolved by "
           f">= {config.CONSENSUS_MIN_RESOLVE_RATE:.0%}; fetching patches")
@@ -126,16 +125,14 @@ def build_all() -> dict[str, list[Task]]:
     verified_list = sources.verified_tasks()
     save_tasks(verified_list, config.TASKS / "verified.jsonl")
     verified = {t.instance_id: t for t in verified_list}
-    pilot_ids = set(json.loads((config.DATA / "pilot_labels.json").read_text(encoding="utf-8")))
-
     print("Loading full SWE-bench + OpenAI annotations...")
-    excluded = openai_excluded(sources.full_swebench_tasks(), pilot_ids)
+    excluded = openai_excluded(sources.full_swebench_tasks())
 
     print("Loading SWE-bench Pro (v1) + SWE-Bench Pro Verified...")
     pro_orig = pro_narrow(sources.pro_tasks(), sources.pro_verified_tasks())
 
     print("Selecting agent-consensus tasks from SWE-bench/experiments...")
-    consensus = agent_consensus(verified, pilot_ids)
+    consensus = agent_consensus(verified)
 
     sets = {"openai_excluded": excluded, "pro_narrow_original": pro_orig, "agent_consensus": consensus}
     for name, tasks in sets.items():

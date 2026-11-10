@@ -55,7 +55,7 @@ Built by `stcg build` into `data/validation/*.jsonl`:
 | `pro_narrow_original` | overspecified | the 75 tasks SWE-Bench Pro Verified repaired for "overly narrow tests", original SWE-bench Pro v1 versions | 75 |
 | `agent_consensus` | fine | Verified tasks where all 3 OpenAI annotators rated `false_negative = 0`, resolved by >= 90% of the top 30 submissions in SWE-bench/experiments, whose resolving patches look different (mean pairwise Jaccard of changed lines <= 0.5) | 157 |
 
-The split (`data/validation/split.json`) is by `instance_id`. 40% of the instances are sampled into dev stratified by set; everything else is test. The 12 hand-labelled pilot tasks (`data/pilot_labels.json`) were used to write the rubric and are excluded from every set. Instances already in `split.json` keep their side when sets grow, so only new instances are sampled (delete the file to redraw).
+The split (`data/validation/split.json`) is by `instance_id`. 40% of the instances are sampled into dev stratified by set; everything else is test. Instances already in `split.json` keep their side when sets grow, so only new instances are sampled (delete the file to redraw).
 
 The dev targets (Step 2.4) are recall >= 70% on overspecified and a false-flag rate <= 15% on fine, both reported with Wilson 95% intervals, per judge and for the ensemble, overall and per set.
 
@@ -73,10 +73,10 @@ stcg/            config.py, tasks.py (Task record), sources.py (downloads), prom
                  llm.py (provider clients), judging.py, metrics.py, evaluate.py,
                  validation.py (Step 2 sets + split), cli.py
 prompts/         judge_v*.txt
-data/            pilot_labels.json, tasks/verified.jsonl, validation/*.jsonl, raw/ (download cache, gitignored)
+data/            tasks/verified.jsonl, validation/*.jsonl, raw/ (download cache, gitignored)
 results/         <prompt>/raw/<judge>/*.json, eval_<split>.md/json, judgments_<split>.jsonl
 tests/           pytest, no API calls
-docs/            research draft, extra manual annotations
+docs/            next_steps.md
 ```
 
 ## Tests

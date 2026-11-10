@@ -68,7 +68,7 @@ Uses the same harness as step 5.
 
 ### 7. Write
 
-The method and validation sections can be written now. `docs/stcg_progress.html` and the draft still show numbers from an earlier round and need updating.
+The method and validation sections can be written now. The draft has no results section yet and needs the new numbers.
 
 ## Open decisions
 
