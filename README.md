@@ -29,8 +29,8 @@ python -m stcg judge --split dev --dry-run   # 2. see call count + token estimat
 python -m stcg judge --split dev         # 3. judge the dev set with both judges, then evaluate
 # 4. read results/judge_v1/eval_dev.md, copy prompts/judge_v1.txt -> judge_v2.txt, edit, rerun with --prompt judge_v2
 python -m stcg judge --split test --prompt judge_vN   # 5. once, with the frozen prompt
-python -m stcg judge --set verified --prompt judge_vN # Step 3: all 500 Verified tasks
-python -m stcg prevalence --prompt judge_vN            # Step 3 report: flag rate by repo, difficulty and agent resolve rate
+python -m stcg judge --set verified --prompt judge_vN # Step 3: all 500 Verified tasks (--set pro for the 731 Pro tasks)
+python -m stcg prevalence --set verified               # Step 3 report: flag rate by repo; for Verified also by difficulty and agent resolve rate
 ```
 
 Useful flags for `judge` / `evaluate`: `--source agent_consensus,openai_excluded`, `--ids django__django-16667`, `--judges claude,gpt61`, `--limit 5`, `--workers 8`.
@@ -74,8 +74,8 @@ stcg/            config.py, tasks.py (Task record), sources.py (downloads), prom
                  llm.py (provider clients), judging.py, metrics.py, evaluate.py,
                  validation.py (Step 2 sets + split), prevalence.py (Step 3 report), cli.py
 prompts/         judge_v*.txt
-data/            tasks/verified.jsonl, validation/*.jsonl, raw/ (download cache, gitignored)
-results/         <prompt>/raw/<judge>/*.json, eval_<split>.md/json, judgments_<split>.jsonl, prevalence_verified.md/json
+data/            tasks/verified.jsonl, tasks/pro.jsonl, validation/*.jsonl, raw/ (download cache, gitignored)
+results/         <prompt>/raw/<judge>/*.json, eval_<split>.md/json, judgments_<split>.jsonl, prevalence_<set>.md/json
 tests/           pytest, no API calls
 docs/            next_steps.md
 ```

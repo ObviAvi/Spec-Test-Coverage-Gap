@@ -90,9 +90,9 @@ def cmd_prevalence(args):
     from .judging import run_dir
     from .prevalence import prevalence
 
-    rep = prevalence(args.judges.split(","), args.prompt)
+    rep = prevalence(args.judges.split(","), args.prompt, args.set)
     print(f"flagged: {_fmt_rate(rep['flag_rate'])}")
-    print(f"report: {run_dir(args.prompt) / 'prevalence_verified.md'}")
+    print(f"report: {run_dir(args.prompt) / f'prevalence_{args.set}.md'}")
 
 
 def main(argv=None):
@@ -119,7 +119,8 @@ def main(argv=None):
             j.add_argument("--dry-run", action="store_true", help="print the call/token estimate only")
             j.add_argument("--allow-test-rerun", action="store_true")
 
-    v = sub.add_parser("prevalence", help="Step 3: flag rate on Verified and its relation to agent resolve rates")
+    v = sub.add_parser("prevalence", help="Step 3: flag rate on a benchmark; for Verified, also vs agent resolve rates")
+    v.add_argument("--set", default="verified", choices=["verified", "pro"])
     v.add_argument("--judges", default=",".join(config.PANEL))
     v.add_argument("--prompt", default="judge_v1", help="prompt version in prompts/")
 

