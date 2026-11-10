@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13417",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8807,
+  "output": {
+    "reasoning": "1. The specification identifies QuerySet.ordered as incorrect when GROUP BY suppresses Meta.ordering: it 'seems to stay truthy, even if the resulting SQL query will not have an ORDER BY clause.' The requested fix is to report ordering accurately, not to introduce ordering into those queries.\n2. The graded tests construct Tag querysets using annotate(num_notes=Count('pk')), both directly and after values('name'). Each requires qs.ordered to be exactly False, and qs.order_by('name').ordered to be exactly True. They require no mocks, private APIs, new implementation names, or particular SQL text.\n3. False for the aggregate-annotated queryset is directly settled by the reported bug. Applying the same result after values('name') is reasonably inferred: it is another closely related GROUP BY query affected by default ordering. True after explicit order_by('name') is settled by the stated purpose of the property and the existing test context, which already checks that explicit ordering makes an annotated queryset ordered. Exact boolean results also follow the existing assertIs(..., False/True) convention. The model, field, and annotation alias are ordinary inputs rather than implementation requirements.\n4. No open requirement selects among reasonable correct fixes. A fix that blindly marks all grouped queries unordered would fail the explicit-ordering assertions, but would also violate the property's specified purpose and existing behavior.\n5. Score 2: the tests extend the reproduction to a closely related query shape and include a basic explicit-ordering regression check.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should report False for these grouped queries without effective default ordering and True when order_by('name') explicitly supplies ordering; the values() variant is a closely related instance of the same bug.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2063,
+  "output_tokens": 650,
+  "seconds": 16.1
+}

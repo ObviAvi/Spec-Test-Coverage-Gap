@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14053",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10741,
+  "output": {
+    "reasoning": "1. The specification identifies duplicate yields from HashedFilesMixin.post_process() as the bug: it yields \"the same original filename multiple times,\" inflating collectstatic statistics and duplicating downstream work. It explicitly expects one result per original file rather than intermediate results.\n2. The only added assertion is assertCountEqual(stats['post_processed'], set(stats['post_processed'])). It requires the collected post-processed filenames to contain no duplicates. It imposes no ordering, particular hash, implementation strategy, new API, or mock interaction.\n3. This requirement is directly settled by the specification's objection to duplicate yields and incorrect post-processing counts. The existing stats field is the observable collection output implicated by the report, not an unspecified internal detail.\n4. There are no open requirements in the added assertion. A reasonable fix must eliminate repeated successful results for the same original file; preserving those duplicates would leave the reported bug unresolved.\n5. The test directly checks the requested behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes the added uniqueness assertion, which directly checks the specification's requirement that a file not be reported as post-processed multiple times.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2440,
+  "output_tokens": 351,
+  "seconds": 8.5
+}

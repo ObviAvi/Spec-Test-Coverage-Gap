@@ -1,0 +1,19 @@
+{
+  "task_id": "full/astropy__astropy-7441",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9249,
+  "output": {
+    "reasoning": "1. What is missing: the spec says TimeDelta should convert to `datetime.timedelta` through a new method named `to_timedelta`. It calls the inherited `to_datetime` \"useless\". It also mentions np.timedelta64 support as \"would also be great\".\n\n2. What the graded tests require:\n- `TimeDelta(timedelta_obj, format='datetime')` accepts Python timedelta input, both scalar and nested-list vector.\n- The `.datetime` attribute returns a timedelta.\n- `td.to_datetime()` returns `timedelta(days=1)`.\n- Values must be exact: `.sec == 86401.0`, `.jd == [[1,2],[3,4]]`.\n\n3. Settled vs open:\n- Converting to timedelta is settled by the spec.\n- The format name 'datetime' for TimeDelta is open. The spec never names a format, and its own naming ('to_timedelta') points toward something like 'timedelta'.\n- `to_datetime()` returning a timedelta is open and contradicts the spec. The spec says to add `to_timedelta`, not to repurpose `to_datetime`.\n- Exact numeric values follow by convention.\n\n4. Reasonable fixes that fail:\n- A developer who follows the spec literally adds `TimeDelta.to_timedelta()` and maybe a format called 'timedelta'. They might also leave `to_datetime` untouched or make it raise, since the spec calls it useless.\n- That fix fails all three graded tests: `format='datetime'` would be unknown, `.datetime` would not exist or would be wrong, and `to_datetime()` would not return a timedelta.\n- The tests therefore depend on names (format 'datetime', attribute `.datetime`, repurposed `to_datetime`) that the spec not only fails to mention but points away from.",
+    "score": 4,
+    "explanation": "The tests require a TimeDelta format named 'datetime', a `.datetime` attribute, and the inherited `to_datetime()` to return `datetime.timedelta`. The spec instead asks for a new `to_timedelta` method, so a fix implementing `to_timedelta` (and perhaps a 'timedelta' format) fails every graded test.",
+    "overspecification_vector": "TimeDelta(td, format='datetime'); td2.datetime == td; td.to_datetime() == timedelta(days=1); np.all(td2.to_datetime() == td)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGvSFYZshxzuYibKdfJ",
+  "input_tokens": 3654,
+  "output_tokens": 1072,
+  "seconds": 11.2
+}

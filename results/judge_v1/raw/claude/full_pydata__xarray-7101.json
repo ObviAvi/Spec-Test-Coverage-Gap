@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pydata__xarray-7101",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13274,
+  "output": {
+    "reasoning": "1. The spec says that after `ds.stack(...)`, calling `assign_coords` on the multi-index dimension leaves stale level names in `_coord_names`. As a result `len(ds)` goes negative and printing fails. The fix is to drop the obsolete multi-index level coord names on update. The spec says nothing about warnings.\n\n2. What the graded tests require:\n   - (a) `data.assign_coords(x=range(4))` on a multi-indexed DataArray emits a `FutureWarning` matching 'Updating MultiIndexed coordinate'.\n   - (b) The same `FutureWarning` for Dataset `assign_coords` and `assign`.\n   - (c) After `updated = data.assign_coords(x=range(4))`, `len(updated.coords) == 1`.\n\n3. Settling each requirement:\n   - (c) is settled by the spec. It expects coord names to update so that only the new coord remains ('assert set(stacked._coord_names) == {\"time\", \"lat\"}').\n   - (a) and (b) are open. The removed lines show the existing code emits `DeprecationWarning`, and the spec never mentions changing the warning category.\n\n4. A competent developer fixing only the `_coord_names` bookkeeping would leave the `DeprecationWarning` untouched.\n   - Then `pytest.warns(FutureWarning, ...)` fails, because `DeprecationWarning` is not a subclass of `FutureWarning`.\n   - The DataArray test checks only the warning category and contains no assertion about the bug at all. So any fix that doesn't independently change the warning class fails it.\n   - This is an unrelated behavior change bundled into the PR, not a detail of the reported bug.\n\n5. Every reasonable fix of the described bug fails both graded tests. They check an unrelated, unspecified change to the warning category rather than the reported behavior. Score 4.",
+    "score": 4,
+    "explanation": "A correct fix that properly drops stale multi-index level names from `_coord_names` would keep the existing `DeprecationWarning` and fail both graded tests. The tests require the warning to be a `FutureWarning`, a change the issue never mentions. The DataArray test checks only this warning class and nothing about the reported bug.",
+    "overspecification_vector": "with pytest.warns(FutureWarning, match=r\"Updating MultiIndexed coordinate\"): (replacing DeprecationWarning) in both test_dataarray.py::test_assign_coords_existing_multiindex and test_dataset.py::test_assign_coords_existing_multiindex"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGzKoU2gkNr1hMyvquT",
+  "input_tokens": 5267,
+  "output_tokens": 1436,
+  "seconds": 15.0
+}

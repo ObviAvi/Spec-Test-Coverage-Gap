@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-25601",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14103,
+  "output": {
+    "reasoning": "1. The spec says that with max_samples near zero and class_weight='balanced_subsample', RandomForestClassifier.fit fails with an unhelpful IndexError. It explicitly allows two expected results: \"EITHER: No error is thrown OR ValueError: insufficient samples for max_samples value\". It also says \"it might be useful to have a minimum of one sample, or it might be useful to fail gracefully with a more descriptive error.\"\n2. The graded test (balanced_subsample case) loads the wine data and builds RandomForestClassifier(n_estimators=10, max_samples=1e-4, class_weight='balanced_subsample', random_state=0). It then calls fit and requires that no exception is raised.\n3. The input is the reproduction example, so it is settled. The required behavior, fit succeeding, is open. The spec names two acceptable outcomes and the test pins one of them.\n4. A competent developer could take the second option the spec offers: validate in fit and raise ValueError(\"insufficient samples for max_samples value\") when round(n_samples * max_samples) < 1. That fix fails the graded test, because fit raises. A fix that rounds up to at least one sample passes.\n5. The test checks observable external behavior but chooses one of two outcomes the spec explicitly endorses, so the score is 3.",
+    "score": 3,
+    "explanation": "The spec explicitly allows either no error or a descriptive ValueError. A fix that raises ValueError for a too-small max_samples would fail, because the test requires fit() to succeed, which in practice means clamping the bootstrap sample count to at least 1.",
+    "overspecification_vector": "forest = RandomForestClassifier(n_estimators=10, max_samples=1e-4, class_weight=class_weight, random_state=0); forest.fit(X, y)  -- requires fit to succeed (round to >=1 sample) rather than raise a descriptive ValueError"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH28EFfBb6x2fJHVx6D",
+  "input_tokens": 5390,
+  "output_tokens": 833,
+  "seconds": 8.7
+}

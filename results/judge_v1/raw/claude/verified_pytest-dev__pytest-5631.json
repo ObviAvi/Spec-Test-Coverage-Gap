@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-5631",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10776,
+  "output": {
+    "reasoning": "1. The specification says that during collection, `num_mock_patch_args` evaluates `p.new in sentinels`. That uses equality, so when `p.new` is an array the comparison yields an array and raises ValueError. The symptom is a collection error for `@patch(..., new=<array>)`.\n\n2. What the test requires: an end-to-end inline run of a test file whose `@patch` uses `new=` set to an object whose `__eq__` raises ValueError, as numpy does. The run must collect and pass one test. It references no private API, new name, or message.\n\n3. Each requirement:\n- Collection must not trigger an equality comparison that raises. This is settled by the spec: \"p.new is an array and the check: 'p.new in sentinels' returns an array of booleans instead of a boolean which causes the ValueError.\"\n- The test must be collected and pass. This is settled as basic regression behavior.\n- Using an object that raises in `__eq__` instead of real numpy is a closely related input. It is the generalized form of the reported bug.\n\n4. Reasonable fixes and how they fare:\n- An identity check, e.g. `any(p.new is s for s in sentinels)`, passes.\n- A try/except around the comparison that treats ValueError as \"not a sentinel\" also passes.\n- Only a fix that special-cases `numpy.ndarray` by isinstance would fail. That fix patches the literal example and leaves the same bug for numpy-like objects, so it does not count as reasonable.",
+    "score": 2,
+    "explanation": "The test only checks that a patch whose `new` object raises on `__eq__` (numpy-like) is collected and runs successfully, which is exactly the reported bug generalized to closely related inputs; identity comparison or exception handling both pass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFh8wH2waLRAQCnMonP",
+  "input_tokens": 4102,
+  "output_tokens": 881,
+  "seconds": 9.6
+}

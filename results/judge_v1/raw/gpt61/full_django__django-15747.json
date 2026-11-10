@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15747",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12371,
+  "output": {
+    "reasoning": "1. The specification identifies QuerySet.update() as the entry point and says updating stored fields should not fail merely because the queryset is ordered by an annotation: it works when sorted by a core field but raises FieldError for an annotated field.\n2. The graded nonaggregate test creates Foo/Bar objects, annotates abs_id=Abs('m2m_foo'), orders by that alias, calls update(x=3), and requires the stored x to equal 3. This is reasonably settled as a closely related instance of the reported bug. The particular alias and value are ordinary test inputs, not required implementation details.\n3. The graded aggregate test calls annotate(m2m_count=Count('m2m_foo')).order_by('m2m_count').update(x=2). It requires FieldError and the exact message 'Cannot update when ordering by an aggregate: Count(Col(update_bar_m2m_foo, update.Bar_m2m_foo.foo))'. Both the requirement to reject this update and its precise diagnostic are open: the specification establishes neither, and its example itself includes Count annotations. The supplied existing-code context establishes no such error contract.\n4. A reasonable fix could discard aggregate ordering when executing the update while retaining the queryset's selection criteria, allowing the update to succeed. That would resolve the reported problem but fail the aggregate test. Even a fix that reasonably rejects unsupported aggregate ordering with a different clear message would fail. These are observable behavior and diagnostic choices tested through the specified public entry point, not implementation-state requirements.",
+    "score": 3,
+    "explanation": "The aggregate test requires an unspecified failure policy and exact error text. A reasonable fix that removes irrelevant aggregate ordering and successfully performs the update—or rejects it with a different clear diagnostic—would fail this test.",
+    "overspecification_vector": "test_update_ordered_by_m2m_aggregation_annotation: `with self.assertRaisesMessage(FieldError, msg):` around `Bar.objects.annotate(m2m_count=Count(\"m2m_foo\")).order_by(\"m2m_count\").update(x=2)`, with the required message `Cannot update when ordering by an aggregate: Count(Col(update_bar_m2m_foo, update.Bar_m2m_foo.foo))`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2884,
+  "output_tokens": 998,
+  "seconds": 22.4
+}

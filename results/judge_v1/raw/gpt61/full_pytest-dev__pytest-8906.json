@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pytest-dev__pytest-8906",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9286,
+  "output": {
+    "reasoning": "1. The issue concerns misleading guidance when pytest.skip is called at module level without allow_module_level=True. It explicitly proposes explaining allow_module_level in the error message or adding a module-skipping API; it does not prescribe replacement wording. 2. The graded test uses the existing pytester.runpytest() harness and result.stdout.fnmatch_lines() to require an output line containing the exact substring 'Using pytest.skip outside of a test will skip the entire module'. No new input, mock, or implementation API is introduced. 3. Improving module-level skipping guidance is settled by the specification, particularly 'Explain skip with allow_module_level in the error message'. The required substring is open: neither the specification nor the existing context establishes it as mandatory. 4. A reasonable fix could instead report 'To skip a module during collection, use pytest.skip(reason, allow_module_level=True)' and explain why skip markers cannot prevent imports. That directly addresses the reported problem but fails the substring assertion. 5. This is an externally observable wording restriction, so the appropriate score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could clearly recommend pytest.skip(..., allow_module_level=True) using different wording. The test rejects it unless stdout contains the particular phrase 'Using pytest.skip outside of a test will skip the entire module', which the specification never requires.",
+    "overspecification_vector": "+        [\"*Using pytest.skip outside of a test will skip the entire module*\"]"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2152,
+  "output_tokens": 565,
+  "seconds": 12.5
+}

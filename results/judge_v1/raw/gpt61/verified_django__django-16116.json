@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16116",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8461,
+  "output": {
+    "reasoning": "The specification asks for makemigrations --check to exit without creating migrations. The test uses the specified command with an app requiring migrations; the SystemExit expectation is existing behavior. The added assertion requires the temporary migration directory itself not to exist. Preventing migration-file creation is settled by \"without making migrations,\" but prohibiting even an empty output directory is not explicitly settled. A reasonable fix could retain output-directory preparation while skipping migration-file writes in check mode and preserving the nonzero exit. That would resolve migration generation but fail the added assertion. The additional constraint concerns observable filesystem behavior, not an internal implementation detail.",
+    "score": 3,
+    "explanation": "A fix could suppress migration-file writes while leaving an empty migration directory created during output preparation. The test rejects that fix because it requires the directory itself to be absent, rather than merely requiring that no migrations were created.",
+    "overspecification_vector": "self.assertFalse(os.path.exists(tmpdir))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1894,
+  "output_tokens": 2199,
+  "seconds": 52.1
+}

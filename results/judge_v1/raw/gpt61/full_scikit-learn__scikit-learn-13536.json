@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13536",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8982,
+  "output": {
+    "reasoning": "The issue asks for a friendly error that explicitly describes the step-name-prefixed format for passing sample_weight to Pipeline.fit. The test's make_pipeline(LogisticRegression()) setup and fit([[0], [0]], [0, 1], sample_weight=[1, 1]) call are settled by the reproduction example. Requiring ValueError is consistent with the existing traceback and invalid-argument convention. However, requiring the message to match 'Pipeline.fit does not accept the sample_weight parameter' is open: the specification prescribes the information to convey, not that wording. A reasonable fix could validate unprefixed fit parameters generally and raise ValueError('Pass sample_weight using <step_name>__sample_weight, for example logisticregression__sample_weight.'). This supplies the requested guidance but fails the test's message match. The constraint concerns observable error wording, not implementation internals.",
+    "score": 3,
+    "explanation": "The test requires a particular message substring that the specification never mandates. A correct fix explaining 'Pass sample_weight using <step_name>__sample_weight, for example logisticregression__sample_weight' would fail despite providing the requested guidance.",
+    "overspecification_vector": "pytest.raises(ValueError, match=\"Pipeline.fit does not accept \" \"the sample_weight parameter\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2110,
+  "output_tokens": 431,
+  "seconds": 9.8
+}

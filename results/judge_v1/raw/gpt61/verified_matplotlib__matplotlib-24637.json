@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24637",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10823,
+  "output": {
+    "reasoning": "The specification reports that AnnotationBbox.set_gid() retains the gid but saving to SVG omits it, preventing the image from being located by that identifier. The test exercises the specified public path: construct an OffsetImage and AnnotationBbox, set its gid, add it to an Axes, and call savefig(format='svg'). Its positioning, arrow, and zoom settings reproduce the example; the generated image and different gid are ordinary input variations. Preserving the supplied gid in the SVG is settled by the request. However, the assertion requires the exact substring '<g id=\"a test for issue 20044\">'. The specification does not settle whether the identifier must belong to a wrapping SVG group rather than the image element itself. A reasonable fix could propagate the AnnotationBbox gid to the rendered image, making that image accessible by the requested identifier without emitting this group tag. Such a fix would fail the assertion despite resolving the reported problem. This is a restriction on externally observable SVG structure, not a private implementation requirement.",
+    "score": 3,
+    "explanation": "A reasonable fix could put the AnnotationBbox gid directly on the SVG image element, allowing the user to locate the image as requested. The test would reject it because it specifically requires a wrapping <g> element with that id.",
+    "overspecification_vector": "expected = '<g id=\"a test for issue 20044\">'\nassert expected in buf"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2524,
+  "output_tokens": 1653,
+  "seconds": 36.9
+}

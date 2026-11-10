@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11749",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10018,
+  "output": {
+    "reasoning": "1. The specification identifies call_command() as the entry point: kwargs supplying a member of a required mutually exclusive group incorrectly trigger the group's missing-argument error. 2. The test requires call_command('mutually_exclusive_required', foo_id=1) and the corresponding foo_name='foo' call to succeed, with those option names reaching the command's handler. These are settled by the reported shop_id example and the requirement to support either member of the group; argparse's hyphen-to-underscore destination mapping is conventional. The test asserts only option-name presence, not output ordering or an implementation detail. 3. Calling the command without either option must still raise CommandError with 'Error: one of the arguments --foo-id --foo-name is required'. This is a basic regression check for required=True, preserving the existing parser error illustrated explicitly in the specification, with the fixture's option names substituted. No mocks, private methods, or new implementation interfaces are required. 4. There are no open requirements that reject a reasonable correct fix: the additional case preserves required-group validation rather than prescribing a new behavior.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should accept either group member through kwargs while preserving the existing required-group error when neither is supplied; the tests check those behaviors without constraining the implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2270,
+  "output_tokens": 640,
+  "seconds": 18.6
+}

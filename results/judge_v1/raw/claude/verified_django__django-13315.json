@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13315",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10910,
+  "output": {
+    "reasoning": "1. Spec: a ForeignKey `limit_choices_to` Q object that involves a join can produce duplicate options in the form field. No function is named; the symptom is duplicate choices in the formfield queryset.\n2. Test requirements:\n   - Build a ModelForm over a model with three fields:\n     - an FK with a Q `limit_choices_to` across reverse relations;\n     - an FK with the equivalent dict;\n     - an M2M with the Q.\n   - Assert, order-independently (assertCountEqual), that each field's queryset is exactly [marley, threepwood], with no duplicates.\n   - The models.py changes (related names, the `funny` field) live in the test patch, so the fix does not need to supply them.\n3. Settlement:\n   - FK with Q: no duplicates — settled by the spec.\n   - Dict form: closely related input, since the same join occurs. Duplicate-free results are the obvious expectation.\n   - M2M field: closely related. Django applies `limit_choices_to` through the shared `apply_limit_choices_to_to_formfield` path, so a fix there covers FK, M2M, Q and dict alike.\n   - The asserted result set is the semantically correct one, and order is not checked.\n4. Possible fixes: `.distinct()` after `complex_filter`, or an Exists/subquery filter. Both pass. The only fix that would fail is one that special-cases Q objects on FK only, and that leaves the same bug in closely related inputs, so it does not count as reasonable.",
+    "score": 2,
+    "explanation": "The tests only check that formfield querysets under join-based `limit_choices_to` (Q or dict, FK or M2M) contain each matching object once, order-independently, and any correct dedup fix in the shared limit-choices path passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGtBM42uXR1mC1yTMqj",
+  "input_tokens": 4059,
+  "output_tokens": 1046,
+  "seconds": 11.4
+}

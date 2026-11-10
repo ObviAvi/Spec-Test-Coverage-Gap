@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-25931",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10733,
+  "output": {
+    "reasoning": "1. The specification says that fitting IsolationForest on a DataFrame with contamination != 'auto' wrongly raises the feature-names UserWarning. The entry point is fit().\n2. The graded test fits IsolationForest(random_state=0, contamination=0.05) on a 4-row, single-column DataFrame and turns every UserWarning into an error.\n3. Requirements and how each is settled:\n- fit with contamination=0.05 on a DataFrame raises no warning: settled by the spec, whose repro is near-verbatim.\n- No UserWarning of any kind is raised: open in principle. However, a correct fix (for example, computing the offset via an internal score path that skips validation, or passing the already-validated data without the feature-name check) would not introduce other UserWarnings.\n- One wrinkle: the data has 4 samples while max_samples='auto' is 256. That case sets max_samples to min(256, n_samples) without warning; only an explicit int larger than n_samples warns. The test passed after the original fix, so the baseline emits no other UserWarnings.\n4. No reasonable fix would emit a different UserWarning here.",
+    "score": 1,
+    "explanation": "The test replicates the issue's reproduction (fit IsolationForest with contamination=0.05 on a DataFrame) and asserts that no UserWarning is raised, which is exactly the expected result in the spec.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGnsZLcVjxrhV35q4oT",
+  "input_tokens": 4123,
+  "output_tokens": 478,
+  "seconds": 6.1
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-6461",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8475,
+  "output": {
+    "reasoning": "1. The issue identifies xr.where failing when its second argument is a scalar and keep_attrs=True, raising IndexError. 2. The added test calls that same public function with the existing condition, scalar branches 1 and 0, and keep_attrs=True; it requires successful completion and actual.attrs == {}. 3. The call and absence of an exception are directly settled by the issue title and reproduction. The empty attributes follow from the attribute-source rule stated in the supplied traceback: 'keep the attributes of x, the second parameter, by default'. A Python integer has no attributes to preserve, so an empty attribute mapping is the conventional result. 4. No material requirement remains open: copying attributes from the condition instead would contradict the stated second-argument rule, not merely choose another equally valid crash fix. 5. Score 2 because the empty-attributes assertion is a straightforward inference rather than an explicitly stated expected result.",
+    "score": 2,
+    "explanation": "Every reasonable fix preserving the stated second-argument attribute semantics should make xr.where(cond, 1, 0, keep_attrs=True) succeed with an empty attrs mapping, as the test asserts.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1986,
+  "output_tokens": 708,
+  "seconds": 15.4
+}

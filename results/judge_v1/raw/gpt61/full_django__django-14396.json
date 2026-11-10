@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-14396",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10987,
+  "output": {
+    "reasoning": "1. The specification requests changing Sitemap.protocol's default to HTTPS, \"slowly with a clear deprecation timeline.\" It settles the eventual default and a phased transition, but names no protocol-resolution method, warning text, or release number.\n2. The sole graded test constructs GenericSitemap({'queryset': None}), calls sitemap.get_protocol() without arguments, and requires RemovedInDjango50Warning containing the prescribed message about changing from HTTP to HTTPS in Django 5.0 and setting Sitemap.protocol to silence it. The other added tests, including the assertion that the current default remains HTTP, are not graded.\n3. Applying the transition to GenericSitemap is a reasonable related case. Some deprecation notification is reasonably implied by the requested gradual transition. However, requiring a callable get_protocol() that emits the warning is open: neither that method nor the warning's emission point is specified. The Django 5.0 deadline, corresponding warning category, and prescribed message text are also not settled by the supplied evidence.\n4. A reasonable fix could retain HTTP during a documented transition and emit a deprecation warning when the default protocol is selected during Sitemap.get_urls(), without introducing get_protocol() or making that helper emit warnings. That fixes the actual sitemap-generation behavior but fails this direct helper call. A warning with different clear wording would also fail the message assertion.\n5. The method-specific requirement makes this significantly overspecified, beyond the additional externally observable wording constraint.",
+    "score": 4,
+    "explanation": "A correct phased transition could warn during Sitemap.get_urls() when the default protocol is used, without providing a warning-emitting get_protocol() method. The graded test requires that unspecified method and emission point, as well as particular warning wording and a Django 5.0 deadline.",
+    "overspecification_vector": "sitemap.get_protocol() inside with self.assertWarnsMessage(RemovedInDjango50Warning, msg); msg = \"The default sitemap protocol will be changed from 'http' to 'https' in Django 5.0. Set Sitemap.protocol to silence this warning.\""
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2513,
+  "output_tokens": 1258,
+  "seconds": 28.4
+}

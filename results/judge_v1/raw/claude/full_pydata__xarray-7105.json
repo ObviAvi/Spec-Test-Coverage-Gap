@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pydata__xarray-7105",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 69322,
+  "output": {
+    "reasoning": "1. The spec reports that `mda.groupby(\"one\")` on a multi-index level coordinate groups by the full multi-index tuples rather than by the level values. It shows the symptom only, through the `groupby(...).groups` entry point, and names no internal function.\n2. What the graded tests require:\n   (a) `from xarray.core.indexes import safe_cast_to_index` as a module-level import in test_indexes.py. Every test in that file, including `test_safe_cast_to_index`, fails unless the function exists in `xarray.core.indexes`.\n   (b) In test_utils.py, `safe_cast_to_index` is no longer tested via `utils` and the related imports are removed. This implies a refactor that moves the function out of `xarray.core.utils`.\n   (c) `test_to_index_multiindex_level` requires `ds.one.variable.to_index()` to equal `midx.get_level_values(\"one\")`. This exercises `IndexVariable.to_index` on a level coordinate.\n   (d) Hundreds of existing tests in test_dataset and test_variable are listed as fail-to-pass, apparently because of import-structure changes from the relocation.\n3. Settlement of each requirement:\n   - (a) and (b) are open. The spec never mentions `safe_cast_to_index` or any module reorganization.\n   - (c) is loosely related to the bug, since groupby relies on converting the level variable to an index. However, it tests `IndexVariable.to_index` directly rather than groupby, which is a different code path.\n4. A competent developer could fix `groupby` correctly, for example by having the grouper extract level values from the multi-index, or by fixing `to_index` while leaving `safe_cast_to_index` in `xarray.core.utils`. Such a fix fails the entire test_indexes.py module with an ImportError, and likely the other listed modules as well. A groupby-specific fix that does not touch `IndexVariable.to_index` would also fail (c).\n5. The tests depend on an unspecified relocation of an internal helper and on a different code path, so this is significantly overspecified.",
+    "score": 4,
+    "explanation": "A correct groupby fix that leaves `safe_cast_to_index` in `xarray.core.utils` fails all of test_indexes.py, because the tests require it to be importable from `xarray.core.indexes`, a refactor the issue never mentions. The tests also check `IndexVariable.to_index()` directly instead of the groupby behavior the issue reports.",
+    "overspecification_vector": "test_indexes.py: `from xarray.core.indexes import (..., safe_cast_to_index,)` and `test_safe_cast_to_index` calling `safe_cast_to_index(array)`; test_variable.py: `assert ds.one.variable.to_index().equals(midx.get_level_values(\"one\"))`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGzr3tUVtYnRSGu4Zhi",
+  "input_tokens": 32403,
+  "output_tokens": 1405,
+  "seconds": 13.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13964",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11148,
+  "output": {
+    "reasoning": "The specification identifies a stale foreign-key value when an initially empty CharField primary key is assigned through the related object, followed by saving the related object and then the referencing object. It explicitly expects 'product_id being populated with product.sku.' The graded test reproduces this sequence using ParentStringPrimaryKey and ChildStringPrimaryKeyParent: construct an empty related object, attach it, set child.parent.name to 'jeff', then call parent.save() and child.save(). These requirements are settled by the reproduction; the fixture names, field length, and string value introduce no additional behavior. Passing the relation through the model constructor instead of a subsequent assignment is conventional model initialization, not a different requested behavior. After refresh_from_db(), child.parent_id must equal parent.name, directly checking the specified persisted foreign-key correction. The child.parent equality assertion checks the same relationship through normal model equality. Refreshing simply verifies persistence rather than prescribing an implementation or intermediate state. There are no open requirements that a reasonable correct fix could violate.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must persist the newly assigned string primary key as the foreign-key value, which is exactly what the parent_id and reloaded relationship assertions verify.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2511,
+  "output_tokens": 550,
+  "seconds": 14.8
+}

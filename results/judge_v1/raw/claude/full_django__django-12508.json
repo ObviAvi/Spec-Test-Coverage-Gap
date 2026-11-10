@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-12508",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16858,
+  "output": {
+    "reasoning": "1. The spec asks for a `-c SQL` option on `./manage.py dbshell` so a SQL command can be run directly. The natural entry point is the dbshell management command. No internal API is named.\n\n2. What the graded tests require:\n- MySQL: `DatabaseClient.settings_to_cmd_args(settings, parameters)` takes a new second positional argument. Arbitrary parameters such as `['--help']` are appended to the command line.\n- PostgreSQL: `DatabaseClient.runshell_db(dbinfo, parameters)` takes a new required positional argument, and `runshell_db({}, [])` is called in the SIGINT test.\n- SQLite: `client.runshell(parameters)` takes a list of raw parameters, and `['-help']` is appended after the db path.\n- `CommandError(returncode=3)` must exist, and `SystemExit.code` must equal 3 when run from the command line.\n\n3. Settlement:\n- The spec never mentions passing arbitrary raw parameters through to the shell; it asks for `-c SQL`. The upstream fix actually implemented `dbshell -- <params>` passthrough, which is a different design from the spec.\n- The new `parameters` argument on `settings_to_cmd_args`, `runshell_db` and `runshell` is open. These are internal client methods.\n- `CommandError`'s `returncode` keyword is entirely unmentioned, so it is open.\n\n4. A reasonable fix that fails:\n- A developer could implement `-c SQL` exactly as specified: add `--command`/`-c` to dbshell and translate it per backend (`psql -c`, `mysql -e`, `sqlite3 db \"SQL\"`, or piping via stdin), passing it as `runshell(command=sql)` or through stdin.\n- That fix fails every graded test, because the tests require a positional raw `parameters` list on internal methods.\n- It also fails the `user_commands` test, which needs `CommandError(returncode=...)` and a matching `SystemExit` code, a feature the spec never mentions.\n\nThe tests target unmentioned internal signatures and a different feature design, so this is a 4.",
+    "score": 4,
+    "explanation": "The tests require a new positional `parameters` list on internal backend methods (`settings_to_cmd_args(settings, parameters)`, `runshell_db(dbinfo, parameters)`, `runshell(parameters)`) that appends raw args such as `--help`. They also require a `CommandError(returncode=...)` keyword that sets the `SystemExit` code; none of this is in a spec that asks only for a `-c SQL` option. A fix that implements `-c` by translating SQL to `psql -c`/`mysql -e`/stdin, without these signature changes, fails every graded test.",
+    "overspecification_vector": "DatabaseClient.settings_to_cmd_args(connection_settings, parameters); DatabaseClient.runshell_db(dbinfo, parameters) / runshell_db({}, []); client.runshell(parameters) expecting ['sqlite3', 'test.db.sqlite3', '-help'] and ['psql', 'dbname', '--help']; raise CommandError(returncode=3) with assertEqual(cm.exception.returncode, 3) and assertEqual(cm.exception.code, 3)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFn17sQF88CT2DhBWQH",
+  "input_tokens": 6686,
+  "output_tokens": 1366,
+  "seconds": 13.4
+}

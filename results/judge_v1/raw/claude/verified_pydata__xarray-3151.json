@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-3151",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10554,
+  "output": {
+    "reasoning": "1. Spec: `combine_by_coords` raises 'does not have monotonic global indexes along dimension y' when the bystander coordinate y is identical across datasets but non-monotonic. The docs say coordinate dimensions that do not vary between datasets should be ignored. The named entry point is `xr.combine_by_coords`.\n2. Test requirements: calls the public `combine_by_coords((ds1, ds2))` on the MCVE input (y=['a','c','b'], x=[1,2,3] and [4..7]). It asserts `assert_identical` with an expected Dataset where x is concatenated to [1..7], data is stacked in order, and y keeps its original order ['a','c','b'].\n3. Settlement:\n- No error: settled ('combine_by_coords should return without error').\n- Concatenation along x in order: settled by existing behaviour and the meaning of combine_by_coords.\n- y preserved unchanged: settled by the docs quote that identical coordinate dimensions are 'ignored', so y should be left as is.\n4. Alternatives: a fix that reorders or sorts y would contradict 'ignored' and would alter the data layout, so it is not reasonable. Any fix that skips the monotonicity check for non-concatenated dimensions, or checks only the concat dims, yields exactly the expected Dataset. No reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "The test runs the issue's MCVE through the public `combine_by_coords` and checks that the result is the natural concatenation along x, with the identical y coordinate left untouched, which is the only reasonable outcome given the documented 'ignored' semantics.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFmMiLYiYztUFsVVx9T",
+  "input_tokens": 4165,
+  "output_tokens": 793,
+  "seconds": 8.8
+}

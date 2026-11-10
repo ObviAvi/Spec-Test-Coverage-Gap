@@ -1,0 +1,18 @@
+{
+  "task_id": "full/matplotlib__matplotlib-24924",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9474,
+  "output": {
+    "reasoning": "The specification identifies Figure.set_tight_layout(False) failing to disable tight layout, with a reproduction using plt.subplots(), set_tight_layout(True), set_tight_layout(False), and get_tight_layout(). Those operations and assertions are directly settled. Re-enabling tight layout afterward is a reasonable regression check for the reported inability to toggle it. Both tests also require at least one PendingDeprecationWarning during their respective sequences; the issue does not specify warnings, but a targeted fix need not change the setters' existing warning behavior. The additional set_constrained_layout(True/False/True) sequence and get_constrained_layout() assertions are open: the specification never mentions constrained layout. A reasonable fix can correct falsey handling for all supported inputs to set_tight_layout, following the issue's suggested set_layout_engine(None) approach, without modifying set_constrained_layout. That resolves the specified bug but leaves test_constrained_toggle failing. This is an additional function/code path rather than another input to the reported function.",
+    "score": 4,
+    "explanation": "A reasonable fix confined to Figure.set_tight_layout can fully restore tight-layout toggling while leaving Figure.set_constrained_layout unchanged. The graded test additionally requires constrained-layout toggling to be fixed, although that separate entry point is not implicated by the specification.",
+    "overspecification_vector": "test_constrained_toggle: fig.set_constrained_layout(True); assert fig.get_constrained_layout(); fig.set_constrained_layout(False); assert not fig.get_constrained_layout(); fig.set_constrained_layout(True); assert fig.get_constrained_layout()"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2200,
+  "output_tokens": 1155,
+  "seconds": 25.2
+}

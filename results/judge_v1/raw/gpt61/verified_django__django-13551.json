@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13551",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11570,
+  "output": {
+    "reasoning": "1. The issue requires rejecting an unused password-reset token after the user's email changes, and explicitly identifies PasswordResetTokenGenerator._make_hash_value() as the place to incorporate email. It also notes that AbstractBaseUser does not require an email.\n2. The added graded test creates User and CustomEmailField instances, calls PasswordResetTokenGenerator.make_token() and check_token(), checks that the fresh token is valid, changes the configured email field, saves, and checks that the original token is invalid. Inputs include ordinary email strings and an initial None value. No particular token contents, hash format, or implementation calls are asserted.\n3. Rejection after an email change is directly settled by the specification. Fresh-token validity is a basic regression requirement. Respecting the custom EMAIL_FIELD/get_email_field_name() configuration is supported by the existing model interface shown in the patch. Handling an initially null email is a reasonable related-input check, especially given the specification's explicit warning about optional email support.\n4. These related inputs do not introduce a reasonable alternative outcome: changing the configured email must invalidate the token, including when the previous value was null. Factoring token hashing onto the model, as suggested in the issue, would also pass if it preserved this behavior. The separately listed test_token_with_different_secret has no body or added assertions supplied here, so it provides no visible evidence of an additional restrictive requirement.",
+    "score": 2,
+    "explanation": "The tests check the specified invalidation behavior through the token generator's normal API, with reasonable custom-email-field and null-email coverage; they do not require a particular implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2660,
+  "output_tokens": 873,
+  "seconds": 20.5
+}

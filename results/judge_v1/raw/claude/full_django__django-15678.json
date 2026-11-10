@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-15678",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9804,
+  "output": {
+    "reasoning": "1. The spec says CryptPasswordHasher should be deprecated in Django 4.1 and removed in 5.0. It names the class but gives no warning text and does not say where the warning should be emitted.\n2. The graded test requires three things. (a) A RemovedInDjango50Warning is raised when get_hasher(\"crypt\") is called with PASSWORD_HASHERS set to CryptPasswordHasher. (b) The warning message contains the exact substring \"django.contrib.auth.hashers.CryptPasswordHasher is deprecated.\" (c) The warning fires on instantiation or lookup, not on encode/verify.\n3. (a) The warning category is settled by Django convention: \"remove in Django 5.0\" maps to RemovedInDjango50Warning. (b) The message is open; the spec gives no wording. (c) Emitting at instantiation is a natural choice but is open; warning in encode()/verify() is also plausible.\n4. A developer could write warnings.warn(\"CryptPasswordHasher is deprecated and will be removed in Django 5.0.\", RemovedInDjango50Warning). That message lacks the full dotted path, so assertRaisesMessage's substring check fails. A developer could also emit the warning only in encode()/verify(), and get_hasher alone would not trigger it. The exact message wording is the most direct mismatch.\n5. The test pins an arbitrary but externally observable message, so the score is 3.",
+    "score": 3,
+    "explanation": "The test requires the warning message to contain exactly \"django.contrib.auth.hashers.CryptPasswordHasher is deprecated.\" and to be raised at get_hasher()/instantiation time. A correct deprecation with different wording, such as \"CryptPasswordHasher is deprecated.\" without the full dotted path, fails.",
+    "overspecification_vector": "msg = \"django.contrib.auth.hashers.CryptPasswordHasher is deprecated.\"; with self.assertRaisesMessage(RemovedInDjango50Warning, msg): get_hasher(\"crypt\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGxn6xQbLKofpLmaa4K",
+  "input_tokens": 3813,
+  "output_tokens": 1164,
+  "seconds": 12.3
+}

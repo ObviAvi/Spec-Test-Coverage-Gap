@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-7760",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10912,
+  "output": {
+    "reasoning": "1. The specification asks for a new config option for the coverage extension. With it enabled, missing coverage would be printed as warnings (to stdout or stderr) as well as written to the .txt files. The suggested name is `coverage_print_missing_as_warning`.\n\n2. What the graded tests require:\n- The config name `coverage_show_missing_items`.\n- When not quiet: status output containing exact table-formatted lines such as 'py  function  raises', 'py  class     Base', 'py  method    Class.roger', and 'c   api       Py_SphinxTest [ function]'.\n- When `app.quiet` is set: warning output containing exact strings such as 'undocumented python function: autodoc_target :: raises' and 'undocumented c api: Py_SphinxTest [function]'.\n\n3. How each requirement is settled:\n- Config name: open. The spec suggests `coverage_print_missing_as_warning`, but the test uses `coverage_show_missing_items`. A fix that follows the spec's name would fail.\n- Output formats: open. Both the column-aligned status table and the '::'-separated warning messages are arbitrary choices.\n- Routing: open. Sending output to status when not quiet and to warnings only when `app.quiet` is set is arbitrary. The spec asks for warnings, so a fix that always emits warnings fails the non-quiet test, which checks status.\n\n4. A reasonable fix would use the spec-suggested name `coverage_print_missing_as_warning`, always call `logger.warning` with something like 'undocumented python function autodoc_target.raises', and fail both tests. The new config name, which the spec contradicts, is the decisive problem.",
+    "score": 4,
+    "explanation": "The tests require a config option named `coverage_show_missing_items`, which differs from the spec's suggested `coverage_print_missing_as_warning`. They also require exact table-formatted status output in non-quiet mode and exact '::'-separated warning messages only in quiet mode, none of which the spec states.",
+    "overspecification_vector": "confoverrides={'coverage_show_missing_items': True}; \"py  function  raises\" / \"c   api       Py_SphinxTest [ function]\" in status; \"undocumented python function: autodoc_target :: raises\" in warning; app.quiet-based routing between status and warning"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH29FXTCZcfsMS6BDtU",
+  "input_tokens": 4135,
+  "output_tokens": 782,
+  "seconds": 8.6
+}

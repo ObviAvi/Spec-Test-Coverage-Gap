@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16819",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7816,
+  "output": {
+    "reasoning": "1. The specification says the migration optimizer should reduce AddIndex/RemoveIndex operations. It names the operations and the optimizer, and the natural reading is that an AddIndex followed by a RemoveIndex of the same index cancels out.\n\n2. What the graded test requires:\n- It calls assertOptimizesTo, an existing helper in the test file.\n- The input is AddIndex(\"Pony\", Index(name=\"idx_pony_weight_pink\")) followed by RemoveIndex(\"Pony\", \"idx_pony_weight_pink\").\n- The expected output is an empty list.\n\n3. Settlement:\n- Reducing an AddIndex/RemoveIndex pair to nothing is settled by the specification: \"reduce AddIndex/RemoveIndex operations when optimizing\". The canonical reduction of add-then-remove is no operations, which matches existing optimizer patterns. For example, CreateModel followed by DeleteModel already reduces to [].\n- The model name and index name match, so there is no ambiguity about which index is being removed.\n\n4. Could a reasonable fix produce something other than []? Not really. A fix would need to implement AddIndex.reduce returning [] when it meets a RemoveIndex with the same model and name. Any reasonable fix achieves this through the public optimizer entry point. A fix that handled only RemoveIndex followed by AddIndex would ignore the obvious add/remove case and would not count.\n\n5. Score: the test directly checks the core behavior the specification asks for, so 1 or 2. It is near-direct; I score 2 because the specific reduction result is inferred rather than stated.",
+    "score": 2,
+    "explanation": "The test asserts that an AddIndex followed by a RemoveIndex of the same index optimizes to an empty list. That is the only reasonable meaning of \"reduce AddIndex/RemoveIndex operations\" and matches existing optimizer patterns such as CreateModel followed by DeleteModel, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGtMEsi7eEsbwXiHTbi",
+  "input_tokens": 2871,
+  "output_tokens": 701,
+  "seconds": 7.6
+}

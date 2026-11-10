@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9997",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 41776,
+  "output": {
+    "reasoning": "1. The specification describes an HTML-linking defect in autodoc type descriptions: “Literal ... should link to typing.Literal in CPython's docs, just like int does.” Linking parameterized typing constructs, including closely related inputs, is settled; no helper API or signature-formatting change is requested.\n2. The graded tests require: (a) _parse_annotation to produce exact pending_xref and punctuation/literal nodes, shorten typing.Literal to Literal, and use reftype='obj' for typing.Literal and ~typing.Dict; (b) stringify to accept the new string modes 'smart' and 'fully-qualified', with exact qualified, abbreviated, and nested representations for Any, containers, Callable, Union/Optional, and Literal; (c) stringify_signature to emit typing-prefixed annotations throughout signatures, including nested types and version-dependent TypeVars; and (d) do_autodoc to emit exact typing-prefixed signatures for wrapped functions, mocked classes, configured type hints, and preserved defaults. Existing punctuation, literal escaping, and builtin formatting have support in the prior tests. The required link destination is specified. The new helper modes, exact intermediate node representation, and broad signature-output changes are open.\n3. A reasonable alternative is to fix autodoc's description generation or type-reference resolution so that parameterized typing constructs receive qualified object links, recursively handling their arguments, while preserving the existing stringify interface and signature output. This resolves the reported behavior and related parameterized types but fails the new stringify mode assertions and the typing-prefixed signature expectations. It can also avoid changing _parse_annotation's intermediate representation.\n4. These tests therefore require an unspecified helper-interface redesign and intermediate outputs, not merely successful links through the reported entry point. The strongest mismatch warrants score 4.",
+    "score": 4,
+    "explanation": "A correct fix could generate qualified object links in autodoc type descriptions while retaining the existing stringify API and signature formatting. It would nevertheless fail tests requiring stringify(..., 'fully-qualified') and 'smart', as well as unrelated signature strings newly containing typing. prefixes.",
+    "overspecification_vector": "assert stringify(Any, \"fully-qualified\") == \"typing.Any\"; assert stringify(Integral, \"smart\") == \"~numbers.Integral\"; assert stringify(List[Dict[str, Tuple]], \"fully-qualified\") == \"typing.List[typing.Dict[str, typing.Tuple]]\"; assert stringify_signature(sig) == '(x: typing.List[int]) -> typing.List[int]'; '.. py:function:: feeling_good(x: int, y: int) -> typing.Generator'; assert_node(doctree[0], pending_xref, refdomain=\"py\", reftype=\"obj\", reftarget=\"typing.Dict\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 10808,
+  "output_tokens": 1245,
+  "seconds": 28.8
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pytest-dev__pytest-5205",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11744,
+  "output": {
+    "reasoning": "1. The spec says `record_property` puts `<properties>` inside `<testcase>`, which is invalid under the JUnit schema; per the schema they belong inside `<testsuite>`. It suggests the feature might need rethinking or removal. It does not name any new API.\n\n2. What the graded tests require:\n- A new fixture named `record_testsuite_property`, which records name/value pairs into `<testsuite><properties>`.\n- Non-string values are converted to strings (10 becomes \"10\").\n- Duplicate names are kept as separate `<property>` entries, in order.\n- The fixture works when `--junitxml` is not given.\n- A non-string name raises `TypeError` with the exact message \"name parameter needs to be a string, but int given\", with or without junitxml.\n\n3. Settled versus open:\n- The fixture name `record_testsuite_property` is never mentioned in the spec. Open.\n- The exact TypeError message is never mentioned. Open.\n- Type checking of the name at all is open.\n\n4. Reasonable fixes that would fail:\n- Change `record_property` itself to emit properties at testsuite level. This is a direct reading of \"it should be inside `<testsuite>`\". Every test fails, because the fixture `record_testsuite_property` does not exist.\n- Emit a warning about the invalid schema, or drop the per-testcase properties under certain junit families. Same result.\n- Even a fix that adds a new fixture with a different name (e.g. `record_suite_property`) fails.\n- Even with the right name, a different TypeError message, or no type checking, fails.\n\nThe tests hinge on a new API name and an exact error message that the spec never mentions.",
+    "score": 4,
+    "explanation": "The tests require a brand-new fixture named exactly `record_testsuite_property` and an exact TypeError message, neither of which the spec mentions. A fix that moves `record_property` output to `<testsuite>`, or that adds a differently named fixture, fails every test.",
+    "overspecification_vector": "Use of fixture `record_testsuite_property` in all four tests; `result.stdout.fnmatch_lines([\"*TypeError: name parameter needs to be a string, but int given\"])`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFp1LKz2veT2ETtTtpN",
+  "input_tokens": 4545,
+  "output_tokens": 751,
+  "seconds": 8.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-14995",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11321,
+  "output": {
+    "reasoning": "1. The issue identifies NDDataRef arithmetic with handle_mask=np.bitwise_or failing when one operand lacks a mask. It explicitly requires that 'the mask that exists should just be copied over to the output.'\n2. The test constructs NDDataRef objects using the reproduction's data and integer mask, then calls multiply with a scalar, an unmasked object, and masked objects. It requires None when neither operand has a mask, the existing mask's values when only one does, unchanged values when multiplying the masked object by itself, and bitwise OR when two distinct masks exist. No mocks, private APIs, messages, or implementation details are checked.\n3. The first five assertions are settled by the reproduction, including its explicitly identified working cases. The final assertion adds a related input: two different masks. Its expected value, np.bitwise_or(mask, other_mask), follows from the supplied handle_mask=np.bitwise_or operation and is a basic regression check.\n4. No requirement leaves a reasonable alternative that these assertions reject. In particular, the tests compare mask values without requiring a particular copying mechanism or object identity.\n5. Score 2: the tests reproduce the reported behavior and add one straightforward related-input regression check.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should preserve the existing mask when the other operand is unmasked and continue applying the explicitly supplied np.bitwise_or when both masks exist.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2909,
+  "output_tokens": 513,
+  "seconds": 12.1
+}

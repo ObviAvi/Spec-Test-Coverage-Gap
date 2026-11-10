@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-13142",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11086,
+  "output": {
+    "reasoning": "1. Spec: fit_predict(X) and predict(X) disagree when n_init>1 in GaussianMixture. It names both entry points and the symptom. 2. Tests: GaussianMixture(n_components=5, n_init=5, random_state=0) on 1000x5 data, with fit_predict equal to predict. There is also an analogous test for BayesianGaussianMixture with n_init=10. 3. Requirement 'fit_predict == predict after n_init>1' is settled by the spec ('the results of fit_predict(X) and predict(X) are often different'). The reproduction is near-verbatim. BayesianGaussianMixture shares the BaseMixture.fit_predict path, so a fix in the base class covers it naturally. A fix applied only to GaussianMixture would leave the same bug in a closely related input/class sharing the code, and would not be a reasonable fix. Any correct fix makes the labels consistent, e.g. by doing a final e-step after restoring the best parameters, or by computing labels from the best params. No exact values are pinned. 4. No reasonable correct fix fails. The Bayesian test is a related input on the same base-class code path.",
+    "score": 1,
+    "explanation": "The graded tests are essentially the issue's reproduction with a fixed seed, asserting fit_predict(X) equals predict(X) when n_init>1, which every correct fix satisfies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGtu2KAk5VvZba2czct",
+  "input_tokens": 4768,
+  "output_tokens": 477,
+  "seconds": 5.9
+}

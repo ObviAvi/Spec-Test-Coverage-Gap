@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-12860",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10317,
+  "output": {
+    "reasoning": "Spec: add support for unpenalized logistic regression in LogisticRegression. It names no API (penalty='none' is merely suggested by analogy with SGDClassifier's penalty=\"none\"), gives no messages, and sets no behavior for liblinear, for C, or for LogisticRegressionCV.\n\nRequirements and status:\n1. penalty='none' as the parameter value: open but strongly suggested by the SGDClassifier analogy. A fix could reasonably use penalty=None instead.\n2. Warning text \"Setting penalty='none' will ignore the C\" when C is non-default: open. A fix could silently ignore C, or warn with different wording.\n3. ValueError \"penalty='none' is not supported for the liblinear solver\": open in wording. A fix might raise with other wording or emulate the case with a large C.\n4. Changed message \"Solver %s supports only 'l2' or 'none' penalties,\": open exact wording. A fix that keeps the old message \"supports only l2 penalties\" fails.\n5. LogisticRegressionCV(penalty='none') raises ValueError with \"penalty='none' is not useful and not supported by LogisticRegressionCV\": open. A fix could allow it, or reject it with different text.\n6. Predictions equal to C=np.inf with l2: reasonable consequence of any correct implementation.\n\nNone of these exact strings is derivable from the spec, so many reasonable fixes fail. All of them are observable messages, not internals, so this is mild overspecification (3) rather than 4.",
+    "score": 3,
+    "explanation": "Tests demand exact error and warning strings that the issue never states. These are: the new solver message \"supports only 'l2' or 'none' penalties,\", the liblinear rejection message, the C-ignored UserWarning, and the LogisticRegressionCV rejection with specific wording. A correct fix adding unpenalized support with different messages, without a C warning, or allowing penalty='none' in CV would fail.",
+    "overspecification_vector": "msg = (\"Solver %s supports only 'l2' or 'none' penalties,\" % solver); msg = \"penalty='none' is not supported for the liblinear solver\"; msg = \"Setting penalty='none' will ignore the C\" with assert_warns_message(UserWarning,...); \"penalty='none' is not useful and not supported by LogisticRegressionCV\""
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH1sGbDtCs2o5yxWeMq",
+  "input_tokens": 4020,
+  "output_tokens": 815,
+  "seconds": 9.1
+}

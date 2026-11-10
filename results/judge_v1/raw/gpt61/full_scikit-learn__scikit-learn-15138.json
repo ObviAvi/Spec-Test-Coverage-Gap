@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-15138",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16203,
+  "output": {
+    "reasoning": "1. The specification requests an option to train the final estimator on both base-estimator predictions and original features, rather than predictions alone. It cites `use_features_in_secondary : bool (default: False)` as the reference interface.\n2. The graded tests require both StackingClassifier and StackingRegressor to accept a new `passthrough` constructor keyword. They exercise Iris/diabetes, existing CV and final-estimator variants, dropped estimators, and sparse inputs. With the option disabled, transform dimensions must remain unchanged. When enabled, transform must append the original features: classifier dimensions 10 and 7 after dropping an estimator; regressor dimensions 12 and 11. Sparse transformed output must remain sparse and have exactly `X_test.format`.\n3. Settled: enabling the option includes original features alongside predictions, while disabling it retains prediction-only behavior, matching the quoted specification. Convention/existing behavior: supporting both stacking estimators and preserving existing CV, estimator-dropping, and prediction functionality are reasonable regression requirements.\n4. Open: the keyword `passthrough` is not specified. A competent developer could implement the cited `use_features_in_secondary=False` interface and fully satisfy the request, yet every graded test would reject that implementation at construction. Also open are the feature-block order and exact sparse representation: prepending original features, or consistently returning CSR for sparse augmented data, would preserve the requested functionality but fail the suffix or format assertions. These choices are not settled by the existing prediction-only transform checks.\n5. The unspecified new constructor name is sufficient for score 4; the ordering and sparse-format checks add externally observable overspecification.",
+    "score": 4,
+    "explanation": "A correct implementation using `use_features_in_secondary=False`, the option name illustrated in the issue, would fail because every graded test instead requires the unspecified keyword `passthrough`. The tests also reject valid alternatives that prepend original features or normalize sparse output to CSR.",
+    "overspecification_vector": "`passthrough=passthrough` in both parameterized tests; `passthrough=True` in both sparse tests; `assert_allclose(X_test, X_trans[:, -4:])`; `assert_allclose(X_test, X_trans[:, -10:])`; the corresponding `assert_allclose_dense_sparse` suffix checks; `assert X_test.format == X_trans.format`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3986,
+  "output_tokens": 1400,
+  "seconds": 31.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16830",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16120,
+  "output": {
+    "reasoning": "1. Settled: the issue identifies Model.save_base() failing to pass force_insert through _save_parents() to _save_table(). It requests that save(force_insert=True) avoid the parent's preliminary UPDATE, including for closely related inheritance cases.\n2. Open: the graded additions require a new tuple-valued force_insert API. They pass (Counter,), (SubCounter,), (models.Model,), and combinations of parent classes, requiring selective insertion of those classes and their descendants. No tuple interface or class-selection semantics appear in the specification. A reasonable fix could propagate the existing Boolean flag throughout parent saving without introducing this API.\n3. Open: the tests require particular query counts for that tuple API: two for a parent/child insertion, three or four for different grandparent selections, and four or five for diamond inheritance. They also require IntegrityError when tuple-selected insertion reaches an existing ancestor, while allowing an existing grandparent when only lower classes are selected. Avoiding unnecessary UPDATEs is specified, but this selective tuple behavior is not. Boolean propagation alone would not distinguish these selections and could attempt to insert an existing grandparent.\n4. Open: validation tests require TypeError for 1, \"test\", [], tuples containing object or a model instance, and a tuple containing a model that is not a base. They additionally require the message substrings \"force_insert must be a bool or tuple.\", \"Invalid force_insert member. ... must be a model subclass.\", and \"Invalid force_insert member. SubCounter must be a base of Counter.\" TypeError is conventional for unsupported types, but introducing these restrictions and choosing these messages are not settled by the issue. A correct propagation fix could retain existing argument handling or use different validation wording.\n5. These failures concern public save() arguments and observable behavior, not private-method calls or implementation-state assertions. The most overspecified added requirements therefore warrant score 3. Unchanged Boolean-query assertions and additions to ungraded tests are not used to raise the score.",
+    "score": 3,
+    "explanation": "A reasonable fix could propagate force_insert=True through parent saves without adding tuple-based ancestor selection; it would fail the graded tuple-selection tests. The tests also require unrequested validation rules and particular TypeError message wording.",
+    "overspecification_vector": "The added save(force_insert=(Counter,)), save(force_insert=(SubCounter,)), save(force_insert=(models.Model,)), and diamond-inheritance tuple calls, with their assertNumQueries(...) and IntegrityError expectations; test_force_insert_not_bool_or_tuple, test_force_insert_not_model, and test_force_insert_not_base, including their required TypeError message substrings."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3650,
+  "output_tokens": 1592,
+  "seconds": 32.9
+}

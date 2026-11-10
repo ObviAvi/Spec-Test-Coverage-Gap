@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14855",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10785,
+  "output": {
+    "reasoning": "1. Spec: get_admin_url in helpers builds the readonly FK link URL without current_app, so a custom admin site gets /admin/... links. Proposed fix: pass current_app=self.model_admin.admin_site.name to reverse.\n\n2. Test requirements: GET the change page on the custom site 'namespaced_admin' (site2). The rendered readonly FK links must match reverse('namespaced_admin:auth_user_change', ...) and reverse('namespaced_admin:admin_views_language_change', ...). The non-registered FK must render as plain text. The test patch registers ReadOnlyRelatedField and Language on site2 itself, so the fix needs nothing extra. The auth User link on site2 depends on User already being registered on site2 in the repository; presumably it is, since the test passes with the reference fix.\n\n3. Each requirement is settled by the spec: 'the url generated for the link is /admin/... instead of /custom-admin/...'. Using the current admin site's name as current_app is the spec's suggestion and the existing admin pattern.\n\n4. Alternatives: a fix could get the site name from request.current_app via the template context, or reverse with the site namespace prefix directly (f'{site.name}:...'). Both produce the same URL, so they pass too. HTML output is unchanged apart from the URL.",
+    "score": 1,
+    "explanation": "The test renders the readonly FK links on a custom admin site and checks that they reverse to that site's namespace, which is exactly the behavior the issue describes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFkSLcEg1rwTdb9CoZg",
+  "input_tokens": 4058,
+  "output_tokens": 523,
+  "seconds": 6.0
+}

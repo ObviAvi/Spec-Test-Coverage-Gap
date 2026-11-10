@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8475",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8989,
+  "output": {
+    "reasoning": "1. The specification identifies HEAD redirect loops raising TooManyRedirects and explicitly requests retrying with GET rather than reporting the link as broken. 2. The test runs the linkcheck builder against a local server whose HEAD requests repeatedly return 302 to the same URL, while GET returns 200. It reads output.json and requires code 0, status 'working', empty info, the checked URI, and the fixture's index.rst/line 1 location. It requires no new function, private API, mock interaction, or particular exception-handling implementation. 3. The HEAD-loop/GET-success behavior is settled directly by 'retry with a GET request for such scenarios.' The successful-result fields and source-location fields are ordinary linkcheck output and fixture metadata, not new choices imposed on the fix. 4. There is no open requirement that a reasonable correct implementation would violate: the test does not constrain redirect limits, request counts, or how GET fallback is implemented. 5. This directly reproduces the specified bug.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix should report this URL as working after GET succeeds despite the HEAD redirect loop, exactly the behavior asserted by the test.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2078,
+  "output_tokens": 575,
+  "seconds": 14.8
+}

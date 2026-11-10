@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-14623",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8561,
+  "output": {
+    "reasoning": "1. The spec says that set_ylim(max, min) on a log-scale axis fails to invert it. The symptom shows up through the public set_ylim and set_yscale API.\n2. The test does three things: it calls ax.set_yscale('log'), then ax.set_ylim(10, 1), then asserts ax.get_ylim() == (10, 1).\n3. Each requirement is settled by the spec. The entry points are those in the reproduction code (set_yscale, set_ylim). The expected outcome is 'I would expect the yaxis to be inverted', which means the limits are retained in inverted order.\n   - Exact equality to (10, 1) is also settled. On an otherwise empty axes, explicitly set limits should come back exactly as given. The context lines show the existing linear test asserting exact inverted values in the same way.\n   - Could a fix return something like (10.0, 1.0)? Float equality with ints still holds.\n   - Could a fix alter the limits slightly, for example via nonsingular expansion? Values 1 and 10 are distinct, positive, and valid for log, so a correct fix leaves them unchanged.\n   - One subtlety: the order of set_yscale before set_ylim differs from the issue example. These are the same functions and the issue example implies order independence, so this is a related input.\n4. I see no reasonable correct fix that would fail this check.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes: the test asserts that set_ylim(10, 1) on a log axis yields get_ylim() == (10, 1), which is exactly the inverted-limits behavior the issue requests, using the same public API.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGn2ETmaoeeepfcdySs",
+  "input_tokens": 3295,
+  "output_tokens": 558,
+  "seconds": 6.9
+}

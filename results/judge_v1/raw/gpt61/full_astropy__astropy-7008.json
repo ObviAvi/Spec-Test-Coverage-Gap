@@ -1,0 +1,18 @@
+{
+  "task_id": "full/astropy__astropy-7008",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7993,
+  "output": {
+    "reasoning": "1. The specification requests a context manager to select a constants version, illustrating it with `with constants_set(astropyconst13):`; 'E.g., something like' does not settle the API. 2. The test requires a callable named `astropy.constants.set_enabled_constants`, accepting the strings 'astropyconst13' and 'notreal'. Inside the first context, `const.h.value` must be 6.62606957e-34; afterward it must be 6.626070040e-34. An unknown version must raise ValueError. No mocks or internal attributes are involved. 3. Selecting the requested constants is directly specified. Temporarily changing the constants and restoring them on exit are conventional context-manager semantics; the numerical assertions check the selected and original datasets, rather than an implementation mechanism. However, the exported name and string-based argument interface are open: neither appears in the specification. ValueError for an unknown version is also not explicitly settled. 4. A reasonable implementation could expose `constants_set(version_module)` and accept the imported astropyconst13 module, following the issue's example. It would implement the requested behavior but fail immediately because `const.set_enabled_constants` does not exist. A module-only interface also need not implement lookup or ValueError handling for version-name strings. 5. Requiring an unspecified newly introduced API name makes this significantly overspecified.",
+    "score": 4,
+    "explanation": "A correct fix could provide `constants_set(astropyconst13)` using a version module, as illustrated in the issue. The tests instead require the unspecified name `astropy.constants.set_enabled_constants` and a string argument, so that fix would fail before its context-manager behavior is exercised.",
+    "overspecification_vector": "with const.set_enabled_constants('astropyconst13'):\nwith pytest.raises(ValueError):\n    with const.set_enabled_constants('notreal'):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1846,
+  "output_tokens": 874,
+  "seconds": 23.1
+}

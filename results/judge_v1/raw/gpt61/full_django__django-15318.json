@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15318",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12539,
+  "output": {
+    "reasoning": "The specification requires unsaved reverse relations to raise errors, saved relations with null relation fields to return empty querysets, and attempts to add objects through null foreign-key relations to fail. The graded tests require: (1) Poll.choice_set.all(), Car(make=\"Ford\").drivers.all(), and Third.child_set.count() on unsaved instances to raise ValueError with a particular primary-key message; (2) saved Car(make=None).drivers add(), create(), get_or_create(), update_or_create(), remove(), clear(), and set() to raise ValueError with a particular field-value message; and (3) that saved car's drivers.count() to return zero without queries. The unsaved failures are settled by 'Trying to use a relation of any kind when the object isn't saved is now an error'; ValueError follows the existing m2m example. Rejection of operations that add objects is settled by 'Trying to add objects to a foreign key relation when the relation field is null is now an error.' The empty count and query avoidance match the specified unchanged empty-queryset behavior and the existing zero-query null-relation test. Exact error wording remains open: a clear message such as 'Save this instance before accessing related objects' would satisfy the specification but fail these assertions. More substantially, requiring remove() and clear() to raise on a saved object with a null relation field is open: these are removal operations, not additions, and the object is saved. A reasonable fix can reject unsaved access and null-key additions while treating clear() on the specified empty relation as a no-op and retaining ordinary not-related-object handling for remove(). That fix would fail tests exercising removal paths not implicated by the specified addition restriction.",
+    "score": 4,
+    "explanation": "The tests additionally require car.drivers.clear() and remove(driver) to raise ValueError when the car is saved but its relation field is null. A correct fix could treat clearing this empty relation as a no-op and preserve normal removal semantics; the tests also reject reasonable alternative error messages.",
+    "overspecification_vector": "In test_related_null_to_field_related_managers: `with self.assertRaisesMessage(ValueError, msg): car.drivers.remove(driver)` and `with self.assertRaisesMessage(ValueError, msg): car.drivers.clear()` for `car = Car.objects.create(make=None)`. Additionally, the exact required message substrings `'<Model>' instance needs to have a primary key value before this relationship can be used.` and `\"{car!r}\" needs to have a value for field \"make\" before this relationship can be used.` are unspecified."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2882,
+  "output_tokens": 1956,
+  "seconds": 47.9
+}

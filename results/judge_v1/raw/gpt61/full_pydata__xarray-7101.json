@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pydata__xarray-7101",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13274,
+  "output": {
+    "reasoning": "1. The issue identifies Dataset.assign_coords after stacking as producing inconsistent coordinate metadata and broken len/printing. Its supplied regression explicitly expects obsolete MultiIndex level names to disappear from _coord_names. 2. The graded tests require replacement of a MultiIndex coordinate with range(4), a resulting Dataset coordinate count of one, and FutureWarning matching 'Updating MultiIndexed coordinate' from DataArray.assign_coords, Dataset.assign_coords, and Dataset.assign. 3. The coordinate-count assertion is a reasonable related-input version of the supplied regression. The warning-message prefix follows existing tests, but changing DeprecationWarning to FutureWarning is open: the specification requests no warning-policy change, and the removed lines establish DeprecationWarning as existing behavior. Dataset.assign is also a different entry point from the reported assign_coords operation. 4. A reasonable fix could synchronize _coord_names with the surviving coordinate variables while preserving all existing warning categories. It would resolve the reported corruption but fail the new FutureWarning expectations, including the requirement imposed on Dataset.assign. 5. The additional requirement on that different entry point makes the most overspecified assertion a 4.",
+    "score": 4,
+    "explanation": "A correct metadata repair could preserve the existing DeprecationWarning behavior. The tests would reject it for not emitting FutureWarning, including from Dataset.assign, a different entry point whose warning behavior the specification never asks to change.",
+    "overspecification_vector": "The added `with pytest.warns(FutureWarning, match=r\"Updating MultiIndexed coordinate\"):` expectations, particularly the one enclosing `data.assign(x=range(4))` in TestDataset.test_assign_coords_existing_multiindex."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3436,
+  "output_tokens": 1889,
+  "seconds": 41.0
+}

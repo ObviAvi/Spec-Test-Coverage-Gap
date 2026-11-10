@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-9296",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8026,
+  "output": {
+    "reasoning": "1. The spec asks for Paginator.__iter__ and gives the exact implementation: yield self.page(n) for each n in page_range.\n2. The test calls iter(paginator) and next() on the result. It requires each yielded object to be convertible with list() into the page items: [1, 2] for page 1 and [3] for page 2.\n3. Each requirement against the spec:\n- __iter__ is settled; the spec quotes it.\n- Yielding Page objects is settled; the spec says yield self.page(page_num).\n- list(page) giving the items is settled by existing code, since Page is already a Sequence.\n- next() working on the iterator is open in principle, but a generator or any iterator supports it. An __iter__ returning a list would fail iter() semantics, so that is not a correct fix.\n4. One alternative would be yielding page numbers instead of pages. That contradicts the spec, so no reasonable fix fails.",
+    "score": 1,
+    "explanation": "The test iterates the paginator and checks that each yielded page lists the expected items ([1, 2] then [3]), which is exactly what the specification's yield self.page(page_num) implementation does.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFkWyQwTYo2SsbELZVU",
+  "input_tokens": 2953,
+  "output_tokens": 401,
+  "seconds": 6.2
+}

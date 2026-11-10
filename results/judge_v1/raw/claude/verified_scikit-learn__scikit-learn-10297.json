@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-10297",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10664,
+  "output": {
+    "reasoning": "1. The spec says RidgeClassifierCV rejects `store_cv_values`, even though its documented `cv_values_` attribute depends on that flag. The fix is to add the parameter and store CV values. The spec quotes the docs: shape `[n_samples, n_alphas]` or `[n_samples, n_responses, n_alphas]`.\n\n2. What the test requires:\n- (a) `RidgeClassifierCV(alphas=..., store_cv_values=True)` is accepted. Settled by the spec.\n- (b) After fitting on a 1-D binary y, `cv_values_.shape == (n_samples, 1, n_alphas)`. Open.\n- (c) After fitting on a 2-D {-1,1} indicator y with 3 columns, `cv_values_.shape == (n_samples, 3, n_alphas)`. Settled: it matches the documented 3-D shape.\n\n3. Requirement (b) is the gap. The quoted documentation says single-target output has shape `[n_samples, n_alphas]`, and RidgeCV already gives that 2-D shape for 1-D y. The simplest fix just forwards `store_cv_values` to `_BaseRidgeCV`. Because LabelBinarizer turns binary y into an (n, 1) matrix, that fix happens to yield (n, 1, n_alphas). But a competent developer who reads the spec's quoted contract, and wants to match RidgeCV, could squeeze the singleton axis for binary or 1-D targets. That fix gives (n, n_alphas) and fails the test. The test pins one of two reasonable shape conventions, and the spec's own text points toward the other one. The upstream fix instead changed the docstring to `[n_samples, n_targets, n_alphas]`. This is observable behavior, not internal state, so it is mild.",
+    "score": 3,
+    "explanation": "The test requires `cv_values_` to have shape (n_samples, 1, n_alphas) for a 1-D binary y. A fix that follows the spec's quoted documentation, which gives `[n_samples, n_alphas]` for single-target y, and squeezes the singleton target axis would fail.",
+    "overspecification_vector": "n_targets = 1; r.fit(x, y); assert r.cv_values_.shape == (n_samples, n_targets, n_alphas)  # 1-D y case"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGumiZSoQnkjGam1EjA",
+  "input_tokens": 4337,
+  "output_tokens": 1699,
+  "seconds": 16.4
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15930",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8552,
+  "output": {
+    "reasoning": "The specification identifies Case(When(~Q(pk__in=[]), ...)) as generating invalid SQL and explicitly expects all rows to receive the matching branch's value. The test uses the same annotate(), Case(), When(), Q(), and Value() entry points and the exact problematic predicate, so those requirements are settled by the reproduction. It additionally requires the annotation to preserve the row count and return \"selected\" for every row, using \"not selected\" as the default. Preserving rows follows from annotation semantics and \"annotate all rows\"; returning the supplied then-value follows from Case semantics. String values, the selected field name, and omitted output_field follow the existing neighboring test pattern and are closely related inputs rather than implementation requirements. No SQL spelling, ordering, private API, or internal representation is asserted. No reasonable correct fix would violate these requirements; a Boolean-only workaround would leave the same bug on closely related inputs.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix must preserve all rows and select the supplied then-value for the always-true predicate; the test checks this with string values instead of the reproduction's Boolean values.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1957,
+  "output_tokens": 749,
+  "seconds": 21.4
+}

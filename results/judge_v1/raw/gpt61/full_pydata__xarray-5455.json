@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pydata__xarray-5455",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9554,
+  "output": {
+    "reasoning": "1. The issue requests dependency-independent backend registration and guess_can_open(), an installed() availability check, and informative errors suggesting matching uninstalled backends when open_dataset() fails. Its proposed error message is explicitly an example, not mandatory wording.\n2. The graded tests exercise the existing plugins.guess_engine() with a mocked installed-engine registry containing a dummy backend or no backends. For 'not-valid', they require ValueError containing either 'did not find a match in any' or 'xarray is unable to open', respectively. For 'foo.nc', both require ValueError containing 'found the following matches with the input'.\n3. ValueError and the engine-discovery test setup follow existing code shown in the patch. Recognizing candidate backends and distinguishing unavailable dependencies from unsupported inputs align with the requested feature. However, none of the three required message fragments is specified. In particular, the issue's example uses different wording, and the tests replace existing generic-error wording without a corresponding requirement in the issue.\n4. A reasonable correct fix could implement all requested backend capabilities, retain the existing errors for wholly unrecognized inputs, and report missing dependencies with 'Xarray cannot find a matching installed backend ... Consider installing ...', following the specification's example. That implementation would fail these regex assertions despite providing the requested behavior.\n5. The decisive restriction is observable error wording rather than an implementation-detail assertion, so the score is 3.",
+    "score": 3,
+    "explanation": "The tests require three error-message fragments that the specification never mandates. A correct fix could retain the existing generic errors and use the specification's own suggested wording for missing backends, yet fail these tests.",
+    "overspecification_vector": "match=r\"did not find a match in any\"; match=r\"xarray is unable to open\"; match=r\"found the following matches with the input\" (required in both graded tests)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2174,
+  "output_tokens": 1650,
+  "seconds": 41.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-14995",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11321,
+  "output": {
+    "reasoning": "1. The spec says that in v5.3, NDDataRef arithmetic with handle_mask=np.bitwise_or crashes when exactly one operand has a mask. Expected: \"the mask that exists should just be copied over to the output. Or whatever was done in that situation in v5.2.\" The entry point is NDDataRef.multiply, the same one used in the reproduction.\n\n2. What the test requires:\n- no-mask × constant gives mask None.\n- no-mask × no-mask gives mask None.\n- masked × constant gives a mask equal to `mask`.\n- masked × masked gives `mask` (bitwise_or of a mask with itself).\n- masked × no-mask gives `mask`.\n- masked × other_mask gives bitwise_or(mask, other_mask).\n\n3. Settledness of each requirement:\n- The None cases appear in the reproduction, annotated \"returns nothing, no mask, OK\", so they are existing behavior.\n- The two mixed cases are settled by \"the mask that exists should just be copied over to the output.\"\n- The masked × masked case is shown in the issue's output.\n- The bitwise_or case is the natural meaning of handle_mask and is existing behavior.\n- assert_equal checks only values, so a copy versus a reference does not matter.\n\n4. Any reasonable fix (return a copy of the existing mask when the other operand's mask is None) passes. A fix that converted the mask to bool would violate the spec's \"copied over\" and the v5.2 behavior, so it is not reasonable.",
+    "score": 1,
+    "explanation": "The test checks the reproduction cases from the issue near-verbatim: the existing mask is copied when the other operand has no mask, and bitwise_or still combines masks when both operands have one.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFinHNFwMauY5m36GyV",
+  "input_tokens": 4572,
+  "output_tokens": 613,
+  "seconds": 7.2
+}

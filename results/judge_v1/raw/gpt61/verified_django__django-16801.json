@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16801",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8680,
+  "output": {
+    "reasoning": "The specification identifies unnecessary post_init registration for ImageField when neither width_field nor height_field is set, not merely incorrect work inside the handler. The graded test uses the existing ImageFieldNoDimensionsTests fixture (PersonModel = Person), computes its identity, and requires that identity to be absent from the sender keys in signals.post_init.receivers. The no-dimensions input and absence of this registration are settled by the issue title and the description that the handler is a noop without width_field/height_field. Inspecting receiver sender keys verifies that expressly requested absence; it does not require a particular replacement implementation or handler name. No reasonable correct fix would need to retain a model-specific post_init connection for this fixture. Keeping the connection and merely returning early would preserve the reported problem.",
+    "score": 1,
+    "explanation": "The assertion that the no-dimensions model has no post_init receiver directly checks the unnecessary signal registration identified by the specification.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1941,
+  "output_tokens": 995,
+  "seconds": 26.0
+}

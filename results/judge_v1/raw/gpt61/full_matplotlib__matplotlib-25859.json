@@ -1,0 +1,18 @@
+{
+  "task_id": "full/matplotlib__matplotlib-25859",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8727,
+  "output": {
+    "reasoning": "1. The specification names Figure.add_axes() and asks to investigate extra positional arguments and, if ignored, \"deprecate extra positional parameters.\"\n2. The added tests require mpl.MatplotlibDeprecationWarning when calling add_axes(ax, \"extra positional argument\") on the Axes' original figure after delaxes(ax), and when calling add_axes([0, 0, 1, 1], \"extra positional argument\"). Both calls must complete without an exception, and each warning must match \"Passing more than one positional argument\".\n3. Warning about ignored extra arguments is settled by the requested deprecation. Continuing to accept them during deprecation and using Matplotlib's deprecation-warning category are reasonable library conventions. Testing both rectangle and existing-Axes inputs covers closely related inputs to the named public method; it does not impose a different entry point. The required warning wording, however, is open: the specification supplies no message text.\n4. A reasonable correct fix could issue MatplotlibDeprecationWarning with \"Additional positional arguments to Figure.add_axes() are deprecated and ignored\" for both inputs. That implements the requested deprecation but fails both warning-message matches.\n5. The tests therefore pin an unspecified choice in externally observable warning text, warranting score 3 rather than 4.",
+    "score": 3,
+    "explanation": "A correct fix could deprecate extra positional arguments with MatplotlibDeprecationWarning but use different clear wording. Both added checks reject it unless the warning contains \"Passing more than one positional argument\", a phrase the specification never requires.",
+    "overspecification_vector": "match=\"Passing more than one positional argument\" in both added pytest.warns(mpl.MatplotlibDeprecationWarning, ...) checks."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2029,
+  "output_tokens": 779,
+  "seconds": 18.2
+}

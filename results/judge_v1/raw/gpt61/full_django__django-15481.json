@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15481",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10186,
+  "output": {
+    "reasoning": "1. The specification explicitly requests that 'set_cookie and set_signed_cookie should accept timedelta object for max_age argument.' Both named entry points are therefore settled.\n2. The graded tests require set_cookie(max_age=timedelta(hours=1)) to produce a cookie max-age of 3600; set_signed_cookie(max_age=timedelta(hours=2)) to produce 7200; and numeric max_age=100 to remain 100. These are settled by conventional conversion of durations to seconds and preservation of the stated existing numeric support. Inspecting response.cookies checks the resulting cookie, not a required implementation technique.\n3. The remaining test passes expires=datetime(2000, 1, 1) together with a timedelta max_age and requires ValueError containing \"'expires' and 'max_age' can't be used together.\" The specification does not discuss conflicting expiration arguments, and the supplied pre-existing test context establishes neither this validation rule nor its wording. The exact message is open.\n4. A reasonable fix could correctly convert timedelta values for both setters and reject conflicting expiration arguments with ValueError(\"Specify either expires or max_age, not both.\"). It would resolve the requested functionality but fail assertRaisesMessage. The added get_signed_cookie assertions are not graded and do not affect the assessment.\n5. The open requirement concerns observable exception wording on a named entry point, so this is mild rather than implementation-level overspecification.",
+    "score": 3,
+    "explanation": "A correct fix could support timedelta in both setters and reject an expires/max_age conflict with a differently worded ValueError. The graded test requires a particular message that the specification and supplied existing-code context do not establish.",
+    "overspecification_vector": "test_max_age_with_expires: msg = \"'expires' and 'max_age' can't be used together.\"; with self.assertRaisesMessage(ValueError, msg): response.set_cookie(\"max_age\", expires=datetime(2000, 1, 1), max_age=timedelta(hours=1))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2352,
+  "output_tokens": 1908,
+  "seconds": 40.4
+}

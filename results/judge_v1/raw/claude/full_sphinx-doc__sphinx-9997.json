@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9997",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 41776,
+  "output": {
+    "reasoning": "1. The spec says that with autodoc_typehints=description, a parametrized type such as Literal[\"a\", \"b\"] is not linked to typing.Literal via intersphinx, while int is. It describes only the symptom (a missing link) and names no function or internal API.\n\n2. What the graded tests require:\n- (a) `sphinx.util.typing.stringify` takes a string mode argument instead of a bool, with values \"fully-qualified\" and \"smart\". Calls like `stringify(int, \"smart\")` and `stringify(Any, \"fully-qualified\") == \"typing.Any\"` depend on this.\n- (b) `stringify_signature` and autodoc signature output now fully qualify typing names: `typing.Optional[typing.Any]`, `typing.List[int]`, `typing.Generator`, `typing.Any`.\n- (c) `_parse_annotation(\"typing.Literal['a','b']\")` yields a pending_xref with reftype=\"obj\" and reftarget \"typing.Literal\", whose display text is the shortened \"Literal\".\n- (d) The reftype for `typing.Dict` changes from \"class\" to \"obj\".\n\n3. How each requirement is settled:\n- (a) Open. The spec mentions neither a stringify mode parameter nor the string \"fully-qualified\".\n- (b) Open. The spec says nothing about changing signature rendering to fully-qualified typing names.\n- (c) Partly settled: linking Literal to typing.Literal is what the spec asks for. The reftype \"obj\" and the short display text \"Literal\" are open.\n- (d) Open.\n\n4. Reasonable fixes that would fail:\n- A developer could fix the bug inside `sphinx/ext/autodoc/typehints.py` by recording annotations with the module-qualified name, or by making `restify`/the description field emit `:py:obj:` links for typing objects. That leaves `stringify`'s bool API and the existing signature output unchanged, and it fails test_stringify (TypeError or wrong value from the string mode argument), test_signature_annotations, test_autodoc_typehints_signature and the others.\n- Even a fix that does qualify names in stringify would fail unless it introduces exactly the \"fully-qualified\"/\"smart\" string API.\n- A fix that keeps reftype=\"class\" (which resolves fine for many intersphinx entries) fails the reftype=\"obj\" assertions.\n\n5. The tests depend on a new, unspecified API signature and on internal node attributes, so the score is 4.",
+    "score": 4,
+    "explanation": "The tests require `stringify()` to take a new string mode parameter with the exact values \"fully-qualified\"/\"smart\" in place of the old bool, and require all signature output to change to fully-qualified `typing.X` names; neither is mentioned in the issue. They also pin reftype=\"obj\" and the short display text \"Literal\" in `_parse_annotation`, so a fix that simply makes the description-field typehint link to typing.Literal fails.",
+    "overspecification_vector": "tests/test_util_typing.py: `stringify(X, \"fully-qualified\")` / `stringify(X, \"smart\")` calls replacing bool args (e.g. `assert stringify(Any, \"fully-qualified\") == \"typing.Any\"`); tests/test_util_inspect.py and autodoc tests expecting `typing.Optional[typing.Any]`, `typing.List[int]`, `-> typing.Generator`, `typing.Any`; tests/test_domain_py.py `reftype=\"obj\"` for typing.Literal/typing.Dict and `[pending_xref, \"Literal\"]` display text."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFq63sYPHtsCYDMxf5d",
+  "input_tokens": 17906,
+  "output_tokens": 1429,
+  "seconds": 14.7
+}

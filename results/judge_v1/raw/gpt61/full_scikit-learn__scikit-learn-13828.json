@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13828",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10303,
+  "output": {
+    "reasoning": "1. The issue reports that AffinityPropagation.fit fails on a sparse precomputed affinity matrix and explicitly expects \"no error raised since it works for dense matrix.\" 2. The added test constructs AffinityPropagation(affinity='precomputed'), passes csr_matrix((3, 3)) to fit, and requires TypeError. 3. The entry point, affinity setting, and sparse input are settled by the reproduction example. The TypeError requirement is not settled; it directly contradicts the expected result. Existing checks for invalid damping and unknown affinity do not justify rejecting the reported sparse input. 4. A reasonable fix could convert sparse precomputed affinities to dense arrays before running the algorithm, supporting the reported case and related sparse inputs without raising. That fix would fail assert_raises(TypeError, ...). 5. The test therefore overspecifies externally observable exception behavior on the same entry point, warranting score 3.",
+    "score": 3,
+    "explanation": "A correct fix that accepts sparse precomputed affinity matrices, for example by converting them to dense internally, would fail because the test requires TypeError. The specification explicitly requests that this input raise no error.",
+    "overspecification_vector": "assert_raises(TypeError, af_2.fit, csr_matrix((3, 3)))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2531,
+  "output_tokens": 420,
+  "seconds": 9.5
+}

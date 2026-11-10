@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-13267",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11328,
+  "output": {
+    "reasoning": "1. The spec reports that instantiating an abstract model with a string ForeignKey raises a confusing TypeError from isinstance() in get_default. The reporter notes this worked in Django 1.8 and seems to want it to work again. They also note that the code says abstract models cannot be instantiated, but the docs do not. Two resolutions are plausible: restore instantiation, or explicitly forbid it with a clear error. The spec does not choose between them.\n2. The graded test calls AbstractPerson() and requires a TypeError whose message contains 'Abstract models cannot be instantiated.'\n3. Requirements:\n- Raising an error at all: open. The issue complains that the call fails and points to 1.8, where it worked, so 'make it work' is a natural reading. A fix that makes ForeignKey.get_default tolerate an unresolved string model (e.g., skip the isinstance check when remote_field.model is a str) resolves the reported crash, but raises nothing and fails the test.\n- Exception type TypeError: open. The existing crash is already a TypeError, and a forbid-style fix could reasonably choose another type.\n- Exact message: open. The spec only paraphrases a code comment ('abstract models can not be instantiated'). A forbid-style fix with wording like 'Cannot instantiate abstract model UserProfile' fails assertRaisesMessage.\n- Any abstract model, even without an FK: the test uses AbstractPerson, which presumably has no string FK. This requires a blanket ban rather than a fix to the FK path, which contradicts the spec's statement that such models 'can still be instantiated perfectly fine'.\n4. A reasonable fix that restores 1.8 behavior fails, and a forbid fix with different wording fails. The assertions are on observable behavior (exception type and message), not internals, so this is a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "The test requires every abstract model instantiation to raise TypeError with the exact message 'Abstract models cannot be instantiated.'. A fix that restores 1.8 behavior by making ForeignKey.get_default handle unresolved string models fails, as does a forbid-style fix with different wording.",
+    "overspecification_vector": "AbstractModelTests.test_abstract_model_not_instantiated: msg = 'Abstract models cannot be instantiated.'; with self.assertRaisesMessage(TypeError, msg): AbstractPerson()"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGwfAiH51egnQydXL2R",
+  "input_tokens": 4322,
+  "output_tokens": 1261,
+  "seconds": 13.0
+}

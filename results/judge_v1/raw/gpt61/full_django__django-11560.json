@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-11560",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8917,
+  "output": {
+    "reasoning": "1. The specification requests “Raise ValueError in Extract lookups that don't work properly with DurationField,” illustrated by ExtractYear on a duration producing an invalid date comparison. Thus ValueError and coverage of duration extraction are settled. 2. The added test calls DTModel.objects.annotate(extracted=Extract('duration', lookup)) for year, iso_year, month, week, week_day, and quarter. It requires ValueError during annotation construction, without filtering or evaluating the queryset, and requires the message substring \"Cannot extract component '%s' from DurationField 'duration'.\" 3. Testing related calendar components through Extract reasonably follows the issue's broader title; these are public extraction operations, not private implementation checks. However, neither the required message nor the precise validation stage is specified. The unchanged test context supplies no convention settling either detail. 4. A reasonable fix could reject these components with ValueError and a differently worded explanatory message. It could also validate during SQL compilation, preventing the invalid SQL while allowing annotation construction. Either fix would fail the added test. 5. These are restrictions on observable error behavior rather than implementation internals, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could raise ValueError with a different clear message, but the test requires the specific substring \"Cannot extract component '<lookup>' from DurationField 'duration'.\" The test also rejects a fix that performs validation during SQL compilation rather than immediately during annotate().",
+    "overspecification_vector": "msg = \"Cannot extract component '%s' from DurationField 'duration'.\"; with self.assertRaisesMessage(ValueError, msg % lookup): DTModel.objects.annotate(extracted=Extract('duration', lookup)) — requires that message and immediate failure without queryset evaluation."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2014,
+  "output_tokens": 899,
+  "seconds": 20.7
+}

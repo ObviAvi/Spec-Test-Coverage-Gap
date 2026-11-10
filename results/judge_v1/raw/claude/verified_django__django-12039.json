@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12039",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10467,
+  "output": {
+    "reasoning": "1. Spec: CREATE INDEX for Index(fields=['-name']) produces `\"name\"DESC`; the expected output is `\"name\" DESC`. There is also an opclass trailing-whitespace issue. The entry point is Index.create_sql / the schema editor.\n\n2. Graded test: test_descending_columns_list_sql. It builds Index(fields=['-headline'], name='whitespace_idx'), calls index.create_sql(Article, editor), and asserts the string contains '(\"headline\" DESC)', using the backend's quote_name.\n\n3. Requirements:\n- Index and create_sql are public and already exist. Settled.\n- Output contains `(quoted DESC)` with exactly one space and no trailing space. Settled by the spec: \"The following would be expected: CREATE INDEX \\\"idx\\\" ON \\\"schema_author\\\" (\\\"name\\\" DESC)\".\n- str() of the Statement is existing behavior.\n\n4. Could a reasonable fix produce different output?\n- It could add the space in the col_suffixes when building them (' DESC'), or in Columns.__str__ when joining.\n- Either way the result is `\"headline\" DESC`.\n- A fix that put a space before every suffix, including empty ones, would yield a trailing space for ascending order. That only affects an ungraded test, and it is arguably incorrect given the spec's whitespace concerns.\n- The descending assertion matches the spec verbatim.",
+    "score": 1,
+    "explanation": "The graded assertion checks for `(\"headline\" DESC)` in the generated CREATE INDEX SQL, which is exactly the expected output the spec gives for a descending field.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFjuG6JqWCE2bgu52xW",
+  "input_tokens": 3980,
+  "output_tokens": 594,
+  "seconds": 7.3
+}

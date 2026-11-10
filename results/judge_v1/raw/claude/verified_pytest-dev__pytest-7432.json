@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7432",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8887,
+  "output": {
+    "reasoning": "1. The spec says that `--runxfail` causes skip-mark location reporting to point at skipping.py instead of the test item. It names `pytest_runtest_makereport` in skipping.py as the location of the bug. 2. The graded test (test_input1) runs `-rs --runxfail` on a file containing a test with @pytest.mark.skip. It asserts the output line \"SKIPPED [1] test_sample.py:2: unconditional skip\" and \"*1 skipped*\". 3. Each requirement against the spec: (a) The location being test_sample.py:2 is settled by the spec, which says the location should point to the item itself, matching the behavior without --runxfail. The test file has the decorator on line 2 after dedent; the spec example shows line 3 for its own file, which corresponds to the same position. (b) The message \"unconditional skip\" is existing behavior shown in the spec. (c) \"1 skipped\" is the standard summary line. 4. No open requirements remain. Any correct fix must make the output under --runxfail match the output without it, and that is exactly what the test checks. The test is a near-verbatim reproduction of the issue example.",
+    "score": 1,
+    "explanation": "The graded test reproduces the issue example with `-rs --runxfail` and asserts the same skip location and message that pytest reports without `--runxfail`, which is exactly the behavior the spec asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGqMtjEdeLdqEnvKxML",
+  "input_tokens": 3325,
+  "output_tokens": 476,
+  "seconds": 5.5
+}

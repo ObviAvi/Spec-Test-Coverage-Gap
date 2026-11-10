@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13590",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9508,
+  "output": {
+    "reasoning": "1. Spec: Query.resolve_lookup_value rebuilds tuples by passing an iterator to the tuple's own type. For a namedtuple this raises TypeError. The spec asks that named tuples work again as __range arguments, and suggests unpacking the iterator with *.\n2. What the test requires:\n- A namedtuple EmployeeRange(minimum=51, maximum=100) is passed to num_employees__range.\n- The resulting queryset equals [c5]. c5 is the only company with 99 employees; the others have 50 or fewer.\n3. Both requirements are settled by the spec, which reports that named 2-tuples passed to range filters error on 3.0 but worked on 2.2. The expected query result is just ordinary range semantics.\n4. Possible alternative fixes:\n- Using * expansion passes.\n- Converting to a plain tuple or list also gives the correct filter result.\n- Special-casing namedtuples via _make passes.\nAll go through the same public filter entry point, so no reasonable fix fails.",
+    "score": 1,
+    "explanation": "The test directly reproduces the issue: filtering with __range on a namedtuple should not raise and should return the matching row, which every correct fix achieves.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFiVGfok1tSoyaDFnyc",
+  "input_tokens": 3573,
+  "output_tokens": 426,
+  "seconds": 4.5
+}

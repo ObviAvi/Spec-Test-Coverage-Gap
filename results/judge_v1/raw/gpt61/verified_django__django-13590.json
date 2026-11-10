@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13590",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9508,
+  "output": {
+    "reasoning": "1. The specification reports that passing named 2-tuples to queryset '__range' filters raises TypeError during Query.resolve_lookup_value(), and requests restoring support for those arguments.\n2. The graded test constructs collections.namedtuple('EmployeeRange', ['minimum', 'maximum']), passes EmployeeRange(51, 100) to Company.objects.filter(num_employees__range=...), and asserts that evaluating the queryset returns only self.c5, the fixture company with 99 employees. It uses no mocks and asserts no internal implementation details.\n3. Named two-element tuple support through '__range' is directly settled by the specification: 'passes named 2-tuples as arguments to range queryset filters.' The expected result follows ordinary range-filter semantics and the existing fixture values: 99 lies within the range, while the other companies do not. The tuple's name, field names, and numeric bounds are reproduction inputs, not additional implementation requirements. With one result, the sequence assertion imposes no ordering choice.\n4. No open requirement rejects a reasonable correct fix. The test does not require a particular constructor strategy or preservation of an intermediate tuple type.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must allow this named two-tuple range filter to execute and return the matching company, exactly what assertSequenceEqual(qs, [self.c5]) checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2197,
+  "output_tokens": 531,
+  "seconds": 12.0
+}

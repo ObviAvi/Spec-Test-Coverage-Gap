@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pytest-dev__pytest-9064",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12372,
+  "output": {
+    "reasoning": "1. The issue requests that `--stepwise-skip` alone behave like `--stepwise --stepwise-skip`: ignore the first failure, stop at the second, and retain stepwise behavior.\n2. `test_stepwise_skip_is_independent` creates three failing tests and invokes pytest with `--tb no --stepwise-skip`. It requires exactly two failures, summaries naming the first two tests, and the interruption message shown in the specification. These are settled by the explicit request for equivalent behavior and its reproduction output. The generated filename simply identifies the tests; no new implementation API is required.\n3. `test_sw_skip_help` invokes pytest with `-h` and requires a line matching `*implicitly enables --stepwise.`. The specification discusses the misleading existing help, but does not prescribe this wording, its punctuation, or its position at the end of a line. That requirement is open.\n4. A reasonable fix could enable stepwise whenever stepwise-skip is requested and update the help to say `Skip the first failure and stop at the next (implies --stepwise).` It would implement the requested behavior and accurately document it, yet fail the help assertion. This is an externally observable wording restriction, rather than an internal implementation constraint.",
+    "score": 3,
+    "explanation": "The help test requires the exact phrase `implicitly enables --stepwise.` at the end of a line. A correct implementation using equally clear help such as `implies --stepwise` would fail despite resolving the reported behavior.",
+    "overspecification_vector": "result.stdout.fnmatch_lines(\"*implicitly enables --stepwise.\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2900,
+  "output_tokens": 672,
+  "seconds": 15.8
+}

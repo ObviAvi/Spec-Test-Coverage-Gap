@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-13551",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8004,
+  "output": {
+    "reasoning": "1. The spec says Product(n + 1/2**k, [k, 0, n-1]).doit() gives a wrong closed form: substituting n=2 yields 9/2 instead of the correct 15/2. The entry point is named (Product(...).doit()) and the expected value is stated.\n2. The test builds Product(n + 1/2**k, (k, 0, n-1)).doit(), then substitutes n=2, calls .doit() again, and asserts the result equals S(15)/2.\n3. Requirements:\n- Entry point: settled by the spec, which uses Product(...).doit().\n- Input n=2 and value 15/2: settled by the spec, \"the product for `n=2` is `(2 + 2^0) * (2 + 2^(-1)) = 15/2`\".\n- The extra .doit() after subs: this accommodates fixes that leave the product unevaluated, so it adds no constraint. A fix returning a correct closed form, or a new q-Pochhammer-like function that evaluates at integers, would also give 15/2 after subs and doit.\n4. No reasonable correct fix fails. Any correct result, whether unevaluated or a correct closed form, evaluates to 15/2 at n=2.",
+    "score": 1,
+    "explanation": "The test asserts exactly the spec's reproduction case: the product evaluated at n=2 must equal 15/2. The added .doit() lets both unevaluated and closed-form fixes pass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFhEAoPJzXsZvg6XNzb",
+  "input_tokens": 3121,
+  "output_tokens": 799,
+  "seconds": 8.5
+}

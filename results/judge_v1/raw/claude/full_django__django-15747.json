@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-15747",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12371,
+  "output": {
+    "reasoning": "1. The specification says QuerySet.update() raises a FieldError ('Cannot resolve keyword ...') when the queryset is ordered by an annotated field. The user's example includes aggregate annotations such as Count('orders'), and the user expects the update to succeed. The entry point is QuerySet.update().\n\n2. What the graded tests require:\n(a) test_update_ordered_by_m2m_annotation: a Bar queryset annotated with a non-aggregate Abs('m2m_foo'), ordered by that annotation, must have update(x=3) succeed and set x.\n(b) test_update_ordered_by_m2m_aggregation_annotation: a queryset annotated with Count('m2m_foo') and ordered by it must raise FieldError with the exact message \"Cannot update when ordering by an aggregate: Count(Col(update_bar_m2m_foo, update.Bar_m2m_foo.foo))\".\n\n3. Settledness of each requirement:\n(a) Settled by the spec: \"Django can successfully perform that action ... However, if the data is sorted by a field resulting from the annotation ... I get the FieldError ... This seems like a bug.\"\n(b) Open. The spec never says aggregate orderings should raise a new error. It implies the opposite: the user sorts by Count annotations and wants the update to work. The new message wording, including the expression repr, appears nowhere in the spec.\n\n4. Reasonable fixes that fail (b):\n- A fix that drops ordering terms which reference annotations (or aggregate annotations) when building the UPDATE. Ordering is irrelevant to most UPDATEs, and the old behavior and comment already omitted annotation orderings. This lets the aggregate case succeed, so no FieldError is raised and the test fails.\n- A fix that raises a FieldError with different wording also fails assertRaisesMessage.\n\n5. The test checks observable behavior but pins one arbitrary choice: raise rather than ignore, plus an exact message. That is a score of 3.",
+    "score": 3,
+    "explanation": "The graded aggregate test requires update() on a queryset ordered by a Count annotation to raise FieldError with the exact text 'Cannot update when ordering by an aggregate: Count(Col(update_bar_m2m_foo, update.Bar_m2m_foo.foo))'. A reasonable fix that drops such orderings (letting the update succeed, as the issue's user wants), or that words the error differently, fails.",
+    "overspecification_vector": "test_update_ordered_by_m2m_aggregation_annotation: msg = \"Cannot update when ordering by an aggregate: Count(Col(update_bar_m2m_foo, update.Bar_m2m_foo.foo))\"; with self.assertRaisesMessage(FieldError, msg): Bar.objects.annotate(m2m_count=Count(\"m2m_foo\")).order_by(\"m2m_count\").update(x=2)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGxyCT7zN3AeHHeNpRH",
+  "input_tokens": 4698,
+  "output_tokens": 1704,
+  "seconds": 16.8
+}

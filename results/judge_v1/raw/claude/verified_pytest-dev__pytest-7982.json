@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7982",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8335,
+  "output": {
+    "reasoning": "1. Spec: since 6.1.0, symlinked directories inside a test directory are skipped instead of being followed and collected. The issue says the `follow_symlinks=False` that caused this should be removed.\n2. Test requirements: create `dir/test_it.py` and a symlink `symlink_dir -> dir`, run pytest, and assert passed=2, meaning the test is collected through both the real directory and the symlink. It uses `Pytester` and `pytester.path`. These are test-infrastructure APIs that are imported, not introduced by the fix, and they exist given that the import is added only in the test patch with no source change implied.\n3. Passed=2 is settled by the spec: \"it should be followed and collected as usual\" and \"does not match the previous behavior\". Before 6.1.0 the symlinked directory was collected as a separate path, giving duplicate collection. Following the symlink means its tests are collected a second time.\n4. Could a reasonable fix deduplicate by resolving the realpath? That would contradict \"collected as usual\" and restoring previous behavior, so it does not count as a reasonable fix. The natural fix of removing `follow_symlinks=False` passes.",
+    "score": 1,
+    "explanation": "The test directly checks that a symlinked directory is followed and its tests collected alongside the real directory (passed=2), exactly as the issue describes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGuN22Y2EHbp4H6v2rr",
+  "input_tokens": 3114,
+  "output_tokens": 469,
+  "seconds": 5.9
+}

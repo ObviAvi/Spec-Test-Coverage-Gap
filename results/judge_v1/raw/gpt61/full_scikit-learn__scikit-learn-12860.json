@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-12860",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10317,
+  "output": {
+    "reasoning": "1. The specification requests genuine unpenalized logistic regression through LogisticRegression, rather than approximating it with a large C. It mentions SGDClassifier's penalty=\"none\", making that spelling a reasonable interface convention. It does not mention LogisticRegressionCV, warnings, or error wording.\n2. The graded additions require: accepting penalty='none' with lbfgs, newton-cg, sag, and saga; predictions identical to L2 with C=np.inf on the generated dataset; a UserWarning containing \"Setting penalty='none' will ignore the C\" when C=4; revised unsupported-L1 error text for both estimator classes; rejection of penalty='none' by liblinear with a specified message; and rejection by LogisticRegressionCV with another specified message.\n3. Unpenalized fitting and equivalence to zero regularization are settled by the requested feature. The penalty spelling follows the explicitly cited SGDClassifier convention, and testing the existing solvers is a reasonable extension. ValueError for invalid solver/penalty combinations follows the existing tests. Warning requirements, message fragments, and the separate LogisticRegressionCV policy are open.\n4. A reasonable implementation could ignore C silently, or issue an equally clear warning with different wording. It could retain different wording for unsupported combinations. More importantly, it could correctly implement the requested LogisticRegression feature while leaving LogisticRegressionCV's existing generic rejection in place, or support unpenalized fitting there instead of introducing the required special rejection. Such fixes would fail the tests despite resolving the issue.\n5. The strongest overspecification is the mandatory behavior of LogisticRegressionCV.fit, a separate estimator entry point not implicated by the specification. The warning and error-message requirements independently constitute milder overspecification.",
+    "score": 4,
+    "explanation": "A correct fix supporting unpenalized LogisticRegression can fail because the tests additionally require LogisticRegressionCV.fit to reject it with a particular message, although that separate estimator is not part of the request. The tests also reject fixes that silently ignore C or use different, clear warning and validation messages.",
+    "overspecification_vector": "lr = LogisticRegressionCV(penalty='none'); assert_raise_message(ValueError, \"penalty='none' is not useful and not supported by LogisticRegressionCV\", lr.fit, X, y). Also: assert_warns_message(UserWarning, \"Setting penalty='none' will ignore the C\", lr.fit, X, y); required error fragments \"Solver %s supports only 'l2' or 'none' penalties,\" and \"penalty='none' is not supported for the liblinear solver\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2480,
+  "output_tokens": 1399,
+  "seconds": 31.3
+}

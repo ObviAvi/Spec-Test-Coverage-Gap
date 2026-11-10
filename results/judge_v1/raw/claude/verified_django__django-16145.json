@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16145",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8543,
+  "output": {
+    "reasoning": "1. The spec says that `runserver 0:8000` prints \"Starting development server at http://0:8000/\" and that it should instead print \"Starting development server at http://0.0.0.0:8000/\". The entry point is the runserver command's output.\n\n2. What the test requires:\n- It calls `call_command(\"runserver\", addrport=\"0:8000\", use_reloader=False, skip_checks=True, stdout=...)`, with `run` and `check_migrations` mocked out.\n- It asserts that stdout contains the substring \"Starting development server at http://0.0.0.0:8000/\".\n\n3. Settlement of each requirement:\n- The expected output is settled near-verbatim by the spec: \"Output should be 'Starting development server at http://0.0.0.0:8000/' when providing '0:8000'\".\n- The mocks are existing infrastructure. They are in place either way, whether the fix changes `self.addr` or only the display string.\n- A fix could convert `0` to `0.0.0.0` for display only, or convert the address actually bound. Since `run` is mocked, both approaches pass.\n\n4. Open details and possible failures:\n- The message format (\"http://\", trailing slash) is pre-existing and unchanged.\n- A fix that printed something different, such as `http://127.0.0.1:8000/` or `localhost`, would contradict the spec's explicit expected output.\n- No reasonable fix fails this test.",
+    "score": 1,
+    "explanation": "The test asserts the exact output string the issue explicitly requests for `runserver 0:8000`, so any fix matching the spec passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGo6jMDtBLtKak5xriB",
+  "input_tokens": 3178,
+  "output_tokens": 561,
+  "seconds": 5.9
+}

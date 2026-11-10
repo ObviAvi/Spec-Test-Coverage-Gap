@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11555",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9578,
+  "output": {
+    "reasoning": "1. The specification identifies a crash in “order_by() a parent model” during multi-table inheritance when “Meta.ordering contains expressions,” caused by treating an OrderBy object as a string. 2. The test introduces ChildArticle inheriting the existing Article model, creates four records varying headline, publication date, and author (including an omitted author), calls ChildArticle.objects.order_by('article_ptr'), and requires the sequence [ca4, ca2, ca1, ca3]. It requires no new implementation names, mocks, or private-method calls. 3. The inheritance scenario, parent ordering entry point, and expression support are settled by the issue. The fixture values are ordinary related regression inputs. Preserving the parent's existing default ordering, rather than merely suppressing the crash, follows Django's relation-ordering convention; the expected sequence checks that preservation. 4. No implementation choice is pinned. Ignoring expression terms or substituting pointer-ID ordering could avoid the exception but would not correctly implement ordering by the parent model, so those are not reasonable correct alternatives.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should let order_by('article_ptr') honor the parent's existing expression-based ordering without crashing; the sequence assertion checks that behavior using ordinary regression fixtures.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2211,
+  "output_tokens": 945,
+  "seconds": 27.1
+}

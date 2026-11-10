@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-7760",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10912,
+  "output": {
+    "reasoning": "1. The specification requests an opt-in coverage-extension setting, suggested as `coverage_print_missing_as_warning`, that reports missing coverage as warnings so CI builds using warning-as-error can fail. It does not prescribe message formatting or a different reporting mode for non-quiet builds.\n2. Both graded tests configure `coverage_show_missing_items` and invoke `app.builder.build_all()`. The first requires status output containing `undocumented` and precisely spaced descriptions of a Python function, class, method, and C API. The second sets `app.quiet = True` and requires warning output with exact descriptions, separators, and bracket formatting for those items.\n3. Building through the coverage builder is consistent with the specification. Reporting uncovered Python and C objects is reasonably within the extension's scope, and warning output under quiet operation supports the reported CI use case. However, the new configuration name `coverage_show_missing_items` is open: neither the specification nor the supplied existing-code context establishes it. The exact message text, spacing, and requirement for status output in non-quiet mode are also open.\n4. A reasonable implementation could introduce the suggested `coverage_print_missing_as_warning` setting and emit warnings for missing objects whenever enabled. It would resolve the requested CI behavior but would not activate when these tests set only `coverage_show_missing_items`. Even an implementation supporting the tests' configuration name could emit clear warnings in both verbosity modes with different wording, failing the status-stream and exact-string assertions.\n5. The strongest mismatch is the required unspecified new configuration name, which makes this significantly overspecified rather than merely a formatting restriction.",
+    "score": 4,
+    "explanation": "Both tests require the unrequested configuration name `coverage_show_missing_items`; a correct fix implementing the suggested `coverage_print_missing_as_warning` would not enable reporting under their configuration. They additionally require particular output streams and exact message formatting that the issue does not settle.",
+    "overspecification_vector": "Both decorators: @pytest.mark.sphinx('coverage', confoverrides={'coverage_show_missing_items': True}). Additional restrictions: status.getvalue() must contain 'undocumented', 'py  function  raises', 'py  class     Base', 'py  method    Class.roger', and 'c   api       Py_SphinxTest [ function]'; with app.quiet = True, warning.getvalue() must contain 'undocumented python function: autodoc_target :: raises', 'undocumented python class: autodoc_target :: Base', 'undocumented python method: autodoc_target :: Class :: roger', and 'undocumented c api: Py_SphinxTest [function]'."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2573,
+  "output_tokens": 1072,
+  "seconds": 23.1
+}

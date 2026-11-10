@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-23534",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8352,
+  "output": {
+    "reasoning": "1. The spec says that symbols() called with a tuple of names and cls=Function returns Symbol objects instead of Function objects. The entry point is `symbols`.\n2. The added assertion is `type(symbols(('q:2','u:2'), cls=Function)[0][0]) == UndefinedFunction`. It uses the public functions `symbols` and `Function` and the class `UndefinedFunction`, which already exists in sympy.core.function.\n3. Each requirement is settled by the specification:\n   - The input is the issue's own reproduction example, verbatim: `smp.symbols(('q:2', 'u:2'), cls=smp.Function)`.\n   - The expected type is stated explicitly: \"Expected result: <class 'sympy.core.function.UndefinedFunction'>\".\n4. No requirement is left open. The natural fix is to pass `cls` (and any other keyword arguments) through to the recursive call in symbols, and any correct fix yields UndefinedFunction here.",
+    "score": 1,
+    "explanation": "The test is the issue's reproduction example verbatim, asserting the exact type named in the expected result (UndefinedFunction), so every correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGtgmcTXbjuaKnuE5b7",
+  "input_tokens": 3170,
+  "output_tokens": 416,
+  "seconds": 5.2
+}

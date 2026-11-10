@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-13199",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12670,
+  "output": {
+    "reasoning": "The issue names HttpResponse.delete_cookie() and asks it to preserve SameSite when expiring cookies, especially messages cookies. The graded tests require: (1) delete_cookie('c', samesite='lax') to expose exactly 'lax' in the cookie; (2) messages deletion to use settings.SESSION_COOKIE_SAMESITE; and (3) session deletion, including custom domain/path, to produce an exact header ending in SameSite=<configured value>. Supporting a samesite argument follows the set_cookie keyword shown in the specification. Propagating the configured policy to messages is directly supported by the report; doing so for sessions is a reasonable related case. Preserving existing expiration, domain, and path behavior is a regression requirement. However, exact lowercase spelling is open: normalizing 'lax' to the equivalent 'Lax' would preserve the policy correctly. The exact session header also excludes additional attributes. A reasonable fix could preserve HttpOnly as well as SameSite when deleting session cookies, following the report's proposed code, and would fail those header comparisons. These are externally observable formatting/attribute choices, not implementation requirements. The ungraded test_default assertion does not affect the assessment.",
+    "score": 3,
+    "explanation": "A correct fix that canonicalizes SameSite values to 'Lax' would fail the test requiring exactly 'lax'. Alternatively, preserving the session cookie's HttpOnly attribute during deletion would fail the exact session-header comparisons despite preserving SameSite correctly.",
+    "overspecification_vector": "self.assertEqual(response.cookies['c']['samesite'], 'lax'); the exact session-header expectations containing 'Max-Age=0; Path=/; SameSite={}' and 'Max-Age=0; Path=/example/; SameSite={}', which exclude an additional HttpOnly attribute."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2919,
+  "output_tokens": 1943,
+  "seconds": 44.4
+}

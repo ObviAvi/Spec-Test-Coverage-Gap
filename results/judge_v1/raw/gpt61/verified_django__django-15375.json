@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15375",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9542,
+  "output": {
+    "reasoning": "1. The specification identifies a crash in annotate(...).aggregate(Sum(..., default=0)), explicitly saying “Annotate (anything) then aggregate works fine” until default is added. 2. The only graded test annotates Publisher with double_num_awards=F('num_awards') * 2, aggregates Sum('double_num_awards', default=0) under the alias value, and requires result['value'] == 40. It uses no mocks, private APIs, or implementation-state assertions. 3. The annotate/aggregate sequence and default=0 are explicitly settled. Changing the model, using an arithmetic annotation, and summing that annotation are closely related inputs. Returning the aggregate under its supplied alias and computing the ordinary sum are settled by ORM and arithmetic conventions; 40 is the fixture-dependent result, not an arbitrary implementation requirement. 4. No open behavioral choice rejects a reasonable correct fix: preserving the reported bug for aggregation over an annotation would leave a closely related instance unresolved. The second added test is ungraded and does not affect the assessment.",
+    "score": 2,
+    "explanation": "The assertion result['value'] == 40 checks the reported annotate-then-aggregate-with-default behavior on a closely related input, with the expected value determined by ordinary summation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2275,
+  "output_tokens": 584,
+  "seconds": 13.6
+}

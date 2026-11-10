@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11490",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8092,
+  "output": {
+    "reasoning": "The specification reports that repeated values()/values_list() evaluations on composed queries retain an earlier column selection, and reproduces this with qs1.union(qs1).values_list('order').get(). The added test calls that exact expression after earlier projections and requires (2,). The entry points and selected 'order' field are explicitly specified; the value 2 comes from the reproduction's order=2. The singleton tuple follows the existing values_list() return convention when selecting one column without flat=True. Earlier projection calls are existing context, not additional requirements. There are no open implementation choices, private APIs, mocks, or arbitrary assertions; no reasonable fix of the reported bug would fail this check.",
+    "score": 1,
+    "explanation": "The assertion reserved_name == (2,) directly verifies that the specification's reproduced values_list('order').get() call returns only the requested column instead of the previous projection.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1882,
+  "output_tokens": 351,
+  "seconds": 10.7
+}

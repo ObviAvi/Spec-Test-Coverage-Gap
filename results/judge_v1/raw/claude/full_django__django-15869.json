@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-15869",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9612,
+  "output": {
+    "reasoning": "1. The specification asks to deprecate the length_is template filter in favor of length combined with ==/{% if %}. It names the filter but gives no deprecation message, and it does not say which warning class to use.\n\n2. What the graded test requires:\n- Rendering {{ string|length_is:3 }} must raise RemovedInDjango51Warning.\n- The warning message must contain the exact text: \"The length_is template filter is deprecated in favor of the length template filter and the == operator within an {% if %} tag.\"\n\n3. Status of each requirement:\n- Warning class (RemovedInDjango51Warning): settled by Django convention. A feature deprecated in 4.2 is removed in 5.1, so the current deprecation class is the one to use. A developer in this repo would know that.\n- Message text: open. The specification never gives wording.\n\n4. A reasonable fix that fails: emitting a warning such as \"length_is is deprecated; use length with == instead.\" This deprecates the filter correctly, but assertRaisesMessage checks for the exact substring, so the fix fails. The assertion is on observable behavior (the warning message), not internals.\n\n5. Exact unspecified message text is a mild overspecification, so score 3.",
+    "score": 3,
+    "explanation": "The test requires the warning text \"The length_is template filter is deprecated in favor of the length template filter and the == operator within an {% if %} tag.\" verbatim. The specification gives no wording, so a correct deprecation with a different message fails.",
+    "overspecification_vector": "msg = (\"The length_is template filter is deprecated in favor of the length \" \"template filter and the == operator within an {% if %} tag.\"); with self.assertRaisesMessage(RemovedInDjango51Warning, msg)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFngArxZLqQfv8TFf72",
+  "input_tokens": 3591,
+  "output_tokens": 600,
+  "seconds": 6.5
+}

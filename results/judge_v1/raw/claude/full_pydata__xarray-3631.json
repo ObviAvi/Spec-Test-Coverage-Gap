@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pydata__xarray-3631",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 46175,
+  "output": {
+    "reasoning": "1. The spec says `da.interp` on long cftime coordinates raises a TypeError. The cause is that `datetime_to_numeric` relies on pandas to convert to timedelta64[ns], and that conversion overflows. The spec suggests using NumPy directly with microsecond resolution, but it names no new functions.\n\n2. The graded tests import four new module-level functions from xarray.core.duck_array_ops: `py_timedelta_to_float`, `np_timedelta64_to_float`, `pd_timedelta_to_float` and `timedelta_to_numeric`. Because the import sits at the top of test_duck_array_ops.py, every test in that file fails without these names. That is why the whole file (test_first, test_reduce, and so on) appears in FAIL_TO_PASS. The tests also pin:\n- the signatures, e.g. a `datetime_unit` keyword;\n- the return types: isinstance float for scalars;\n- string input such as \"1 day\" being accepted by `timedelta_to_numeric`;\n- `py_timedelta_to_float(dt.timedelta(days=1e6), 'ps') == 86400*1e18` exactly.\n\n3. None of these names, signatures or behaviors appear in the spec. They are open. A fix that edits `datetime_to_numeric` in place, or that names its helper differently, would pass the interp regression test but fail the entire test_duck_array_ops.py module at import time.\n\n4. The tests therefore depend on new names the fix must introduce, none of which the spec mentions.",
+    "score": 4,
+    "explanation": "Tests import four new helpers from xarray.core.duck_array_ops: py_timedelta_to_float, np_timedelta64_to_float, pd_timedelta_to_float and timedelta_to_numeric. They also assert those helpers' exact signatures and float return types. A correct fix that repairs datetime_to_numeric without creating these exact names fails every test in test_duck_array_ops.py at import time.",
+    "overspecification_vector": "from xarray.core.duck_array_ops import py_timedelta_to_float, np_timedelta64_to_float, pd_timedelta_to_float, timedelta_to_numeric; test_py_timedelta_to_float, test_np_timedelta64_to_float, test_pd_timedelta_to_float, test_timedelta_to_numeric (including the '1 day' string input and the isinstance(out, float) checks)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGzH32Rc1UHJM2cG8L2",
+  "input_tokens": 21718,
+  "output_tokens": 819,
+  "seconds": 8.2
+}

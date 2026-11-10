@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14559",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8931,
+  "output": {
+    "reasoning": "1. The specification names bulk_update() and requests the number of rows matched, explaining that its repeated update() return values 'could simply be added and returned.'\n2. The graded tests require bulk_update([], ['note']) to return 0 while preserving the existing zero-query behavior; updating 2,000 existing Note objects to return 2,000; duplicate references in one batch to return 1; and those references in separate batches to return 2. Note, bulk_create(), and the note/misc fields are fixture setup, not new implementation interfaces.\n3. The large-batch result follows directly from the requested matched-row total. Zero for empty input follows from an empty sum, and avoiding queries preserves the existing behavior shown in the test context. The duplicate results follow from the proposed aggregation and update() semantics: one update matches the row once, whereas two separate updates each match it once.\n4. No asserted detail remains open under that aggregation model. Counting input objects would not count matched rows, and counting globally distinct rows instead would depart from the described sum of update() results. The tests impose no particular implementation.",
+    "score": 2,
+    "explanation": "Every reasonable fix implementing the described aggregate matched-row count passes: empty input contributes 0, and a row matched in two separate update batches contributes 2.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2043,
+  "output_tokens": 1229,
+  "seconds": 29.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-13199",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12670,
+  "output": {
+    "reasoning": "1. The spec says HttpResponse.delete_cookie() drops the SameSite attribute, so the expiring Set-Cookie header lacks it and browsers warn. It names delete_cookie and the messages app as a caller, and notes the problem affects all cookies deleted this way.\n\n2–3. Requirements:\n(a) delete_cookie accepts a `samesite` keyword argument and emits it (test_delete_cookie_samesite). Settled by convention. delete_cookie cannot know the original cookie's samesite unless the caller passes it, so a parameter is required. Naming it `samesite` mirrors set_cookie's existing parameter, which is the only reasonable name. The reporter's own sketch also passes `samesite=` through to set_cookie and rejects hard-coding session settings for all cookies.\n(b) The messages cookie storage passes settings.SESSION_COOKIE_SAMESITE on deletion. Settled: the reporter says they \"copied the kwargs from the messages code,\" which already uses SESSION_COOKIE_SAMESITE when setting the cookie.\n(c) The session middleware passes settings.SESSION_COOKIE_SAMESITE when deleting the session cookie, and the exact header string ends with `; SameSite=Lax`. Settled by convention. The spec says all cookies deleted via delete_cookie are affected, and a competent developer would update the other core caller with its matching setting. The header format comes from the existing SimpleCookie serialization, not from the fix.\n\n4. Rejected alternatives: a fix that leaves delete_cookie untouched and has callers call set_cookie directly ignores the title's explicit target. A fix that updates only messages ignores the spec's statement that the bug hits every cookie deleted through delete_cookie. No reasonable fix diverges on what is asserted.",
+    "score": 2,
+    "explanation": "Every reasonable fix adds a `samesite` argument to delete_cookie, mirroring set_cookie, and has messages and sessions pass SESSION_COOKIE_SAMESITE when deleting, which is exactly what the graded assertions check.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFnMzEkEX6yGvGhcBwu",
+  "input_tokens": 4989,
+  "output_tokens": 1579,
+  "seconds": 15.4
+}

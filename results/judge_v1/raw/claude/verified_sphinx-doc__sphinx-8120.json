@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8120",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10435,
+  "output": {
+    "reasoning": "1. The specification says a user-supplied `locale/<lang>/LC_MESSAGES/sphinx.po` in `locale_dirs` is compiled to `.mo` but ignored. Sphinx's built-in translations take precedence over it. The expected behaviour is that the user catalog overrides built-in messages. It describes a symptom and implicates the i18n initialisation that loads the 'sphinx' catalog.\n\n2. What the test requires:\n- It writes `locales/de/LC_MESSAGES/sphinx.po` translating 'Quick search' and builds the basic testroot with language='de'.\n- `sphinx.mo` must exist after app creation. This comes from existing gettext_auto_build behaviour, which the spec describes: \"a sphinx.mo is created\".\n- `app.translator.gettext('Quick search') == 'QUICK SEARCH'`. `app.translator` is an existing attribute set by `_init_i18n` from the 'sphinx' catalog.\n- The built `index.html` must contain 'QUICK SEARCH'.\n- `locale.translators.clear()` is an existing module-level dict, used only for cleanup.\n\n3. How each is settled:\n- The user catalog overriding built-in messages is settled by the spec's expected behaviour (\"should have been Foobar 1\").\n- The `.mo` creation is existing behaviour.\n- `app.translator` is existing API. Any fix that makes user catalogs override must change how the 'sphinx' catalog/translator is built, so `app.translator.gettext` reflects it.\n- The message 'Quick search' instead of 'Fig. %s' uses the same mechanism; it is a related input.\n\n4. Open requirements: essentially none. The natural fix reorders locale_dirs so user dirs come before the package locale dir in `init_i18n`. A plausible alternative, e.g. merging catalogs with user entries winning, would also affect `app.translator` and the HTML. No reasonable fix would override only figure/listing labels without affecting the general translator.",
+    "score": 2,
+    "explanation": "Any correct fix must make the user's sphinx.po override the built-in 'sphinx' catalog that backs the existing `app.translator`, so both the gettext assertion and the 'QUICK SEARCH' HTML check follow directly from the issue's expected behaviour.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFjJBh66zAQqT8FvYey",
+  "input_tokens": 4024,
+  "output_tokens": 1324,
+  "seconds": 14.2
+}

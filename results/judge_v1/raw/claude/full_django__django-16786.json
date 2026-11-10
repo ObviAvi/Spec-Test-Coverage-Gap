@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16786",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12086,
+  "output": {
+    "reasoning": "1. The spec says a FilteredRelation condition that references a field needing a JOIN (for example through Coalesce(F(...), F('rel__field')) or any nested F) produces SQL that uses an alias whose JOIN was never added. The title points to the cause: conditions are resolved too late, at SQL compilation. It describes a symptom and a cause, not a specific API.\n2. The graded tests require three things, each checked only by queryset results through the public annotate(FilteredRelation(...)).filter(...) API:\n   (a) test_condition_spans_join: a condition with F('editor__name') needs a join to editor, and the query must return [book1].\n   (b) test_condition_spans_join_chained: one FilteredRelation's condition references another FilteredRelation's alias field (F('contains_editor_author__name')).\n   (c) test_condition_self_ref: a condition on the 'author' relation references F('author__name').\n3. Settled status:\n   (a) is settled directly by the spec: a condition referencing a field that requires a JOIN must get that JOIN.\n   (b) and (c) are closely related inputs of the same bug, 'nested field references' whose joins must be set up when the condition is resolved. The spec suspects 'an underlying issue with how JOINs are detected and added to a query when there are nested field references'.\n   All assertions are observable query results with natural expected values: book1 is the only match.\n4. No private APIs, names or messages are asserted. A fix that resolves the condition properly, with its joins, before compilation handles all three cases. A fix that hard-codes only the Coalesce shape would be the narrow, literal-example kind that does not count.",
+    "score": 2,
+    "explanation": "The tests only check that FilteredRelation conditions referencing fields across joins (directly, through another filtered relation, or self-referencing) return the correct rows, which is what a correct fix for the reported missing JOIN would do.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFnzNWJrZdKtA6hKMWs",
+  "input_tokens": 4519,
+  "output_tokens": 1466,
+  "seconds": 16.0
+}

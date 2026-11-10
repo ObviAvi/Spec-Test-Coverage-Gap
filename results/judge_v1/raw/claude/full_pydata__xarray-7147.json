@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pydata__xarray-7147",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10871,
+  "output": {
+    "reasoning": "1. The spec says the decode_cf error message should include the name of the problematic variable. It names no particular wording.\n\n2. The test calls decode_cf on a dataset whose variable 'invalid' has a value of 1e36. It requires a ValueError whose message matches the regex \"Failed to decode variable 'invalid'\".\n\n3. Each requirement against the spec:\n- decode_cf entry point: settled by the spec's example.\n- ValueError type: settled, since the existing error is already a ValueError. A fix could plausibly wrap the error in a different exception, but ValueError is the natural choice.\n- Message containing the variable name: settled by the spec.\n- Exact phrase \"Failed to decode variable 'invalid'\": open. The spec only asks that the message indicate the name.\n\n4. A reasonable fix could change the existing message to \"unable to decode time units ... for variable 'invalid'\" or \"Error decoding variable 'invalid': ...\". Either includes the name and would fail the regex.\n\n5. The test checks observable behavior but pins one arbitrary wording, so the score is 3.",
+    "score": 3,
+    "explanation": "The test requires the error message to contain the exact phrase \"Failed to decode variable 'invalid'\", but the spec only asks that the variable name appear in the message. A fix that writes, say, \"unable to decode time units ... in variable 'invalid'\" would fail.",
+    "overspecification_vector": "pytest.raises(ValueError, match=\"Failed to decode variable 'invalid'\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFoZczxoNn2jzKjfBvG",
+  "input_tokens": 4173,
+  "output_tokens": 528,
+  "seconds": 6.2
+}

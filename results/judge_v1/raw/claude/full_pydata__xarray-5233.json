@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pydata__xarray-5233",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 40484,
+  "output": {
+    "reasoning": "1. The issue asks for three things: (1) `ds.time.dt.calendar`; (2) `xr.convert_calendar`; (3) `xr.date_range` / `date_range_like` with a calendar argument. It suggests that numpy datetime64 coordinates report the calendar \"default\".\n\n2–4. What the graded tests require:\n\n- `TestDatetimeAccessor::test_calendar` asserts `self.data.time.dt.calendar == \"proleptic_gregorian\"` for numpy datetime64 data.\n  - The specification explicitly suggests the opposite: \"If the datatype is numpy return 'default'\".\n  - A developer who follows the spec and returns \"default\" fails this test. This detail is open, and the spec actively points the wrong way.\n\n- Every listed test in `test_coding_times.py` (`test_decode_cf`, `test_cf_timedelta`, etc.) is graded only because the module now imports `_should_cftime_be_used` from `xarray.coding.times`.\n  - That is a private helper the spec never mentions.\n  - Any correct implementation that puts the use-cftime decision logic elsewhere, or under another name, gets an ImportError at collection. The entire module then fails.\n  - This is an unspecified private name the fix must introduce.\n\n- The many `test_accessor_dt.py` field-access tests fail before the fix for some collection or setup reason tied to the original patch's structure.\n  - Most likely the dask helper `raise_if_dask_computes` with the `max_computes` keyword, or similar.\n  - Their passing likewise depends on that structure rather than on the requested behavior.\n\n5. The tests depend on a private function name introduced by the fix and contradict the spec's suggested return value for numpy calendars. Score 4.",
+    "score": 4,
+    "explanation": "A fix that follows the spec and returns \"default\" for numpy datetime64 calendars fails `test_calendar`, which requires \"proleptic_gregorian\". Any fix that doesn't define a private `_should_cftime_be_used` in `xarray.coding.times` breaks import of the whole `test_coding_times.py` module, failing dozens of graded tests.",
+    "overspecification_vector": "`from xarray.coding.times import (_encode_datetime_with_cftime, _should_cftime_be_used, ...)` in test_coding_times.py; `assert cal == \"proleptic_gregorian\"` in TestDatetimeAccessor.test_calendar"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGzK35g1qU9jbtiiRWY",
+  "input_tokens": 17894,
+  "output_tokens": 1275,
+  "seconds": 11.9
+}

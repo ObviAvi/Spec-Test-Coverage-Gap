@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-3305",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10131,
+  "output": {
+    "reasoning": "The issue explicitly names DataArray.quantile and requires keep_attrs=True to preserve input attributes, illustrated by retaining {'units': 'K'}. The graded test calls DataArray(self.va).quantile with keep_attrs=True and asserts actual.attrs == self.attrs: attribute preservation is directly settled by that requirement. It exercises q values 0.25, [0.50], and [0.25, 0.75], with dim=None, 'x', ['x'], and ['x', 'y']; these are closely related inputs to the same public method, so preserving attributes for them is reasonably inferred. The existing numerical comparison against np.nanpercentile remains a regression check: enabling attribute retention should not change quantile values. The fixture references do not impose implementation names or internal state on the fix. No open requirement admits a reasonable correct fix that would fail these assertions.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should satisfy actual.attrs == self.attrs when keep_attrs=True across these related quantile and dimension inputs, while preserving the existing numerical results.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2431,
+  "output_tokens": 514,
+  "seconds": 11.9
+}

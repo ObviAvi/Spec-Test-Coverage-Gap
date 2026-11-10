@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-12856",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10441,
+  "output": {
+    "reasoning": "1. The specification identifies missing validation of fields named in UniqueConstraint and contrasts this with unique_together, which 'raises models.E012 if the fields don't exist.' It describes the symptom through makemigrations, without prescribing a validation implementation.\n2. The graded tests call Model.check(databases=self.databases). They require exactly one Error for each invalid constraint: missing_field produces models.E012 with exact wording and obj=Model; a ManyToManyField produces models.E013 with exact wording and obj=Model; an inherited, non-local field produces models.E016 with exact wording, the exact multi-table-inheritance hint, and obj=Child. There are no mocks or implementation-state assertions. The foreign-key test is not graded.\n3. Detecting a nonexistent constraint field and using models.E012 are settled explicitly by the specification. Using model system checks and model-associated Error objects is consistent with the stated comparison to existing model validation. Testing other invalid field references is a reasonable related-input extension. However, the specification does not settle the exact diagnostic wording, the 'constraints' label in each message, or the inheritance hint. The supplied existing-code context does not establish these strings as mandatory either.\n4. A reasonable fix could perform all three validations through Model.check, retain the tested error IDs and model objects, but report the missing-field error as \"UniqueConstraint 'name' refers to the nonexistent field 'missing_field'.\" It could likewise provide a differently worded inheritance hint. Such a fix would resolve the described problem and related invalid inputs but fail the exact Error comparisons.\n5. The rejecting assertions concern public diagnostic output rather than implementation details, so the strongest supported score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could detect all three invalid field references and use the expected error IDs while identifying the constraint by name in its diagnostic messages. The tests reject that fix because they require exact message wording and, for the inherited field, an exact hint not specified by the issue.",
+    "overspecification_vector": "The exact Error message strings in the three graded assertEqual calls, including \"'constraints' refers to the nonexistent field 'missing_field'.\", and hint='This issue may be caused by multi-table inheritance.'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2321,
+  "output_tokens": 992,
+  "seconds": 23.3
+}

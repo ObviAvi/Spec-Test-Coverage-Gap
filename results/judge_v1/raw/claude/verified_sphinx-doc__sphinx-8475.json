@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8475",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8989,
+  "output": {
+    "reasoning": "1. The spec says linkcheck should fall back to a GET request when a HEAD request raises TooManyRedirects, instead of reporting the link as broken. It names the behavior (the except clause around the HEAD request) rather than a new API.\n2. What the test requires: a local server whose HEAD handler redirects to itself forever and whose GET handler returns 200 OK. After `build_all`, output.json must equal {code: 0, status: 'working', filename: 'index.rst', lineno: 1, uri: 'http://localhost:7777/', info: ''}.\n3. Status of each requirement:\n- 'working' status is settled by the spec: \"extends the except clause to retry with a GET request\", so the link should pass.\n- code 0 and info '' are settled by existing code: this is what linkcheck already emits for a successful GET with no redirect.\n- filename, lineno and uri are settled by existing test-root fixtures that other tests in the file already use.\n4. Open requirements: none. Any fix that catches TooManyRedirects (alone or with HTTPError) and retries with GET produces exactly this output. Plausible variations all give the same JSON: retrying GET with or without stream, or catching the broader RequestException.",
+    "score": 2,
+    "explanation": "Every fix that falls back to GET on TooManyRedirects makes the link report as 'working' with the standard output.json fields that existing linkcheck code already produces for a successful link.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFjpAFcUFrD4R7bSqED",
+  "input_tokens": 3387,
+  "output_tokens": 667,
+  "seconds": 8.3
+}

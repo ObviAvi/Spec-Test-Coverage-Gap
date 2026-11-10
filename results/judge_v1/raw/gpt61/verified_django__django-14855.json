@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14855",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10785,
+  "output": {
+    "reasoning": "1. The specification identifies get_admin_url and says readonly ForeignKey links in a custom Admin Site incorrectly point to '/admin/...' rather than that site's URLs. It explicitly proposes supplying the current site's name to reverse(). 2. The graded test opens the change form through 'namespaced_admin' and requires both the user and language ForeignKey links to match change URLs in that namespace. These requirements are settled by the reported behavior; the fixture's namespace is simply a concrete custom-site name, not a required implementation detail. 3. The language case preserves quoted string primary keys, consistent with the specification's quote(remote_obj.pk). Existing link markup and plain-text rendering for an unregistered related model are established by the preexisting test and constitute ordinary regression coverage when run on the custom site. 4. No requirement leaves an arbitrary implementation choice open: the test observes rendered links and does not require the proposed reverse() call or any particular internal implementation. No reasonable correct fix would violate these assertions.",
+    "score": 2,
+    "explanation": "Every reasonable fix must generate readonly ForeignKey links in the active custom admin site's namespace; the additional checks merely preserve existing rendering and related-object behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2441,
+  "output_tokens": 1144,
+  "seconds": 35.0
+}

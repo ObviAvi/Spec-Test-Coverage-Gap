@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-12096",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8058,
+  "output": {
+    "reasoning": "1. Spec: Function._eval_evalf doesn't recursively evalf the result of _imp_, so nested implemented functions like f(g(2)).evalf() stay unevaluated. It names both the entry point and the cause.\n2. Test requirements: implemented_function, a nested call f(f(2)), .evalf(), and a result equal to Float(16).\n3. Settlement:\n- The nested composition evaluating to a number is settled by the spec's example f(g(2)).evalf(). The test uses f(f(2)) instead, which is the same code path with a related input.\n- Equality with Float(16) is settled: evalf of 16 gives Float 16.0, matching the spec's expected 4.00000000000000-style output.\n4. Any fix that recursively evaluates (e.g. calling Float(self._imp_(*self.args)).evalf or evalf on the args) yields 16.0. Precision differences don't matter for Float(16) equality at default precision. No reasonable fix fails.",
+    "score": 1,
+    "explanation": "The test asserts that a nested implemented-function composition evalfs to a number (16), which is exactly the spec's reproduction case with f(g(2)) replaced by f(f(2)), so every recursive-evalf fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFgD24PXiHat1AKTqWL",
+  "input_tokens": 3075,
+  "output_tokens": 434,
+  "seconds": 7.1
+}

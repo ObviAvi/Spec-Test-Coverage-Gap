@@ -1,0 +1,18 @@
+{
+  "task_id": "full/matplotlib__matplotlib-20805",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10537,
+  "output": {
+    "reasoning": "1. The specification identifies an ordering bug involving tick_params(labelrotation=45) and spines[\"top\"].set_position((\"axes\", 1.05)). The settled requirement is: \"the labels [should] be rotated regardless of where the spine command is placed.\"\n2. The test creates matching subplots with add_subplot(), enables grid(True), applies tick_params(direction='in', length=10, width=5, color='C0', pad=12, labelsize=14, labelcolor='C1', labelrotation=45, grid_color='C2', grid_alpha=0.8, grid_linewidth=3, grid_linestyle='--'), and calls draw_no_output(). It then calls xaxis.reset_ticks() and yaxis.reset_ticks() only on the test figure and requires PNG equality with the reference.\n3. Rotation of 45 degrees is explicitly specified. The other styling values are ordinary test inputs, and honoring requested styles is conventional. However, requiring direct calls to Axis.reset_ticks() to preserve the entire rendered appearance is open: the specification never mentions that method, and the test never repositions a spine.\n4. A reasonable fix could change spine positioning to retain existing ticks and update their transforms without resetting them. Alternatively, it could preserve and reapply rotation within the spine-positioning operation. Either approach can solve the reported ordering problem across axes and spine positions while leaving standalone reset_ticks() behavior unchanged. Such a fix would fail this test.\n5. The test therefore requires a repair through a different entry point rather than merely requiring the reported problem to disappear.",
+    "score": 4,
+    "explanation": "A correct fix could preserve tick rotation within Spine.set_position, including by avoiding destructive tick recreation, while leaving Axis.reset_ticks unchanged. The test bypasses spine positioning and directly requires reset_ticks to preserve the rendered appearance, so it would reject that fix.",
+    "overspecification_vector": "@check_figures_equal(extensions=['png']) combined with direct calls to:\nax.xaxis.reset_ticks()\nax.yaxis.reset_ticks()\nThe test requires appearance preservation through these calls without invoking the reported spines[\"top\"].set_position(...) operation."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2588,
+  "output_tokens": 1194,
+  "seconds": 27.4
+}

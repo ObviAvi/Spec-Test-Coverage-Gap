@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16662",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8614,
+  "output": {
+    "reasoning": "The issue concerns import ordering in generated migration files: “Place all import module statements before from module import objects in each section.” It explicitly gives the desired sequence `import datetime\\nimport time\\nfrom django.db import migrations, models`. The test adds a migrations.AddField using models.FloatField(default=time.time) to make the migration require a time import, then uses the existing MigrationWriter(migration).as_string() entry point. These classes and calls are fixture setup and existing migration-generation machinery, not new implementation requirements. The sole changed assertion requires the exact import sequence shown in the specification. Its module names, order, and formatting are therefore directly settled by the reproduction example. No asserted detail is left open, and the test imposes no internal implementation constraint.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the asserted `datetime`, `time`, and `django.db` import sequence directly matches the specification’s desired output.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1895,
+  "output_tokens": 412,
+  "seconds": 10.3
+}

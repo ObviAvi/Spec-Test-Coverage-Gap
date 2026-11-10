@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-8599",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9797,
+  "output": {
+    "reasoning": "The spec proposes two new config options, `html_add_permalinks_html` and `viewcode_source_html`. The graded tests use differently named options: `html_permalinks` (a bool that disables permalinks) and `html_permalinks_icon` (the HTML content of the permalink).\n\nRequirements:\n(1) The config name `html_permalinks` must exist and accept False. This is open. The spec never mentions it; it only proposes `html_add_permalinks_html`.\n(2) The config name `html_permalinks_icon` must exist and be rendered as raw HTML inside the headerlink. This is open. The spec names the option `html_add_permalinks_html`.\n(3) The rendered markup must be exactly `<a class=\"headerlink\" href=\"#...\" title=\"Permalink to this headline\">ICON</a>`. This follows the existing format, so it is settled by convention.\n\nA developer who implements exactly what the spec describes would add `html_add_permalinks_html`. Under that fix, `confoverrides={'html_permalinks_icon': ...}` is an unknown config key: Sphinx warns and ignores it, so the default ¶ is rendered and the assertion fails.\n\nThe `html_permalinks: False` test only asserts that the plain h1 appears. Without that option, an unknown key is ignored, the permalink stays, and the assertion fails because the headerlink is appended inside the h1.\n\nBoth tests therefore depend on new config names the spec never mentions and in fact contradicts.",
+    "score": 4,
+    "explanation": "The tests require new config options named `html_permalinks` (a bool) and `html_permalinks_icon` (HTML content). The specification instead names the option `html_add_permalinks_html` (plus `viewcode_source_html`), so a fix that follows the spec fails both tests.",
+    "overspecification_vector": "confoverrides={'html_permalinks': False}; confoverrides={'html_permalinks_icon': '<span>[PERMALINK]</span>'}"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH2LE59tonvfAc8Zzgp",
+  "input_tokens": 3608,
+  "output_tokens": 681,
+  "seconds": 7.7
+}

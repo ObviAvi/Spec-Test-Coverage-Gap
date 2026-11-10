@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12858",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8502,
+  "output": {
+    "reasoning": "1. The issue identifies a false models.E015 error when model ordering uses a lookup rather than a transform, specifically an ordering path ending in '__isnull'. 2. The graded test defines a model with CharField(max_length=100), sets Meta.ordering to ('test__isnull',), and requires Model.check() == []. It uses no mocks or implementation-specific hooks. 3. Accepting '__isnull' in ordering is settled by the issue's title and working query examples. Testing a direct CharField instead of a chain of foreign keys is a closely related input to the same ordering-validation behavior. Model.check() is the conventional model-check entry point underlying the reported management-command error, and [] conventionally represents no check errors. The field name and length merely construct an otherwise valid model. 4. No substantive requirement remains open: rejecting this valid lookup on a direct field would leave the same reported bug unresolved for closely related inputs. 5. The test is a reasonable generalization of the reproduction, warranting score 2.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should make Model.check() return [] for ordering = ('test__isnull',), which tests the reported lookup-validation bug on a simpler, closely related field configuration.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1949,
+  "output_tokens": 499,
+  "seconds": 12.7
+}

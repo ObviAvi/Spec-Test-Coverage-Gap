@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13089",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9572,
+  "output": {
+    "reasoning": "1. Spec: DatabaseCache._cull crashes with \"'NoneType' object is not subscriptable\" because `cursor.fetchone()` returns None after the culling SQL. The spec suggests \"a simple check to see if it contains data would be enough.\" The entry point is cache.set() -> _base_set -> _cull.\n2. Test requirements:\n   - Uses the existing 'cull' cache config, already used by test_cull.\n   - Sets the private `_max_entries = -1` as setup, so a cull is forced on an empty table. With cull_num = 0, the culling query returns no row.\n   - Calls `set('force_cull_delete', 'value', 1000)`; it must not raise.\n   - Asserts `has_key(...)` is True afterwards.\n3. Settled vs open:\n   - Not crashing: settled by the spec (the reported error).\n   - Key present after set: settled by the basic semantics of set. The table was empty, so nothing else could be deleted, and the insert must still happen.\n   - `_max_entries` is an existing attribute that _base_set reads; it is only used to set up the scenario, not asserted.\n4. Alternative fixes all pass:\n   - Checking for None before the DELETE.\n   - try/except around fetchone.\n   - Skipping culling when the count is 0.\n   - Deleting everything when no row is returned (the table is empty anyway).\n   In every case the key is then inserted and has_key is True. No reasonable fix fails.\n5. Score 2: the test is a regression check through the natural set() path, with private-attribute setup only.",
+    "score": 2,
+    "explanation": "Every reasonable fix that guards against fetchone() returning None lets set() complete, so the assertion that has_key is True after set on an empty culling cache passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGuDL9iYx7uighEAJit",
+  "input_tokens": 3624,
+  "output_tokens": 1030,
+  "seconds": 12.3
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14017",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9562,
+  "output": {
+    "reasoning": "1. The specification identifies an operand-order bug in Q/Exists combinations and explicitly says that '& (and |) operators should be commutative on Q-Exists pairs.' Its reproduction uses Q(), so empty Q operands are within scope.\n2. The added assertions require Q(salary__gte=30) & Exists(is_ceo) to select self.max, and Q(salary__lt=15) | Exists(is_poc) to select self.example_inc.ceo and self.max. They also require all four operand/operator combinations of Exists(is_poc) and Q() to select self.max. The Company query uses point_of_contact=OuterRef('pk'), with that contact set to self.max through save(). assertCountEqual imposes no result ordering.\n3. Support for both operand orders and both operators is explicitly settled. The salary thresholds and correlated-query fixtures exercise ordinary AND/OR filtering semantics rather than imposing arbitrary implementation choices. Treating empty Q as a neutral condition follows the existing Q convention, also reflected in the traceback comment: 'If the other Q() is empty, ignore it and just use self.' Checking the resulting queryset extends the reproduction into observable query behavior.\n4. No requirement leaves a meaningful implementation choice open: the tests do not require __rand__, a particular expression structure, or any private API. A fix using reflected operators, broader Q combination support, or another reasonable implementation can satisfy the same assertions.",
+    "score": 2,
+    "explanation": "The tests check the requested commutativity for both operators, including the reported empty-Q case, and verify the ordinary filtering semantics on related nonempty inputs without constraining the implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2253,
+  "output_tokens": 882,
+  "seconds": 20.4
+}

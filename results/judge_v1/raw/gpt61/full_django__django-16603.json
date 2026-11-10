@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16603",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15723,
+  "output": {
+    "reasoning": "1. The issue concerns receiving http.disconnect after the complete request body, while request processing is still underway. Its reproduction explicitly requires no response after sending a body followed by a disconnect.\n2. test_disconnect_with_body directly repeats that reproduction: the normal ASGI application must produce no output. This is settled by the specification.\n3. test_asyncio_cancel_error uses ASGIHandler.request_class and ASGIRequest.urlconf to route an async view. With no disconnect, it requires the ordinary 200 response and unchanged body, a reasonable regression check. With a disconnect during the view, it requires no response and delivery of asyncio.CancelledError to the view. Cancellation is a natural implementation, but its specific delivery to application code is not explicitly settled; a handler could instead monitor disconnection, suppress the response, and allow an already-running view to finish. The flag observes application-visible cancellation behavior, not private handler state.\n4. test_assert_in_listen_for_disconnect sends http.not_a_real_message after the body and requires AssertionError containing 'Invalid ASGI message after request body: http.not_a_real_message'. Both the exception choice and required wording are open. The specification discusses genuine disconnects, and the shown read_body implementation establishes no malformed-message validation convention. A correct concurrent disconnect listener could raise AssertionError with different wording, or another validation exception, while handling all genuine disconnects correctly.\n5. The malformed-message assertion alone establishes score 3: it pins unspecified externally observable error behavior. Despite the test's name, it never directly calls or requires a private listen_for_disconnect method.",
+    "score": 3,
+    "explanation": "A reasonable fix could correctly monitor disconnects and cancel request processing, yet reject malformed ASGI messages with different wording or a different exception. The graded test requires a particular AssertionError message that the specification never establishes.",
+    "overspecification_vector": "test_assert_in_listen_for_disconnect: await communicator.send_input({\"type\": \"http.not_a_real_message\"}); msg = \"Invalid ASGI message after request body: http.not_a_real_message\"; with self.assertRaisesMessage(AssertionError, msg). Additionally, test_asyncio_cancel_error requires the running view specifically to observe asyncio.CancelledError via self.assertIs(view_did_cancel, True), rather than merely requiring disconnect handling and no response."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3611,
+  "output_tokens": 1526,
+  "seconds": 37.0
+}

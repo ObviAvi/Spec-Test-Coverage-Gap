@@ -1,0 +1,18 @@
+{
+  "task_id": "full/matplotlib__matplotlib-25281",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17578,
+  "output": {
+    "reasoning": "1. The specification identifies missing validation at the public legend entry point: “Errors should be raised when invalid arguments are passed to `loc`,” rather than during show/drawing. It provides invalid-string validation as the existing pattern.\n2. The graded tests call only ax.legend. They require immediate ValueError for tuples (1.1,), (0.481, 0.4227, 0.4523), and (0.481, 'go blue'); list [1.1, 2.2, 3.3]; dictionary {'not': True}; and integer codes 11 and -1. They also require successful calls for codes 0, 1, 5, and 10. Every rejection checks a specific message containing a fixed description of accepted forms and the rejected value's representation. No mocks, private methods, or internal state are involved.\n3. Immediate rejection is explicitly settled by the quoted requirement. Testing malformed sequences and other invalid non-string inputs reasonably extends the reported bug; retaining valid location codes is a regression check. ValueError follows the specification's invalid-string precedent. However, the exact non-string error wording is open: the specification gives an existing string-validation message, not a required message for these new checks.\n4. A reasonable fix could validate all these inputs immediately and raise ValueError with a clear message such as 'Invalid loc: expected a location code or two numeric coordinates'. That resolves the bug but fails the graded message regexes.\n5. The gap concerns externally observable error wording, not implementation details, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could immediately reject every tested invalid loc with ValueError but use different, equally clear wording. All four graded tests require the particular message prefix 'loc must be string, coordinate tuple, or an integer 0-10, not ', which the specification does not prescribe.",
+    "overspecification_vector": "The exact-message match requirements in all four graded tests, including the value \"loc must be string, coordinate tuple, or an integer 0-10, not 11\" in test_loc_validation_numeric_value and the analogous messages for the other rejected inputs."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4897,
+  "output_tokens": 1200,
+  "seconds": 23.3
+}

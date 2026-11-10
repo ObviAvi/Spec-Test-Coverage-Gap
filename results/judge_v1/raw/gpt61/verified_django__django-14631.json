@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14631",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10828,
+  "output": {
+    "reasoning": "The specification requires _clean_fields() and changed_data to obtain values through BoundField, explicitly saying the cleaned value and form[name].initial \"should be the same.\" The graded tests construct a bound form with empty submitted data and a disabled DateTimeField whose callable initial advances one second per invocation. They require successful validation, the first callable result (14:30:46), and equality between cleaned_data['dt'] and the BoundField's cached initial. These requirements directly exercise the reported inconsistency; the timestamp is determined by the fixture rather than an arbitrary required constant. The additional assertion that microseconds are removed follows the existing BoundField/widget normalization pattern, also evidenced by the surrounding without_microsec assertions. Although not stated numerically in the issue, this is a reasonable consequence of using the existing BoundField initial rather than independently retrieving the field initial. There are no open implementation requirements: the tests neither require the suggested _did_change() method nor prescribe how either refactoring is implemented.",
+    "score": 2,
+    "explanation": "Every reasonable fix using the existing BoundField initial consistently should pass: the tests check the explicitly requested cleaned-value/initial equality and its normal caching and microsecond-normalization consequences.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2447,
+  "output_tokens": 2080,
+  "seconds": 46.7
+}

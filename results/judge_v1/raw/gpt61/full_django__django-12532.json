@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-12532",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9297,
+  "output": {
+    "reasoning": "1. The specification identifies an inconsistent public error-message key: \"ModelMultipleChoiceField should use 'invalid_list'\" rather than 'list'. It does not prescribe a migration or deprecation policy.\n2. The graded test_modelchoicefield supplies error_messages={'invalid_list': 'NOT A LIST OF VALUES', ...} and requires clean('3') to report that customized message. This is settled directly by the specification. Its required-field and invalid-choice checks preserve existing behavior shown in the unchanged test context.\n3. The graded test_list_error_message_warning constructs ModelMultipleChoiceField with error_messages={'list': 'NOT A LIST OF VALUES'} and requires a RemovedInDjango40Warning whose message contains \"The 'list' error message key is deprecated in favor of 'invalid_list'.\" The warning requirement, its category, its timing during construction, and its wording are all open: neither the specification nor the supplied existing-code context establishes them.\n4. A reasonable fix could consistently use 'invalid_list' while retaining 'list' as a silent compatibility alias. That resolves the reported inconsistency but fails the warning test. Even a fix that emits a deprecation warning could reasonably choose different wording. The separate, ungraded test_list_error_message does not affect the score.\n5. The unsupported assertions concern publicly observable warning behavior, not implementation internals, so the most overspecified graded assertion warrants score 3.",
+    "score": 3,
+    "explanation": "A correct fix could adopt 'invalid_list' and silently support the legacy 'list' key, but the graded test additionally demands a RemovedInDjango40Warning during construction. It also requires specific warning wording, although the specification says nothing about a deprecation policy or message.",
+    "overspecification_vector": "test_list_error_message_warning: `with self.assertRaisesMessage(RemovedInDjango40Warning, msg): ModelMultipleChoiceField(..., error_messages={'list': 'NOT A LIST OF VALUES'})`, where `msg` is \"The 'list' error message key is deprecated in favor of 'invalid_list'.\""
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2104,
+  "output_tokens": 821,
+  "seconds": 15.9
+}

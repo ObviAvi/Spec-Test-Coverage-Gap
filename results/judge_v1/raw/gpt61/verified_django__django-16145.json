@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16145",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8543,
+  "output": {
+    "reasoning": "1. The issue concerns runserver's displayed URL for addrport='0:8000' and explicitly requires 'Starting development server at http://0.0.0.0:8000/'.\n2. The test invokes call_command('runserver', addrport='0:8000'), disables reloading and checks, captures stdout, and asserts that the specified message appears. It patches runserver.run and BaseCommand.check_migrations but asserts nothing about calls to either.\n3. The input and exact output substring are settled verbatim by the specification. Using call_command follows the command-testing pattern visible in the surrounding context. Disabling reloading/checks and mocking server startup isolate the output without prescribing how address normalization is implemented.\n4. No asserted detail remains open: the test does not require a particular normalization location, internal address value, or implementation strategy. Its substring assertion also permits additional output.\n5. The graded assertion directly checks the reported reproduction case and required result.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must print the explicitly requested 'Starting development server at http://0.0.0.0:8000/' for the reported '0:8000' input, which is precisely what the test asserts.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1981,
+  "output_tokens": 599,
+  "seconds": 15.3
+}

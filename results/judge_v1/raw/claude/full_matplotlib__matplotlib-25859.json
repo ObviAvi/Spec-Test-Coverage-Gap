@@ -1,0 +1,19 @@
+{
+  "task_id": "full/matplotlib__matplotlib-25859",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8727,
+  "output": {
+    "reasoning": "1. The issue says Figure.add_axes silently ignores extra positional arguments such as `False, 1`. It proposes: \"if not deprecate extra positional parameters.\" The entry point is Figure.add_axes.\n2. What the tests require: calling add_axes(ax, 'extra') and add_axes([0,0,1,1], 'extra') must emit a MatplotlibDeprecationWarning whose message matches \"Passing more than one positional argument\".\n3. Status of each requirement:\n- Emitting a deprecation warning: settled by the spec (\"deprecate extra positional parameters\"), and MatplotlibDeprecationWarning is the repo convention.\n- Covering both the Axes-instance path and the rect path: reasonable, since a correct fix should handle extra args on both.\n- The message text \"Passing more than one positional argument\": open. The spec never gives wording.\n4. A reasonable fix could deprecate with different wording and fail the match. Examples:\n- `_api.warn_deprecated('3.8', message='Extra positional arguments to add_axes are deprecated and ignored')`.\n- A message like \"add_axes() got unexpected positional arguments; this is deprecated\".\n- Matplotlib's own `make_keyword_only`-style wording (\"Passing the ... parameter ... positionally is deprecated\").\nAll of these are correct deprecations, but none matches the regex.\n5. The test pins an exact, unspecified message on observable behavior, so the score is 3.",
+    "score": 3,
+    "explanation": "The tests require the deprecation warning text to match \"Passing more than one positional argument\". A correct fix that deprecates extra positional args to add_axes with different wording (e.g. \"extra positional arguments are deprecated\") would fail.",
+    "overspecification_vector": "pytest.warns(mpl.MatplotlibDeprecationWarning, match=\"Passing more than one positional argument\") (both occurrences)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGz96XuGrc9LZnQygks",
+  "input_tokens": 3288,
+  "output_tokens": 944,
+  "seconds": 9.6
+}

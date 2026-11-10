@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14983",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9233,
+  "output": {
+    "reasoning": "The issue concerns the public repr() output of RepeatedKFold and RepeatedStratifiedKFold, which currently falls back to an object-address representation. The tests instantiate both named classes with n_splits=2 and n_repeats=6 and require exactly '<ClassName>(n_repeats=6, n_splits=2, random_state=None)'. The class names, parameter names, and inclusion of random_state=None are settled by the specification's expected outputs. Displaying the supplied values 2 and 6 is a reasonable extension to closely related inputs. However, requiring n_repeats before n_splits is not supported: the specification explicitly illustrates 'RepeatedKFold(n_splits=5, n_repeats=10, random_state=None)' and the corresponding order for RepeatedStratifiedKFold. A reasonable fix could preserve that illustrated order for all inputs, returning '<ClassName>(n_splits=2, n_repeats=6, random_state=None)', and fail both graded cases. The restriction concerns observable output formatting, not implementation internals.",
+    "score": 3,
+    "explanation": "A correct fix that follows the specification's illustrated parameter order—n_splits, n_repeats, random_state—would fail because the tests require n_repeats before n_splits.",
+    "overspecification_vector": "repeated_cv_repr = ('{}(n_repeats=6, n_splits=2, random_state=None)'.format(repeated_cv.__class__.__name__)); assert repeated_cv_repr == repr(repeated_cv)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2281,
+  "output_tokens": 488,
+  "seconds": 9.8
+}

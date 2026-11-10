@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24627",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8059,
+  "output": {
+    "reasoning": "1. The specification says that clearing an axes with cla() (and a figure with clf()) should unset the `.axes` and `.figure` attributes of the artists it deparents. The reproduction uses a Line2D and `a.cla()`.\n\n2. What the test requires:\n- It calls `ax.clear()`.\n- It uses two lines from `ax.plot` and an image from `ax.imshow`.\n- Before clearing, it asserts `art.axes is ax` and `art.figure is fig`.\n- After clearing, it asserts `art.axes is None` and `art.figure is None`.\n\n3. Status of each requirement:\n- `.axes` set to None: settled. The title says cla() should \"unset the `.axes` and `.figure` attributes\", and the example shows `l.remove()` giving `None`.\n- `.figure` set to None: settled by the same title text.\n- Going through `clear()` rather than `cla()`: settled by existing code. In matplotlib, `cla` and `clear` are aliases that both route to the same internal clear routine, so a fix there covers both.\n- Covering images as well as lines: settled. The spec says \"deparented artists\" in general, and an image is a closely related input. A fix that only handled lines would leave the same bug for other children.\n- The pre-clear assertions only check existing behavior.\n\n4. Nothing is left open. The unset value is None, matching the `remove()` behavior the spec cites.",
+    "score": 2,
+    "explanation": "The test asserts that after `ax.clear()` the children's `.axes` and `.figure` are None, which is exactly what the issue title asks for. Including an image alongside the lines is just a related input under the same 'deparented artists' requirement.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGoy6kPSgXDfKfzzZ6t",
+  "input_tokens": 3066,
+  "output_tokens": 958,
+  "seconds": 10.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-14396",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10987,
+  "output": {
+    "reasoning": "1. The spec asks to change Sitemap.protocol's default to https 'slowly with a clear deprecation timeline'. It gives no warning class, message, method, or target version.\n2. The graded test requires several things:\n- a get_protocol() method on GenericSitemap/Sitemap that emits the warning when called with no protocol set;\n- the warning class RemovedInDjango50Warning;\n- the exact message \"The default sitemap protocol will be changed from 'http' to 'https' in Django 5.0. Set Sitemap.protocol to silence this warning.\"\n3. Status of each requirement:\n- get_protocol: depends on the repository. Sitemap.get_protocol likely exists in Django 4.0 (it was added earlier for get_urls). The unchanged tests do not show it, but the spec's link and Django history suggest it exists. Treat it as plausibly existing.\n- RemovedInDjango50Warning: settled by convention. Django's deprecation policy, for a change made in the 4.0 dev cycle, gives this class.\n- Exact message text: open. Any reasonable deprecation wording would work, e.g. 'The default value of Sitemap.protocol will change to https...'.\n- Where the warning fires: open. It could fire at construction or in get_urls instead of get_protocol. Emitting in get_protocol is natural if that method computes the protocol.\n4. A correct fix that warns with RemovedInDjango50Warning but different wording fails assertWarnsMessage. The rejected detail is an exact message string, which is observable behavior.",
+    "score": 3,
+    "explanation": "The test requires the exact deprecation message \"The default sitemap protocol will be changed from 'http' to 'https' in Django 5.0. Set Sitemap.protocol to silence this warning.\" A correct deprecation fix with different wording would fail.",
+    "overspecification_vector": "msg = (\"The default sitemap protocol will be changed from 'http' to 'https' in Django 5.0. Set Sitemap.protocol to silence this warning.\"); with self.assertWarnsMessage(RemovedInDjango50Warning, msg): sitemap.get_protocol()"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGxQmoUcxnSoUwf9HwA",
+  "input_tokens": 4249,
+  "output_tokens": 733,
+  "seconds": 7.6
+}

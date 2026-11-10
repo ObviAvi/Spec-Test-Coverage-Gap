@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15678",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9804,
+  "output": {
+    "reasoning": "1. The specification names CryptPasswordHasher and requires: “deprecate it in Django 4.1 and remove in Django 5.0.” It does not prescribe warning wording or when the warning must be emitted.\n2. The graded test configures PASSWORD_HASHERS with django.contrib.auth.hashers.CryptPasswordHasher, calls get_hasher(\"crypt\"), and requires a RemovedInDjango50Warning containing the substring \"django.contrib.auth.hashers.CryptPasswordHasher is deprecated.\" It runs only when crypt is available.\n3. The class being deprecated is settled by the specification. The configured class path and \"crypt\" identifier match the existing tests. RemovedInDjango50Warning is conventional for the specified removal version. Requiring the warning during get_hasher() is a natural public-API check, but its precise timing is not explicitly settled. The required message substring is open.\n4. A reasonable fix could emit RemovedInDjango50Warning at the tested point with the message \"CryptPasswordHasher is deprecated and will be removed in Django 5.0.\" This clearly implements the requested deprecation but fails the required substring assertion. A warning emitted when encoding or verifying rather than retrieving the hasher could also miss the test's timing requirement.\n5. The message assertion alone establishes mild overspecification: it pins externally observable wording rather than an internal implementation detail.",
+    "score": 3,
+    "explanation": "A correct fix could warn with \"CryptPasswordHasher is deprecated and will be removed in Django 5.0.\" The test rejects that reasonable wording because it requires a particular fully qualified name and sentence ending.",
+    "overspecification_vector": "msg = \"django.contrib.auth.hashers.CryptPasswordHasher is deprecated.\"\nwith self.assertRaisesMessage(RemovedInDjango50Warning, msg):\n    get_hasher(\"crypt\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2249,
+  "output_tokens": 915,
+  "seconds": 20.0
+}

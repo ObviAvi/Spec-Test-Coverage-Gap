@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-14309",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12751,
+  "output": {
+    "reasoning": "The specification identifies an unchecked args[0] access in is_fits when a filepath lacks a FITS extension and no positional data arguments are supplied. The test imports the existing connect module and calls connect.is_fits(\"\", \"foo.bar\", None) without extra arguments, requiring a falsy result without an exception. The function and failing branch are explicitly identified in the traceback and in the statement that the function previously returned None for a string without a FITS extension. The unknown extension and absent data arguments are closely related inputs to the reproduction. Falsiness follows from the identifier having neither a recognized extension nor an object to identify; the test does not require False rather than None. The empty origin is not specified, but it is incidental to the described filepath/argument-access failure, and no reasonable corrective change requires treating it differently. The test imposes no new API, exact return type, or implementation requirement.",
+    "score": 2,
+    "explanation": "The assertion checks the explicitly implicated is_fits function on a related non-FITS filename with no data arguments, requiring only the natural falsy, non-crashing result rather than a particular implementation or exact value.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3144,
+  "output_tokens": 1141,
+  "seconds": 27.1
+}

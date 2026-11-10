@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13112",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10233,
+  "output": {
+    "reasoning": "1. The spec says that with Django 3.1, migrate/makemigrations crashes when a ForeignKey points to a model in an app with a mixed-case label ('DJ_RegLogin'). The lazy reference gets lowercased to 'dj_reglogin.category', which does not match the installed app label. Only the symptom is described; no function is named, but the error is the migration state's lazy-reference check.\n\n2. What the test requires:\n- Models are defined in app_label 'MiXedCase_migrations' with a FK and an M2M to Author.\n- They are added to a ProjectState via ModelState.from_model.\n- Accessing project_state.apps (rendering the migration state) must not raise.\n- project_state.apps.get_models() must return 3 models.\n\n3. Each requirement against the spec:\n- FK with a mixed-case app label resolving in migration state: settled. This is exactly the reported crash ('declared with a lazy reference to ... but app ... isn't installed'), which is raised when the state apps are rendered.\n- M2M with the same mixed-case label: a closely related input. The same lowercasing bug affects the M2M deconstruct path, and a fix that only patched FK would leave the bug in a related input, so it would not count as reasonable.\n- Exactly 3 models: just confirms all models render. No arbitrary value.\n- Uses only public ProjectState, ModelState and Apps APIs, which are the natural migration entry points.\n\n4. Any correct fix must make the migration state render without the lazy-reference error. That holds whether the developer preserves app-label case in field deconstruction or makes resolution tolerant of case. So this test passes. No reasonable fix that resolves the reported crash would fail it.",
+    "score": 2,
+    "explanation": "The test renders a ProjectState containing FK and M2M references to a mixed-case app label and asserts all 3 models load, which is exactly the reported migration crash plus the closely related M2M case.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGpQyVNDNBoLjVfTRyA",
+  "input_tokens": 3892,
+  "output_tokens": 1236,
+  "seconds": 12.8
+}

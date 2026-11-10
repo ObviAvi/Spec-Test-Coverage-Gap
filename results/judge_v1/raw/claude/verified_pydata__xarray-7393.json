@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-7393",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10026,
+  "output": {
+    "reasoning": "1. The spec says that stacking a coordinate of dtype i4 turns it into i8 in the resulting MultiIndex level, and that building a MultiIndex should not change the dtype of the source indexes. The entry point is Dataset.stack, accessed through ds[...].values.dtype.\n\n2. The tests stack an int32 coordinate and a float32 coordinate, then assert that str(values.dtype) equals the original dtype.\n\n3. The int32 case is settled directly by the spec's example. The float32 case is the same bug on a closely related input. The spec states a general principle: 'Creating a MultiIndex should not change the data type of the Indexes from which it is built.' Pandas Index upcasts float32 to float64 in the same way it upcasts int32 to int64, and a reasonable fix stores level coordinate dtypes and restores them; that approach is dtype-agnostic.\n\n4. A fix that only special-cases integers would ignore the general principle stated in the spec. That would amount to fixing only the literal example, so it does not count as a reasonable fix.\n\nThe tests use the public API, matching the reproduction.",
+    "score": 2,
+    "explanation": "The test checks through the public stack API that both int32 and float32 coordinate dtypes are preserved, which follows directly from the spec's principle that creating a MultiIndex should not change the source index dtypes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGrH2oTHavh6XyV6SqF",
+  "input_tokens": 3977,
+  "output_tokens": 473,
+  "seconds": 5.6
+}

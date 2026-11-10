@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-14623",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8561,
+  "output": {
+    "reasoning": "1. The issue explicitly reports that reversing limits fails for logarithmic axes and expects inversion for both scales. Its reproduction uses ax.set_yscale(yscale) followed by ax.set_ylim(y.max(), y.min()). 2. The added test creates an axes, calls ax.set_yscale(\"log\"), sets descending positive limits with ax.set_ylim(10, 1), and asserts ax.get_ylim() == (10, 1). There are no mocks, private APIs, required implementation names, or error-message checks. 3. The logarithmic scale and descending limits are directly settled by the report. The public getter checks the requested limits and their order; preserving explicitly supplied valid limits follows the existing limits API behavior, also illustrated by the surrounding assertions. The smaller values and omission of plotted data merely isolate the reported operation. 4. No open implementation choice is constrained: a fix that still cannot preserve descending positive log limits on an empty axes would leave the same bug on a closely related input.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because assert ax.get_ylim() == (10, 1) directly checks that setting descending limits inverts a logarithmic axis as requested.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2055,
+  "output_tokens": 589,
+  "seconds": 16.5
+}

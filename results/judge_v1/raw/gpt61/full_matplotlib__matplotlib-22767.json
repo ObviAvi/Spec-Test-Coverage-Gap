@@ -1,0 +1,18 @@
+{
+  "task_id": "full/matplotlib__matplotlib-22767",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10296,
+  "output": {
+    "reasoning": "The specification identifies an incorrect default in find_nearest_contour and explicitly requests replacing range(len(self.levels)) with range(len(self.layers)). Its contourf reproduction is expected to return a nearest-contour tuple successfully. Only test_find_nearest_contour_no_filled is graded. It creates filled contours and requires all three find_nearest_contour calls—with default indices, explicit indices, and different pixel settings—to raise ValueError matching \"Method does not support filled contours.\" The function and filled-contour inputs are settled by the specification; the additional arguments are related inputs. However, rejecting filled contours, choosing ValueError, and requiring that message are not specified, and rejection conflicts with the successful expected outcome. A reasonable fix is precisely the requested default-index correction, preserving nearest-contour searches over valid filled-contour collections. Such a fix returns a result rather than raising and therefore fails the graded test. These assertions concern observable behavior of the same public function, not implementation internals, so the score is 3.",
+    "score": 3,
+    "explanation": "A developer could make the explicitly requested change to range(len(self.layers)), fixing the IndexError while returning nearest-contour results. The graded test instead requires filled-contour calls to raise ValueError with a particular message, rejecting that reasonable fix.",
+    "overspecification_vector": "All three repeated assertions `with pytest.raises(ValueError, match=\"Method does not support filled contours.\"):` around `cs.find_nearest_contour(1, 1, pixel=False)`, `cs.find_nearest_contour(1, 10, indices=(5, 7), pixel=False)`, and `cs.find_nearest_contour(2, 5, indices=(2, 7), pixel=True)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2574,
+  "output_tokens": 781,
+  "seconds": 17.9
+}

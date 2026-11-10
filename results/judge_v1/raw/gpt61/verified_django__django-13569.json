@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13569",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9950,
+  "output": {
+    "reasoning": "1. The issue concerns annotate(...Count(...)).order_by('?'): random ordering must not split aggregation groups. The specification explicitly says the random call has 'nothing to do with the aggregation' and should not break it.\n2. The test calls Author.objects.annotate(contact_count=Count('book')).order_by('?') and evaluates the queryset. It requires nine author/name-count pairs, with Peter Norvig having count 2 and the others count 1. ordered=False imposes no particular random ordering. It asserts no SQL text, compiler implementation, private method, or new API.\n3. Preserving aggregate counts under random ordering is settled by the specification. Using Author/book rather than Thing/related, and evaluating model instances rather than calling values(), are reasonable closely related inputs. The exact names and counts identify the existing fixture records and their aggregate results; they do not require the fix to introduce particular constants or behavior beyond preserving those results.\n4. No open implementation choice is constrained. A reasonable fix that removes random ordering's effect on grouping should produce the expected records and counts regardless of how it changes query compilation.\n5. Score 2: this is the reported regression exercised on related models and queryset output.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should preserve the author/book counts under order_by('?'), including Peter Norvig's count of 2; ordered=False avoids constraining the random result order.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2346,
+  "output_tokens": 565,
+  "seconds": 13.8
+}

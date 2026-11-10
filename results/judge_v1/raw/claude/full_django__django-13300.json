@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-13300",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9210,
+  "output": {
+    "reasoning": "1. The spec asks that Exists() subqueries use `SELECT 1` instead of listing every column, \"like .exists() does\". The stated motivation is shorter, easier-to-debug SQL. It names Exists() as the entry point.\n2. The test builds `Experiment.objects.values(exists=Exists(Experiment.objects.order_by('pk')))` and makes four assertions:\n   (a) exactly one query is run;\n   (b) the quoted pk column name does not appear in the SQL;\n   (c) `connection.ops.limit_offset_sql(None, 1)` (LIMIT 1) appears in the SQL;\n   (d) 'ORDER BY' does not appear.\n3. Settled vs. open:\n   - (a) Settled; this is the existing behaviour.\n   - (b) Settled by \"It would be nice if the queries generated for Exists() used SELECT 1\". Dropping the selected columns removes the pk column.\n   - (d) Likely settled. Django's Exists already cleared ordering in its constructor as a performance optimization, so most fixes keep that. A clear_select_clause-style fix also leaves ordering alone.\n   - (c) Open. The spec only asks for SELECT 1. LIMIT 1 appears in the `.exists()` example, but the request is explicitly about the select list (\"used SELECT 1 like .exists() does\"). Adding LIMIT 1 inside an EXISTS subquery is an extra optimization the issue never asks for.\n4. A reasonable fix for (c): in Exists, clear the select clause and select a constant 1 (the same thing the reporter did by hand with `.values_list('_1')`), without adding a limit. This fully resolves the issue: no pk column, SELECT 1 in the subquery. It fails the LIMIT 1 assertion. Only a fix that happens to reuse Query.exists() (which also sets the limit) passes.\n5. The gap is an observable SQL detail that pins one valid choice among several, so score 3.",
+    "score": 3,
+    "explanation": "A correct fix that makes Exists() subqueries emit `SELECT 1` (e.g., clearing the select clause and selecting a constant) without also adding `LIMIT 1` fails the assertion that the SQL contains LIMIT 1. The issue only asks for SELECT 1, never for limiting the subquery.",
+    "overspecification_vector": "self.assertIn(connection.ops.limit_offset_sql(None, 1), captured_sql)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGwgdXSZiswXqXMCqUp",
+  "input_tokens": 3453,
+  "output_tokens": 1404,
+  "seconds": 14.7
+}

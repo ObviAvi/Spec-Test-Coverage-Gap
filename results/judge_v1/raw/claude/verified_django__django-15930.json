@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15930",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8552,
+  "output": {
+    "reasoning": "1. Spec: Case with When(~Q(pk__in=[])) generates invalid SQL 'CASE WHEN THEN'; expected all rows annotated with True since they all match.\n2. Test requires: annotate with Case(When(~Q(pk__in=[]), then=Value(\"selected\")), default=Value(\"not selected\")); all rows returned; each has selected == \"selected\".\n3. The input is essentially the reproduction (uses string values instead of booleans, no output_field, no order_by), which are related inputs on the same code path. The expected result, every row matching, comes straight from the spec: \"I expected behavior to annotate all rows with the value True since they all match.\"\n4. Any correct fix passes, whether it compiles the full match into a tautology like '1=1' in When.as_sql or simplifies the Case to its 'then' value. Row count and value checks are purely observable behavior.",
+    "score": 1,
+    "explanation": "The test runs the issue's reproduction (~Q(pk__in=[]) in a When) and checks that every row gets the 'then' value, exactly the behavior the spec expects.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFgEFEMkCVw8Y5qFHrg",
+  "input_tokens": 3205,
+  "output_tokens": 389,
+  "seconds": 6.9
+}

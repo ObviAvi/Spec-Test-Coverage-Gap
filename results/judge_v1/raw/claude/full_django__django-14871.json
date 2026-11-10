@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-14871",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7858,
+  "output": {
+    "reasoning": "1. The spec says Select2 translations are not applied for languages with subtags, such as LANGUAGE_CODE='pt-BR'. The i18n static file is not found because the language code gets lowercased (widgets.py around L366, the media/i18n-name lookup). It names only a symptom and the media lookup line.\n\n2. The graded test calls `build_attrs` on AutocompleteMixin and asserts the result contains a new key `'lang': 'en'`.\n\n3. Settlement:\n- Fixing the i18n file lookup: settled by the spec.\n- Adding a `lang` HTML attribute to the widget attrs: open. The spec never mentions widget attributes, `build_attrs`, or telling Select2 which language to use through a `lang` attribute.\n- The exact key name `lang` and value 'en': open.\n\n4. A competent developer could fix exactly what the issue describes. For example, they could stop lowercasing, or map 'pt-br' to 'pt-BR' in SELECT2_TRANSLATIONS, so the correct i18n static file loads in `media`. That fix leaves `build_attrs` unchanged and fails the test.\n\nA developer who also realizes Select2 needs to be told the language could pass it a different way: a `data-language` attribute, or setting the language in autocomplete.js from the media name. Those also fail.\n\nThe test pins a specific new attribute name on a different method (`build_attrs`) than the media lookup the spec implicates.",
+    "score": 4,
+    "explanation": "The test requires `build_attrs()` to emit a new `'lang': 'en'` attribute, which the spec never mentions. A correct fix that repairs the case-sensitive i18n file lookup in `media`, or passes the language to Select2 another way (e.g. `data-language`), fails.",
+    "overspecification_vector": "+            'lang': 'en',  (assertion in test_build_attrs that build_attrs output includes a new 'lang' key)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFnTXNFhydDDf4qWvGA",
+  "input_tokens": 2893,
+  "output_tokens": 1330,
+  "seconds": 14.2
+}

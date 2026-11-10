@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-18605",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8653,
+  "output": {
+    "reasoning": "The specification requests integer validation of both bounds in Idx('i', (m, n)): \"The check for integer dimension should be done to both upper and lower bounds when a tuple is given.\" The graded test instead requires Idx('i', m) with an unconstrained Symbol to succeed, with name 'i', lower 0, and upper m - 1, and requires a real=False Symbol to raise TypeError. The label and bounds mapping follows the existing construction shown in the traceback, and rejecting a non-real dimension with TypeError follows the stated integer requirement and existing exception convention. However, accepting an unconstrained Symbol is open and is not implied by the issue; the displayed scalar validation actually rejects it because its is_integer property is unknown. A reasonable correct fix would apply the displayed scalar validation to both tuple bounds while leaving scalar validation unchanged. That fixes the reported bug but raises TypeError on the test's unconstrained m. This is an externally observable acceptance-policy choice within the same function, so the score is 3.",
+    "score": 3,
+    "explanation": "A reasonable fix could validate both tuple bounds using the existing integer-dimension check and preserve scalar-dimension behavior. It would reject the unconstrained symbol m, failing tests that require Idx('i', m) to succeed even though the specification never requests relaxing scalar validation.",
+    "overspecification_vector": "m = symbols(\"m\")\nassert Idx(\"i\", m).name == 'i'\nassert Idx(\"i\", m).lower == 0\nassert Idx(\"i\", m).upper == m - 1"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2048,
+  "output_tokens": 867,
+  "seconds": 21.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-13453",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16151,
+  "output": {
+    "reasoning": "1. Spec: `Table.write(..., format=\"html\", formats=...)` ignores `formats`, while other ASCII writers (csv, rst, MRT) honor it. The entry point is the public `write()`, and the expected result is formatted values in the HTML cells.\n2. What the test requires:\n   - It calls `table.write(sp, format=\"html\", formats={\"C1\": \"04d\", \"C2\": \".2e\"})`.\n   - It compares the full HTML output to an expected string.\n   - Cells must read 0001/0002 and 1.23e-11/-9.88e+11.\n   - The HTML structure must be unchanged.\n3. Each requirement:\n   - Public `write` entry point with `formats`: settled by the spec (\"the `formats` option to the write() method seems to be ignored\").\n   - Format-spec strings rather than lambdas: settled by convention. `formats` accepts both strings and callables for every other writer, and the spec expects HTML to behave like csv/rst. A fix that handled only callables would leave the same bug for closely related inputs, so it is not a reasonable fix.\n   - Formatted values (\"0001\", \"1.23e-11\", \"-9.88e+11\"): fully determined by Python's standard format specs.\n   - HTML skeleton (head, meta, indentation): this is existing writer output, shown verbatim in the issue. Fixing the formatting has no reason to change it.\n4. No open requirement. Any fix that makes the HTML writer apply column formats the way other writers do produces exactly this output.",
+    "score": 2,
+    "explanation": "The test writes a table through the public `write(format=\"html\", formats=...)` call and checks that standard string format specs are applied in the cells. That is the spec's requirement on a closely related input, with the existing HTML structure unchanged.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGswLCEZ5ovBqCqVChS",
+  "input_tokens": 6409,
+  "output_tokens": 875,
+  "seconds": 10.1
+}

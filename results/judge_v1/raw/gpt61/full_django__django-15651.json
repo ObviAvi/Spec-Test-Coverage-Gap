@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15651",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11063,
+  "output": {
+    "reasoning": "1. The specification requests a backwards-compatible RenameIndex operation and explicitly says: \"If the autodetector finds an old, unnamed index and a new, named one matching field signature, issue a RenameIndex operation.\" Only this autodetector behavior is graded here.\n2. The graded test requires one migration for otherapp containing exactly [RenameIndex, AlterUniqueTogether], in that order. RenameIndex must have model_name=\"book\", new_name=\"book_title_author_idx\", and old_fields=(\"author\", \"title\"); AlterUniqueTogether must have name=\"book\" and unique_together=set(). There are no mocks. The other two added tests are not graded.\n3. Emitting RenameIndex with the matching old fields and requested new name is settled by the quoted requirement and the operation's specified interface. Model identification, batching changes into a migration, and reflecting the accompanying unique_together removal follow ordinary migration-state conventions. However, placing RenameIndex before AlterUniqueTogether is open: the specification establishes no ordering between these changes.\n4. A reasonable implementation could generate the unique_together removal first and then generate RenameIndex. These changes concern distinct index/constraint operations, so that ordering can produce the correct final schema and migration state while still implementing the required rename detection. It would fail the exact operation-order assertion and the position-specific attribute assertions.\n5. The strongest gap is therefore an externally observable migration-order choice, warranting score 3.",
+    "score": 3,
+    "explanation": "A correct autodetector could emit AlterUniqueTogether before RenameIndex while implementing the same required changes. The test rejects that valid ordering by requiring RenameIndex at position 0 and AlterUniqueTogether at position 1.",
+    "overspecification_vector": "self.assertOperationTypes(changes, \"otherapp\", 0, [\"RenameIndex\", \"AlterUniqueTogether\"]), together with assertOperationAttributes requiring RenameIndex attributes at operation index 0 and AlterUniqueTogether attributes at operation index 1."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2483,
+  "output_tokens": 1005,
+  "seconds": 24.9
+}

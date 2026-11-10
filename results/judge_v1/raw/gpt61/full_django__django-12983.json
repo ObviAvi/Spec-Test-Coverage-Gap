@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-12983",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8303,
+  "output": {
+    "reasoning": "1. The issue names django.utils.text.slugify() and requests that it “strip dashes and underscores.” Its example changes '___This is a test ---' from '___this-is-a-test-' to 'this-is-a-test', establishing removal at the boundaries, not removal of internal separators.\n2. The added cases require: collapsing internal dash/space runs (' multiple---dash and  space ' → 'multiple-dash-and-space'); trimming surrounding whitespace, including tabs and newlines; preserving internal underscores ('underscore_in-value' and the double underscore in 'strip__underscore-value'); removing leading/trailing underscore runs, dash runs, and mixed underscore/dash runs; and handling mixed boundary whitespace and separators ('_ -strip-mixed-value _-' → 'strip-mixed-value'). They exercise the same public function and require no new names, mocks, messages, or internal state.\n3. Boundary dash/underscore removal is settled by the requested change and example. Mixed runs are closely related inputs covered by the same requirement. Whitespace handling and separator collapsing follow ordinary slugification behavior; the reported original output also demonstrates collapsing a dash run. Preserving interior underscores follows the conventional meaning of 'strip' and avoids changing behavior unrelated to boundary cleanup.\n4. No requirement leaves a material open choice. Globally removing or replacing underscores would unnecessarily change interior content, while a fix that leaves separators behind when boundary whitespace and separators are mixed would leave the same boundary-cleanup bug unresolved.\n5. The tests extend the reproduction with reasonable related and regression cases rather than selecting among distinct valid fixes.",
+    "score": 2,
+    "explanation": "Every reasonable boundary-stripping fix should pass: the underscore, dash, and mixed-boundary assertions directly generalize the reported example, while the other assertions preserve normal slugification behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1914,
+  "output_tokens": 913,
+  "seconds": 21.6
+}

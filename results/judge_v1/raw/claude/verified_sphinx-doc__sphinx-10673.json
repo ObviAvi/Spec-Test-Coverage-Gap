@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10673",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10063,
+  "output": {
+    "reasoning": "1. The spec says a toctree listing `genindex`, `modindex` and `search` should work and not warn about nonexisting documents. Users clearly want these links to appear in the toctree. It describes the symptom only and names no function.\n\n2. What the graded test requires:\n- Build an xml project whose toctree with caption 'Indices' lists genindex, modindex and search.\n- `app.env.tocs['index']` contains two toctree nodes. This structure comes from existing toctree processing.\n- The second toctree node has caption 'Indices', default options, and `entries=[(None,'genindex'),(None,'modindex'),(None,'search')]`.\n\n3. Settledness of each requirement:\n- Caption and default options are existing behaviour.\n- The entries requirement is settled by convention in the existing code. Toctree entries are stored as (title, ref) tuples, and the title is None when the user gives no explicit title, which is the case for every ordinary document reference. Before the fix these names were dropped from entries with a warning. The natural fix is to stop dropping them and append them exactly as regular docnames are appended, which yields (None, 'genindex').\n- Resolving them into links at render time is not checked.\n\n4. Possible deviations:\n- A developer could fill in titles at directive time, e.g. ('Index','genindex'). That departs from the established pattern of deferring titles to resolution, so it is unlikely.\n- A fix that only suppresses the warning without keeping the entries ignores the user's goal of having the links, so it does not count as correct.\n- No reasonable fix that keeps the entries in the standard format would fail.",
+    "score": 2,
+    "explanation": "The test asserts that the toctree keeps the entries `(None, 'genindex')`, `(None, 'modindex')` and `(None, 'search')` instead of dropping them with a warning; any fix that includes these names following the existing (title, docname) entry convention passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFhWeytrbwSd5p7eRcv",
+  "input_tokens": 3870,
+  "output_tokens": 1487,
+  "seconds": 17.2
+}

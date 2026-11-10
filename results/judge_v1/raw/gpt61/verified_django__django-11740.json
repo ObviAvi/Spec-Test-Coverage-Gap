@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11740",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10552,
+  "output": {
+    "reasoning": "1. The specification identifies a missing cross-app migration dependency when an existing scalar field becomes a ForeignKey: it says the migration should 'create dependency for App2.' It describes migration generation rather than prescribing a particular implementation function.\n2. The graded test calls the existing get_changes helper with before/after ModelState fixtures. Before, Book.author is an IntegerField; afterward, the existing book fixture supplies the foreign key. It requires exactly one migration for otherapp, containing one AlterField operation, with dependencies [('testapp', '__first__')]. There are no mocks or required new implementation names.\n3. The dependency on the referenced app is directly settled by the specification. IntegerField instead of UUIDField is a closely related input exercising the same scalar-to-foreign-key transition. A single AlterField is the conventional, data-preserving representation of that change. The '__first__' dependency representation follows the adjacent existing cross-app dependency test, which already expects the same marker.\n4. These requirements do not introduce a meaningful open implementation choice. Replacing the field through destructive removal/addition would not be an equivalent correct fix, and the test does not require a particular internal dependency-building algorithm. No reasonable alternative fix is identified that resolves this migration-generation bug while violating these conventional output requirements.",
+    "score": 2,
+    "explanation": "The test checks the requested cross-app dependency for the closely related IntegerField-to-ForeignKey conversion, using the existing AlterField and '__first__' migration conventions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2473,
+  "output_tokens": 832,
+  "seconds": 21.3
+}

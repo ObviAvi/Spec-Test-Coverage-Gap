@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11299",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12849,
+  "output": {
+    "reasoning": "1. The specification identifies malformed CheckConstraint SQL when AND and OR clauses are combined. It requires unqualified column references, illustrated by replacing \"new__app_testconstraint\".\"field_1\" with \"field_1\". It mentions Col versus SimpleCol as an apparent cause, but does not require a particular internal representation or changes to Query.build_where().\n2. The only graded test constructs Query(Author) and directly calls build_where() with Q(num__gt=2, name__isnull=False) | Q(num__lt=F('id')). It requires a particular where.children nesting and order, GreaterThan/IsNull/LessThan lookup types, and SimpleCol instances for all three lookup left-hand sides and the F('id') right-hand side. The migration test is not graded.\n3. Correct AND/OR semantics and unqualified constraint SQL are settled by the specification. The comparison and null-check meanings follow normal lookup conventions. However, the precise tree layout, lookup implementation classes, and especially the requirement that generic Query.build_where() produce SimpleCol objects are internal choices not settled by the requested SQL behavior. Mentioning SimpleCol in the diagnosis does not mandate using it at this stage. The F-expression input is related coverage, but its internal representation is likewise unspecified.\n4. A reasonable fix could recursively normalize column references only during CheckConstraint SQL generation, ensuring unqualified references throughout nested AND/OR expressions, including field-to-field comparisons. Such a fix would address the reported failure and closely related cases while leaving generic Query.build_where() results unchanged. It would fail the graded SimpleCol assertions despite generating correct constraint SQL.\n5. The test therefore imposes an internal implementation requirement rather than checking only whether the reported problem is resolved.",
+    "score": 4,
+    "explanation": "A correct fix could remove column qualification specifically during CheckConstraint SQL generation without changing generic Query.build_where(). The graded test would reject it because it directly inspects that query builder's intermediate tree and requires SimpleCol instances.",
+    "overspecification_vector": "where = query.build_where(Q(num__gt=2, name__isnull=False) | Q(num__lt=F('id')))\nself.assertIsInstance(num_gt_lookup.lhs, SimpleCol)\nself.assertIsInstance(name_isnull_lookup.lhs, SimpleCol)\nself.assertIsInstance(num_lt_lookup.rhs, SimpleCol)\nself.assertIsInstance(num_lt_lookup.lhs, SimpleCol)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3021,
+  "output_tokens": 845,
+  "seconds": 17.1
+}

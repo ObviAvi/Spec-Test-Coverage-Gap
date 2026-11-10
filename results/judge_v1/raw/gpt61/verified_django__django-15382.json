@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15382",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7897,
+  "output": {
+    "reasoning": "1. The specification reports that filtering with `~models.Exists(MyModel.objects.none())` alongside another condition incorrectly produces an empty result or loses the WHERE block. 2. The test creates a Manager, calls `Manager.objects.filter(~Exists(Manager.objects.none()) & Q(pk=manager.pk))`, and requires the result to be exactly `[manager]`. 3. The negated empty Exists expression and accompanying filter are settled by the reported example. Using Manager instead of MyModel, selecting by primary key instead of name, and expressing the conjunction with `& Q(...)` are closely related inputs governed by standard Django filtering semantics. An empty subquery makes Exists false, its negation true, and the primary-key condition selects the created manager. The singleton assertion introduces no ordering requirement. 4. No open implementation choice is constrained: the test asserts only query results, not SQL shape, internal state, or a particular optimization. Any reasonable fix covering the reported bug and closely related inputs must return the manager.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix must make the negated empty Exists condition true while preserving the accompanying primary-key filter, so `assertSequenceEqual(qs, [manager])` follows from the reported behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1799,
+  "output_tokens": 559,
+  "seconds": 13.1
+}

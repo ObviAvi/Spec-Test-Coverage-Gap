@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-2905",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10207,
+  "output": {
+    "reasoning": "1. The spec says assigning an object that has a `.values` attribute into an object-dtype array unwraps `.values` instead of storing the object itself. It names the exact cause: the line `data = getattr(data, 'values', data)` at variable.py L641, introduced by PR #1746. That line is in `as_compatible_data`, which both `Variable.__setitem__` and the `Variable` constructor use.\n2. What the test requires:\n   - It builds `Variable(dims=(), data=CustomWithValuesAttr(np.arange(3)))`, an arbitrary object with a `.values` attribute.\n   - It asserts `orig._data.item()` is the custom object, i.e., the object is stored as-is in a 0-d object array rather than unwrapped.\n3. Settlement:\n   - Not unwrapping `.values` from arbitrary objects is settled by the spec: \"prevents storing objects inside arrays of dtype==object ... if the RHS has a values property\", plus the pointer to the offending line.\n   - The constructor entry point follows from that line living in the shared `as_compatible_data` helper. Fixing the named line (only unwrap `.values` for pandas/xarray types) fixes both paths.\n   - Using `_data.item()` is just how a 0-d object array is inspected. Any fix that stops the unwrapping yields a 0-d object ndarray holding the object, since `np.asarray(obj)` gives that.\n4. Alternative fixes:\n   - A fix that special-cased only `__setitem__` and left the cited line untouched would fail. It would also leave the identified root cause in place, though, and the spec stresses that many library objects carry `.values`.\n   - So a competent developer fixing the named line passes.",
+    "score": 2,
+    "explanation": "The spec pinpoints the `getattr(data, 'values', data)` line in the shared `as_compatible_data` helper. Any fix there that stops unwrapping `.values` from arbitrary objects makes the test's assertion pass: the Variable stores the CustomWithValuesAttr object itself, which `_data.item()` returns.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFhzurYmSiGerGjZsJt",
+  "input_tokens": 3942,
+  "output_tokens": 2026,
+  "seconds": 20.7
+}

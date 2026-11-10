@@ -1,0 +1,19 @@
+{
+  "task_id": "full/astropy__astropy-7008",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7993,
+  "output": {
+    "reasoning": "1. The spec asks for a context manager that switches which version set of constants is active. Its example is `constants_set(astropyconst13)`, which uses a hypothetical name ('something like') and passes a module object rather than a string.\n\n2. What the test requires:\n- A function exposed on astropy.constants named `set_enabled_constants`.\n- It accepts the string 'astropyconst13'.\n- Inside the block, const.h.value equals the CODATA2010 value.\n- After the block, const.h.value is restored to the CODATA2014 value.\n- Entering the context with 'notreal' raises ValueError.\n\n3. Status of each requirement:\n- Function name `set_enabled_constants`: open. The spec offers `constants_set` only as a tentative example.\n- String argument: open. The spec's example passes what looks like a module object, `astropyconst13`, not a string.\n- Value switching and restoration on exit: settled by the spec.\n- ValueError for an invalid name: roughly conventional, but the exception type is not stated.\n\n4. Reasonable fixes that would fail:\n- A developer who names the function `constants_set`, as in the spec, or something like `constants_version`, fails with an AttributeError.\n- A developer who accepts module objects as the spec shows, passing `astropy.constants.astropyconst13`, fails when the test passes a string.\n- The name is unspecified and introduced only by the fix, which pushes the score to 4.",
+    "score": 4,
+    "explanation": "The test calls `const.set_enabled_constants('astropyconst13')`, a name the spec never mentions; the spec suggests `constants_set(astropyconst13)` with a module argument. A correct context manager under the spec's name, or one taking a module object, fails.",
+    "overspecification_vector": "const.set_enabled_constants('astropyconst13'); const.set_enabled_constants('notreal') with pytest.raises(ValueError)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGvQKi88UvGpqokWxZv",
+  "input_tokens": 2962,
+  "output_tokens": 649,
+  "seconds": 7.1
+}

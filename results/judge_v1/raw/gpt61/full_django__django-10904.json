@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-10904",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19049,
+  "output": {
+    "reasoning": "1. The specification requests a codebase-wide cleanup: “Replace use of OSError aliases with OSError,” plus simplify handlers catching both OSError and SMTPException. It names no particular upload function and does not request more specific exception subclasses.\n2. The only graded test, test_not_a_directory, creates a regular file at UPLOAD_TO, registers os.remove for cleanup, and calls self.obj.testfile.save('foo.txt', file, save=False) using SimpleUploadedFile('foo.txt', b'x'). It requires FileExistsError (or a subclass) with a message containing '<UPLOAD_TO> exists and is not a directory.' No mocks or new implementation names are required.\n3. The conflicting-path input and rejection behavior are established by the existing test. The message is also established: the previous test required that exact text as the exception's first argument. However, requiring FileExistsError rather than generic OSError is open: the specification requests replacement of aliases, not narrowing of raised exception types.\n4. A reasonable correct fix would mechanically replace the existing raise IOError(message) with raise OSError(message), preserve the message, replace other aliases throughout the codebase, and simplify the SMTP handlers. That satisfies the requested cleanup but fails assertRaisesMessage(FileExistsError, msg), because OSError constructed with only a message remains a generic OSError.\n5. The additional restriction concerns an externally observable exception type, so this is mildly rather than significantly overspecified.",
+    "score": 3,
+    "explanation": "A correct alias-replacement fix can raise OSError with the existing message when the upload directory path is a file. The graded test instead requires FileExistsError, an unrequested narrowing of the exception type.",
+    "overspecification_vector": "with self.assertRaisesMessage(FileExistsError, msg):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4360,
+  "output_tokens": 802,
+  "seconds": 18.6
+}

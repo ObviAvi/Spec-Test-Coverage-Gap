@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-7166",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7909,
+  "output": {
+    "reasoning": "Spec: the InheritDocstrings metaclass uses inspect.isfunction, which returns False for properties, so properties don't inherit docstrings. Graded test: it defines a Base with a docstringed property bar and a Subclass that overrides bar without a docstring, then asserts Subclass.bar.__doc__ == 'BAR'. That is exactly the behavior the issue describes, through the public metaclass entry point. There are no new names, messages, or private APIs. Possible fix variants: checking for property alongside functions (the original fix uses `inspect.isfunction(val) or inspect.isdatadescriptor(val)`), or setting the property's __doc__ attribute. Both work, since property.__doc__ is writable when the instance has no docstring. Any reasonable fix makes the inherited doc visible on Subclass.bar.",
+    "score": 1,
+    "explanation": "The test directly asserts that a property overriding a documented base property inherits its docstring ('BAR'), which is exactly what the issue says should work.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGqmLspmRyEvgTgUHS9",
+  "input_tokens": 2922,
+  "output_tokens": 353,
+  "seconds": 5.3
+}

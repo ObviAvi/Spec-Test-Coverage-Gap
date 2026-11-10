@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14122",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8651,
+  "output": {
+    "reasoning": "The specification identifies unwanted GROUP BY fields from Meta.ordering and the resulting \"wrong aggregation\"; it does not prescribe an implementation. The test uses Article.objects.exclude()/filter().update() to assign three existing articles to author_1 and one to author_2, then calls values('author').annotate(count=Count('author')). These are ordinary fixture setup and public ORM operations, not requirements for new APIs. Excluding default-ordering fields from this grouping is directly settled by \"Meta.ordering fields must not be included in GROUP BY clause.\" The expected author primary keys and counts of 3 and 1 follow from the assignments and standard grouping/counting semantics. The dictionary keys follow from values('author') and the explicit annotation alias 'count'. assertCountEqual deliberately leaves result order unrestricted. No implementation details, SQL formatting, private methods, or error messages are asserted. There is no open choice that would let a reasonable correct fix produce different results for this query.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix must produce one aggregate per author with counts 3 and 1, rather than splitting groups using Meta.ordering fields—the exact aggregation error described in the specification.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2015,
+  "output_tokens": 605,
+  "seconds": 14.9
+}

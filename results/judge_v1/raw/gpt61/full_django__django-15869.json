@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15869",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9612,
+  "output": {
+    "reasoning": "1. The specification requests: \"Deprecate length_is template filter in favor of length,\" recommending comparisons within an {% if %} tag. It does not prescribe warning wording or a removal release.\n2. The graded test renders '{{ string|length_is:3 }}' with string='good' and requires a RemovedInDjango51Warning containing the full message assembled in msg. It does not assert the rendered output.\n3. Exercising length_is through template rendering is settled by the specification's examples; using another string and length is a related input. Emitting a warning is conventional for deprecation. The precise versioned warning category is not established by the supplied evidence, and the required message text is open.\n4. A reasonable fix could retain the filter's behavior and emit RemovedInDjango51Warning with 'length_is is deprecated; use length with an equality comparison in an if tag instead.' That implements the requested deprecation, even using the tested category, but fails the required message match. Another appropriate deprecation category could also satisfy the issue absent a project convention settling the release.\n5. The decisive mismatch concerns externally observable warning wording, not implementation internals, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could emit RemovedInDjango51Warning when length_is is used but phrase the replacement guidance differently. The test rejects it because assertRaisesMessage requires a particular warning-message substring that the specification never supplies.",
+    "overspecification_vector": "msg = (\"The length_is template filter is deprecated in favor of the length \" \"template filter and the == operator within an {% if %} tag.\"); with self.assertRaisesMessage(RemovedInDjango51Warning, msg):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2225,
+  "output_tokens": 1116,
+  "seconds": 25.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16693",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10130,
+  "output": {
+    "reasoning": "1. Spec: a context processor that returns None triggers a mysterious TypeError inside bind_template. The issue proposes a nicer message modeled on the view error \"didn't return an HttpResponse object. It returned None instead.\", raised from a try/except around updates.update(). The entry point is RequestContext.bind_template.\n\n2. What the tests require:\n- bind_template raises a TypeError (assertRaisesMessage(TypeError, ...)).\n- The message contains the exact substring \"Context processor context_process_returning_none didn't return a dictionary.\" This includes:\n  - the processor's bare __name__, not its qualified dotted path;\n  - the word \"dictionary\" rather than \"dict\" or \"mapping\";\n  - the phrase \"Context processor\".\n\n3. Classification:\n- TypeError: settled by convention. The original error is a TypeError, and re-raising it keeps the type.\n- Message wording: open. The spec suggests mimicking the view message, but it gives no exact text.\n  - The view message uses the full dotted path (example.views.index).\n  - A dev mimicking it closely might write \"The context processor template_tests.test_context.context_process_returning_none didn't return a dictionary. It returned None instead.\"\n  - That fails because the substring \"Context processor context_process_returning_none\" is absent: the capitalization differs and the dotted path comes before the name.\n  - Other reasonable variants also fail, e.g. \"didn't return a dict\" or \"must return a dict\".\n\n4. Many reasonable fixes with different wording or a qualified name fail, so the message is pinned. The asserted behavior is still externally observable (an exception message).",
+    "score": 3,
+    "explanation": "The test pins the exact substring \"Context processor context_process_returning_none didn't return a dictionary.\". A correct fix fails if it uses the processor's qualified dotted path (as the view error the spec cites does), says \"dict\" instead of \"dictionary\", or phrases the message differently.",
+    "overspecification_vector": "msg = (\"Context processor context_process_returning_none didn't return a \" \"dictionary.\") with assertRaisesMessage(TypeError, msg)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGyAzc4699M78UXJqLQ",
+  "input_tokens": 3693,
+  "output_tokens": 751,
+  "seconds": 7.5
+}

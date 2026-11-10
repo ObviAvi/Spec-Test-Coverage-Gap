@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pytest-dev__pytest-9064",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12372,
+  "output": {
+    "reasoning": "1. The spec says `--stepwise-skip` alone has no effect. It recommends that `--stepwise-skip` act the same as `--stepwise --stepwise-skip`. The spec also notes that the combo requirement is not mentioned in the help text.\n\n2. What the graded tests require:\n- test_stepwise_skip_is_independent: run the reproduction example with only `--stepwise-skip`. It expects 2 failures and the 'Interrupted: Test failed, continuing from this test next run.' line. This matches the spec's example output verbatim and is settled.\n- test_sw_skip_help: requires the `-h` output to contain a line ending with \"implicitly enables --stepwise.\" This is open. The spec only observes that the help text does not mention the combo requirement. It never says the help text must change, and it certainly gives no wording.\n\n3. A reasonable correct fix could make `--stepwise-skip` enable stepwise in pytest_configure and leave the help text alone. That fix fails. So could one that updates the help with other wording, such as \"(also enables --stepwise)\" or \"Implies --stepwise\". These are all valid and observable choices, so the help test pins one specific phrasing.",
+    "score": 3,
+    "explanation": "test_sw_skip_help requires the help text for --stepwise-skip to end with the exact phrase \"implicitly enables --stepwise.\". A correct fix that makes the flag work, but leaves the help unchanged or uses different wording (e.g. \"implies --stepwise\"), fails.",
+    "overspecification_vector": "result.stdout.fnmatch_lines(\"*implicitly enables --stepwise.\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFpAm6oNQokcy42Z8MQ",
+  "input_tokens": 4507,
+  "output_tokens": 564,
+  "seconds": 6.4
+}

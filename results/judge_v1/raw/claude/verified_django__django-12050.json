@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12050",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7922,
+  "output": {
+    "reasoning": "1. Spec: Query.resolve_lookup_value turns a list input into a tuple, which breaks exact-value queries. Expected behavior: 'The expected iterable return type should match input iterable type.' It names the function and states the required behavior.\n2. What the test requires:\n   - Query(Item).build_where(Q(name=['a','b'])), an existing public-ish path that calls resolve_lookup_value.\n   - The first child is an Exact lookup.\n   - Its rhs equals \"['a', 'b']\".\n3. Status of each requirement:\n   - Exact lookup: settled by existing behavior. Q(name=...) with no lookup suffix is exact.\n   - rhs string: name is a CharField, so get_prep_value str()-ifies the value. If the list is preserved, rhs is \"['a', 'b']\"; if it is coerced to a tuple, rhs is \"('a', 'b')\". So the asserted string follows directly from the spec's requirement that a list stays a list, combined with existing CharField prep.\n   - build_where: existing method and the natural path through resolve_lookup_value; it is not new or invented.\n4. Possible fixes: type(value)(...), or branching to keep a list as a list and a tuple as a tuple. Both yield a list here and pass. I see no reasonable fix that preserves the list type yet fails, and no unspecified name or value is pinned.",
+    "score": 2,
+    "explanation": "Any fix that makes resolve_lookup_value return a list for list input yields the CharField-prepped rhs \"['a', 'b']\", which is exactly what the spec's 'return type should match input iterable type' demands.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGs9eLHmwLsDM5VwhEN",
+  "input_tokens": 2904,
+  "output_tokens": 918,
+  "seconds": 10.8
+}

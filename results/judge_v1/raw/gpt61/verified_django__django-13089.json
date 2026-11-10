@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13089",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9572,
+  "output": {
+    "reasoning": "The specification identifies a missing-row result in _cull: cursor.fetchone()[0] fails because the query is 'not returning any data,' and suggests checking for data. The tests obtain caches['cull'], temporarily set the existing _max_entries field to -1, call set('force_cull_delete', 'value', 1000), and require has_key('force_cull_delete') to be exactly True. They restore _max_entries afterward and run the same test with and without time-zone support. Settled by the specification: culling must tolerate a missing result without raising the reported exception. Settled by API convention: setting an unexpired key should leave it present, and has_key returns a boolean. Open details are the negative capacity used to force the condition, the key, and the timeout; these are reproduction inputs rather than required implementation choices. Skipping the deletion, returning from _cull when no row exists, or otherwise safely handling the empty result all allow the subsequent insertion to succeed. No reasonable correct fix needs to reject these assertions.",
+    "score": 2,
+    "explanation": "The test reproduces the missing-row culling condition and verifies that setting an unexpired key still succeeds; its private-field adjustment forces the regression without prescribing how to fix it.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2242,
+  "output_tokens": 1302,
+  "seconds": 32.1
+}

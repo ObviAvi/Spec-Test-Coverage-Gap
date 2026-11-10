@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13112",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10233,
+  "output": {
+    "reasoning": "1. The specification reports a migration failure for a ForeignKey targeting a model in a mixed-case app: the lazy reference incorrectly uses 'dj_reglogin' instead of 'DJ_RegLogin'. Both makemigrations and migrate are identified as entry points.\n2. The test creates an isolated Apps registry, an Author, a Book with a ForeignKey to Author, and a Magazine with a ManyToManyField to Author, all under 'MiXedCase_migrations'. It converts them using ModelState.from_model(), adds them to ProjectState, and requires project_state.apps.get_models() to return three models without a lazy-reference error. There are no mocks, exact error messages, or required implementation names.\n3. Mixed-case labels and successful ForeignKey resolution are settled by the reported failure. The particular label and model names are equivalent reproduction inputs. Using migration state construction is a conventional way to exercise the reported migration failure; the test does not assert how references are stored internally. Returning all three explicit models is normal registry behavior.\n4. ManyToManyField coverage is not explicitly requested, but is a closely related relational-reference case, and the example already contains a ManyToManyField. Leaving the same mixed-case lazy-reference failure for that relation would leave the bug in a closely related input rather than represent an alternative correct behavior. No arbitrary choice in the assertion excludes a reasonable correct fix.",
+    "score": 2,
+    "explanation": "The assertion that migration state renders all three models checks successful mixed-case relationship resolution, extending the reported ForeignKey case only to a closely related ManyToManyField case without prescribing an implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2336,
+  "output_tokens": 1391,
+  "seconds": 31.3
+}

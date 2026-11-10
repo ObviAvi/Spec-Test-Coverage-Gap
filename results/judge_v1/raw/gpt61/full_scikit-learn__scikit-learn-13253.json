@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13253",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11393,
+  "output": {
+    "reasoning": "1. The specification requests column-wise DataFrame handling that avoids converting mixed columns to one object array and instead can \"preserve the datatypes per column.\" It explicitly identifies categories_ dtypes as affected behavior. 2. The only graded test is test_encoder_dtypes_pandas. It fits OneHotEncoder(categories='auto') on three-column DataFrames, inspects categories_[i].dtype, and checks transform(X).toarray(). The added mixed input contains integer, object-string, and floating-point columns; their category dtypes must respectively equal int, object, and float. The encoded output must contain the expected six indicator columns. Other tests in the patch are not graded. 3. Preserving these per-column category dtypes is settled by the specification's datatype-preservation goal; the asserted types correspond to the input columns' ordinary pandas/NumPy dtypes. The indicator values and feature ordering follow the existing test's encoding behavior, extended to a third column. 4. There is no open implementation choice constrained here: the test does not require a particular extraction method, validation helper, or internal representation. A fix that retains whole-frame object coercion and consequently produces object-typed numeric categories would leave the reported problem unresolved.",
+    "score": 1,
+    "explanation": "The graded assertions directly check the requested preservation of integer, object-string, and floating-point column dtypes in categories_, while retaining the existing one-hot encoding behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2850,
+  "output_tokens": 959,
+  "seconds": 23.4
+}

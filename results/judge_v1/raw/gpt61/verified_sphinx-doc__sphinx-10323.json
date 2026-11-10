@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10323",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11040,
+  "output": {
+    "reasoning": "The specification reports lost leading whitespace in literalinclude prepend/append output and expects correctly indented snippets. It suggests excluding prepend/append from dedent as a possible solution, not as the required implementation. The test constructs LiteralIncludeReader directly with lines='9-11', dedent=2, prepend='class Foo:', and append='# comment', then requires read() to return dedented file content surrounded by unchanged added lines. Line selection, concatenation, and newlines are ordinary regression details. However, requiring dedent to exclude the added lines, specifically within LiteralIncludeReader.read(), remains open: a reasonable fix could instead preserve raw leading whitespace during directive-option processing, resolving the reported problem without changing the reader's existing dedent ordering. The direct reader test bypasses that fix and would still fail.",
+    "score": 4,
+    "explanation": "A correct fix could preserve leading whitespace in prepend/append during directive-option processing while leaving LiteralIncludeReader's dedent behavior unchanged. The test bypasses directive processing and requires the reader itself to exclude prepend/append from dedent, rejecting that alternative.",
+    "overspecification_vector": "options = {'lines': '9-11', 'dedent': 2, 'prepend': 'class Foo:', 'append': '# comment'}; reader = LiteralIncludeReader(literal_inc_path, options, DUMMY_CONFIG); content, lines = reader.read(); assert content == (\"class Foo:\\n\" \"  def baz():\\n\" \"      pass\\n\" \"\\n\" \"# comment\\n\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2613,
+  "output_tokens": 1890,
+  "seconds": 45.6
+}

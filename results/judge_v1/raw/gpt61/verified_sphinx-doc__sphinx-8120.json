@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8120",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10435,
+  "output": {
+    "reasoning": "1. The specification describes an end-to-end bug: a project-local sphinx.po is automatically compiled, but its translations do not override bundled translations in generated HTML. It does not name an initialization method or require translations to be available before building.\n2. The test uses pytest's Sphinx fixture and make_app with German, writes a Catalog containing Quick search → QUICK SEARCH using pofile.write_po, clears locale.translators for isolation, and checks three things: sphinx.mo exists immediately after application construction; app.translator.gettext('Quick search') already returns the override; and app.build() produces index.html containing that override.\n3. Automatic compilation is settled by 'a ... sphinx.mo is created (because of gettext_auto_build = True)'. Honoring the override in HTML is settled by the expected caption translations. German and Quick search are reasonable related inputs to the general request to 'change translations or add additional translation'. The catalog-writing and cache-clearing calls are setup, not additional asserted behavior. However, the exact pre-build timing of compilation and, especially, the contents of app.translator immediately after construction are open: the specification only describes running make html and inspecting its output.\n4. A reasonable fix could retain automatic compilation but reload or merge project-local system catalogs at the start of app.build(), before document translation and rendering. That would fix captions and other system messages generally, yet fail the pre-build gettext assertion. A lazy build-time compilation/loading implementation could also fail the pre-build file-existence assertion.\n5. The test therefore imposes an intermediate-state requirement beyond the reported output behavior.",
+    "score": 4,
+    "explanation": "A correct fix could load the project-local system catalog at the beginning of the build and produce all the requested translated output. It would nevertheless fail because the test requires app.translator to expose the override immediately after application construction, before app.build() runs.",
+    "overspecification_vector": "assert app.translator.gettext('Quick search') == 'QUICK SEARCH' before app.build(); additionally, assert (locale_dir / 'sphinx.mo').exists() fixes compilation timing to application construction."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2487,
+  "output_tokens": 1862,
+  "seconds": 46.9
+}

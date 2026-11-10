@@ -1,0 +1,19 @@
+{
+  "task_id": "full/astropy__astropy-12962",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11234,
+  "output": {
+    "reasoning": "1. The spec says there is no way to turn a CCDData into an ImageHDU. It proposes three alternative interfaces and does not commit to any of them: (A) `to_hdu(as_image_hdu=True)`, (B) a new function `fits.ccddata_to_image_hdu`, (C) `write(..., append=True)`.\n\n2. The graded tests require:\n- `ccd.to_hdu(as_image_hdu=False)` returns an HDUList whose element [0] is a PrimaryHDU.\n- `ccd.to_hdu(as_image_hdu=True)` returns an HDUList whose element [0] is an ImageHDU.\n- `ccd.write(filename, as_image_hdu=False)` produces a file with 1 HDU.\n- `ccd.write(filename, as_image_hdu=True)` produces a file with exactly 2 HDUs, where hdus[1] is an ImageHDU (implied: an empty PrimaryHDU first).\n\n3. Status of each requirement:\n- The `to_hdu` `as_image_hdu` kwarg is named in Option A, but only as one of three proposed options. It is open.\n- A `write` `as_image_hdu` kwarg is never mentioned anywhere. Option C proposes `append=True` instead. It is open.\n- The file layout for `write(as_image_hdu=True)` (dummy PrimaryHDU plus ImageHDU) is not specified. It is open.\n\n4. Reasonable fixes that fail:\n- A developer implementing Option B (`fits.ccddata_to_image_hdu`) fails both tests.\n- A developer implementing Option C (`write(append=True)`) fails both tests.\n- A developer implementing exactly Option A on `to_hdu` only fails `test_ccddata_writer_as_imagehdu`, because `write` does not accept or forward `as_image_hdu`.\n\nThe tests depend on an interface choice among explicitly offered alternatives, plus a `write` kwarg the spec never names.",
+    "score": 4,
+    "explanation": "The tests require an `as_image_hdu` keyword on both `CCDData.to_hdu` and `CCDData.write`, with `write` producing an empty PrimaryHDU followed by an ImageHDU. A fix implementing the spec's Option B (`fits.ccddata_to_image_hdu`), Option C (`write(append=True)`), or Option A on `to_hdu` alone would fail.",
+    "overspecification_vector": "ccd_data.write(filename, as_image_hdu=True); assert len(hdus) == 2; assert isinstance(hdus[1], fits.ImageHDU); ccd_data.to_hdu(as_image_hdu=True)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFmauahgg3b4yeZELBp",
+  "input_tokens": 4428,
+  "output_tokens": 1301,
+  "seconds": 11.8
+}

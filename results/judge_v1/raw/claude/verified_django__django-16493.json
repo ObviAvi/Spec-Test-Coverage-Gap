@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16493",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10278,
+  "output": {
+    "reasoning": "1. Spec: FileField.deconstruct omits the storage kwarg when the storage is a callable that returns default_storage. It should include a reference to the callable. The spec names deconstruct and its `self.storage is not default_storage` check.\n2. Test requirements:\n- A model field using storage=callable_default_storage. The test patch adds this field and the helper itself.\n- The field's deconstruct() kwargs must contain 'storage'.\n- kwargs['storage'] must be the callable itself, checked by identity.\n3. Each requirement is settled:\n- The spec says the kwarg should be included \"as a reference to the callable as expected\".\n- The existing test test_deconstruction already asserts `assertIs(storage, callable_storage)` for callables, so returning the original callable is the established convention.\n- The test models and helpers are created by the test patch, so no fix needs to introduce new names.\n4. Any reasonable fix works: checking `getattr(self, '_storage_callable', self.storage) is not default_storage`, or always including the kwarg when a callable was given. Either one returns the callable reference and passes. No reasonable correct fix fails.",
+    "score": 1,
+    "explanation": "The test calls deconstruct() on a field whose storage callable returns default_storage and asserts that kwargs['storage'] is that callable, which is exactly the behavior the issue asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFjJyaZk38paEYop3pH",
+  "input_tokens": 3768,
+  "output_tokens": 477,
+  "seconds": 7.0
+}

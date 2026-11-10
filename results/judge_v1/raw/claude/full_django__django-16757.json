@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16757",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16072,
+  "output": {
+    "reasoning": "1. The spec says the admin checks do not report admin.E109 when list_display contains a reverse foreign key such as choice_set. It asks for a system check error, presumably admin.E109, extended to cover this case. It does not specify any message wording.\n\n2. What the graded tests require:\n- (a) The E109 check fires for list_display = ['song_set'] on Band, which is a reverse FK accessor.\n- (b) The error id is 'admin.E109'.\n- (c) The exact message is \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\"\n- (d) The existing ManyToManyField test now also expects this new message. Before, it expected \"must not be a ManyToManyField.\"\n\n3. Settled versus open:\n- (a) Settled: \"Ideally, using a reversed foreign key would also result in a system check error.\"\n- (b) Reasonably settled: the spec mentions admin.E109 and says \"also\".\n- (c) and (d) Open. The spec never says to reword the existing message.\n\n4. Reasonable fixes that fail:\n- Fix A keeps the M2M message unchanged and adds a distinct message for reverse FKs, e.g. \"must not be a reverse foreign key\". It fails both tests: the M2M test because its message changed, and the reverse-FK test because the wording differs.\n- Fix B uses a unified message with different wording, e.g. \"must not be a ManyToManyField or reverse foreign key.\" It also fails both tests.\n\nThe assertions are on externally observable message text that the tests pinned to one choice, so this is mild overspecification.",
+    "score": 3,
+    "explanation": "The tests require the exact reworded E109 message \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\" for both M2M and reverse-FK cases. A correct fix that keeps the old M2M message or words the reverse-FK message differently fails both graded tests.",
+    "overspecification_vector": "\"The value of 'list_display[0]' must not be a many-to-many field or a \" \"reverse foreign key.\" asserted in test_invalid_field_type (rewording the existing ManyToManyField message) and test_invalid_reverse_related_field"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGyekxSgRQnJ5kyUhGS",
+  "input_tokens": 6740,
+  "output_tokens": 769,
+  "seconds": 8.8
+}

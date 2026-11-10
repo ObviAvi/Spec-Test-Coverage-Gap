@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16661",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9858,
+  "output": {
+    "reasoning": "The specification identifies ModelAdmin.lookup_allowed() incorrectly treating a primary-key relation as concrete inheritance and shortening 'restaurant__place__country'. The test's Country, Place, Restaurant, and Waiter models, primary-key OneToOneField, ModelAdmin entry point, list_filter configuration, and exact True result for that lookup are settled by the reproduction. The added assertions use the same function with closely related inputs: 'restaurant__place__country__id__exact' with value '1', and 'restaurant__place__country__name' with value 'test_value', with the latter explicitly included in list_filter. These are reasonably inferred regression coverage: the former explicitly filters the related country's primary key, while the latter extends the affected traversal to a configured field. The changed value '1' introduces no arbitrary output requirement; all assertions concern lookup permission. No mocks, new implementation names, or internal state are required. There is no open detail for which a reasonable fix of this traversal bug should produce a different result.",
+    "score": 2,
+    "explanation": "Every reasonable fix should allow the reported configured lookup and preserve that permission for its explicit primary-key exact form and the configured related-name lookup; the extra assertions are closely related regression cases.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2220,
+  "output_tokens": 794,
+  "seconds": 23.3
+}

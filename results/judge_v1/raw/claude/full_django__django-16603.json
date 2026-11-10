@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16603",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15723,
+  "output": {
+    "reasoning": "1. The spec says http.disconnect is ignored once the request body has been read, so a client that disconnects during long-polling is never noticed. It suggests listening to the receive queue while dispatching the request, similar to Channels' await_many_dispatch. It names ASGIHandler and read_body.\n\n2. Graded tests and what they require:\n(a) test_disconnect_with_body: this is the spec's own reproduction test, verbatim. Settled.\n(b) test_assert_in_listen_for_disconnect: when a message of type 'http.not_a_real_message' arrives after the body, the application must raise AssertionError with the exact text 'Invalid ASGI message after request body: http.not_a_real_message'. Open. The spec never says what to do with unknown messages after the body. A reasonable fix that only watches for http.disconnect and ignores or logs other message types fails. So does a fix that raises a different exception type or uses different wording.\n(c) test_asyncio_cancel_error: on disconnect, the running async view must receive asyncio.CancelledError; on a normal request it must not. It uses the request_class / urlconf attributes, which already exist. Cancelling the view is a natural reading of 'keep receiving whilst dispatching', so it is partly settled. However, a fix that lets the view finish and then simply suppresses the response would fail the view_did_cancel check.\n\n3. The most overspecified assertion is (b). It pins a behavior the spec never mentions, and an exact message string, but both are observable at the application boundary rather than internal state.",
+    "score": 3,
+    "explanation": "A correct fix that watches for http.disconnect during view execution but ignores unexpected message types fails test_assert_in_listen_for_disconnect. So does one that raises a different exception or different wording. The test demands an AssertionError with the exact message 'Invalid ASGI message after request body: http.not_a_real_message', which the spec never mentions.",
+    "overspecification_vector": "test_assert_in_listen_for_disconnect: msg = \"Invalid ASGI message after request body: http.not_a_real_message\"; with self.assertRaisesMessage(AssertionError, msg); also test_asyncio_cancel_error's self.assertIs(view_did_cancel, True), which requires cancelling the view."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGy9K9u7in67kttNuay",
+  "input_tokens": 5986,
+  "output_tokens": 1324,
+  "seconds": 13.5
+}

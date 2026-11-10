@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7910",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10679,
+  "output": {
+    "reasoning": "1. The spec says decorated `__init__` (wrapped with functools.wraps) is not documented under napoleon. The cause is in napoleon's skip logic: `cls = obj.__globals__[cls_path]` looks in the wrapper's globals, so `cls_is_owner` becomes False. The function containing that line is `_skip_member`.\n2. What the test requires: call `_skip_member(app, 'class', '__decorated_func__', SampleClass.__decorated_func__, skip, ...)` on a functools.wraps-decorated special method with a docstring.\n   - With `napoleon_include_special_with_doc=True`, the result must be exactly `False` (assertIs).\n   - With the config set to False, the result must be `None`.\n3. How each requirement is settled:\n   - The decorated method must be recognized as owned by the class: settled by the spec, which explains why the `__globals__` lookup fails for decorated methods.\n   - Exact `False` rather than `None`: settled by existing code. Non-decorated members already return `False` in this branch, and `None` otherwise. The tightening from assertFalse to assertIs only stops the buggy `None` from passing.\n   - Special method plus `napoleon_include_special_with_doc` instead of `__init__`: this is the same function and the same `cls_is_owner` logic with a related input. The spec's `__init__` case goes through the same lookup.\n   - Calling `_skip_member` directly: this is the function the issue itself pinpoints.\n4. Plausible fixes all make the decorated method resolve to the test module's `SampleClass` and return `False` through the existing path:\n   - `inspect.unwrap(obj).__globals__`\n   - looking up the class via `sys.modules[obj.__module__]` (functools.wraps copies `__module__`)\n   - a fallback when the globals lookup fails\n   None of these produces a different observable result.",
+    "score": 2,
+    "explanation": "The test simply checks that `_skip_member`, the function the issue pinpoints, treats a functools.wraps-decorated documented method as class-owned and returns its existing `False` value instead of `None`, which any correct fix to the `__globals__` lookup achieves.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGpUcmK4ruESPt5f1D9",
+  "input_tokens": 4059,
+  "output_tokens": 1519,
+  "seconds": 16.9
+}

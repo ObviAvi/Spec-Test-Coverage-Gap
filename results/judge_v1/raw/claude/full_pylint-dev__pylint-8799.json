@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pylint-dev__pylint-8799",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9074,
+  "output": {
+    "reasoning": "1. The specification's title is \"Short circuit if all checks disabled\". The body only describes a symptom: `pylint test.py --disable=all` takes over 3s. It names no function and says nothing about the exit code or output when short-circuiting.\n2. The test runs pylint on a file with `--disable=all` and requires two things:\n   - exit code 32;\n   - stdout containing \"No files to lint: exiting.\"\n3. Exit code 32: open. Pylint uses 32 for usage errors, and the existing 'no files given' path prints \"No files to lint: exiting.\" and exits 32. The original fix appears to reuse that path by emptying the file list. The specification only says to short-circuit, though. A competent developer could instead return early with exit code 0, since nothing was found and nothing is wrong. That arguably fits better, because disabling all checks is not a usage error.\n4. Message: open. A fix that short-circuits silently, or prints something like \"All checks disabled, nothing to do\", is a reasonable correct fix. It removes the slow work but fails the string assertion.\n5. Both assertions pin one observable choice among several valid ones, so the score is 3.",
+    "score": 3,
+    "explanation": "A fix that skips linting when all checks are disabled but exits with code 0 (or prints a different message, or nothing) would fail. The test requires exit code 32 and the exact string \"No files to lint: exiting.\", and the specification states neither.",
+    "overspecification_vector": "self._runtest([UNNECESSARY_LAMBDA, \"--disable=all\"], out=out, code=32); assert \"No files to lint: exiting.\" in out.getvalue().strip()"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH1ErLxA4n576fBzNYf",
+  "input_tokens": 3390,
+  "output_tokens": 931,
+  "seconds": 10.6
+}

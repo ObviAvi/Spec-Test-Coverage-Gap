@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10673",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10063,
+  "output": {
+    "reasoning": "1. The specification asks for toctree entries named genindex, modindex, and search to work without the reported nonexisting-document warnings. It describes source syntax and build behavior, not an internal representation.\n2. The graded test builds an XML project containing two toctrees and index/module content. It inspects app.env.tocs['index'], requires an exact nested node structure, and checks the second toctree's caption, default option fields, and ordered entries [(None, 'genindex'), (None, 'modindex'), (None, 'search')].\n3. Supporting the three special targets is settled by the requested directive. Preserving their source order and caption, and honoring ordinary directive defaults, are conventional expectations. The exact stored node hierarchy and especially retaining None titles and unmodified target names in app.env.tocs are open: the specification never requires that representation.\n4. A reasonable implementation could recognize these generated pages during directive processing, supply their generated-page titles immediately, and arrange correct link resolution without warnings. Its stored entries would contain titles rather than None, so it would fail the entries assertion despite providing the requested behavior. Alternatively, representing generated-page links with dedicated reference nodes could violate the asserted hierarchy.\n5. The decisive restriction concerns intermediate internal state rather than the requested build output, so the score is 4.",
+    "score": 4,
+    "explanation": "A correct fix could populate generated-page titles when recognizing these special toctree entries, producing working links without warnings. The test would reject it because it requires the internal app.env.tocs entries to retain exactly (None, 'genindex'), (None, 'modindex'), and (None, 'search').",
+    "overspecification_vector": "toctree = app.env.tocs['index']\nassert_node(toctree[0][1][1], addnodes.toctree, ... entries=[(None, 'genindex'), (None, 'modindex'), (None, 'search')])\nThe exact nested node hierarchy asserted by assert_node(toctree, ...) is also an unspecified internal representation."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2450,
+  "output_tokens": 1230,
+  "seconds": 29.6
+}

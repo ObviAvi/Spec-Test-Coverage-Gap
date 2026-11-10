@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-25601",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14103,
+  "output": {
+    "reasoning": "1. The issue concerns RandomForestClassifier.fit failing with an unhelpful IndexError when a tiny max_samples produces an empty bootstrap sample with class_weight='balanced_subsample'. It explicitly permits either successful fitting or a descriptive ValueError. 2. The graded balanced_subsample case loads wine data, constructs RandomForestClassifier with max_samples=1e-4, n_estimators=10, and random_state=0, then calls fit without catching exceptions. It therefore requires successful fitting; it does not actually assert that the sample count is rounded to one. 3. The dataset, classifier, max_samples, class_weight, and fit entry point are settled by the reproduction. The estimator count and random seed are ordinary variations on that same case. Requiring success rather than a descriptive ValueError is open because the specification explicitly allows both outcomes. 4. A reasonable fix could detect when the calculated bootstrap sample count is zero and raise ValueError('insufficient samples for max_samples value'), consistently covering similarly small fractions. This satisfies the specification but fails the graded test. 5. The test pins one permitted externally observable outcome, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix that detects an empty bootstrap sample and raises the explicitly permitted descriptive ValueError would fail because the test requires forest.fit(X, y) to complete without an exception.",
+    "overspecification_vector": "The unguarded `forest.fit(X, y)` call for the graded `class_weight='balanced_subsample'` case with `max_samples=1e-4` requires success and rejects the specification's permitted ValueError outcome."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3416,
+  "output_tokens": 547,
+  "seconds": 12.4
+}

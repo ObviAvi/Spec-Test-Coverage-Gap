@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-13453",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16151,
+  "output": {
+    "reasoning": "1. The specification identifies Table.write(..., format=\"html\", formats=...) as the entry point and says HTML should \"respect the formatting given by the formats argument,\" as other ASCII writers do. 2. The test constructs two named numeric columns, supplies formats={\"C1\": \"04d\", \"C2\": \".2e\"}, writes through that entry point, and compares the complete HTML after stripping outer whitespace. It requires cells containing 0001, 0002, 1.23e-11, and -9.88e+11, with column and row order preserved. There are no mocks, private calls, or implementation-state assertions. 3. Applying supplied formats is explicitly settled. Supporting format-specification strings, rather than only the reproduction's callable, is a reasonable inference from the request to support the existing formats option. The expected numeric strings follow standard formatting semantics; the different signs, magnitudes, and integer column are closely related inputs. Preserving table order and the HTML serialization surrounding the cells follows existing behavior, with the same wrapper and indentation demonstrated in the issue. 4. No genuinely open choice is imposed: a callable-only patch would leave the same formats-support bug for ordinary related inputs, while changing unrelated HTML serialization is not needed to implement this fix. Thus the test adds conventional coverage rather than selecting among reasonable alternative fixes.",
+    "score": 2,
+    "explanation": "Every reasonable complete fix should honor the supplied integer and scientific-notation format strings, producing the asserted cell values while preserving the existing HTML output structure.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4201,
+  "output_tokens": 827,
+  "seconds": 23.0
+}

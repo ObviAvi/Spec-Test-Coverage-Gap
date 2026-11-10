@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-3305",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10131,
+  "output": {
+    "reasoning": "1. Spec: DataArray.quantile(..., keep_attrs=True) drops attrs; expected attrs preserved.\n2. Test requires: DataArray(self.va).quantile(q, dim=dim, keep_attrs=True) values match nanpercentile (already true), and actual.attrs == self.attrs. The inputs are a DataArray built from a Variable with attrs, using various q (scalar, list) and dim (None, single, list).\n3. keep_attrs=True preserving attrs is settled by the spec's expected output. Doing this across different q/dim values is just related inputs on the same function. Values are unchanged existing behavior.\n4. Any reasonable fix that propagates keep_attrs in DataArray.quantile, whether via Dataset.quantile or Variable.quantile, will preserve attrs for all of these inputs. One subtlety: dim=None reduces over all dims, and a reasonable fix should handle that too. No alternative reasonable behavior exists.",
+    "score": 1,
+    "explanation": "The test asserts that quantile(..., keep_attrs=True) returns the original attrs, which is exactly the expected output stated in the issue, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGuo98qTDTk8yeEWH8q",
+  "input_tokens": 3811,
+  "output_tokens": 415,
+  "seconds": 4.6
+}

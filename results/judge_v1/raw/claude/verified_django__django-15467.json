@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15467",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8727,
+  "output": {
+    "reasoning": "1. The specification says that in `formfield_for_foreignkey`, when the field is in `radio_fields`, a caller-supplied `empty_label` kwarg gets overwritten with `_('None')`. It names the exact line and suggests keeping `kwargs.get('empty_label')`.\n2. What the test requires:\n- A ModelAdmin with `radio_fields` on the `parent` FK, plus `formfield_overrides = {ForeignKey: {'empty_label': 'Custom empty label'}}`.\n- It calls the public `formfield_for_dbfield` on `Inventory.parent`.\n- It asserts `ff.empty_label == 'Custom empty label'`.\n3. Settlement:\n- The asserted value is settled: the spec says a user-supplied `empty_label` must be honoured.\n- The route is `formfield_overrides` rather than overriding `formfield_for_foreignkey`. Existing code in `formfield_for_dbfield` merges `formfield_overrides[db_field.__class__]` into kwargs before calling `formfield_for_foreignkey`. So the label arrives as `kwargs['empty_label']`, exactly the case the spec describes.\n- `Inventory.parent` is `blank=True` (existing fixture), so the blank branch applies.\n4. Possible fixes: the suggested fix (`kwargs.get('empty_label') or _('None')`), `kwargs.get('empty_label', _('None'))`, and `setdefault` all pass. Each is reached through the same `formfield_for_foreignkey` code path. I see no reasonable fix of the radio_fields branch that respects kwargs and still fails this test.",
+    "score": 2,
+    "explanation": "Any fix that keeps a caller-supplied `empty_label` in `formfield_for_foreignkey`'s radio_fields branch passes, because `formfield_overrides` is already merged into those kwargs. The assertion `ff.empty_label == 'Custom empty label'` maps directly to the spec's requirement.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGswjW5582oeEMv1EWD",
+  "input_tokens": 3353,
+  "output_tokens": 1403,
+  "seconds": 12.9
+}

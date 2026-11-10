@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-6461",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8475,
+  "output": {
+    "reasoning": "1. The specification says `xr.where(cond, 1, 0, keep_attrs=True)` raises IndexError. The traceback shows `keep_attrs` is meant to keep the attrs of x, the second argument (\"keep the attributes of x, the second parameter, by default\"). When x is a scalar, the attrs list passed to the lambda is too short. The entry point is `xr.where`.\n2. Test requirements: `xr.where(cond, 1, 0, keep_attrs=True)` must not raise, and `actual.attrs == {}`.\n3. Not raising is settled directly by the specification's reproduction. The empty attrs result is settled by the existing documented semantics: attrs come from x, and a scalar x has no attrs, so the result has none.\n4. One possible deviation is falling back to cond's attrs when x is a scalar. That would contradict the explicit 'keep the attributes of x' rule and the consistency with `DataArray.where`, so it is not a reasonable correct fix. Fixes such as `getattr(x, 'attrs', {})` or a length guard returning `{}` both pass.\n5. Score 2.",
+    "score": 2,
+    "explanation": "The test only checks that the reported call succeeds and returns empty attrs. Empty attrs is the only result consistent with the existing rule of keeping x's attributes when x is a scalar with no attrs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGqvtMGGFC5C449Kmzb",
+  "input_tokens": 3168,
+  "output_tokens": 960,
+  "seconds": 9.6
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14496",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9972,
+  "output": {
+    "reasoning": "The issue identifies fractional OPTICS min_samples reaching NearestNeighbors as a float and explicitly proposes int(round(max(2, min_samples * n_samples))). The added test exercises the specified public OPTICS(...).fit(X) entry point with min_samples=0.1, so successful fitting is directly settled. It also supplies min_cluster_size=0.08, max_eps=20, cluster_method='xi', and xi=0.4, then compares labels_ with the existing test's expected_labels. These are related inputs and a regression check against established clustering behavior, rather than a new API or implementation requirement. Fractional min_cluster_size is not explicitly discussed in the issue, but the assertion does not independently impose a new conversion rule for it; a correct min_samples fix should preserve the existing clustering behavior. No reasonable alternative fix is identified that follows the specified rounding correction yet must produce different labels on this regression case.",
+    "score": 2,
+    "explanation": "The test checks that fractional min_samples works through OPTICS.fit and preserves the existing expected clustering, using related Xi-clustering inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2394,
+  "output_tokens": 1284,
+  "seconds": 25.9
+}

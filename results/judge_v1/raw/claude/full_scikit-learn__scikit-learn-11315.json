@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-11315",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 28010,
+  "output": {
+    "reasoning": "1. The specification says `_BaseComposition._set_params` (reached via `ColumnTransformer([]).set_params(n_jobs=2)`) crashes on `zip(*...)` when the composition has no estimators. The fix it implies is to guard the empty case in `_set_params`. It mentions #11315 only as related work.\n\n2. What the graded tests require:\n- `remainder` accepts an estimator instance, e.g. `remainder=DoubleTrans()`, `SparseMatrixTrans()` or `StandardScaler()`, and that estimator is fit and applied to the remaining columns.\n- `transformers_` gains a trailing `('remainder', <'drop' | 'passthrough' | estimator>, [cols])` entry whenever remaining columns exist, including for 'drop' and 'passthrough'.\n- That entry is absent when no columns remain.\n- The error message is exactly \"remainder keyword needs to be one of 'drop', 'passthrough', or estimator.\"\n- `get_params()` exposes `remainder` and `remainder__*` nested params, and `set_params(remainder__with_std=False)` works.\n- `test_column_transformer_no_estimators` uses `ColumnTransformer([], remainder=StandardScaler())`. It checks `params['remainder__with_mean']`, the output shape, `len(transformers_) == 1`, and `transformers_[-1][2] == [0, 1, 2]` (list equality).\n- Separately, `test_column_transformer_dataframe` asserts a `('remainder', 'drop', [1])` entry in `transformers_`.\n\n3. How each is settled:\n- Only the empty-`_set_params` guard is settled by the spec (\"raises an error when the composition has no estimators\").\n- Everything else is open. Estimator-valued remainder, the remainder entry in `transformers_`, the new error wording and the `remainder__` params all belong to the separate feature #11315, which the spec only references by number.\n\n4. A competent developer would fix the empty-tuple unpacking in `_set_params` and `_get_params`, for example by returning early or handling an empty list. Such a fix resolves the reported bug fully. It still fails nearly every graded test, because they require:\n- a new estimator-remainder feature;\n- a specific internal layout of the fitted `transformers_` attribute (remainder appended as the last tuple, with a list of column indices);\n- an exact new error message.\n\nThe graded tests also never exercise `set_params` on an empty composition. They test a different feature.\n\n5. The tests check internal fitted state and a feature the spec never describes, so this is score 4.",
+    "score": 4,
+    "explanation": "A correct fix that just makes `_set_params`/`_get_params` handle an empty estimator list fails almost every graded test. The tests require a whole new #11315 feature: estimator-valued `remainder`, a trailing `('remainder', ..., cols)` tuple in fitted `transformers_`, `remainder__*` nested params, and a new exact error message.",
+    "overspecification_vector": "ColumnTransformer(..., remainder=DoubleTrans()/SparseMatrixTrans()/StandardScaler()); assert len(ct.transformers_) == 2; assert ct.transformers_[-1][0] == 'remainder'; assert ct.transformers_[-1][1] == 'drop'/'passthrough'; assert_array_equal(ct.transformers_[-1][2], [1]); 'remainder__with_mean' in get_params(); error message \"remainder keyword needs to be one of 'drop', 'passthrough', or estimator.\"; test_column_transformer_no_estimators uses ColumnTransformer([], remainder=StandardScaler()) and asserts ct.transformers_[-1][2] == [0, 1, 2]"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFpR9HvxTVhJaJHUEoy",
+  "input_tokens": 11850,
+  "output_tokens": 1429,
+  "seconds": 12.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13915",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21811,
+  "output": {
+    "reasoning": "1. The spec says `sklearn.utils.sparsefuncs.min_max_axis` raises a TypeError on csc matrices whose `indptr` is int64 on 32-bit Windows. The cause is `ufunc.reduceat(X.data, X.indptr[major_index])` in `_minor_reduce`. The natural fix is to cast the indices to `np.intp` (or similar) in `_minor_reduce`.\n2. The graded tests require:\n   (a) `test_euclidean_distances_upcast` and `test_euclidean_distances_upcast_sym`. These import the private `sklearn.metrics.pairwise._euclidean_distances_upcast`, call it with `X`, `Y` and `batch_size` in [None, 5, 7, 101], and assert results match `cdist`/`pdist` to rtol=1e-6. This is a batching bug fix (#13910) in pairwise distances.\n   (b) `test_one_hot_encoder_feature_names_drop`. This requires `OneHotEncoder(drop=...).get_feature_names()` to return a numpy array that excludes dropped categories, e.g. `['x0_c', 'x2_b']`.\n   The `test_min_max` `large_indices` parametrization, which actually matches the spec, is not graded.\n3. None of the graded requirements is settled by the spec. It never mentions pairwise distances, `_euclidean_distances_upcast`, batch handling, OneHotEncoder, `drop`, or feature names. All are open.\n4. Any reasonable fix for the spec, such as casting `X.indptr[major_index]` to `np.intp` in `_minor_reduce`, leaves the euclidean-upcast batching bug and the OneHotEncoder `get_feature_names` drop behavior untouched. So every graded test still fails. The graded tests exercise entirely different functions and code paths, including a private function.\n5. Score 4.",
+    "score": 4,
+    "explanation": "The graded tests check unrelated functionality: batch handling in the private `_euclidean_distances_upcast` and `OneHotEncoder.get_feature_names()` honoring `drop`. A correct fix to `min_max_axis`/`_minor_reduce` for int64 `indptr` passes none of them.",
+    "overspecification_vector": "test_euclidean_distances_upcast / test_euclidean_distances_upcast_sym calling `_euclidean_distances_upcast(X, Y=Y, batch_size=batch_size)` with assert_allclose vs cdist/pdist; test_one_hot_encoder_feature_names_drop asserting `ohe.get_feature_names()` == ['x0_c', 'x2_b'] / ['x0_b', 'x2_a'] with drop='first'/['c', 2, 'b']"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFpo4R7r8Ap8tANJNBa",
+  "input_tokens": 9625,
+  "output_tokens": 1126,
+  "seconds": 10.6
+}

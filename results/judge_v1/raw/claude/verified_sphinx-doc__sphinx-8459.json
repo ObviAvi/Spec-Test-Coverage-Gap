@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8459",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9594,
+  "output": {
+    "reasoning": "1. The specification says that when `autodoc_typehints = 'description'`, `autodoc_type_aliases` is ignored. The parameter and return types show the expanded type (`Dict[str, Any]`) instead of the alias. It describes a symptom in the description-mode typehint rendering. The expected result is that the alias is shown in both modes.\n2. What the test requires:\n   - It builds text output for `.. autofunction:: target.annotations.sum`, an existing test module, with `autodoc_typehints='description'` and `autodoc_type_aliases={'myint': 'myint'}`.\n   - It asserts the exact text: the signature without annotations, then a Parameters list with `x (*myint*)` and `y (*myint*)`, then `Return type: myint`.\n3. Requirements:\n   - That aliases are applied in description mode is settled by the spec: \"`types.JSONObject` instead of `Dict[str, Any]` in both cases.\"\n   - The text layout (Parameters / Return type field lists, italics, bullets) is settled by existing code. It is the existing description-mode output format, already used by other tests.\n   - The rendered type `myint` follows directly from the alias mapping.\n   - The test module `target.annotations` already exists (it is used by `test_autodoc_type_aliases`).\n4. Any reasonable fix makes the typehint recording step honor `type_aliases`, for example by passing `type_aliases` to `inspect.signature` in `record_typehints`. Such a fix yields exactly this output. No reasonable alternative changes the formatting or the alias rendering.\n5. The test checks the reported behavior on a related input, so the score is 2.",
+    "score": 2,
+    "explanation": "The test checks that, in description mode, the parameter and return types render as the configured alias `myint`, using the existing description field-list format, which is exactly the fix the issue asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGoXwR6RLcJhVCTTeNx",
+  "input_tokens": 3670,
+  "output_tokens": 893,
+  "seconds": 9.0
+}

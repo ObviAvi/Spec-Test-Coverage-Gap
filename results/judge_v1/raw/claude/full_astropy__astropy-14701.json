@@ -1,0 +1,19 @@
+{
+  "task_id": "full/astropy__astropy-14701",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 108489,
+  "output": {
+    "reasoning": "1. The spec asks for a `latex` writer registered with `Cosmology.write`. It suggests a `write_latex(...)` function that calls `to_table()`, renames columns to LaTeX forms, and calls `QTable.write(..., format='latex')`. It points to the existing io modules as the pattern.\n\n2. What the tests require:\n- (a) A module `astropy.cosmology.io.latex` exporting `write_latex`.\n  - Settled: the spec names `write_latex`, and the io/<format>.py layout is the existing convention.\n- (b) The same module must export a private constant named `_FORMAT_TABLE` whose values are the LaTeX column names.\n  - Open: the spec never names any mapping constant.\n  - It is imported at the top of test_latex.py, and test_connect.py imports test_latex.\n  - So if the name is missing, every graded test in both files fails at collection.\n- (c) A `latex_names=True` kwarg.\n  - Convention: the html writer has the same kwarg.\n- (d) `cls=list` raises TypeError matching \"'cls' must be\".\n  - Convention: this propagates from `to_table`.\n- (e) An invalid path gives FileNotFoundError, and `overwrite=False` on an existing file gives an OSError mentioning \"overwrite=True\".\n  - Convention: this comes from the Table.write behavior.\n- (f) The renamed columns read back via `QTable.read` must be members of `_FORMAT_TABLE.values()`.\n  - Open: the expected names come from the test's own private dict.\n\n3. A reasonable fix that fails: one that keeps its mapping under another name, such as `_LATEX_NAMES` or `COLUMN_NAME_MAP`, or builds it inline inside `write_latex`. It correctly registers and writes LaTeX tables, yet fails the import of `_FORMAT_TABLE`, and so fails every graded test. This is a dependency on an unspecified private name the fix must introduce.",
+    "score": 4,
+    "explanation": "The tests do `from astropy.cosmology.io.latex import _FORMAT_TABLE, write_latex`, so a correct latex writer that names its column-renaming mapping anything other than the private `_FORMAT_TABLE` (or builds it inline) fails at import. Because test_connect.py imports test_latex, every graded test fails along with it.",
+    "overspecification_vector": "from astropy.cosmology.io.latex import _FORMAT_TABLE, write_latex; assert column_name in _FORMAT_TABLE.values()"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGvF85CYDr8Krt5ZSRM",
+  "input_tokens": 53729,
+  "output_tokens": 1533,
+  "seconds": 15.8
+}

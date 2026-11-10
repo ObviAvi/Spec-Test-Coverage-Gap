@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-10297",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10664,
+  "output": {
+    "reasoning": "1. The specification requests adding the boolean `store_cv_values` parameter to `RidgeClassifierCV` and retaining cross-validation values as `cv_values_`. It documents shapes `[n_samples, n_alphas]` or `[n_samples, n_responses, n_alphas]`.\n2. The graded test constructs `RidgeClassifierCV(alphas=[0.1, 1, 10], store_cv_values=True)`, fits five samples with binary 1-D labels, and requires `cv_values_.shape == (5, 1, 3)`. It then fits three-column multilabel targets and requires shape `(5, 3, 3)`. It checks no prediction values, messages, private methods, or implementation details.\n3. Constructor support and exposure of `cv_values_` are explicitly settled. Using classification labels and multiple target columns is a reasonable extension of the requested classifier support; the multilabel shape follows the documented three-axis form. However, retaining a singleton target axis for 1-D binary labels is open: the specification permits a two-axis shape and does not assign the three-axis form to this case. The surrounding RidgeCV test also shows the two-axis convention for 1-D targets.\n4. A reasonable fix could expose stored values with shape `(n_samples, n_alphas)` for a single binary target, while retaining `(n_samples, n_targets, n_alphas)` for multiple targets. This implements the flag and documented attribute but fails the binary shape assertion.\n5. The disputed requirement is an externally observable array-shape choice, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could return `cv_values_` with shape `(5, 3)` for the 1-D binary target, consistent with the documented two-dimensional form. The test instead requires `(5, 1, 3)`, choosing a singleton target axis that the specification does not mandate.",
+    "overspecification_vector": "In `test_ridge_classifier_cv_store_cv_values`, the first `assert r.cv_values_.shape == (n_samples, n_targets, n_alphas)` with `n_targets = 1` requires shape `(5, 1, 3)` for 1-D binary labels rather than allowing `(5, 3)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2695,
+  "output_tokens": 871,
+  "seconds": 16.3
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-11905",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9692,
+  "output": {
+    "reasoning": "The spec asks that __isnull reject non-boolean values and says 'IMO we should raise an error for non-boolean values'. The graded test instead requires a deprecation path: it expects RemovedInDjango40Warning (not an error) and the exact message 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.'\n\nThe test also requires the warning to fire for a ForeignObject relation (stock__isnull) and through qs.exists().\n\nRequirements and status:\n- The warning class RemovedInDjango40Warning: open. The spec says to raise an error, so the natural fix raises ValueError, and that fix fails assertWarnsMessage. It is also an exception, not a warning, so the test errors out.\n- The exact message text: open. No wording is given in the spec.\n- Use of the deprecation mechanism at all: contradicts the spec's 'raise an error'.\n\nA reasonable fix raises ValueError('The QuerySet value for an isnull lookup must be True or False.'), which is exactly the eventual Django 4.0 behavior. That fix fails the graded test.\n\nThe test_iterator failure is likely just model-related setup.\n\nThe test checks externally observable behavior, but behavior opposite to what the spec describes (a warning versus an error), plus an unspecified exact message. This is more than pinning wording: it requires a deprecation-warning approach the spec never mentions. That fits score 4 (an unspecified mechanism and name, different behavior), or at least 3. Since the spec explicitly says raise an error, any fix that follows the spec fails. I'll give 4.",
+    "score": 4,
+    "explanation": "The spec says to raise an error for non-boolean __isnull values, but the test requires a RemovedInDjango40Warning deprecation warning with the exact message 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.' A fix that raises ValueError as the spec suggests fails.",
+    "overspecification_vector": "with self.assertWarnsMessage(RemovedInDjango40Warning, msg): qs.exists(); msg = ('Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.')"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFmwHBtztkp2B9hKfvr",
+  "input_tokens": 3695,
+  "output_tokens": 753,
+  "seconds": 7.8
+}

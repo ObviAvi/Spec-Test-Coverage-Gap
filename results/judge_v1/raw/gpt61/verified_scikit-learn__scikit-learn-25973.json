@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-25973",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10475,
+  "output": {
+    "reasoning": "The specification identifies SequentialFeatureSelector.fit failing when cv is an iterable of splits and explicitly expects it to \"run without errors.\" The graded test reproduces this through the public API: make_classification, two groups built with np.zeros_like, LeaveOneGroupOut.split, KNeighborsClassifier(n_neighbors=5), and SequentialFeatureSelector(n_features_to_select=5, cv=splits). These choices match the reproduction. The only variations are random_state=0 for reproducibility and omitting scoring='accuracy'; neither imposes an additional result requirement, and the classifier's default scoring is accuracy. The test requires only that fit complete without raising; it asserts no selected features, scores, internal state, messages, or implementation details. There are no open requirements that would reject a reasonable correct fix.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix would pass because the sole requirement—sfs.fit(X, y) completing with a split generator—is the specification's expected behavior, tested almost verbatim.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2410,
+  "output_tokens": 382,
+  "seconds": 8.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-24443",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8073,
+  "output": {
+    "reasoning": "1. The specification reports that constructing a homomorphism on permutation groups incorrectly raises ValueError when inverse generators are encountered in `_image()`. It explicitly reproduces this with `D3 = DihedralGroup(3)` and `homomorphism(D3, D3, D3.generators, D3.generators)`.\n2. The added test constructs exactly that group and mapping, requires construction to succeed, and asserts `T.is_isomorphism()`.\n3. The group, constructor, arguments, and successful construction are settled by the reproduction example. The isomorphism assertion is settled by the mathematical meaning of those arguments: mapping every generator to itself defines the identity homomorphism on D3, which is necessarily an isomorphism. It does not select an implementation strategy or an arbitrary result.\n4. There are no open requirements for which a reasonable correct fix could choose differently. Fixing inverse-generator handling without changing the intended mapping satisfies both construction and the identity map's isomorphism property.\n5. The test is a direct regression of the reported example.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix permits the exact reported construction and produces the identity homomorphism, so `assert T.is_isomorphism()` checks a necessary property of the specified example.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1936,
+  "output_tokens": 518,
+  "seconds": 13.6
+}

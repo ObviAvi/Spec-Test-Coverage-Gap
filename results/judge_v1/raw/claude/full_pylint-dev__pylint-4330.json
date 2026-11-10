@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pylint-dev__pylint-4330",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14093,
+  "output": {
+    "reasoning": "Spec: ignore text flanked by double backticks in comments/docstrings for spellcheck. Tests: (1) double backticks test: settled by spec. (2) single backticks test: spec says \"Anything flanked in backticks should be ignored\", which arguably covers single backticks, though the title says double. A fix handling only double backticks is plausible since the title explicitly says \"double backticks\". (3) Tool-directive tests: comments like '# fmt: on fmt', '# noqa fmt', '# nosec', '# isort:skip', '# mypy:' must skip the directive at the start of a comment but flag later occurrences. Nothing in the spec mentions tool directives at all. These tests fail before the fix, so the original fix also changed directive handling. (4) test_skip_directives_specified_in_pylintrc requires a new config option 'spelling_ignore_comment_directives', which is completely unmentioned in the spec. A correct fix for backticks alone would fail this test (set_config with an unknown option would likely error) and the tool directive tests. So these tests depend on an unspecified new name and unrelated behavior.",
+    "score": 4,
+    "explanation": "A correct backtick-ignoring fix fails the tests because they also require a new config option `spelling_ignore_comment_directives` and new skipping of tool directives (fmt:, noqa, nosec, isort:skip, mypy:) at the start of comments, neither of which the issue mentions. Single-backtick handling is also asserted despite the title specifying double backticks.",
+    "overspecification_vector": "set_config(spelling_ignore_comment_directives=\"newdirective:,noqa\") in test_skip_directives_specified_in_pylintrc; parametrized test_skip_tool_directives_at_beginning_of_comments_but_still_raise_error_if_directive_appears_later_in_comment (fmt/noqa/nosec/isort/mypy); test_skip_code_flanked_in_single_backticks"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFokjj6F4iMoEiQamzh",
+  "input_tokens": 5307,
+  "output_tokens": 660,
+  "seconds": 7.3
+}

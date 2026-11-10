@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16661",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9858,
+  "output": {
+    "reasoning": "Step 1: The spec says ModelAdmin.lookup_allowed() wrongly rejects 'restaurant__place__country' when listed in list_filter. The cause is that a OneToOneField primary key ('place') is treated like a concrete-inheritance parent link and dropped from the lookup path. It names the entry point lookup_allowed and gives the reproduction.\nStep 2: The tests call lookup_allowed three times on the same model setup, each expected to return True:\n- 'restaurant__place__country' (the spec example; value '1' instead of 'test_value', which does not matter)\n- 'restaurant__place__country__id__exact'\n- 'restaurant__place__country__name', with '__name' added to list_filter\nStep 3: The first assertion is settled verbatim by the spec. The other two are the same function on closely related inputs, settled by convention.\n- The __id__exact lookup goes through the existing logic: after the relation parts, the non-relation field 'id' ends the loop and the path 'restaurant__place__country' is checked against list_filter.\n- The __name lookup is checked directly against the matching list_filter entry.\nAny fix that stops collapsing the non-parent-link OneToOne PK will keep 'place' in the path, so both pass. Examples: checking model._meta.parents, or checking remote_field.parent_link.\nStep 4: No reasonable correct fix would pass the reported case yet fail these related lookups. A fix that only special-cased the exact string would not count as reasonable.",
+    "score": 2,
+    "explanation": "All assertions call the spec-named lookup_allowed() on the spec's reproduction models and only add closely related lookups (__id__exact, __name) that any fix preserving the 'place' segment in the path will allow.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFgCov4aFvwcEsVziDp",
+  "input_tokens": 3721,
+  "output_tokens": 1120,
+  "seconds": 14.2
+}

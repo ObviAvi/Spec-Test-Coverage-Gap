@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-15481",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10186,
+  "output": {
+    "reasoning": "1. The spec says set_cookie and set_signed_cookie should accept a datetime.timedelta for max_age instead of raising TypeError from int(). It names both entry points.\n2. Requirements of the graded tests:\n(a) set_cookie(max_age=timedelta(hours=1)) produces max-age 3600.\n(b) set_signed_cookie with max_age=100 gives 100, and with timedelta(hours=2) gives 7200.\n(c) set_cookie(expires=datetime(...), max_age=timedelta(hours=1)) raises ValueError with the exact message \"'expires' and 'max_age' can't be used together.\"\n3. Status of each:\n(a) and (b) are settled by the spec (\"should accept timedelta object for max_age argument\"). Converting to whole seconds matches the existing int(max_age) behaviour.\n(c) is open. The spec says nothing about combining expires and max_age. In the pre-fix code shown by context, expires is simply kept when max_age is set, with no error. The test is fail-to-pass and newly added, which suggests the ValueError and its exact wording come from the original PR (or at least that the check must fire for timedelta input). The spec does not ask for it.\n4. A reasonable fix converts the timedelta to seconds (e.g. int(max_age.total_seconds())) and otherwise keeps the existing expires/max_age handling. That fix resolves the reported TypeError, but it raises no ValueError when both are passed, so test_max_age_with_expires fails. Even a fix that did add such a check would need this exact message.\n5. This is observable behaviour, but an unspecified rule with an exact message, so score 3.",
+    "score": 3,
+    "explanation": "A correct fix that only converts a timedelta max_age to seconds keeps the existing behaviour when expires is also passed (no error), so test_max_age_with_expires fails. That test demands a ValueError with the exact message \"'expires' and 'max_age' can't be used together.\", which the issue never mentions.",
+    "overspecification_vector": "test_max_age_with_expires: msg = \"'expires' and 'max_age' can't be used together.\"; with self.assertRaisesMessage(ValueError, msg): response.set_cookie(\"max_age\", expires=datetime(2000, 1, 1), max_age=timedelta(hours=1))"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGxfBUwWSMS7S56s4PZ",
+  "input_tokens": 3894,
+  "output_tokens": 2323,
+  "seconds": 22.0
+}

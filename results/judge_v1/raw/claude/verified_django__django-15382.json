@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15382",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7897,
+  "output": {
+    "reasoning": "Spec: filtering on ~Exists(empty queryset) combined with another condition wrongly produces EmptyResultSet (no rows) and drops the WHERE clause. The correct behavior is that ~Exists(empty) is always true, so the result should be filtered only by the other condition.\n\nWhat the test requires: Manager.objects.filter(~Exists(Manager.objects.none()) & Q(pk=manager.pk)) returns [manager].\n\nSettled points:\n- Public APIs only: filter, Exists, Q, and ~ for negation.\n- The spec's example is filter(~Exists(none()), name='test') returning <QuerySet []>, which is wrong. The test uses & Q(...) instead of a kwarg, which is the same combination in a closely related form.\n- The expected result is the only reasonable one: the record matching the other condition is returned.\n\nAny correct fix makes negated empty Exists evaluate to always-true, or at least not to an empty result set. That could be done by catching EmptyResultSet in Exists.as_sql when negated, or by fixing WHERE compilation. Either way the matching record is returned. Nothing internal is asserted.",
+    "score": 2,
+    "explanation": "The test only asserts that filtering with ~Exists(empty) combined with a pk condition returns the matching row, which follows directly from the issue's example.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGu6W84D8xirktYX87T",
+  "input_tokens": 2949,
+  "output_tokens": 470,
+  "seconds": 6.4
+}

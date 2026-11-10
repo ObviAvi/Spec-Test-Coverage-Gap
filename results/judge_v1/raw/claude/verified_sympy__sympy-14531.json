@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-14531",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9324,
+  "output": {
+    "reasoning": "1. The spec says StrPrinter settings are ignored in some subexpressions. It names Eq and Limit with `sympy_integers=True`, and `python(Eq(x, y))`, which fails to emit Symbol declarations. The cause is printers formatting args with plain str instead of `self._print`.\n2. Requirements of the graded tests:\n- `sstr(Eq(x, Rational(2,3)), sympy_integers=True) == 'Eq(x, S(2)/3)'`. Settled: the spec shows Eq should honor `sympy_integers`, and the S(2)/3 format already exists in the context line.\n- `sstr(Limit(x, x, Rational(7,2)), sympy_integers=True) == 'Limit(x, x, S(7)/2)'`. Settled: the spec says the expected output is `Limit(x, x, S(1)/2)`.\n- `python(Eq(x, y))` returns the full Symbol-declaration string. Settled verbatim by the spec.\n- `python(Ne(...))` includes the Symbol declarations. This is a closely related input: Ne is printed by the same Relational printer as Eq, so a correct fix that is not limited to the literal example covers it too.\n3. Nothing is open. The exact strings follow from existing formatting conventions shown in the spec and the context lines.",
+    "score": 2,
+    "explanation": "The tests assert the spec's stated expected outputs: Eq and Limit honoring `sympy_integers`, and `python(Eq)` declaring symbols. The only addition is Ne, which goes through the same relational printing path, so every correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGu4wsE8dHYCMZd9tVZ",
+  "input_tokens": 3809,
+  "output_tokens": 848,
+  "seconds": 9.5
+}

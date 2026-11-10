@@ -1,0 +1,19 @@
+{
+  "task_id": "full/matplotlib__matplotlib-24924",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9474,
+  "output": {
+    "reasoning": "1. The specification says `Figure.set_tight_layout(False)` does not disable tight layout, so `get_tight_layout()` stays truthy. It names `set_tight_layout` and the falsey branch, and suggests the fix: \"this branch just needs to set `self.set_layout_engine(None)` in the falsey case.\" It does not mention `set_constrained_layout`.\n\n2. What the graded tests require:\n- (a) `test_tight_toggle`: `set_tight_layout` True, then False, then True, with `get_tight_layout()` reflecting each state.\n- (b) Both calls emit `PendingDeprecationWarning`.\n- (c) `test_constrained_toggle`: the same toggle sequence through `set_constrained_layout` / `get_constrained_layout`.\n\n3. Classification:\n- (a) Settled by the spec's reproduction. Re-enabling afterwards is a natural regression check: after the engine is set to None, setting True installs a tight engine again.\n- (b) Settled by existing code. The pending deprecation of these setters most likely came with the layout-engine work (#20426, which the issue cites) and is not something the fix adds. Some uncertainty remains here.\n- (c) Open. The issue only discusses `set_tight_layout` and points at one specific branch in figure.py. `set_constrained_layout` is a separate function with the same `if bool(...)` / no-else pattern, so it has the same bug, but the spec never mentions it.\n\n4. A reasonable fix that fails: a developer follows the issue's explicit suggestion and adds `else: self.set_layout_engine(None)` only to `set_tight_layout`. That fully resolves the reported bug and passes `test_tight_toggle`. It fails `test_constrained_toggle`, because `set_constrained_layout(False)` still leaves the constrained engine in place. The check is on observable public behavior, but of an unmentioned sibling API, so this is score 3 rather than 4.",
+    "score": 3,
+    "explanation": "A fix that applies the issue's suggested change only to `Figure.set_tight_layout` resolves the reported bug but fails `test_constrained_toggle`. That test requires `set_constrained_layout(False)` to make `get_constrained_layout()` return False, an analogous bug in a different function the specification never mentions.",
+    "overspecification_vector": "test_constrained_toggle: `fig.set_constrained_layout(False); assert not fig.get_constrained_layout()` (and the subsequent re-enable assertion)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGz7hwVbTjjA1S5LR4E",
+  "input_tokens": 3656,
+  "output_tokens": 2852,
+  "seconds": 27.5
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24026",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9806,
+  "output": {
+    "reasoning": "The specification identifies ax.stackplot as the failing entry point: supplying CN color aliases raises ValueError, and stackplot should not change the Axes cycler. The only new tested behavior is ax.stackplot(..., colors=[\"C0\", \"C1\", \"C2\"]) in an existing labeled-data rendering test, graded for PNG and PDF. Accepting and correctly rendering these aliases is directly settled by the reported failure and the requirement to keep colors synchronized across plot types. Labeled-data support, plot limits, and the existing rendering expectations are established by the unchanged test. Using explicit C0–C2 colors should preserve the expected default-cycle colors; there is no reasonable alternative interpretation that a correct fix would need to choose. No new private API, implementation detail, error message, or arbitrary output choice is required. The test does not independently verify cycler preservation, but that is a coverage limitation rather than overspecification.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix should pass the added stackplot call with colors=[\"C0\", \"C1\", \"C2\"], which directly tests the CN-alias support described in the issue.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2452,
+  "output_tokens": 784,
+  "seconds": 18.1
+}

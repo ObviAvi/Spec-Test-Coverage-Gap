@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-17038",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11310,
+  "output": {
+    "reasoning": "1. The specification says `isqrt` in `sympy.core.power` returns wrong results because the float fast-path bound is far too large. It offers several fixes: lower the bound to 2**52+2**27 (assuming a correctly rounded sqrt), use `int(_sqrt(n+0.5))` for n < 2**50, or keep `int(_sqrt(n))` but verify the result and fall back to the integer path.\n\n2-3. Requirements of the graded test:\n- Limit and boundary assertions and the regression values 67108864 and 99999999: settled by the issue text.\n- Half-integer inputs (`limit + S.Half` and similar): settled by existing behavior, since the old test already passed `S.Half` inputs.\n- `isqrt(1-tiny)==0`, `isqrt(4503599761588224-tiny)`, `isqrt(10**100 - tiny)`: these Rational inputs just below integers are a correctness extension. The issue does not mention them, but they follow from \"largest integer <= sqrt(n)\".\n- Monkeypatching `power._sqrt` to return 2.999999999 and expecting `isqrt(9)==3`: the issue names the `_sqrt` alias and discusses inaccurate sqrt. However, it presents lowering the bound (assuming correct rounding) and the `n+0.5` trick as valid options, not only result verification.\n- `raises(ValueError)` for `isqrt(-1)`, `isqrt(-10**1000)`, `isqrt(-S.Half)`, `isqrt(-Rational(1,10**1000))`: open, the specification never discusses negative inputs.\n\n4. Fixes that violate the open requirements:\n- A fix that only lowers the bound to 4503599761588224, as the issue explicitly offers, fails three graded checks:\n  - The mocked-`_sqrt` assertion returns 2.\n  - `isqrt(1-tiny)` returns 1, because float(1-tiny)==1.0.\n  - `isqrt(-10**1000)` raises OverflowError, since `math.sqrt` cannot convert the int to float.\n- Even the issue's own suggestion (fast path plus check plus fallback) fails on negatives without an explicit sign check:\n  - `-10**1000` raises OverflowError rather than ValueError.\n  - `-tiny` converts to -0.0, so `_sqrt` returns -0.0 and `int` gives 0 with no error. The verification `0*0 <= -tiny` then fails, and the fallback `integer_nthroot(int(n),2)` with int(-tiny)==0 may return 0 instead of raising.\n- The ValueError-for-negatives contract is therefore an unstated choice that reasonable fixes would not make.\n\nThe test checks observable behavior (exception type, return values), not internals beyond an existing alias. That places it at 3.",
+    "score": 3,
+    "explanation": "A reasonable fix that verifies the float result or lowers the bound, as the issue suggests, does not add an explicit negative-input check. It then raises OverflowError for `isqrt(-10**1000)` and returns 0 for `isqrt(-Rational(1,10**1000))`, failing the unspecified `raises(ValueError, ...)` assertions. The issue's bound-lowering option also fails the `1-tiny` and mocked `_sqrt` assertions.",
+    "overspecification_vector": "raises(ValueError, lambda: isqrt(-10**1000)); raises(ValueError, lambda: isqrt(-S.Half)); raises(ValueError, lambda: isqrt(-tiny)); assert isqrt(1-tiny) == 0; power._sqrt = lambda x: 2.999999999 with assert isqrt(9) == 3"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFqW411DHCfzt3MaS15",
+  "input_tokens": 4468,
+  "output_tokens": 2608,
+  "seconds": 24.7
+}

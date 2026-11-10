@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16816",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13133,
+  "output": {
+    "reasoning": "1. The specification reports that list_display containing a reverse relation such as \"choice\" passes admin checks but crashes when rendering the changelist. It explicitly suggests that \"error E108 be updated to cover this case as well.\"\n2. The graded tests create ModelAdmin subclasses with list_display = [\"song\"] and [\"featured\"] on Band, covering reverse foreign-key and reverse many-to-many relationships. Through assertIsInvalid(), both require admin.E109 and the exact message \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\"\n3. Settled: detecting the invalid reverse relation during admin checks follows directly from the reported missing validation. Convention: testing related relationship types is reasonable generalization, and the surrounding test context shows that admin.E109 already exists. Open: the specification does not require assigning E109 to the reported reverse foreign-key case or using this particular expanded message. Existing use of E109 does not make that classification the only reasonable choice, especially because the issue explicitly names E108.\n4. A reasonable correct fix could extend E108 validation to reject unsupported reverse relations, including the reported case, before changelist rendering. It would fail the required E109 assertion. Alternatively, a fix using E109 with different clear wording would fail the exact-message assertion.\n5. These restrictions concern observable diagnostic output, not implementation internals, so the appropriate score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could reject the reported reverse relation with admin.E108, as the issue requests, but the tests require admin.E109. They also require exact diagnostic wording that the specification never supplies.",
+    "overspecification_vector": "Both added tests require \"admin.E109\" and the exact message \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\""
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3107,
+  "output_tokens": 923,
+  "seconds": 22.1
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16612",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12106,
+  "output": {
+    "reasoning": "The issue names AdminSite.catch_all_view() and requires APPEND_SLASH redirects to retain the query string: the expected URL ends in '/?id=123'. The two graded tests create and log in a staff user, reverse an admin changelist URL, and GET its slashless form with '?id=1'; the second also supplies SCRIPT_NAME='/prefix/'. They require a 301 redirect to the slash-appended URL with '?id=1' preserved, including '/prefix' in the second case. Query preservation and slash placement are settled by the specification's expected redirect. Status 301 is settled by the existing HttpResponsePermanentRedirect shown in the issue. The different admin URL and query value are equivalent related inputs. Preserving SCRIPT_NAME is conventional deployment-prefix behavior, also supported by the existing script-name regression test in the context; it does not introduce a separate implementation requirement. The user fixtures and reverse() merely arrange requests through the affected admin entry point. No graded assertion constrains the implementation, and there is no open choice that a reasonable correct fix would violate. The added non-staff and no-catch-all tests are not graded.",
+    "score": 2,
+    "explanation": "Every reasonable fix preserves the query string in the existing permanent slash redirect, including when the same admin request has a deployment prefix; the SCRIPT_NAME case is a straightforward related-input regression check.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2791,
+  "output_tokens": 694,
+  "seconds": 17.8
+}

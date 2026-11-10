@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7910",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10679,
+  "output": {
+    "reasoning": "The specification identifies a Napoleon member-ownership bug: a functools.wraps-decorated method retains its docstring but has wrapper globals that do not contain its class. The graded test reproduces that arrangement using a decorator defined in another module. It calls _skip_member for a documented decorated special method, requiring False when napoleon_include_special_with_doc is enabled and None when disabled. The decorator and cross-module globals are directly grounded in the report. Testing another special method rather than __init__ is a reasonable related-input check: the reported cause is generic method-owner detection, not constructor-specific behavior. The False/None results follow the existing helper's include-versus-default decision pattern and the skip-member callback contract; False explicitly includes the member, whereas None defers to normal handling. Although the test calls a private function, it exercises the ownership decision explicitly implicated by the specification, without requiring a particular repair mechanism. The fixture's names and location impose no new production interface. No open requirement selects among materially different reasonable fixes.",
+    "score": 2,
+    "explanation": "The test reasonably extends the reported ownership-detection failure to another decorated special method and checks that Napoleon explicitly includes it when configured, while preserving default handling when disabled.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2520,
+  "output_tokens": 2657,
+  "seconds": 54.5
+}

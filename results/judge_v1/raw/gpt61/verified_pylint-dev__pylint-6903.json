@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pylint-dev__pylint-6903",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11706,
+  "output": {
+    "reasoning": "1. The specification identifies `_query_cpu()` returning 0 for cgroup quota -1 and shares 2, causing `--jobs=0` to crash. It explicitly requires that 'the calculated number should never be 0.' 2. The test invokes the existing `Run` entry point with `--jobs=0`, mocks the reported quota and shares files, and patches `pylint.lint.run.Path` to make the shares file available. These reproduce the specified environment rather than assert an internal calculation. Its only outcome assertion is normal termination with exit code 0; successful runner exit is also established by the existing test context. 3. The test leaves the exact positive worker count and the correction mechanism open. Clamping the CPU calculation, rounding fractional allocations upward, or enforcing a positive effective job count can all pass. There is no additional substantive requirement that rejects a reasonable correct fix.",
+    "score": 1,
+    "explanation": "The test reproduces the reported fractional-CPU environment and checks that running with `--jobs=0` succeeds, without requiring a particular worker count or implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2979,
+  "output_tokens": 990,
+  "seconds": 23.5
+}

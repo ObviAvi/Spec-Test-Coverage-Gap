@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16333",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8951,
+  "output": {
+    "reasoning": "1. The spec says UserCreationForm.save(commit=True) never calls self.save_m2m(), so ManyToMany field data is lost when the form is used with a custom User model that has M2M fields. It names the entry point (save(commit=True)) and the fix (call save_m2m).\n2. What the test requires:\n- A subclass of UserCreationForm whose Meta uses CustomUserWithM2M and adds the field 'orgs'.\n- The form is valid.\n- After form.save(commit=True), user.orgs.all() equals [organization].\n3. How each requirement is settled:\n- The models CustomUserWithM2M and Organization come from tests/auth_tests/models/with_many_to_many.py. That module already exists in Django's test suite for createsuperuser M2M tests, and in any case it is test infrastructure, not something the fix must create.\n- The saved-M2M assertion is exactly the behavior the spec describes: \"UserCreationForm.save(commit=True) omits to call self.save_m2m()\".\n4. No open requirements. Any fix that saves the M2M data on commit=True passes, whether it calls save_m2m or calls super().save in some other way.",
+    "score": 1,
+    "explanation": "The test calls UserCreationForm.save(commit=True) with an M2M field and asserts the relation was saved, which is exactly the behavior the issue asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFhfKtQgMdGCJjDF1aA",
+  "input_tokens": 3341,
+  "output_tokens": 659,
+  "seconds": 10.2
+}

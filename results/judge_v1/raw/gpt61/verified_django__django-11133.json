@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11133",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8397,
+  "output": {
+    "reasoning": "The specification identifies HttpResponse(memoryview(...)) as the failing entry point and explicitly expects response.content to contain the underlying bytes: \"I am expecting b'My Content'\". The graded test constructs HttpResponse(memoryview(b'memoryview')) and asserts r.content == b'memoryview'. The constructor, memoryview input, content property, and byte-preserving result are all settled by that example. The different payload merely reproduces the same behavior with different data; it imposes no additional policy. There are no mocks, internal-state assertions, or open requirements, and no reasonable correct fix would fail this assertion.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the assertion directly checks the specified behavior: HttpResponse must expose a memoryview's underlying bytes as its content.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1900,
+  "output_tokens": 263,
+  "seconds": 6.4
+}

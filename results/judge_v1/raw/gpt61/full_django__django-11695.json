@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-11695",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9663,
+  "output": {
+    "reasoning": "1. The specification describes excessive requests from Select2 autocomplete widgets and explicitly requests a delay using Select2's ajax.delay option. It specifies neither a duration nor where that option must be configured.\n2. The only graded test is test_build_attrs. Its added assertion requires the widget's attribute dictionary to contain exactly 'data-ajax--delay': 250. The other dictionary entries are existing context; the Selenium timing assertions are not graded.\n3. Using ajax.delay is settled by the specification. The 250-millisecond value and configuring it through the Python-generated data-ajax--delay attribute are open choices.\n4. A reasonable fix could set ajax.delay in the autocomplete's JavaScript Select2 initialization, achieving the requested rate limiting without adding that attribute. It would fail the dictionary assertion. Alternatively, using the tested attribute with a reasonable delay of 300 milliseconds would also fail.\n5. Score 4: beyond selecting an unspecified duration, the test requires a particular intermediate configuration representation rather than checking whether autocomplete requests are delayed.",
+    "score": 4,
+    "explanation": "A correct fix that configures Select2's ajax.delay in JavaScript would fail because test_build_attrs requires a Python-generated data-ajax--delay attribute. The test also fixes the delay at 250 milliseconds, although the specification leaves the duration open.",
+    "overspecification_vector": "test_build_attrs: self.assertEqual(attrs, {..., 'data-ajax--delay': 250, ...})"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2169,
+  "output_tokens": 810,
+  "seconds": 19.5
+}

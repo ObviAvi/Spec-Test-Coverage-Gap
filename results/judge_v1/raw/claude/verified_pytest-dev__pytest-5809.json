@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-5809",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8466,
+  "output": {
+    "reasoning": "1. The spec says the pastebin submission uses lexer=python3, which causes HTTP 400 errors. It names the location (pastebin.py, the create_new_paste params) and proposes changing the lexer to 'text'.\n2. The graded test requires:\n- mocked urlopen is called once with bytes data;\n- url == 'https://bpaste.net' (unchanged context);\n- 'lexer=text' appears in the data;\n- 'code=full-paste-contents' appears in the data (unchanged context).\n3. The lexer value 'text' is settled by the spec: \"The call goes through fine if `lexer` is changed from `python3` to `text`. This would seem like the right thing to do in any case.\" The other assertions are existing behavior.\n4. Possible alternatives:\n- Falling back to 'text' only after a 400 error does not fit the spec's clear direction, and the mock would still see python3 first.\n- Omitting the lexer parameter, or using another lexer, contradicts the explicit suggestion.\nA competent developer would simply change the lexer to 'text'.\n5. The test checks exactly the change the spec describes, so the score is 1.",
+    "score": 1,
+    "explanation": "The spec explicitly says to change the lexer from 'python3' to 'text', and the test asserts exactly 'lexer=text' in the posted data.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGthznbXnyae4p9tjEJ",
+  "input_tokens": 3166,
+  "output_tokens": 467,
+  "seconds": 5.9
+}

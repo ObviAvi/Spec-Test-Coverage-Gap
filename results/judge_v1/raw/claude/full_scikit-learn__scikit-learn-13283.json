@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13283",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11595,
+  "output": {
+    "reasoning": "1. Spec: IsolationForest decision_function/score computation is memory-inefficient across trees; it suggests moving per-tree computation or reducing memory use. It names no chunking helper. 2. The tests patch `sklearn.ensemble.iforest.get_chunk_n_rows`, so the fix must import that name into the iforest module and call it. The tests also assert the exact call count (3 with contamination=0.25, 2 with 'auto'), which means calling it exactly once per scoring pass. 3. Whether get_chunk_n_rows is used at all is open. The spec suggests per-tree accumulation, i.e. looping over trees and summing depths into an n_samples vector. That fix is a reasonable, correct memory improvement that never calls get_chunk_n_rows, so the patch would raise AttributeError (the attribute doesn't exist in the module) or the call count would be 0. The call count itself is also an implementation detail. A fix could chunk with a fixed batch size, or use sklearn.utils.gen_batches with its own working-memory computation. 4. This is a mock of an unspecified internal helper plus an assertion on how often it is called, so it is a test of internal implementation.",
+    "score": 4,
+    "explanation": "The tests require the fix to import and call `get_chunk_n_rows` inside `sklearn.ensemble.iforest` exactly once per scoring call. A correct fix that reduces memory another way (per-tree accumulation as the issue suggests, or manual batching) fails, either from the patch target not existing or from the call_count assertion.",
+    "overspecification_vector": "@patch(\"sklearn.ensemble.iforest.get_chunk_n_rows\", ...) and `assert mocked_get_chunk.call_count == n_predict_calls` with n_predict_calls of 3/2"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFpffRWHMnPwP3bCzN5",
+  "input_tokens": 4440,
+  "output_tokens": 605,
+  "seconds": 7.0
+}

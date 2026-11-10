@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-10428",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9369,
+  "output": {
+    "reasoning": "The specification requests a common estimator check in sklearn/utils/estimator_checks.py ensuring predictions and transformations are invariant under subsetting, explicitly allowing individual-sample comparisons. The added fixture NotInvariantPredict returns ones for batches and zeros for single samples, so detecting its violation is settled by that requirement. Running the check through check_estimator and reporting an AssertionError follow the existing test conventions shown in the context. However, the assertion also requires the diagnostic to match 'predict of NotInvariantPredict is not invariant when applied to a subset.'. That wording is open: neither the specification nor the existing context mandates it. A reasonable implementation could compare singleton and batch predictions correctly but raise AssertionError with 'NotInvariantPredict.predict produces different batch and single-sample predictions', failing the graded regex.",
+    "score": 3,
+    "explanation": "A correct common check could detect this non-invariant estimator and raise AssertionError with a different clear diagnostic. The test rejects that fix because it requires a particular message wording that the specification never supplies.",
+    "overspecification_vector": "msg = (\"{method} of {name} is not invariant when applied \" \"to a subset.\").format(method=method, name=name); assert_raises_regex(AssertionError, msg, check_estimator, NotInvariantPredict)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2146,
+  "output_tokens": 588,
+  "seconds": 14.0
+}

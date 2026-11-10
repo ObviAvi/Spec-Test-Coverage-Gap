@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15572",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9109,
+  "output": {
+    "reasoning": "1. The spec says an empty string in TEMPLATES DIRS gets normalized into the project root (cwd). That makes django/template/autoreload.py's template_changed() always return True, which breaks autoreload. It names the module and describes the normalization as the cause. The normalization happens in get_template_directories(), which builds `cwd / to_path(dir)`.\n2. The test sets DIRS=[\"\"] and asserts that autoreload.get_template_directories() returns set().\n3. Each requirement:\n- Use of get_template_directories: an existing function in the module the spec names. It is where the normalization the spec describes happens. Settled by the spec and existing code.\n- Return value set(): the empty path must not become a watched directory, so the result must be empty. Settled.\n4. Alternative fixes:\n- Filtering empty strings in get_template_directories passes.\n- Filtering them earlier, in Engine dirs, also passes.\n- A fix only inside template_changed would have to ignore cwd specifically. That would break a legitimate cwd template dir and cannot tell empty strings apart from real entries, so it is not a reasonable correct fix.\nEvery reasonable fix removes the empty entry before or during the normalization step, so the test passes.",
+    "score": 2,
+    "explanation": "The test checks that the empty-string DIRS entry is no longer normalized into a watched directory by get_template_directories(), the existing function the spec identifies as doing the normalization. Any reasonable fix that drops empty entries passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGuHyT7EMc2uMdKsDtz",
+  "input_tokens": 3401,
+  "output_tokens": 997,
+  "seconds": 10.9
+}

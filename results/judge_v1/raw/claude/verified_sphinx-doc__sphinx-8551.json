@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8551",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11239,
+  "output": {
+    "reasoning": "1. The spec says that info-field xrefs (:type:, :rtype:, :param <type>) resolve unqualified names differently from explicit roles like :py:class:. They search every module instead of the current module and its parents, which causes ambiguity warnings and wrong targets. The expected behaviour is that they act like explicit xref roles. The spec describes a symptom but strongly implies the cause: these xrefs lack the current module/class context.\n\n2. What the graded test requires:\n- The doctree structure of a py:class with :param str name: and :param age: / :type age: int. This structure already existed before the fix.\n- Each type pending_xref has refdomain='py', reftype='class', reftarget='str'/'int'. These also already existed.\n- Each pending_xref carries attributes py:module='example' and py:class='Class'. This is the new part.\n\n3. Settledness:\n- Structure, refdomain, reftype and reftarget are existing behaviour, so settled.\n- The py:module / py:class attributes are settled by convention. The spec says these xrefs should look up names like explicit roles do. Existing explicit roles (PyXRefRole.process_link) store context as refnode['py:module'] and refnode['py:class']. The Python domain's resolve_xref reads node.get('py:module') and node.get('py:class') to do current-then-parent lookup. So the natural, essentially forced, way to give info-field xrefs the same lookup is to attach the same two context attributes from env.ref_context when the xref is created.\n- Including py:class follows from \"behave like explicit roles\". Omitting it would leave the same bug for class-nested names, a closely related input.\n\n4. Alternatives:\n- Pre-qualifying reftarget with the module would break builtins like 'str' and change reftarget, so it is not reasonable.\n- Rewriting resolve_xref to get context some other way is contrived, because the pending_xref has no other carrier of context.\n- Routing types through the existing role machinery yields the same attributes.\n\nSo no reasonable fix diverges.",
+    "score": 2,
+    "explanation": "The issue asks that :type:/:rtype: xrefs look names up the same way explicit py roles do. The test checks the same context attributes that explicit roles already attach and that resolve_xref already consumes: py:module and py:class on the pending_xref. Any reasonable fix therefore produces them.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGpjj6reuetYL98vE8F",
+  "input_tokens": 4326,
+  "output_tokens": 2752,
+  "seconds": 28.8
+}

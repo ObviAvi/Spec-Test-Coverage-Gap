@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14559",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8931,
+  "output": {
+    "reasoning": "1. Spec: bulk_update() returns None; it should return the number of rows matched, like update(). It suggests simply adding up the return values of the update() calls it already makes.\n2. Graded requirements:\n- bulk_update([]) returns 0.\n- 2000 notes updated returns 2000.\n- [note, note] in one batch returns 1.\n- [note, note] with batch_size=1 returns 2.\n3. Each requirement against the spec:\n- Empty list returning 0: settled. \"Number of rows matched\" for no objects is 0, and summing from 0 gives 0. Returning None for empty input would contradict the new contract.\n- 2000: settled, since the sum of rows matched across batches is 2000.\n- Duplicates in one batch returning 1: settled by \"the return values could simply be added\". update() with pk__in=[same pk] matches 1 row.\n- Duplicates across batches returning 2: settled by the same summing approach, since each batch's update matches 1 row.\n4. Possible alternatives:\n- Returning len(objs) contradicts \"number of rows matched\".\n- Deduplicating pks across batches would be an unprompted divergence from \"simply added\".\nNo reasonable fix that follows the spec fails these tests.",
+    "score": 2,
+    "explanation": "The spec says to sum the update() return values ('rows matched'), which directly yields 0 for an empty list, 2000 for the large batch, and 1 or 2 for duplicates in one batch versus separate batches.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFkq7pWWjjnfLcs1vEs",
+  "input_tokens": 3361,
+  "output_tokens": 792,
+  "seconds": 9.6
+}

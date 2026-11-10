@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pytest-dev__pytest-9911",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9369,
+  "output": {
+    "reasoning": "1. The issue asks for explicit rejection of empty tuples in pytest.raises() and pytest.warns(), with a helpful explanation; analogous pytest.raises(None) handling is suggested as a bonus. 2. Both graded tests call the public pytest.raises(expected_exception=...) factory, using None or (), and require it to immediately raise ValueError whose message matches 'Expected an exception type or'. They reference no private APIs or implementation details. 3. Rejecting () is settled by 'explicitly check tuple inputs, and raise a more helpful error message if they're empty.' None is explicitly discussed, though as optional bonus behavior. Immediate argument validation is a reasonable interpretation. However, neither ValueError specifically nor the required message substring is settled: the specification's illustrative message instead begins 'Passing expected_exception=() is an error' and explains why matching is impossible. 4. A reasonable fix could reject both inputs with ValueError using the specification's suggested explanatory messages. It would resolve the issue but fail both tests because those messages do not contain 'Expected an exception type or'. The required wording therefore pins an externally observable choice among several valid ones.",
+    "score": 3,
+    "explanation": "A correct fix could raise ValueError for both inputs using the specification's suggested 'Passing expected_exception=... is an error' explanation. Both tests would reject it solely because the message lacks the required substring 'Expected an exception type or'.",
+    "overspecification_vector": "Both added tests require: with pytest.raises(ValueError, match=\"Expected an exception type or\"):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2133,
+  "output_tokens": 692,
+  "seconds": 14.7
+}

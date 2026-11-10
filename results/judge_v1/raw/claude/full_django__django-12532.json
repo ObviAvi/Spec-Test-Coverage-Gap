@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-12532",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9297,
+  "output": {
+    "reasoning": "1. The spec says ModelMultipleChoiceField uses the error message key 'list' where MultipleChoiceField uses 'invalid_list', and asks that it switch to 'invalid_list'. It names no deprecation path.\n2. What the graded tests require:\n(a) test_modelchoicefield: passing error_messages={'invalid_list': ...} makes clean('3') raise 'NOT A LIST OF VALUES'.\n(b) test_list_error_message_warning: constructing ModelMultipleChoiceField with error_messages={'list': ...} raises RemovedInDjango40Warning (as an error under assertRaisesMessage) with the message \"The 'list' error message key is deprecated in favor of 'invalid_list'.\"\n3. How each is settled:\n- (a) is settled by the spec: \"should use 'invalid_list' as error message key\".\n- (b) is mostly open. Django's deprecation policy suggests keeping 'list' with a warning, and the current-cycle class RemovedInDjango40Warning follows by convention. But the spec never mentions deprecation. The exact message wording is arbitrary. Emitting the warning at __init__ rather than at clean time is also unspecified.\n4. Reasonable fixes that fail (b):\n- A fix that simply renames the key fails.\n- A fix that deprecates with different wording fails, e.g. \"'list' error message key is deprecated; use 'invalid_list' instead.\"\n- A fix that warns lazily in clean() when the 'list' message is used fails, because the test only constructs the field.\nThese are observable-behavior differences (warning text and timing), not internal state.",
+    "score": 3,
+    "explanation": "The graded deprecation test requires a RemovedInDjango40Warning raised at construction time with the exact text \"The 'list' error message key is deprecated in favor of 'invalid_list'.\" A correct fix that just renames the key, or deprecates with different wording or at clean() time, fails.",
+    "overspecification_vector": "test_list_error_message_warning: msg = \"The 'list' error message key is deprecated in favor of 'invalid_list'.\"; with self.assertRaisesMessage(RemovedInDjango40Warning, msg): ModelMultipleChoiceField(queryset=..., error_messages={'list': ...})"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGwQ19acxb4y3BZJCQp",
+  "input_tokens": 3555,
+  "output_tokens": 1095,
+  "seconds": 10.4
+}

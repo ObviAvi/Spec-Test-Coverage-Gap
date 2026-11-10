@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15814",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10295,
+  "output": {
+    "reasoning": "The specification identifies a crash when evaluating select_related() followed by only() across a foreign key to a proxy model, demonstrated by select_related(\"custom\").only(\"custom__name\"). The test reproduces this pattern using existing ProxyTrackerUser and Issue fixtures: it creates an assignee, creates an issue, and evaluates select_related(\"assignee\").only(\"assignee__status\"). These operations are directly settled by the reported behavior; the different model and field names merely instantiate the same case. The fixture strings \"Joe Doe\", \"test\", and \"New issue\" impose no implementation requirements. Using get() to evaluate the query and asserting equality with the saved issue rely on ordinary QuerySet retrieval and model equality conventions. A reasonable fix must retrieve the correct object, not merely suppress the exception. No open implementation choice is constrained, and no reasonable correct fix would fail this assertion.",
+    "score": 1,
+    "explanation": "The assertion that qs.get() equals the created issue directly verifies successful, correct retrieval for the reported select_related().only() proxy-model scenario.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2500,
+  "output_tokens": 693,
+  "seconds": 18.6
+}

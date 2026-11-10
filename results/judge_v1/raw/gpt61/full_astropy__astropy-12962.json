@@ -1,0 +1,18 @@
+{
+  "task_id": "full/astropy__astropy-12962",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11234,
+  "output": {
+    "reasoning": "1. The missing capability is exporting CCDData as an ImageHDU rather than always putting its data in a PrimaryHDU. The specification explicitly offers alternative interfaces: Option A, to_hdu(as_image_hdu=True); Option B, fits.ccddata_to_image_hdu(ccd_image); or Option C, write(..., append=True).\n2. The tests require to_hdu(as_image_hdu=False) to return a PrimaryHDU first, and to_hdu(as_image_hdu=True) to return an ImageHDU first. These are settled by Option A and the existing default behavior if Option A is chosen, but requiring that particular option is open: the specification does not require all three alternatives.\n3. The tests also require write(filename, as_image_hdu=False) to produce one HDU, and write(filename, as_image_hdu=True) to produce two HDUs with an ImageHDU second. Preserving the primary-only default and inserting a primary before an image extension follow existing behavior and FITS conventions. However, exposing as_image_hdu through write is open: the specification gives that keyword only for to_hdu, while its proposed write interface uses append=True.\n4. A reasonable fix implementing Option B could return a complete ImageHDU with the CCDData's data and relevant metadata, without adding either tested keyword interface. It would resolve the requested conversion but fail these tests. The gap concerns mandatory choices of public interface, rather than internal implementation details.",
+    "score": 3,
+    "explanation": "A correct fix could implement the explicitly proposed fits.ccddata_to_image_hdu(ccd_image) convenience function instead of Option A, but the tests require to_hdu(as_image_hdu=...). They additionally require write(as_image_hdu=...), although that writer keyword is not proposed in the specification.",
+    "overspecification_vector": "ccd_data.to_hdu(as_image_hdu=False); ccd_data.to_hdu(as_image_hdu=True); ccd_data.write(filename, as_image_hdu=False); ccd_data.write(filename, as_image_hdu=True)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2796,
+  "output_tokens": 1624,
+  "seconds": 33.7
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-24661",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8431,
+  "output": {
+    "reasoning": "1. The specification says `parse_expr(..., evaluate=False)` ignores `evaluate=False` for relationals. The title says \"for relationals\", and the example `parse_expr('1 < 2', evaluate=False)` should return `Lt(1, 2, evaluate=False)`. It names the entry point `parse_expr`.\n2. The test calls `parse_expr(text, evaluate=False)` on six inputs: `<`, `<=`, `>`, `>=`, `!=`, `==`. It compares each result by structural `==` against the matching unevaluated object: `Lt`, `Le`, `Gt`, `Ge`, `Ne`, `Eq`, each with `evaluate=False`.\n3. Requirements:\n- `<` mapping to `Lt` is settled verbatim by the spec.\n- The other operators are settled by the title \"relationals\". In SymPy, `Le`, `Gt`, `Ge`, `Ne` and `Eq` are all relational classes, and each Python operator maps to exactly one of them.\n- Structural equality is not a hidden requirement. The Relational constructors sympify their arguments, so `Lt(Integer(1), Integer(2), evaluate=False)` equals `Lt(1, 2, evaluate=False)`.\n4. A fix covering only `<` would patch just the literal example and leave the same bug in closely related inputs, so it does not count. A reasonable fix would not produce a reversed form such as `Gt(2, 1)` for `1 < 2`. No reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "The test checks that `parse_expr(..., evaluate=False)` returns the unevaluated relational for each comparison operator, which is the spec's `Lt` example applied to the other relationals named in the title.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGscCFiQQ9CpnVchKtN",
+  "input_tokens": 3253,
+  "output_tokens": 998,
+  "seconds": 10.1
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16614",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 78003,
+  "output": {
+    "reasoning": "1. The specification identifies django.forms.fields.URLField.to_python and asks that scheme-less URLs assume HTTPS: \"URLField should assume the safe option https.\" Changing the existing fallback from http to https is a reasonable complete fix.\n2. The graded tests additionally require URLField(assume_scheme=\"http\") and URLField(assume_scheme=\"https\"), require URLField() to continue producing \"http://example.com\", and require a RemovedInDjango60Warning with specific wording announcing a Django 6.0 transition. They also require that warning when a ModelForm's URL field is constructed. Existing validation and preservation of explicitly supplied schemes are conventional regression requirements; the added ignore_warnings decorators do not themselves require warnings.\n3. HTTPS normalization for scheme-less hosts and paths is settled by the specification. The new assume_scheme keyword, retention of the HTTP default during a transition, warning category/message, release deadline, and warning during ModelForm construction are not specified. Indeed, retaining the HTTP default does not implement the requested default change immediately.\n4. A competent developer could simply change the fallback in to_python to HTTPS, preserving explicit schemes and existing validation, without adding a configuration keyword or deprecation machinery. That fix would resolve the reported problem and related inputs but fail the new keyword calls, HTTP-default assertions, and warning assertions.\n5. The mandatory, unspecified assume_scheme API makes this significantly overspecified, beyond merely choosing particular observable warning wording.",
+    "score": 4,
+    "explanation": "A reasonable fix that directly changes the fallback scheme to HTTPS would fail because the tests require a new assume_scheme keyword and deliberately retain HTTP as the default. They also demand an unspecified Django 6.0 deprecation warning, including its category and wording.",
+    "overspecification_vector": "URLField(assume_scheme=\"http\"); URLField(assume_scheme=\"https\"); test_urlfield_assume_scheme: f = URLField(); self.assertEqual(f.clean(\"example.com\"), \"http://example.com\"); test_urlfield_raises_warning and test_url_modelform_assume_scheme_warning: self.assertWarnsMessage(RemovedInDjango60Warning, msg), where msg is \"The default scheme will be changed from 'http' to 'https' in Django 6.0. Pass the forms.URLField.assume_scheme argument to silence this warning.\""
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 17115,
+  "output_tokens": 981,
+  "seconds": 24.9
+}

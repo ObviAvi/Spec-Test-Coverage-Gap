@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-17038",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11310,
+  "output": {
+    "reasoning": "1. The specification identifies incorrect floor-square-root results from `sympy.core.power.isqrt`, caused by floating-point rounding. It explicitly discusses both a smaller safe bound and using `int(_sqrt(n + 0.5))` under a bounded-error assumption; checking the result and falling back is presented as one option, not a requirement.\n2. The tests require correct results at the revised boundary `4503599761588223`, at nearby half-integers, and for the two reported integers. These are settled by the reported defect and closely related rounding cases. The native-sqrt boundary comparisons establish the reproducer, without requiring the implementation to use that boundary.\n3. They also require ValueError for `-1`, `-10**1000`, `-S.Half`, and a negative tiny rational; and exact floors for `1-tiny`, `4503599761588224-tiny`, and `10**100-tiny`. ValueError follows the standard square-root domain convention. Existing half-integer tests demonstrate noninteger support, and the new rational cases reasonably extend the same floor semantics.\n4. The open requirement is robustness after the private `power._sqrt` is replaced with a function returning `2.999999999` for every input, while `isqrt(9)` and `isqrt(10000)` must remain correct. The specification discusses plausible rounding errors, not arbitrary corruption of this helper. A reasonable implementation could validate negativity, convert nonnegative inputs exactly to integers, use the explicitly discussed `int(_sqrt(n + 0.5))` approach below `2**50`, and use an integer algorithm above it. That implementation handles the ordinary and rational cases but fails these mocked assertions.\n5. This rejects a reasonable fix through manipulation of an internal helper, so the most overspecified requirement merits score 4.",
+    "score": 4,
+    "explanation": "A correct fix could use the specification's bounded-error `int(_sqrt(n + 0.5))` approach for small inputs and exact integer arithmetic elsewhere. It would fail when the test replaces the private `_sqrt` helper with a constant-returning function, which demands protection against arbitrary corruption rather than the rounding errors described.",
+    "overspecification_vector": "power._sqrt = lambda x: 2.999999999; followed by assert isqrt(9) == 3 and assert isqrt(10000) == 100"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2889,
+  "output_tokens": 2071,
+  "seconds": 48.1
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16693",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10130,
+  "output": {
+    "reasoning": "1. The specification asks for an informative error when a context processor returns the wrong type, specifically None, instead of the current mysterious TypeError. It explicitly identifies context.bind_template() and updates.update(processor(self.request)) in the failing path.\n2. The graded test configures a DjangoTemplates backend with a normal request context processor and context_process_returning_none, constructs RequestContext(HttpRequest()), and binds Template(\"\"). It requires TypeError containing \"Context processor context_process_returning_none didn't return a dictionary.\" No mocks or new implementation symbols are required.\n3. Exercising template binding with a processor returning None is settled by the reported reproduction. The backend configuration and other processor are ordinary setup. TypeError follows the existing exception type and is conventional for an invalid return type. However, the required message substring is open: the specification requests a helpful message and gives a view-error analogy, but does not prescribe this wording or the processor's name format.\n4. A reasonable fix could raise TypeError with \"Context processor template_tests.test_context.context_process_returning_none returned None; expected a dictionary.\" This identifies the faulty processor, actual result, and expected type, yet fails the required substring assertion.\n5. The test therefore mildly overspecifies observable error-message wording, rather than implementation details.",
+    "score": 3,
+    "explanation": "A correct fix could report the processor's fully qualified name and say that it returned None instead of a dictionary. It would still fail because assertRaisesMessage requires the particular substring \"Context processor context_process_returning_none didn't return a dictionary.\"",
+    "overspecification_vector": "msg = (\"Context processor context_process_returning_none didn't return a \" \"dictionary.\"); with self.assertRaisesMessage(TypeError, msg):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2254,
+  "output_tokens": 587,
+  "seconds": 13.1
+}

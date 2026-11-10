@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12050",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7922,
+  "output": {
+    "reasoning": "1. The specification identifies Query.resolve_lookup_value converting lists to tuples and explicitly requires that the 'iterable return type should match input iterable type,' particularly for exact lookups. 2. The test constructs Query(Item), builds Q(name=['a', 'b']), selects the first lookup, requires an Exact instance, and asserts its prepared rhs is \"['a', 'b']\". 3. Preserving the list is explicitly settled. Using an Exact lookup for an unqualified field lookup and converting a string-field value to its string representation are conventional ORM behavior; the asserted string is the consequence of preserving the list rather than converting it to a tuple. build_where exercises the implicated resolution through query construction. 4. The particular list contents introduce no additional requirement beyond representative list handling. No reasonable fix preserving iterable types would fail these assertions without also changing unrelated lookup construction or field preparation. 5. The test therefore adds a conventional integration-level consequence, not an arbitrary implementation requirement.",
+    "score": 2,
+    "explanation": "Every reasonable fix preserving the input list through lookup resolution produces the asserted rhs \"['a', 'b']\" under normal string-field preparation, while retaining the existing Exact lookup behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1792,
+  "output_tokens": 1068,
+  "seconds": 24.9
+}

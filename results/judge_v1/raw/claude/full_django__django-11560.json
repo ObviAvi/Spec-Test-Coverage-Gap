@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-11560",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8917,
+  "output": {
+    "reasoning": "1. The spec asks for a ValueError when Extract lookups that do not work with DurationField are used. Its example is ExtractYear on a duration field. It names no message, no complete list of lookups, and no point in time when the error must be raised.\n2. What the graded tests require:\n- ValueError is raised for 'year', 'iso_year', 'month', 'week', 'week_day' and 'quarter'.\n- The exact message is \"Cannot extract component '<lookup>' from DurationField 'duration'.\"\n- The error is raised when `annotate()` is called, not when the queryset is evaluated (the test never calls `list()`).\n3. How each requirement is settled:\n- ValueError type: settled by the spec's title.\n- 'year': settled by the spec's example.\n- The other lookups: a reasonable reading of \"lookups that don't work properly\", though which date components count is somewhat open. For example, month can be extracted from a PostgreSQL interval.\n- Exact message: open, the spec gives no wording.\n- Raise at annotate time: open-ish. A fix that raises in `as_sql` would only fail on evaluation, so the test (no `list()`) would not see the error.\n4. Reasonable fixes that fail:\n- A fix raising ValueError(\"ExtractYear is not supported for DurationField\") or similar fails `assertRaisesMessage`.\n- A fix that checks in `as_sql` rather than `resolve_expression` also fails.\nThe test asserts observable behavior but pins arbitrary wording, so the score is 3.",
+    "score": 3,
+    "explanation": "The test requires the exact message \"Cannot extract component '<lookup>' from DurationField 'duration'.\" raised at annotate() time; a correct fix with different wording, or one that raises during SQL compilation, fails.",
+    "overspecification_vector": "msg = \"Cannot extract component '%s' from DurationField 'duration'.\"; assertRaisesMessage(ValueError, msg % lookup) around DTModel.objects.annotate(extracted=Extract('duration', lookup)) without evaluating the queryset"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFmuYWeJ29VMoadXC8i",
+  "input_tokens": 3342,
+  "output_tokens": 1058,
+  "seconds": 10.4
+}

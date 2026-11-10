@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-18630",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11920,
+  "output": {
+    "reasoning": "The specification reports an AttributeError during integration and directly reproduces it through hyper(...).nseries(), caused by treating a TupleArg as an ordinary function argument. Fixing that failure for related hypergeometric inputs is settled. Only test_limits is graded; the added test_eval_nseries and its private-method calls do not count. The changed graded assertion requires hyper((1,), (4/3, 5/3), k**2).series(k) to equal exactly 1 + 9*k**2/20 + 81*k**4/1120 + O(k**6). The coefficients and expansion order follow conventional series mathematics, but eagerly simplifying the hypergeometric coefficients at zero is open. Indeed, the removed assertion accepted the mathematically equivalent expression containing hyper(..., 0). A reasonable fix could correct tuple-argument handling and the reported singular-argument expansion while preserving that established, unevaluated representation for regular-point Taylor expansions. Such a fix would resolve the reported bug but fail the new structural equality.",
+    "score": 3,
+    "explanation": "The graded test additionally requires hypergeometric coefficients at zero to simplify to explicit numbers. A correct fix for the reported AttributeError could preserve the previously accepted, mathematically equivalent series containing hyper(..., 0), and would fail this assertion.",
+    "overspecification_vector": "The changed test_limits assertion: hyper((1,), (Rational(4, 3), Rational(5, 3)), k**2).series(k) == 1 + 9*k**2/20 + 81*k**4/1120 + O(k**6), specifically requiring explicit numeric coefficients instead of the previously accepted hyper(..., 0) expressions."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3441,
+  "output_tokens": 998,
+  "seconds": 22.6
+}

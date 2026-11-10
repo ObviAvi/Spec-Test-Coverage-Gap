@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16899",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9228,
+  "output": {
+    "reasoning": "1. The specification identifies a missing field name in readonly_fields validation errors and asks to “include the field name,” showing another check’s “refers to” wording as a consistency example. 2. The graded tests exercise SongAdmin(Song, AdminSite()).check() and CityInline(State, AdminSite()).check(). They require errors identifying readonly_fields[1] as 'nonexistent' and readonly_fields[0] as 'i_dont_exist', respectively, with exact message text, the existing admin class as obj, and id='admin.E035'. 3. Including the offending names is settled by the specification. Coverage of both ModelAdmin and inline administration is supported by the issue’s description and CityInline example. The error type, objects, identifier, index reporting, and descriptions of acceptable attributes are existing behavior shown in the patch context. However, the exact new sentence structure—“refers to '<name>', which is not”—is open: the specification illustrates this style but does not require a literal message template. 4. A reasonable fix could produce “The value of 'readonly_fields[1]' ('nonexistent') is not a callable, an attribute of 'SongAdmin', or an attribute of 'admin_checks.Song'.” Applying that format to both cases includes the missing names while preserving the existing diagnostic, but fails both exact-message comparisons. 5. This is an externally observable wording restriction, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could include the offending name parenthetically after readonly_fields[index], rather than use the exact “refers to '<name>', which is not” construction. Both tests would reject that clear diagnostic solely because its wording differs.",
+    "overspecification_vector": "Exact expected messages: \"The value of 'readonly_fields[1]' refers to 'nonexistent', which is not a callable, an attribute of 'SongAdmin', or an attribute of 'admin_checks.Song'.\" and \"The value of 'readonly_fields[0]' refers to 'i_dont_exist', which is not a callable, an attribute of 'CityInline', or an attribute of 'admin_checks.City'.\""
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2073,
+  "output_tokens": 845,
+  "seconds": 16.2
+}

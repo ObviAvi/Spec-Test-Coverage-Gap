@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14122",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8651,
+  "output": {
+    "reasoning": "1. Spec: Meta.ordering fields still end up in the GROUP BY clause when a query does values().annotate(aggregate), which produces wrong aggregation. The commit that removed the ORDER BY did not remove them from GROUP BY. The spec names a symptom, and the natural entry point is the queryset aggregation path.\n2. The graded test uses Article, which has a default ordering, plus the existing authors. It runs Article.objects.values('author').annotate(count=Count('author')) and asserts the result, compared without regard to order, is the two groups with counts 3 and 1.\n3. Requirements:\n- Correct grouping by author only, with Meta.ordering excluded: settled by the spec ('populates GROUP BY with Meta.ordering fields thus leads to wrong aggregation').\n- Count values: these follow from the data, so they are the only correct answer.\n- assertCountEqual ignores order: nothing is pinned there.\n- The test uses public APIs only.\n4. A correct fix that excludes Meta.ordering from GROUP BY (for example, skipping order_by expressions when _meta_ordering is set in get_group_by) passes. Any fix that resolves the bug yields these counts. There is no open detail.",
+    "score": 1,
+    "explanation": "The test asserts correct aggregation results for values().annotate(Count) on a model with Meta.ordering, which is exactly the reported bug, so every correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFgEWcVdHecxn6WQ9Qt",
+  "input_tokens": 3258,
+  "output_tokens": 497,
+  "seconds": 7.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-11115",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10719,
+  "output": {
+    "reasoning": "1. What the specification asks for: the AlreadyRegistered exception message should give more detail about the already-registered model, so the developer can identify the clashing package or app. It names no particular format.\n\n2. What the graded tests require:\n- Default ModelAdmin: assertRaisesMessage (a substring check) for \"The model Person is already registered in app 'admin_registration'.\"\n- Custom admin: the substring \"The model Person is already registered with 'admin_registration.PersonAdmin'.\"\n\n3. Status of each requirement:\n- The exact wording of both messages is open. The specification only says the exception should give \"more details\".\n- Branching on whether the admin class is the default ModelAdmin is open.\n- Showing the admin class as app_label.ClassName, rather than the module path or qualname, is open.\n\n4. Reasonable fixes that fail:\n- \"The model Person (admin_registration.Person) is already registered by admin_registration.PersonAdmin\" is a correct, helpful message but fails both substring checks.\n- Including the full module path, e.g. 'admin_registration.tests.PersonAdmin', fails the second test.\n- Even the original message followed by extra detail fails. The new expected substring adds \" in app ...\" right after \"registered\", so any differently worded suffix breaks it.\n\nThese are observable messages, but the exact wording is arbitrary, which points to a score of 3.",
+    "score": 3,
+    "explanation": "The tests pin exact message text: \"The model Person is already registered in app 'admin_registration'.\" for the default admin and \"...registered with 'admin_registration.PersonAdmin'.\" for a custom admin. A fix that adds the app label, model path, or admin class in any other wording or format (for example a module-qualified class path) fails.",
+    "overspecification_vector": "msg = \"The model Person is already registered in app 'admin_registration'.\"; msg = \"The model Person is already registered with 'admin_registration.PersonAdmin'.\""
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFmnGxT6rg4Nuh9GzyX",
+  "input_tokens": 4013,
+  "output_tokens": 680,
+  "seconds": 7.9
+}

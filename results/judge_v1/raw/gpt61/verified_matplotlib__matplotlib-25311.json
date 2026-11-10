@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-25311",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9244,
+  "output": {
+    "reasoning": "1. The specification reports that pickle.dumps(fig) fails after enabling a draggable legend, and says the same happens with draggable annotations. Its required outcome is \"Pickling successful\"; it does not prescribe a serialization strategy. 2. The graded test adds a draggable legend through plt.legend(draggable=True), serializes the figure with the highest pickle protocol, checks that the pickle contains no FigureCanvasAgg reference, and reloads and draws the figure using the existing round-trip test. 3. Successful serialization is explicitly settled. Enabling dragging through the legend constructor is a closely related input, and preserving a usable figure on round-trip is a reasonable regression requirement. The absence of FigureCanvasAgg from the pickle stream is open: neither the specification nor the existing test context requires canvas-free serialization. 4. A reasonable alternative could serialize the draggable's canvas reference using a portable Agg replacement and reconnect it to the figure's canvas on loading. That could support both draggable legends and annotations, including GUI figures, while still including FigureCanvasAgg in the pickle. 5. The additional assertion therefore constrains internal serialization representation rather than merely verifying the reported bug is fixed.",
+    "score": 4,
+    "explanation": "A correct fix could make canvas references safely serializable using an Agg replacement and reconnect them on loading. Such a fix could successfully pickle and restore draggable figures but fail the test solely because its pickle stream references FigureCanvasAgg.",
+    "overspecification_vector": "assert \"FigureCanvasAgg\" not in [arg for op, arg, pos in pickletools.genops(pkl)]"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2166,
+  "output_tokens": 989,
+  "seconds": 28.2
+}

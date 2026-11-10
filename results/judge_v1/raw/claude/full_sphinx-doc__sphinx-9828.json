@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9828",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9703,
+  "output": {
+    "reasoning": "1. The spec asks for a new configuration parameter that allows fuzzy translations to be written into mo files, and it names that parameter explicitly as \"use_fuzzy_translations\".\n2. The graded test sets confoverrides 'gettext_allow_fuzzy_translations': True and asserts that the fuzzy translation 'FEATURES' appears in the HTML output.\n3. Requirements:\n   - Config name 'gettext_allow_fuzzy_translations': open, and in fact contradicted. The spec says \"Add a new configuration parameter 'use_fuzzy_translations'\".\n   - Fuzzy translation shows in output when enabled: settled by the spec.\n4. A developer following the spec literally would add `use_fuzzy_translations`. Sphinx accepts unknown confoverrides only with a warning, so `gettext_allow_fuzzy_translations` would be ignored. The option would then stay at its default (presumably False), the fuzzy entry would be excluded, and the assertion would fail. The test therefore depends on a config name that the fix must introduce and that differs from the one the spec gives.",
+    "score": 4,
+    "explanation": "The spec explicitly names the new config option \"use_fuzzy_translations\", but the test sets \"gettext_allow_fuzzy_translations\". A fix that follows the spec would ignore the test's override, leave fuzzy entries excluded, and fail the 'FEATURES' in content assertion.",
+    "overspecification_vector": "confoverrides={'language': 'de', 'gettext_allow_fuzzy_translations': True}"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH2Nq5x8y918di16YJW",
+  "input_tokens": 3649,
+  "output_tokens": 540,
+  "seconds": 6.0
+}

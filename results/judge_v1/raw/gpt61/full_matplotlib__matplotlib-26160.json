@@ -1,0 +1,18 @@
+{
+  "task_id": "full/matplotlib__matplotlib-26160",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8975,
+  "output": {
+    "reasoning": "1. The issue requests public modification of the xy1, xy2, and slope properties of the artist returned by axline(), 'following normal Artist design.' It explicitly permits locking the initial two-point versus point-and-slope representation. 2. The test constructs both representations, calls set_xy1(x, y), set_xy2(x, y), and set_slope(value), checks the updated values through get_xy1(), get_xy2(), and get_slope(), and requires ValueError with particular messages for incompatible updates. 3. Public mutation and correct readback are settled by the requested functionality; get_*/set_* naming follows the stated Artist convention. The ordinary numeric inputs introduce no unusual requirements. Rejecting incompatible updates follows the explicitly suggested representation lock, and ValueError is conventional. 4. The coordinate setters' two-positional-argument signature is open: a reasonable implementation could accept a single (x, y) tuple, matching how axline receives its control points. That implementation fails the test calls. The error wording is also open: an implementation raising ValueError('Cannot change xy2 on a slope-defined line') correctly enforces the restriction but fails the required regex. 5. These are externally observable API choices, rather than internal implementation requirements, so the score is 3.",
+    "score": 3,
+    "explanation": "A reasonable fix could accept control points as single tuples rather than two positional arguments, causing the setter calls to fail. Even with the tested signatures, clear ValueError messages with different wording would fail the required message matches.",
+    "overspecification_vector": "line1.set_xy1(.2, .3); line2.set_xy1(.3, .2); line2.set_xy2(.6, .8); line1.set_xy2(.2, .3); match=\"Cannot set an 'xy2' value while 'slope' is set\"; match=\"Cannot set a 'slope' value while 'xy2' is set\""
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2167,
+  "output_tokens": 1082,
+  "seconds": 22.5
+}

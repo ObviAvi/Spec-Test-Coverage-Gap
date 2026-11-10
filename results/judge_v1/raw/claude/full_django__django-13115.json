@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-13115",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8770,
+  "output": {
+    "reasoning": "1. The specification says UniqueConstraint should raise an error when `deferrable` is combined with `include` or `opclasses`, because those parameters need a CREATE UNIQUE INDEX. The entry point is the UniqueConstraint constructor.\n2. What the graded tests require:\n- A ValueError from the constructor when `include` is combined with `deferrable`, with a message containing 'UniqueConstraint with include fields cannot be deferred.'\n- A ValueError when `opclasses` is combined with `deferrable`, with a message containing 'UniqueConstraint with opclasses cannot be deferred.'\n3. Settled vs. open:\n- Raising an error is settled by the specification: \"should throw an error when deferrable is combined with...\".\n- ValueError is settled by convention. The existing test_deferrable_with_condition and test_invalid_defer_argument use ValueError in the constructor.\n- The exact message is open. The existing condition check likely uses 'UniqueConstraint with conditions cannot be deferred.', so a developer following that pattern would probably write the opclasses message as tested.\n- The include message adds the word 'fields', which the pattern does not dictate.\n4. A reasonable fix could raise 'UniqueConstraint with include cannot be deferred.' or 'UniqueConstraint with include cannot be deferred.' style wording. A wholly different message such as 'Deferrable unique constraints cannot use include.' is also reasonable. Any of these fails assertRaisesMessage, which requires the tested string as a substring.\n5. The tests pin exact error wording that the specification leaves open, so this is mild overspecification of observable behavior.",
+    "score": 3,
+    "explanation": "The tests require the exact message 'UniqueConstraint with include fields cannot be deferred.' and 'UniqueConstraint with opclasses cannot be deferred.'. A correct fix that raises ValueError with different wording (e.g. 'UniqueConstraint with include cannot be deferred.') fails.",
+    "overspecification_vector": "message = 'UniqueConstraint with include fields cannot be deferred.'; message = 'UniqueConstraint with opclasses cannot be deferred.' (asserted via assertRaisesMessage)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGwc8PpbeEd4d5UHvEc",
+  "input_tokens": 3221,
+  "output_tokens": 1013,
+  "seconds": 10.0
+}

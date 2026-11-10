@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-14182",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14736,
+  "output": {
+    "reasoning": "1. The specification requests a precision argument for Django's Round function, explicitly describing a second argument and showing a two-argument ROUND workaround.\n2. The graded positive-precision tests call Round(field, precision) with precisions 1, 2, and 5 on decimal, float, integer, and null inputs. Accepting that second positional argument is settled by the specification. Rounding related numeric inputs, preserving their numeric types, and propagating null are conventional extensions of the existing Round behavior. Pi() supplies test data rather than requiring a new implementation entry point.\n3. The SQLite-only graded test additionally requires Round('f1', -1) to raise ValueError containing exactly 'SQLite does not support negative precision.'. Neither the handling of SQLite's negative-precision limitation nor this diagnostic wording is specified.\n4. A reasonable fix could reject negative SQLite precision with ValueError('Negative precision is not supported by SQLite.'). It would implement the requested feature and communicate the same limitation, but fail assertRaisesMessage. Alternatively, a fix could implement negative precision on SQLite rather than reject it.\n5. The rejecting assertion concerns observable exception behavior, not implementation internals, so the task is mildly overspecified.",
+    "score": 3,
+    "explanation": "A correct implementation could reject negative SQLite precision with a clear ValueError whose wording differs. The graded test nevertheless requires the specific message 'SQLite does not support negative precision.'.",
+    "overspecification_vector": "test_unsupported_negative_precision: msg = 'SQLite does not support negative precision.'; with self.assertRaisesMessage(ValueError, msg): FloatModel.objects.annotate(value=Round('f1', -1)).first()"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3518,
+  "output_tokens": 829,
+  "seconds": 19.4
+}

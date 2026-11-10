@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13551",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11570,
+  "output": {
+    "reasoning": "1. The specification says a password reset token stays valid after the user changes their email. It names the fix point, `PasswordResetTokenGenerator._make_hash_value()`, which should include the user's email. It also warns that `AbstractBaseUser` does not force a user to have an email.\n\n2. What the graded test requires:\n- It creates three users: a `CustomEmailField` user (where `EMAIL_FIELD='email_address'`) with email None, the same model with an email, and the default `User` with an email.\n- For each, a token made by `make_token` must pass `check_token`.\n- After the field named by `get_email_field_name()` is changed and saved, `check_token` must fail.\n\n3. How each requirement is settled:\n- Email must be part of the hash: settled by the spec (\"add the user's email address into ... _make_hash_value()\").\n- Must work when the user has no email (None): settled by the spec (\"Nothing forces a user to even have an email\").\n- Must respect a custom `EMAIL_FIELD`: settled by convention. Django already exposes `get_email_field_name()` and uses it elsewhere, for example in `PasswordResetForm`. A fix that reads only `user.email` would leave the same bug for custom user models with a different email field, which is a closely related input, so it does not count as a correct fix.\n- How None is folded into the hash ('' vs 'None'): open, but it does not matter. The test only checks that the token is valid before the change and invalid after it, and both encodings give that result.\n- The fix location: also open in a harmless way. Whether the email goes into `_make_hash_value` directly or into a method on the model, as the spec suggests, the observable behaviour through `make_token`/`check_token` is the same.\n\n4. No reasonable correct fix fails. The test asserts only token validity through the public API.\n\n`test_token_with_different_secret` is listed as failing-to-pass, which is odd. Its failure before the patch is most likely an import artifact of the test patch, not a requirement on the fix.",
+    "score": 2,
+    "explanation": "The test only asserts, through the public `make_token`/`check_token` API, that changing the email (read via the existing `get_email_field_name()` convention, including when the starting email is None) invalidates the token, which is exactly what the issue asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGoY5MJmXVqvecSPH1q",
+  "input_tokens": 4494,
+  "output_tokens": 1419,
+  "seconds": 14.7
+}

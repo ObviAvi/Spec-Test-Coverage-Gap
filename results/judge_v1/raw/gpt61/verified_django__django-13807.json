@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13807",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10067,
+  "output": {
+    "reasoning": "The specification identifies missing table-name quoting in SQLite check_constraints(), explicitly showing both PRAGMA foreign_key_check(%s) and PRAGMA foreign_key_list(%s). The graded test uses the specified reserved table name 'order' and calls connection.check_constraints(table_names=['order']), so this entry point and input are settled. It creates a foreign-key violation and requires IntegrityError rather than a SQL syntax error; that follows the existing constraint-checking contract and exercises the second query identified in the report. The 'select' primary-key column and 'where' foreign-key column are related SQL-identifier inputs, not required production names or implementation details. Object creation, refresh, disabled constraint checks, and transaction rollback are test scaffolding using existing APIs. The test asserts no error message, quoting syntax, query text, or internal state. No open implementation choice is pinned in a way that rejects a reasonable correct fix.",
+    "score": 2,
+    "explanation": "Every reasonable fix should allow check_constraints(table_names=['order']) to detect the deliberately invalid foreign key and raise IntegrityError instead of failing on reserved-word SQL syntax.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2322,
+  "output_tokens": 1286,
+  "seconds": 27.2
+}

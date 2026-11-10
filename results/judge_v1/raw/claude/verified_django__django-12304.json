@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12304",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8374,
+  "output": {
+    "reasoning": "1. The spec says Choices enum classes are callable, so Django templates call them with no arguments and the lookup fails. It suggests setting do_not_call_in_templates = True on the Choices classes. It names a symptom (template usage) and a suggested mechanism.\n2. The test renders '{{ Suit.DIAMOND.label }}|{{ Suit.DIAMOND.value }}' with Suit in the context and expects 'Diamond|1'. It requires:\n- the template engine not to call the Suit class during variable resolution;\n- attribute access to the member;\n- the existing .label and .value properties.\n3. Settlement:\n- Not calling the class is settled by the spec: \"can't be used in Django templates due to their being callable ... declare do_not_call_in_templates = True\".\n- The label 'Diamond' and value 1 come from the existing Suit definition and existing label/value behavior (context lines show earlier tests already cover labels and values).\n- Members are int/str values and are not callable, so only the class matters.\n- The test uses variable output rather than the spec's {% if %} comparison. Both depend on the same variable-resolution step, so any fix that makes the class usable in templates passes either way.\n4. Alternative fixes all pass:\n- setting the attribute on the metaclass;\n- setting it in ChoicesMeta.__new__;\n- marking it as a non-member;\n- changing the template engine to skip calling classes or enums.\nNo reasonable fix that resolves the spec would render something different.",
+    "score": 2,
+    "explanation": "Any fix that stops templates from calling Choices classes makes '{{ Suit.DIAMOND.label }}|{{ Suit.DIAMOND.value }}' render 'Diamond|1' from the existing label/value behavior, which is a closely related variant of the spec's template example.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGpd32rAJDBoa5NPJLd",
+  "input_tokens": 3079,
+  "output_tokens": 1730,
+  "seconds": 17.7
+}

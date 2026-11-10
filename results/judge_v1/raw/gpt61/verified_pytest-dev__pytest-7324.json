@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7324",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7879,
+  "output": {
+    "reasoning": "1. The specification reports an interpreter abort from Expression.compile(\"False\"); the quoted CPython assertion identifies \"None\", \"True\", and \"False\" as the problematic names. 2. The graded cases cover those three spellings. The only added test line is \"None\" in the existing test_valid_idents parameterization, alongside \"True\", \"False\", and other Python keywords. No new helper, internal state, exact error message, or implementation detail is required. 3. Fixing compilation of \"False\" is directly specified. Covering \"True\" and \"None\" is reasonably inferred because the reported assertion explicitly groups them together. Treating these strings as valid identifiers follows the existing test pattern rather than introducing a new interpretation of expressions. 4. Rejecting all three names would avoid the abort but would discard the existing valid-identifier behavior; fixing only \"False\" would leave the same bug on closely related inputs. Neither is a reasonable complete fix here. There is no visible open implementation choice constrained by the added test.",
+    "score": 2,
+    "explanation": "The tests extend the reported crash to the other names explicitly listed in the failing assertion, while preserving the existing valid-identifier behavior; every reasonable complete fix should pass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1815,
+  "output_tokens": 1040,
+  "seconds": 26.8
+}

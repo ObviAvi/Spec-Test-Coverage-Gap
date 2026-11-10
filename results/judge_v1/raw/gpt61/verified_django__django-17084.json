@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-17084",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9050,
+  "output": {
+    "reasoning": "1. The specification reports that queryset.aggregate() fails when an aggregate references an annotation containing a Window expression, illustrated by Coalesce(Window(Sum(...)), 0.0) followed by Sum(annotation).\n2. The test uses Book.objects.annotate(), Coalesce, Window, Avg('pages'), partition_by=F('publisher'), and aggregate() with Sum(annotation) and Count('id'). It requires one database query, exactly two occurrences of 'select' in its SQL, and the result {'sum_avg_publisher_pages': 1100.0, 'books_count': 2}. The feature guard merely limits execution to databases supporting windows; there are no mocks or required new implementation names.\n3. Supporting the nested window annotation and aggregating it is settled by the reported example. Using Avg and partitioning rather than Sum and ordering is a closely related input. The result values and output aliases follow ordinary aggregation semantics and the fixture data, not an arbitrary implementation choice. A single-query aggregate follows the normal ORM execution pattern. However, exactly two SELECT tokens is open: neither the issue nor SQL semantics requires that precise query structure.\n4. A reasonable alternative compiler fix could isolate window evaluation in an inner derived table, project Coalesce and other annotation expressions in a second layer, and aggregate in the outer query. That produces correct results in one database query but contains three SELECTs. The test rejects this implementation solely because of its SQL structure.\n5. The SQL-shape assertion therefore significantly overspecifies how the fix must be implemented.",
+    "score": 4,
+    "explanation": "A correct fix could use separate derived-table layers for window evaluation and annotation projection before the final aggregate. It would return the expected totals in one query but fail the requirement that the generated SQL contain exactly two SELECTs.",
+    "overspecification_vector": "self.assertEqual(sql.count(\"select\"), 2, \"Subquery wrapping required\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2098,
+  "output_tokens": 1285,
+  "seconds": 28.7
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-13615",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7637,
+  "output": {
+    "reasoning": "1. The spec says Complement(FiniteSet(x, y, 2), Interval(-10, 10)) wrongly returns {x, y}. It explicitly expects `{x, y} \\ [-10,10]`: the number 2 is removed and the symbols stay inside an unevaluated Complement. The entry point is Complement itself.\n2. The test asserts Complement(FiniteSet(x, y, 2), Interval(-10, 10)) == Complement(FiniteSet(x, y), Interval(-10, 10)). The LHS is the reproduction example verbatim. The RHS is the same function on the symbol-only input, so it must also yield the unevaluated `{x, y} \\ [-10,10]`.\n3. The LHS result is settled by the spec, which states the expected output. The RHS is the same code path on a closely related input. The spec's expected output shows that symbols of unknown membership must not be dropped, so the symbol-only case must also stay unevaluated. Equality is structural, so both sides must reduce to the same canonical form. Both go through the same Complement evaluation, so any consistent fix agrees.\n4. A fix that returns the unevaluated complement only when numbers are present, while still collapsing the symbol-only case to {x, y}, would fail. That fix leaves the same bug in a closely related input, so it does not count as reasonable. No reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "The assertion checks the issue's exact example against the spec's stated expected result `{x, y} \\ [-10,10]`, expressed as the unevaluated Complement of the symbol-only set, which any correct fix produces on both sides.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGn2QP21zNRaupXmNR6",
+  "input_tokens": 2883,
+  "output_tokens": 1084,
+  "seconds": 11.8
+}

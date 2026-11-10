@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12209",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9761,
+  "output": {
+    "reasoning": "The reported regression is that saving an instance with an explicit, existing primary key attempts an INSERT when the primary-key field has a default. The specification explicitly includes repeated fixture loading: “loaddata ... when the fixture contains explicit pk values and the objects already exist.” The patch defines UUIDDefaultData.data as UUIDField(primary_key=True, default=uuid.uuid4), matching the reported field configuration, and adds (pk_obj, 793, UUIDDefaultData, uuid_obj) to the existing serializer test data. Applying the existing primary-key serialization checks to this model is a conventional regression test for the expressly mentioned fixture problem. The model name, case number 793, and uuid_obj are test inputs, not names or constants the implementation must introduce. No added assertion requires a particular implementation, message, query count, or private API. There is no visible open requirement that a reasonable fix covering both ordinary saving and the stated fixture regression could violate.",
+    "score": 2,
+    "explanation": "The added serializer case checks explicit UUID primary keys on a field with a default, reasonably covering the specification’s explicit complaint that loading fixtures over existing objects fails.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2292,
+  "output_tokens": 1037,
+  "seconds": 27.2
+}

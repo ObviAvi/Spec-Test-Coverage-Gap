@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10466",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11260,
+  "output": {
+    "reasoning": "1. The spec says the `Message.locations` list in `sphinx/builders/gettext.py` contains duplicate (source, line) entries, so the .pot file repeats location lines. The title names `Message.locations`, and the issue proposes deduplicating in `Message.__init__` with `list(set(locations))`.\n2. Requirements of the graded test:\n- It uses `Catalog`, `Catalog.add`, `MsgOrigin` and iteration over the catalog. These appear to be existing APIs; none is imported via `+` lines that a fix must introduce.\n- `len(list(catalog)) == 2`.\n- `msg.text` must match.\n- `msg1.locations` must equal the exact list `[('/path/to/filename',1), ('/path/to/filename',2), ('/path/to/yetanother',1)]`. That is deduplicated, a list, and in this specific order.\n3. Status of each requirement:\n- Deduplication on `Message.locations` is settled by the spec (\"Message.locations duplicate unnecessary\", \"there are NO duplications\").\n- Catalog and message text behavior already exists.\n- The order of the deduplicated locations is open. The spec never says whether order should be preserved or sorted.\n4. A reasonable alternative that fails: the issue's own proposed fix, `self.locations = list(set(locations))` in `Message.__init__`. String hashing is randomized per process, so this yields an arbitrary order, and the exact list equality fails (nondeterministically). Fixes using `dict.fromkeys` (insertion order) or `sorted(set(...))` happen to pass, because the expected list is both insertion-ordered and sorted. The test therefore pins a deterministic ordering the spec never requires.\n5. The assertion is on observable message locations but pins an ordering, so score 3.",
+    "score": 3,
+    "explanation": "The test asserts `msg1.locations` equals an exact ordered list. A fix that deduplicates with `list(set(locations))`, exactly as the issue proposes, produces an arbitrary order and fails. The fix needs to deduplicate while preserving a deterministic order: insertion order or `sorted(set(...))`.",
+    "overspecification_vector": "assert msg1.locations == [('/path/to/filename', 1), ('/path/to/filename', 2), ('/path/to/yetanother', 1)]"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGnMTbz78RCfDcNZxUj",
+  "input_tokens": 4379,
+  "output_tokens": 1469,
+  "seconds": 15.3
+}

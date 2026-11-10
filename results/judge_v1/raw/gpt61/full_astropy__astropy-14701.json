@@ -1,0 +1,18 @@
+{
+  "task_id": "full/astropy__astropy-14701",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 108489,
+  "output": {
+    "reasoning": "1. The missing feature is LaTeX-table export registered with Cosmology.write. The specification suggests a write_latex method using cosmology.io.table.to_table() and QTable.write(..., format='latex'), but explicitly leaves presentation flexible ('e.g.' and 'or something').\n2. Settled: writing through Cosmology.write(..., format='latex') and producing a LaTeX table across the cosmology fixtures. Conventional: readable table output, reporting invalid paths, and respecting overwrite=False. However, the required error-message substrings are not explicitly specified; alternative validation could produce different clear messages.\n3. Open API choices: tests require accepting cls=QTable and cls=Table, rejecting cls=list with a TypeError containing \"'cls' must be\", and accepting latex_names=True. Using to_table makes table-class selection plausible, but the specification does not require exposing it on the writer. A reasonable implementation could always use QTable and always format its headers, without either optional keyword.\n4. Open implementation requirements: tests import write_latex specifically from astropy.cosmology.io.latex, invoke it directly, and import the private constant _FORMAT_TABLE. The graded column tests require every header after the first two to belong to that constant's values. The specification neither names this constant nor requires a persistent formatting lookup table. A correct registered writer could generate headers with a formatting function or a differently named mapping and export the same valid LaTeX, yet fail the import and these assertions. The tests do not prescribe literal header spellings independently of the imported mapping, but they do prescribe that internal representation.\n5. The connect.py additions reuse these requirements through the public interface and accommodate the absence of a LaTeX reader. The unchanged regression tests do not establish further implementation requirements. There are no mocks. The private-constant dependency is sufficient for score 4.",
+    "score": 4,
+    "explanation": "A correct registered LaTeX writer could generate formatted headers dynamically without defining _FORMAT_TABLE. It would satisfy the requested export feature but fail these tests because they import that unspecified private constant and validate output against its values.",
+    "overspecification_vector": "from astropy.cosmology.io.latex import _FORMAT_TABLE, write_latex\nassert column_name in _FORMAT_TABLE.values()\nself.functions = {\"write\": write_latex}\nwrite(fp, format=\"latex\", latex_names=True)\nwrite(fp, format=\"latex\", cls=tbl_cls)\nwith pytest.raises(TypeError, match=\"'cls' must be\"):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 30422,
+  "output_tokens": 1578,
+  "seconds": 34.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-8599",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9797,
+  "output": {
+    "reasoning": "The specification requests configurable raw HTML for permalink and viewcode link contents, explicitly naming `html_add_permalinks_html` and `viewcode_source_html`. The graded tests instead build the basic HTML fixture with (1) `html_permalinks=False`, requiring the heading to contain no permalink, and (2) `html_permalinks_icon='<span>[PERMALINK]</span>'`, requiring that span unescaped inside the heading's permalink anchor, with a specific class, href, title, and serialization. Rendering configured HTML unescaped is settled by the specification's HTML examples, and retaining ordinary permalink anchor behavior is consistent with its example. However, the configuration names `html_permalinks` and `html_permalinks_icon` are open: neither appears in the specification, which explicitly proposes a different configuration interface. Disabling links through the new `html_permalinks` setting is also not requested. A reasonable correct fix would implement both specified options, preserve the existing `html_add_permalinks` behavior, and introduce neither tested configuration name. Such a fix would fail the graded assertions because these overrides would not control its output. The tests therefore depend on unspecified new names, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix implementing the explicitly requested `html_add_permalinks_html` and `viewcode_source_html` options could fail both tests. The tests instead require support for the unspecified configuration names `html_permalinks` and `html_permalinks_icon`.",
+    "overspecification_vector": "confoverrides={'html_permalinks': False}; confoverrides={'html_permalinks_icon': '<span>[PERMALINK]</span>'}; the corresponding assertions requiring these unspecified settings to remove the permalink or replace its contents."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2277,
+  "output_tokens": 658,
+  "seconds": 13.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-12973",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10287,
+  "output": {
+    "reasoning": "The issue concerns inconsistent copy_X values between construction and fit. It explicitly proposes that fit default to None and override the constructor setting only when an argument is supplied. The graded case constructs LassoLarsIC(precompute=False), supplies fit(..., copy_X=False), and requires the original Gaussian input matrix to change. Supporting the explicit fit argument and giving it precedence are settled by the specification. The data dimensions, target column, and precompute=False are ordinary fixture choices. However, requiring mutation—assert copy_X == np.array_equal(X, X_copy), with copy_X=False—is open: disabling a requested copy does not necessarily guarantee that the caller's array is overwritten. A reasonable implementation could consistently propagate the effective flag while obtaining a Fortran-contiguous working array during validation when the supplied array has the wrong layout. That would honor the override without necessarily changing this original C-contiguous input, and would fail the assertion.",
+    "score": 3,
+    "explanation": "The test requires copy_X=False to cause observable mutation, rather than merely control copying consistently. A correct precedence fix that obtains a separate working array when needed for memory layout could leave the original input unchanged and fail this test.",
+    "overspecification_vector": "assert copy_X == np.array_equal(X, X_copy) in test_lasso_lars_fit_copyX_behaviour[False]"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2471,
+  "output_tokens": 2160,
+  "seconds": 61.6
+}

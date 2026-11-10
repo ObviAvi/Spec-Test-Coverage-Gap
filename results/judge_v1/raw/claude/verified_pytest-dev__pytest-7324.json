@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7324",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7879,
+  "output": {
+    "reasoning": "1. The issue reports that `Expression.compile(\"False\")` crashes a debug-build interpreter. It names the entry point `Expression.compile`. The cause is building `ast.Name` nodes for the reserved names True, False and None (see bpo-40870).\n2. The graded tests are `test_valid_idents` with the inputs \"True\", \"False\" and \"None\". The test likely evaluates the expression with a matcher such as `{ident: True}.__getitem__` and asserts the result is truthy, meaning the word is looked up as an identifier through the matcher.\n3. That these words are identifiers is settled by existing code. The context lines show \"True\" and \"False\" already in the valid-idents list, so the existing contract is that they are matcher identifiers, not Python constants. Adding \"None\" is a closely related input: the crash assertion quoted in the issue names None, True and False together. A fix that handles only True and False would leave the same bug for None, so it is not a reasonable fix.\n4. A correct fix must stop emitting raw `Name` nodes for these words while keeping identifier semantics, for example by prefixing names or using a mapping adapter. Any such fix passes. A fix that turned True/False into constants would break the existing contract and the existing tests, so it does not count.",
+    "score": 2,
+    "explanation": "The graded test only checks that True/False/None still evaluate as matcher identifiers through the existing evaluate path, which every correct fix that avoids the compile crash and keeps the existing identifier semantics will satisfy.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFgDY4doHZEnkTVbTAq",
+  "input_tokens": 2918,
+  "output_tokens": 1180,
+  "seconds": 15.1
+}

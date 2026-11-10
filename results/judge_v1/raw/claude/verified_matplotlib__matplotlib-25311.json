@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-25311",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9244,
+  "output": {
+    "reasoning": "1. The spec says pickling a figure fails with `TypeError: cannot pickle 'FigureCanvasQTAgg'` after `leg.set_draggable(True)`. The same failure happens for draggable annotations. The cause is that the draggable helper holds a reference to the GUI canvas. No API is named; the symptom is that `pickle.dumps(fig)` fails.\n2. What the test requires:\n   - The complete test figure now includes `plt.legend(draggable=True)`.\n   - `pickle.dumps(fig_ref)` must succeed.\n   - The pickle opcode stream must contain no `FigureCanvasAgg` reference.\n   - The figure must unpickle and draw identically.\n3. How each requirement is settled:\n   - Pickling a figure with a draggable legend is settled by the spec's reproduction case.\n   - The no-canvas-in-stream check is settled by the nature of the bug. GUI canvases are unpicklable, so any fix that works for the reported QTAgg case must keep the canvas out of the pickled state. `Figure.__getstate__` already drops the canvas, so the existing pattern is that canvases are not pickled. The test runs under Agg, whose canvas happens to be picklable, so this assertion is how it checks the canvas exclusion.\n   - Both plausible fixes avoid serializing the canvas and pass: making `canvas` a property derived from `ref_artist.figure`, or adding `__getstate__`/`__setstate__` to `DraggableBase` that drop the canvas and callback ids.\n   - Draw equality after loading is existing behavior.\n4. A fix would fail only if it still pickled a canvas object. Such a fix would not resolve the reported GUI-backend error, so it is not a correct fix. No reasonable correct alternative is rejected.",
+    "score": 2,
+    "explanation": "Any correct fix must keep the unpicklable GUI canvas out of the pickled draggable-legend state, which is exactly what the `FigureCanvasAgg not in genops(pkl)` assertion checks under the Agg backend.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGns8YkzRfpAYVKsM6c",
+  "input_tokens": 3573,
+  "output_tokens": 1370,
+  "seconds": 15.0
+}

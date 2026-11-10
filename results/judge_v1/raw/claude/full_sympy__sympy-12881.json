@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-12881",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10941,
+  "output": {
+    "reasoning": "1. The specification says Poly.free_symbols wrongly includes generators that do not occur in the polynomial. It names the free_symbols property and suggests checking which gens appear in the monomials, plus the domain symbols.\n\n2. The graded tests require:\n(a) Poly(1+x+x**2, x, y, z).free_symbols == {x}. This is settled by the spec, which says free symbols of gens not appearing should be excluded.\n(b) Poly(x+sin(y), z).free_symbols == {x, y}. This is settled by convention: the domain symbols are included, as the spec's `free_symbols_in_domain` hint shows and as existing behavior already does.\n(c) Poly(x*y - x, z, x, y).ltrim(1) == Poly(x*y - x, x, y). This is open; ltrim is never mentioned.\n(d) Poly(x*y - x, x, y).ltrim(-1) raises PolynomialError. This is also open.\n\n3. Why (c) and (d) fall outside the spec: the old ltrim appears to raise only when trimmed monomials collide. So Poly(x*y - x, x, y).ltrim(-1) would silently drop x instead of raising. That is a separate bug in a separate method, which the original PR fixed alongside free_symbols.\n\n4. A competent developer who correctly fixes free_symbols as the issue describes would not touch ltrim. They would fail test_Poly_ltrim, which is a graded FAIL_TO_PASS test, even though the reported problem is fully fixed. The test exercises a different function, a different code path than the one the spec implicates.\n\n5. Score 4.",
+    "score": 4,
+    "explanation": "test_Poly_ltrim requires Poly.ltrim to raise PolynomialError when leading generators being trimmed actually appear (e.g. Poly(x*y - x, x, y).ltrim(-1)). That bug in a different method is never mentioned in the free_symbols issue. A correct fix limited to Poly.free_symbols therefore fails this graded test.",
+    "overspecification_vector": "test_Poly_ltrim: `assert Poly(x*y - x, z, x, y).ltrim(1) == Poly(x*y - x, x, y)` and `raises(PolynomialError, lambda: Poly(x*y - x, x, y).ltrim(-1))`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH2Y3jFb2k1E52zsjZf",
+  "input_tokens": 4709,
+  "output_tokens": 1968,
+  "seconds": 18.6
+}

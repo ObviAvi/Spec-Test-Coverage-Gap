@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-4094",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9339,
+  "output": {
+    "reasoning": "1. Spec: `to_unstacked_dataset` raises MergeError when the stacked variables have only the sample dimension. Expected output: \"A working roundtrip.\" It names `to_stacked_array` and `to_unstacked_dataset` as the entry points.\n2. Test requirements: it runs the exact MCVE (`arr` over x=[0,1,2]; `Dataset({'a': arr, 'b': arr})`; `to_stacked_array('y', sample_dims=['x'])`; `to_unstacked_dataset('y')`). It then asserts `assert_identical(unstacked, data)`. The pre-existing 2-D roundtrip checks remain as context.\n3. Inputs and API calls: settled verbatim by the MCVE.\n4. Identical result: settled by the spec's \"A working roundtrip\", which means getting the original dataset back. `assert_identical` additionally checks coords and attrs. A fix that merely suppressed the error, for example `compat='override'`, could leave a stray scalar `y` coordinate. That would fail, but it also would not deliver a true roundtrip, so it is not a correct fix under the spec. A correct fix drops the selected level coordinate and squeezes, which yields an identical dataset.\n5. No private APIs, magic values, or messages are involved.",
+    "score": 2,
+    "explanation": "The test runs the issue's MCVE verbatim and asserts the roundtrip returns the original dataset (`assert_identical`), which is exactly what \"A working roundtrip\" requires.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGpCKjn4mgWefbdVRxJ",
+  "input_tokens": 3678,
+  "output_tokens": 848,
+  "seconds": 9.8
+}

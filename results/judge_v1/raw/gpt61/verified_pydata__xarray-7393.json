@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-7393",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10026,
+  "output": {
+    "reasoning": "1. The issue identifies xr.Dataset.stack as the entry point and says that creating a MultiIndex 'should not change the data type of the Indexes from which it is built.' The reproduction specifically checks an int32 coordinate's dtype after stacking.\n2. The tests construct a Dataset with a two-element coordinate named bar, stack it into baz, and require str(foo['bar'].values.dtype) to remain 'int32' or 'float32'. They require no private APIs, implementation details, mocks, or new names.\n3. Preserving int32 is explicitly settled by the reproduction. Preserving float32 is a reasonable extension of the stated dtype-preservation requirement to a closely related input. Using two coordinate values instead of one does not introduce a distinct behavioral requirement. The bar/baz names are ordinary input names, and the dtype strings are standard NumPy representations, not arbitrary formatting requirements.\n4. There is no open choice that a reasonable correct fix would violate: retaining the original coordinate dtype is the required outcome, including for analogous float32 widening. A fix limited to the literal int32 example while leaving this closely related dtype-conversion bug would not qualify as a correct general fix.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix preserves the coordinate dtype through stack; the tests check that requirement for the reported int32 case and the closely related float32 case.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2532,
+  "output_tokens": 555,
+  "seconds": 13.4
+}

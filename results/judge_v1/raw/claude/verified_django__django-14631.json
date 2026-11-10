@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14631",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10828,
+  "output": {
+    "reasoning": "1. What is wrong: the spec says BaseForm._clean_fields() and changed_data should read values through BoundField. It names one consequence: \"form._clean_fields() can return a different value from form[name].initial when they should be the same.\" It also says the existing test_datetime_clean_initial_callable_disabled can be adjusted to cover this.\n\n2. What the graded tests require:\n- A form with a disabled DateTimeField whose callable initial returns a later time on each call.\n- form.errors == {}.\n- cleaned_data['dt'] equals the first call's value (seconds 46).\n- That cleaned value equals bf.initial.\n- With microseconds=123456, the cleaned value has its microseconds stripped.\n- Only public APIs are used: errors, cleaned_data, form[name].initial.\n\n3. Settled or open:\n- Cleaned value equals bf.initial: settled directly by the spec text quoted above.\n- Seconds equal 46: settled. BoundField.initial is a cached property, so a fix that cleans through the BoundField calls the callable once, on the first access triggered by errors/full_clean. That first call returns 46.\n- Microseconds stripped: settled by the same consistency requirement. BoundField.initial already strips microseconds for widgets that don't support them (existing behavior). Matching form[name].initial therefore implies stripping.\n\n4. Open requirements: none. A fix that routes _clean_fields through bf.initial (or bf.data) satisfies every assertion. A fix that still calls get_initial_for_field separately would violate the spec's stated consequence, so it is not a correct fix.",
+    "score": 2,
+    "explanation": "The key assertion, cleaned == form['dt'].initial, is exactly what the spec says should hold; the specific seconds and microsecond values follow from BoundField.initial's existing caching and microsecond stripping.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGv6WeTbEJyGAxVJsPa",
+  "input_tokens": 3977,
+  "output_tokens": 1818,
+  "seconds": 17.7
+}

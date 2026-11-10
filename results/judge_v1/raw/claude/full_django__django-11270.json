@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-11270",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8716,
+  "output": {
+    "reasoning": "1. The specification says startapp should validate the target directory's name, in the same way it already validates the app name. It describes the desired behavior but gives no error text. 2. The graded tests run startapp with targets 'invalid.dir_name', '7invalid_dir_name', '.invalid_dir_name' and 'os'. They assert two exact messages: \"CommandError: '%s' is not a valid app directory. Please make sure the directory is a valid identifier.\" and \"CommandError: 'os' conflicts with the name of an existing Python module and cannot be used as an app directory. Please try another directory.\" 3. Raising CommandError for invalid identifiers and for importable module names is settled by convention: \"like app name validation\" points at the existing validate_name, which already does both checks. The exact wording is open. The existing messages say 'is not a valid app name' and 'cannot be used as an app name'. A developer could reuse those wordings, or check only the basename of the target, which happens to equal the input here. Any wording other than 'app directory' / 'valid identifier' / 'Please try another directory' fails. 4. One reasonable correct fix calls validate_name(os.path.basename(target)) and gets the existing 'is not a valid app name' message. It rejects the bad targets correctly but fails the assertOutput checks. The same applies to any custom wording such as 'is not a valid target directory'. 5. The tests pin exact error text that the specification never gives, which makes this a mild overspecification (score 3).",
+    "score": 3,
+    "explanation": "The tests require the exact strings \"'X' is not a valid app directory. Please make sure the directory is a valid identifier.\" and \"... cannot be used as an app directory. Please try another directory.\" A fix that validates the target correctly but reuses the existing app-name messages, or uses its own wording, fails.",
+    "overspecification_vector": "assertOutput(err, \"CommandError: '%s' is not a valid app directory. Please make sure the directory is a valid identifier.\" % bad_target); assertOutput(err, \"CommandError: 'os' conflicts with the name of an existing Python module and cannot be used as an app directory. Please try another directory.\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGvyramEnG56UhtiR4Y",
+  "input_tokens": 3189,
+  "output_tokens": 726,
+  "seconds": 7.7
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14017",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9562,
+  "output": {
+    "reasoning": "1. Spec: `Q() & Exists(...)` raises TypeError from `Q._combine`, while `Exists(...) & Q()` works. It says & and | 'should be commutative on Q-Exists pairs'. So the entry point is the Q operators `__and__`/`__or__` with a conditional expression on the right.\n\n2. Graded requirements:\n- `Q(salary__gte=30) & Exists(is_ceo)` used in filter returns [max].\n- `Q(salary__lt=15) | Exists(is_poc)` returns [ceo, max].\n- `Exists(is_poc) & Q()`, `Q() & Exists(is_poc)`, `Exists(is_poc) | Q()` and `Q() | Exists(is_poc)` each filter to [max].\n- Only public operators and queryset filtering are used; no private names, messages or internal state are asserted.\n\n3. Settlement:\n- Q-left & with Exists: settled by the spec ('Q() & Exists(...) raise a TypeError').\n- | variant: settled ('The & (and |) operators should be commutative').\n- Non-empty Q: a closely related input; commutativity implies the same result as `Exists(...) & Q(...)`, which the existing context lines already test.\n- Empty-Q cases: commutativity means `Q() | Exists` must match `Exists | Q()`. The latter already works and yields only the Exists condition, because an empty Q child produces an empty WhereNode that `_add_q` drops.\n\n4. Alternative fixes considered:\n- Wrapping a conditional `other` as `Q(other)` inside `_combine`: passes everything; the empty self returns the other side.\n- Returning NotImplemented and adding a conditional-aware `__rand__`/`__ror__` on Combinable that builds `Q(other) & Q(self)`: also passes; an empty Q child is ignored at query build time.\n- Either way, the results are determined by the existing query semantics, not by the fix's internal structure. No reasonable correct fix produces different filter results.",
+    "score": 2,
+    "explanation": "The tests only check that `Q(...) & Exists(...)` and `Q(...) | Exists(...)`, including with an empty Q, filter to the same rows as the already-working Exists-first forms, which is exactly the commutativity the spec demands.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFgiLS2FpEKHvapr5Uo",
+  "input_tokens": 3685,
+  "output_tokens": 2915,
+  "seconds": 28.5
+}

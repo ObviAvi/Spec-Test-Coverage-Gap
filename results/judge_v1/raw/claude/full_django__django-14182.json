@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-14182",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14736,
+  "output": {
+    "reasoning": "1. The spec asks for an optional second precision argument to Round. It says all backends support it natively and suggests the shape Round(expr, precision).\n2. What the graded tests require:\n- Round('field', n) works with a positional second argument for integer, float, decimal and null inputs.\n- Result types match the input field type (int, float, Decimal).\n- Values are rounded to the given places.\n- test_unsupported_negative_precision runs only on SQLite. It requires that Round('f1', -1) raises ValueError with the exact message 'SQLite does not support negative precision.'\n3. Status of each requirement:\n- Positional precision argument: settled by the spec's custom Func example with arity 2.\n- Output types: settled by the existing Round/NumericOutputFieldMixin behaviour, which the older context tests already check.\n- Rounding values: settled.\n- SQLite negative-precision error: open. The spec says 'all backends natively supported by Django support a second argument to Round' and never mentions SQLite's lack of negative precision. Nothing says an error should be raised, what type it should be, or what the message should say.\n4. A reasonable fix that fails: add an optional precision argument that passes straight through to ROUND(x, p) on every backend. On SQLite, ROUND(123.45, -1) silently returns 123.0, so no ValueError is raised and the test fails. A fix that does detect the case but raises NotSupportedError, or uses different wording, also fails the assertRaisesMessage check.\n5. The tests pin observable behaviour (an exception type and an exact message) that the spec never states, so this is a 3.",
+    "score": 3,
+    "explanation": "A reasonable fix that passes precision straight through to ROUND on every backend, as the spec implies all backends support, fails test_unsupported_negative_precision. That test requires SQLite to raise ValueError with the exact message 'SQLite does not support negative precision.' when given a negative precision, which the spec never mentions.",
+    "overspecification_vector": "test_unsupported_negative_precision: msg = 'SQLite does not support negative precision.'; with self.assertRaisesMessage(ValueError, msg): FloatModel.objects.annotate(value=Round('f1', -1)).first()"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGxLkTXtvXL1oQLmJyf",
+  "input_tokens": 5946,
+  "output_tokens": 1091,
+  "seconds": 10.9
+}

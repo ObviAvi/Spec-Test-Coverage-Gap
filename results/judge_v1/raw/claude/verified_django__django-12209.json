@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12209",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9761,
+  "output": {
+    "reasoning": "1. The spec: since Django 3.0, saving an instance with an explicit pk, when the pk field has a default, does an INSERT instead of an UPDATE. This breaks re-saving existing objects, and the issue explicitly names loaddata of fixtures with explicit pks for objects that already exist. The suggested remedy is to keep the INSERT shortcut only when no explicit pk was set.\n\n2. What the tests require:\n- A new test model `UUIDDefaultData`, with a UUID primary key that has `default=uuid4`, is added in the test patch itself. The fix does not have to create it.\n- A pk_obj entry is added to the serializer data round-trip tests. That machinery creates the object, serializes it, then deserializes and saves it while the object already exists. It then checks that the saved object matches.\n\n3. Whether each requirement is settled:\n- The deserialize/save path is settled by the spec: \"changing the behaviour of the loaddata management command when the fixture contains explicit pk values and the objects already exist\".\n- The expected result (the existing row is updated rather than hitting an integrity error) is settled by \"In Django 2.2 and earlier ... INSERT followed by an UPDATE\".\n\n4. Candidate fixes and whether they pass:\n- Reverting the optimization entirely passes.\n- Skipping the shortcut for raw saves (the upstream approach) passes.\n- Skipping the shortcut when the pk was passed explicitly to the constructor also passes, because the deserializer builds the instance with the pk passed as a keyword argument.\n- A fix that covered only `Model.save()` from user code and broke loaddata would ignore part of the spec, so it does not count as a reasonable fix.\n\nNo reasonable correct fix fails these tests.",
+    "score": 2,
+    "explanation": "The graded test is a serializer round-trip (deserialize and save over an existing row) for a UUID pk that has a default, which is exactly the loaddata scenario the issue describes; any fix that restores UPDATE-on-explicit-pk behavior passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGnWhUdfe7ABcDo3ZgM",
+  "input_tokens": 3756,
+  "output_tokens": 1417,
+  "seconds": 15.8
+}

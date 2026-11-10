@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-10081",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12560,
+  "output": {
+    "reasoning": "1. Spec: with --pdb, tearDown runs for unittest.TestCase classes decorated with @unittest.skip at the class level. The test should be skipped and tearDown should not run. This is a symptom report through the normal pytest entry point.\n\n2. Graded test (only the [@unittest.skip] variant is graded):\n- It writes a file with a class-level @unittest.skip(\"skipped for reasons\").\n- The class's setUp and tearDown append to a tracked list via a monkeypatched attribute on pytest. That attribute lives entirely inside the test and needs nothing from the fix.\n- It runs pytest --pdb in-process.\n- It asserts the output contains '* 1 skipped in *'.\n- It asserts the tracked list is empty, meaning neither setUp nor tearDown ran.\n\n3. Each requirement against the spec:\n- '1 skipped': settled. The spec says the test is \"properly skipped normally\" and shows the bad --pdb output 'sE'; the correct outcome is just the skip.\n- tearDown not called: settled. This is the bug as titled.\n- setUp not called: settled by convention. With a skipped class, unittest itself never calls setUp. The spec's example has setUp raising NameError, yet the normal run shows only 's', so setUp is evidently not run. Any fix that defers tearDown only when the test is not skipped, checking either the method or the class `__unittest_skip__`, leaves both uncalled.\n- The pytest version of the mark is not graded.\n\n4. No open requirements. Any reasonable fix makes the class-level skip prevent tearDown postponement, e.g. checking `_is_skipped` on `self.obj` or on the class. That yields the right skip count and an empty tracked list. The test exercises the exact reproduction from the issue through the public CLI.",
+    "score": 1,
+    "explanation": "Every reasonable fix passes: the graded test reproduces the issue's class-level @unittest.skip example and checks only that pytest --pdb reports '1 skipped' and that neither setUp nor tearDown runs, which is exactly the reported bug.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGre7pw9h1YS1G4BHLo",
+  "input_tokens": 4951,
+  "output_tokens": 730,
+  "seconds": 8.7
+}

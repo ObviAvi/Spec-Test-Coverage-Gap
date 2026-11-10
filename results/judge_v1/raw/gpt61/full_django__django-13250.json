@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-13250",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13458,
+  "output": {
+    "reasoning": "1. The specification reports incorrect SQLite JSONField __contains and __contained_by semantics for nested structures. It does not require disabling these lookups rather than implementing correct containment.\n2. The graded tests run unless supports_json_field_contains is enabled. They call filter(value__contains={'baz': {'a': 'b', 'c': 'd'}}).get() and filter(value__contained_by={'a': 'b'}).get(), requiring NotSupportedError with, respectively, 'contains lookup is not supported on this database backend.' and 'contained_by lookup is not supported on this database backend.'.\n3. The lookup entry points and nested JSON inputs are settled by the issue. NotSupportedError follows the existing Oracle unsupported-lookup convention, but extending that unsupported behavior to SQLite is an open design choice. The precise backend-generic messages and feature-gate name are not specified.\n4. A reasonable fix could implement recursive containment correctly without introducing the new feature flag; these tests would then demand exceptions instead of accepting correct results. Alternatively, a fix that disables the broken SQLite lookups but reports 'contains lookup is not supported on SQLite.' would fail the message assertion despite resolving the issue in the same manner as the tested fix.\n5. The decisive assertions concern observable exception behavior and wording at the normal query entry point, so the overspecification is score 3 rather than an implementation-internal requirement.",
+    "score": 3,
+    "explanation": "The tests require disabling the SQLite lookups with specifically worded NotSupportedError messages, although the specification leaves the remedy open. Correct containment emulation without the new feature flag, or disabling the lookups with clear SQLite-specific messages, would fail.",
+    "overspecification_vector": "test_contains_unsupported: msg = 'contains lookup is not supported on this database backend.'; with self.assertRaisesMessage(NotSupportedError, msg).\ntest_contained_by_unsupported: msg = 'contained_by lookup is not supported on this database backend.'; with self.assertRaisesMessage(NotSupportedError, msg).\nBoth tests are gated by @skipIfDBFeature('supports_json_field_contains')."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3279,
+  "output_tokens": 1295,
+  "seconds": 26.0
+}

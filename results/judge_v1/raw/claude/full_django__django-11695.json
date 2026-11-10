@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-11695",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9663,
+  "output": {
+    "reasoning": "1. The spec says autocomplete widgets fire an Ajax request on every key press. It asks for rate limiting via Select2's ajax.delay option. It names no delay value.\n2. The graded test test_build_attrs asserts that build_attrs returns 'data-ajax--delay': 250, i.e. the integer 250.\n3. Using the ajax.delay option is settled by the spec (\"adding a delay using the ajax.delay option provided by Select2\"). Setting it through a data-ajax--delay attribute is reasonably settled by convention, because the existing attrs already use data-ajax--cache, data-ajax--type and data-ajax--url. The delay value is open: the spec never gives 250. The value type is also open: the other attrs are strings ('true', 'GET'), so a developer might write the string '250'.\n4. A developer could pick 300ms, 500ms or 200ms, all of which rate-limit requests. Another could pass the value in JS options instead of a data attribute. Any of these would fail the exact-dict assertion. The non-graded Selenium test, which sleeps 0.25s, doesn't matter here.\n5. The test pins one arbitrary value among many reasonable ones. It is observable output of build_attrs, so this is score 3.",
+    "score": 3,
+    "explanation": "The test requires build_attrs to include exactly 'data-ajax--delay': 250 (an integer). A correct fix using a different delay (e.g. 300 or 500), a string value '250', or JS-level configuration fails the exact-dict comparison.",
+    "overspecification_vector": "'data-ajax--delay': 250, in the assertEqual on attrs in test_build_attrs"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGwGD5Wi4iwFQdWNALB",
+  "input_tokens": 3613,
+  "output_tokens": 560,
+  "seconds": 6.4
+}

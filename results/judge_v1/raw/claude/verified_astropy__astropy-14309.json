@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-14309",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12751,
+  "output": {
+    "reasoning": "1. The spec says `identify_format(\"write\", Table, \"bububu.ecsv\", None, [], {})` raises IndexError. The traceback pinpoints `is_fits` in astropy/io/fits/connect.py, which runs `isinstance(args[0], ...)` when `args` is empty and the filepath has no FITS extension. The quoted maintainer comment explains that `is_fits` used to return None in this case.\n2. The test calls `connect.is_fits(\"\", \"foo.bar\", None)` with no extra args and asserts the result is falsy.\n3. Requirements:\n- The function `is_fits` in `connect` is settled: it is named in the traceback and the issue text.\n- The input (non-FITS filepath, empty args) is settled: it is the exact failing case from the issue.\n- A falsy return is settled: the spec says the function \"was returning None\" before, and a non-FITS file should not be identified as FITS. The assertion is `not ...`, so None or False both pass.\n- The origin value \"\" is irrelevant.\n4. One alternative would be to catch exceptions inside the registry's `identify_format` instead. That leaves the identifier itself broken, and the spec clearly attributes the regression to `is_fits`, so it is not the natural correct fix. Any fix to `is_fits` passes, whether it guards `len(args) > 0`, returns early for string paths, or returns None or False.",
+    "score": 2,
+    "explanation": "The test calls `is_fits` directly, which the traceback and issue name as the faulty function. It asserts only a falsy result for a non-FITS path with empty args, so every reasonable guard passes (returning None or False, or checking args length).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFhr3o6Re7BkeQAf7k7",
+  "input_tokens": 4928,
+  "output_tokens": 886,
+  "seconds": 10.6
+}

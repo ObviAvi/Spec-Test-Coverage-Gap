@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16032",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9332,
+  "output": {
+    "reasoning": "1. The spec describes a symptom: when a queryset that uses annotate() followed by alias() appears on the RHS of an __in lookup, its selected fields are not cleared. This produces the error \"sub-select returns 10 columns - expected 1\". No specific function is named; the entry point is the public QuerySet API.\n\n2. What the graded tests require:\n- (a) test_annotation_and_alias_filter_related_in_subquery is near-verbatim the spec's reproduction. It filters on book__in with a Book queryset using annotate+alias, and expects the 4 named publishers.\n- (b) test_annotation_and_alias_filter_in_subquery uses the same pattern with pk__in on Publisher (num_awards__gt=4, annotate, alias) and expects [p3, p4].\n\n3. Status of each requirement:\n- (a) is settled by the spec's example.\n- (b) is a closely related input: the same __in lookup, the same annotate+alias pattern, a direct field instead of a related one. A correct fix clears the select (keeping only pk) whenever an __in RHS queryset has annotations or aliases, so it covers both cases. The expected results come from fixture data, not from any arbitrary choice made by the fix.\n\n4. Could a reasonable fix fail (b)? Only one that special-cases related lookups, and that would be patching the literal example while leaving the same bug in a closely related input. No private API, message, or name is involved.\n\n5. Score 2: the second test is the same bug on a related input.",
+    "score": 2,
+    "explanation": "Both tests assert correct query results for __in lookups against annotate().alias() querysets: one is the spec's reproduction, the other is the same pattern with pk__in, which any proper fix clearing the RHS select would handle.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGn1cFixzVjoGfrZBmR",
+  "input_tokens": 3567,
+  "output_tokens": 610,
+  "seconds": 7.2
+}

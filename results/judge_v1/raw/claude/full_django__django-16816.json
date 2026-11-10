@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16816",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13133,
+  "output": {
+    "reasoning": "1. The spec says list_display = [\"choice\"], where choice is a reverse relation name, passes system checks but crashes at runtime. It asks that \"error E108 be updated to cover this case as well.\" It names no message wording and says nothing about E109.\n2. The tests require that list_display = [\"song\"] (reverse FK) and [\"featured\"] (reverse M2M related_name) on Band each produce exactly one error. That error must have id \"admin.E109\" and the exact message \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\"\n3. Detecting these cases at check time is settled by the spec. The error id is open, and the spec actually points to E108, not E109. The message is open: it is a new, reworded E109 text that the spec never gives (the old E109 text referred only to ManyToManyField).\n4. A reasonable fix that follows the spec literally makes the E108 check fail for reverse relations. It would emit admin.E108 with the existing \"refers to 'choice', which is not a callable, an attribute of ...\" style message. Both tests would fail it on the error id and the message. A fix that reuses E109 but keeps its existing M2M-only wording would also fail on the message text.",
+    "score": 3,
+    "explanation": "The tests require admin.E109 with the new exact message \"must not be a many-to-many field or a reverse foreign key.\" A fix that follows the issue's explicit suggestion to extend E108 (or that reuses E109's existing wording) correctly flags reverse relations but fails both tests.",
+    "overspecification_vector": "\"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\", \"admin.E109\" in test_invalid_related_field and test_invalid_m2m_related_name"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFo2x2cbMs8jgaVRxWk",
+  "input_tokens": 4912,
+  "output_tokens": 1051,
+  "seconds": 12.2
+}

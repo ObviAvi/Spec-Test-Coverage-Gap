@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16757",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16072,
+  "output": {
+    "reasoning": "The specification asks for an admin system-check error when a reverse foreign key appears in list_display, rather than a later HTTP 500. The tests require a ModelAdmin with Band.list_display = [\"song_set\"] to be invalid, and preserve rejection of an existing many-to-many case. These inputs are settled by the reported reverse-relation problem and existing many-to-many behavior; using admin.E109 follows the existing check's convention. However, both tests require the exact message \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\" That wording is open: the specification prescribes no diagnostic text, and the existing test previously expected a different many-to-many message. A reasonable fix could preserve that existing message and add a separate E109 diagnostic saying the entry must not be a reverse foreign key. Such a fix resolves the issue for reverse relations generally but fails these exact-message assertions. The tests constrain observable diagnostic wording, not implementation internals.",
+    "score": 3,
+    "explanation": "A correct fix could retain the existing ManyToManyField diagnostic and report reverse foreign keys with a separate clear admin.E109 message. The tests reject it because they require both cases to use one exact, newly combined message that the specification never requests.",
+    "overspecification_vector": "Both assertIsInvalid calls require the exact concatenated message: \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\""
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3786,
+  "output_tokens": 592,
+  "seconds": 14.1
+}

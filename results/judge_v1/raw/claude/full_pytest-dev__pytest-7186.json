@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pytest-dev__pytest-7186",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 18651,
+  "output": {
+    "reasoning": "1. The spec says `_is_setup_py` raises UnicodeDecodeError because `path.read()` decodes with the locale encoding (ascii under LC_ALL=C). The traceback shows the current signature, `_is_setup_py(config, path, parent)`, called from `pytest_collect_file`. The natural fix is to read the file as bytes or with an explicit encoding.\n2. The tests import the private `_is_setup_py` and call it with a single argument, `_is_setup_py(path)`. They assert False for a file named not_setup.py, True for setup.py files importing setuptools or distutils.core, and True for a cp1252-encoded setup.py.\n3. The return values are settled by the function's existing behavior, and the encoding robustness is settled by the issue. The one-argument signature is open. The spec shows the three-argument signature, and nothing asks to drop `config` and `parent`.\n4. A competent fix that changes `path.read()` to `path.read_binary()` and checks `b\"setuptools\" in contents` keeps the `(config, path, parent)` signature. It fully resolves the bug, but every graded test calls `_is_setup_py(setup_py)` and would fail with a TypeError.\n5. The tests depend on an unspecified change to a private function's signature, so this is a 4.",
+    "score": 4,
+    "explanation": "The tests call the private helper as `_is_setup_py(path)` with one argument, but the spec shows its signature as `_is_setup_py(config, path, parent)`. A correct fix that only switches to reading bytes and keeps the original signature fails every graded test with a TypeError.",
+    "overspecification_vector": "`assert not _is_setup_py(not_setup_py)` / `assert _is_setup_py(setup_py)`: these calls use a one-argument signature, while the spec's traceback shows `_is_setup_py(config, path, parent)`."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH1RqPXHRk8rfsNqc9z",
+  "input_tokens": 6528,
+  "output_tokens": 843,
+  "seconds": 9.4
+}

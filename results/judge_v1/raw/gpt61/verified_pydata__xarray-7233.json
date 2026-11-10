@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-7233",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14705,
+  "output": {
+    "reasoning": "The issue names Coarsen.construct and explicitly requires: \"All variables that were coordinates before the coarsen.construct stay as coordinates afterwards.\" The graded test reproduces the example's 24-element array, auxiliary coordinate day, window size 12, output dimensions year/month, and Dataset variable T. It requires the resulting coordinate-name list to equal the original ['day']; this directly checks the reported coordinate demotion. Although list equality could impose order generally, this singleton input introduces no ordering choice. The additional DataArray call checks the same public operation on a closely related, already-supported input: the existing test context also exercises DataArray coarsen.construct. This is a reasonable regression requirement, not a separate implementation constraint. There are no mocks, private APIs, new names, or unsettled values that a reasonable correct fix would fail.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix preserves day as a coordinate in the Dataset reproduction and retains that behavior for the closely related DataArray call; those are the only graded assertions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3860,
+  "output_tokens": 755,
+  "seconds": 17.6
+}

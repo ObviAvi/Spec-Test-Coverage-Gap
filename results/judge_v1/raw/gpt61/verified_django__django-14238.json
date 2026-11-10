@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14238",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11584,
+  "output": {
+    "reasoning": "The specification identifies a failing DEFAULT_AUTO_FIELD subclass check for subclasses of both BigAutoField and SmallAutoField, and explicitly proposes allowing their subclasses in AutoFieldMeta.__subclasscheck__. The graded inheritance test adds subclasses of those two classes and requires issubclass(field, models.AutoField) to be true: directly settled by that description. Its checks of BigAutoField and SmallAutoField themselves preserve behavior shown in the existing test context. The second graded test sets DEFAULT_AUTO_FIELD to a test-defined BigAutoField subclass, creates a model without an explicit primary key, and requires its generated primary key to be an instance of the configured subclass. This directly reproduces the reported scenario and verifies that the configured field is used rather than merely suppressing the crash. The test-defined class names and import path are fixtures, not production interfaces the fix must introduce. No requirement is open, and no reasonable correct fix would fail these assertions.",
+    "score": 1,
+    "explanation": "The tests directly verify the reported subclass-check behavior for both named field types and that the DEFAULT_AUTO_FIELD reproduction creates a primary key using the configured subclass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2744,
+  "output_tokens": 472,
+  "seconds": 9.9
+}

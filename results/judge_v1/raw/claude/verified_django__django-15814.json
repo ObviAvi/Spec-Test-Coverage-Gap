@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15814",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10295,
+  "output": {
+    "reasoning": "1. Spec: select_related() on an FK to a proxy model followed by only() on a related field crashes with ValueError ('id' not in list). It also suggests a fix: use concrete_model._meta in the deferred-loading code.\n2. Test: uses existing models ProxyTrackerUser and Issue (assignee FK to a proxy model, presumably). It calls Issue.objects.select_related('assignee').only('assignee__status').get() and asserts the result equals the created issue.\n3. Settled: the scenario mirrors the spec's reproduction exactly: FK to a proxy, select_related, only on a related field, query must not crash. The assertion is plain equality of the fetched object to the created one. That is model equality by pk, the only reasonable outcome.\n4. No open requirements. Any correct fix that stops the crash passes, whether it is the suggested concrete_model change or a different place that resolves the proxy pk.",
+    "score": 1,
+    "explanation": "The test reproduces the spec's exact scenario (select_related on a proxy FK, then only() on a related field) and only asserts that the query returns the created object without crashing.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGu1y2cCkFem7m8jHGe",
+  "input_tokens": 3969,
+  "output_tokens": 392,
+  "seconds": 4.7
+}

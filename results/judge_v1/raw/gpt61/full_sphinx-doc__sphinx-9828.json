@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9828",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9703,
+  "output": {
+    "reasoning": "1. The issue asks for optional inclusion of fuzzy PO translations in generated documentation, explicitly proposing a configuration parameter named 'use_fuzzy_translations' and passing it to write_mo. 2. The sole graded test sets language='de' and gettext_allow_fuzzy_translations=True, creates a fuzzy entry mapping 'features' to 'FEATURES', builds HTML, and asserts that index.html contains 'FEATURES'. Catalog and pofile.write_po are test setup, not required implementation interfaces. 3. Including the fuzzy translation when enabled is settled by the specification; the German locale and sample translation are ordinary inputs exercising that behavior. However, the configuration name 'gettext_allow_fuzzy_translations' is not specified—the issue explicitly proposes a different name. 4. A reasonable fix could implement only 'use_fuzzy_translations', defaulting to False to preserve existing behavior, and correctly include fuzzy translations when that option is True. The test never enables that option, so this fix would fail the assertion. The ungraded disabling test does not affect the assessment.",
+    "score": 4,
+    "explanation": "The graded test requires the new configuration name 'gettext_allow_fuzzy_translations', whereas the specification names 'use_fuzzy_translations'. A correct implementation supporting the specified name with fuzzy translations disabled by default would not respond to the test's override and would fail to include 'FEATURES'.",
+    "overspecification_vector": "'gettext_allow_fuzzy_translations': True in confoverrides, on which assert 'FEATURES' in content depends."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2243,
+  "output_tokens": 608,
+  "seconds": 13.2
+}

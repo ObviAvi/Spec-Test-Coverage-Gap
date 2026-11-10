@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16830",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16120,
+  "output": {
+    "reasoning": "The spec asks only that a boolean force_insert=True be passed along to the parent saves so no UPDATE precedes the parent INSERT. A natural fix forwards force_insert to _save_parents and _save_table.\n\nThe graded tests require far more than that:\n- force_insert must accept a tuple of model classes, e.g. (Counter,), (models.Model,), (SubCounter,) or (). This picks which parents get force-inserted. The spec never mentions it, so it is open.\n- An exact TypeError message \"force_insert must be a bool or tuple.\" for inputs 1, \"test\" and []. Open.\n- An exact message \"Invalid force_insert member. {object!r} must be a model subclass.\" Open.\n- An exact message \"Invalid force_insert member. SubCounter must be a base of Counter.\" Open.\n- Diamond MTI query counts that depend on the tuple semantics. Open.\n\nIn fact, under the natural boolean fix, SubCounter(pk=1).save(force_insert=True) would issue 2 queries. Yet test_force_insert_parent asserts 3 queries for force_insert=True and 2 for the tuple form. So the plain boolean propagation the issue asks for fails the graded test outright.\n\nThe tests depend on an entirely new API design: tuple-valued force_insert, validation rules and exact error messages. None of this appears in the spec. Any reasonable fix that simply propagates the boolean fails all seven tests.",
+    "score": 4,
+    "explanation": "The tests require a new, unspecified API where force_insert accepts a tuple of parent model classes, with exact TypeError messages for invalid values. They also keep force_insert=True from propagating to parents (3 queries asserted). A fix that simply passes the boolean force_insert to _save_parents, exactly as the issue proposes, fails every graded test.",
+    "overspecification_vector": "SubCounter(pk=2, value=1).save(force_insert=(Counter,)); force_insert=(models.Model,); with self.assertNumQueries(3): SubCounter(pk=1, value=1).save(force_insert=True); \"force_insert must be a bool or tuple.\"; f\"Invalid force_insert member. {object!r} must be a model subclass.\"; \"Invalid force_insert member. SubCounter must be a base of Counter.\"; DiamondSubSubCounter tuple-based query counts"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGyg9omtQWAYUxkLmT5",
+  "input_tokens": 6259,
+  "output_tokens": 820,
+  "seconds": 8.6
+}

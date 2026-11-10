@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pylint-dev__pylint-5613",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8389,
+  "output": {
+    "reasoning": "1. The specification asks for a programmatic pyreverse entry point that avoids manually setting sys.argv and catching SystemExit, illustrating `pylint.pyreverse(output=pylint.PNG, project=name, files=files)`. It mentions the existing `pylint.run_pyreverse()` but does not require changing it or other runners.\n2. The graded tests require all three existing runners—run_pylint, run_pyreverse, and run_symilar—to accept the exact keyword `arguments`, containing an absolute Python filename. Called from a temporary working directory, each must raise SystemExit with code 0.\n3. Passing files programmatically is settled by the desired example. The exact `arguments` keyword and use of existing runners are open. Extending run_pylint and run_symilar is also open: neither is mentioned in the issue. SystemExit(0) is an existing runner convention evidenced by the context test, but that does not require a new programmatic API to expose termination. Using an absolute filename from another working directory is a reasonable related input, not itself an overspecification.\n4. A reasonable fix could introduce the illustrated high-level pyreverse API, translate its options and files into the underlying invocation, and handle SystemExit internally, while leaving all existing runner signatures unchanged. This would resolve the request for arbitrary supported options and files, but every graded invocation could fail with an unexpected-keyword TypeError. Even extending only run_pyreverse would fail the unrelated run_pylint and run_symilar cases.\n5. Score 4: the tests mandate changes to different entry points beyond the requested pyreverse functionality.",
+    "score": 4,
+    "explanation": "A correct fix could provide the requested `pylint.pyreverse(output=..., project=..., files=...)` API while leaving legacy runners unchanged. The tests instead require `arguments=` on those runners, including the unrequested run_pylint and run_symilar code paths.",
+    "overspecification_vector": "@pytest.mark.parametrize(\"runner\", [run_pylint, run_pyreverse, run_symilar])\nrunner(arguments=testargs)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1942,
+  "output_tokens": 769,
+  "seconds": 16.9
+}

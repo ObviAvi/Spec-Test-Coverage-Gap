@@ -1,0 +1,19 @@
+{
+  "task_id": "full/matplotlib__matplotlib-26160",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8975,
+  "output": {
+    "reasoning": "1. The spec asks for public setters, and implicitly getters, for the axline artist's xy1, xy2 and slope, following normal Artist design. It also suggests refusing to set xy2 when slope is set, and vice versa.\n\n2. Test requirements:\n- Methods set_xy1, set_xy2, set_slope, get_xy1, get_xy2, get_slope.\n- set_xy1 and set_xy2 take two positional scalars, as in set_xy1(.2, .3).\n- get_xy1 returns something equal to the tuple (.2, .3), and get_slope returns 2.4.\n- set_xy2 on a slope-defined line raises ValueError with the message \"Cannot set an 'xy2' value while 'slope' is set\".\n- set_slope on a two-point line raises ValueError with the message \"Cannot set a 'slope' value while 'xy2' is set\".\n\n3. Settled vs. open:\n- The get_/set_ names are settled by convention: \"properties (xy1, xy2, slope) had setters (following normal Artist design)\".\n- Rejecting the incompatible representation is settled: \"don't let one set xy2 if slope is set and vice-versa\".\n- The exception type ValueError is reasonable by convention, though TypeError or RuntimeError could also be argued.\n- The exact error message text is open.\n- The setter signature is open. Normal Artist design (e.g. Rectangle.set_xy(xy), Text.set_position(xy)) takes a single tuple. A developer following that pattern writes set_xy1(xy), and the test's set_xy1(.2, .3) then raises TypeError. Matplotlib itself later moved to the tuple signature.\n- The getter's return type is open. Storing the point as an array or list would break `== (.2, .3)`: an array comparison gives an ambiguous truth value, and a list compared to a tuple is False.\n\n4. Failing fixes: a fix whose error messages say e.g. \"xy2 cannot be set for a line defined by slope\" fails the match. A fix with set_xy1(xy) fails the positional-argument calls. All of this is observable public-API behavior, not internal state.",
+    "score": 3,
+    "explanation": "The tests pin the exact ValueError message wording (\"Cannot set an 'xy2' value while 'slope' is set\" / \"Cannot set a 'slope' value while 'xy2' is set\"), which the spec never gives. They also call set_xy1/set_xy2 with two separate scalars, whereas a fix following the usual Artist convention of a single tuple argument (set_xy1((x, y))) would fail.",
+    "overspecification_vector": "pytest.raises(ValueError, match=\"Cannot set an 'xy2' value while 'slope' is set\"); pytest.raises(ValueError, match=\"Cannot set a 'slope' value while 'xy2' is set\"); line1.set_xy1(.2, .3) / line2.set_xy2(.6, .8) two-positional-arg signature; assert line1.get_xy1() == (.2, .3) tuple return type"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGzCqmBoC9UycSNngsd",
+  "input_tokens": 3418,
+  "output_tokens": 1466,
+  "seconds": 14.0
+}

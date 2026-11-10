@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-15345",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7935,
+  "output": {
+    "reasoning": "The specification identifies mathematica_code(Max(...)) as producing Python-style parentheses instead of valid Mathematica syntax, explicitly expecting 'Max[x,2]'. The added assertion calls that same public printer with Max(x,y,z)*Min(y,z) and requires exactly 'Max[x, y, z]*Min[y, z]'. Printing a three-argument symbolic Max with brackets is a reasonable extension of the reported case; bracket syntax and comma spacing also match the existing f[x, y, z] test. However, requiring Min to print correctly is open: the specification never mentions Min. A competent developer could add a Max-specific printer that handles arbitrary Max arguments and composition correctly without changing Min printing. That resolves the specified Max defect but fails this assertion because of the separate Min operation.",
+    "score": 4,
+    "explanation": "The assertion additionally requires fixing Min printing, a separate function absent from the issue. A reasonable Max-only printer fix would resolve the reported defect and related Max inputs but fail because Min(y,z) still prints with parentheses.",
+    "overspecification_vector": "assert mcode(Max(x,y,z)*Min(y,z)) == \"Max[x, y, z]*Min[y, z]\" — specifically the requirement that Min(y,z) print as \"Min[y, z]\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1869,
+  "output_tokens": 786,
+  "seconds": 17.9
+}

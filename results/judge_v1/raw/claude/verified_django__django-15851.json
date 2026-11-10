@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15851",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8114,
+  "output": {
+    "reasoning": "1. The spec says dbshell on PostgreSQL places the extra parameters after the database name, so psql ignores them. The fix is to build the args list with the dbname last.\n2. The test calls settings_to_cmd_args_env (the existing helper that wraps DatabaseClient.settings_to_cmd_args_env) with {'NAME':'dbname'} and ['--help']. It expects (['psql','--help','dbname'], None).\n3. Each requirement:\n- The order with params before dbname is settled by the spec: \"leaving the database name for the end of the args list.\"\n- The function and its return shape already exist, as the context lines show.\n- Env being None is existing behavior when there is no password.\n- Host, port and user flags do not appear in this test, so their placement relative to the params is not tested.\n4. One open point is whether a fix could use `-d dbname` instead of a positional dbname. That would also be correct, but the issue explicitly says to keep the database name at the end of the list, so the natural fix just moves the positional dbname. A `-d` variant would contradict the spec's guidance. Every reasonable fix following the spec produces ['psql','--help','dbname'].",
+    "score": 1,
+    "explanation": "The test asserts that the extra parameter comes before the dbname, which is exactly what the issue asks for (\"leaving the database name for the end of the args list\").",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFkLwRRGZsAbWrZ9Ccb",
+  "input_tokens": 2987,
+  "output_tokens": 470,
+  "seconds": 6.6
+}

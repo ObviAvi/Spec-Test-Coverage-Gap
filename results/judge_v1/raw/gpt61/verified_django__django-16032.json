@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16032",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9332,
+  "output": {
+    "reasoning": "The specification identifies '__in' failing to clear selected RHS fields when alias() follows annotate(), and reproduces it through Publisher.objects.filter(book__in=long_books_qs). The related-subquery test uses that same filter, pages__gt=400, Value(1) annotation and alias, values('name'), and the four explicitly specified publisher names: all settled by the reproduction. The other test uses Publisher.objects.filter(num_awards__gt=4).annotate(...).alias(...) as the RHS of pk__in and expects self.p3 and self.p4. This is a closely related input to the same __in operation; implicit primary-key selection and preservation of the RHS filter follow ordinary QuerySet semantics. The annotation and alias names are merely inputs, not implementation names the fix must introduce. Both assertions use assertCountEqual, so they impose no ordering requirement. Neither test checks SQL formatting, internal state, private methods, or a particular implementation. There are no open requirements that a reasonable correct fix could violate.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix passes the reproduced book__in assertion and its straightforward pk__in variant, which checks the same annotate-then-alias bug on another model and filter.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2180,
+  "output_tokens": 528,
+  "seconds": 15.0
+}

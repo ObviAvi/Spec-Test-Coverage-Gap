@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16612",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12106,
+  "output": {
+    "reasoning": "1. The specification says that with APPEND_SLASH=True, AdminSite.catch_all_view() redirects to request.path + '/' and drops the query string. The expected redirect is foo/?id=123. It names the function and the exact line.\n\n2. What the graded tests require:\n- GET the admin changelist URL without its trailing slash, with ?id=1 appended.\n- Expect a 301 redirect to known_url?id=1.\n- A second test does the same with SCRIPT_NAME='/prefix/' and expects /prefix{known_url}?id=1.\n- fetch_redirect_response=False, so the redirect target is never fetched.\n\n3. How each requirement is settled:\n- Status 301: settled by existing behaviour. The current code uses HttpResponsePermanentRedirect, and the existing test_missing_slash_append_slash_true asserts 301.\n- Query string preserved as '?id=1': settled by the spec (\"Expected redirect: .../admin/auth/foo/?id=123\").\n- SCRIPT_NAME prefix kept: settled by existing code. The pre-existing test_missing_slash_append_slash_true_script_name already passes, because request.path includes the script prefix. Any fix that builds on request.path, or uses request.get_full_path(force_append_slash=True), keeps the prefix.\n\n4. Open details: none of consequence. The likely fixes are:\n- appending '?' + request.META['QUERY_STRING'] when it is non-empty;\n- using request.get_full_path(force_append_slash=True).\n\nBoth yield the same URL for 'id=1'. No unusual encoding choice is pinned. A fix that switched to path_info would drop the prefix, but that would break an already-passing test, so it is not a reasonable correct fix.",
+    "score": 2,
+    "explanation": "The graded tests assert the spec's own expectation: the appended-slash redirect keeps the query string, at 301 and with the existing script-prefix handling. Any reasonable fix that appends the query string to request.path passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGpvDswLyK5JKKnHkPQ",
+  "input_tokens": 4557,
+  "output_tokens": 978,
+  "seconds": 10.4
+}

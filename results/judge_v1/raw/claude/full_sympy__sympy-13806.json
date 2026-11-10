@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-13806",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10540,
+  "output": {
+    "reasoning": "1. The issue only asks for 'support' for the LaTeX `{90^^\\circ}` meaning ninety degrees, e.g. cos(90 degree) = 0. It names no entry point and does not say whether it wants parsing, LaTeX printing or something else. It never mentions pretty printing or how units are ordered in products.\n2. The graded tests require:\n   (a) test_degree_printing: `pretty(90*degree) == '90°'`, `pretty(x*degree) == 'x°'`, `pretty(cos(x*degree + 90*degree)) == 'cos(x° + 90°)'`. This is the pretty printer, with the degree sign and no space.\n   (b) test_units (both the pretty and latex versions): in a Mul, symbols must print before unit quantities, e.g. `3⋅x⋅y⋅kilogram⋅meter²/second²` and `2 \\cdot x \\cdot kilogram \\cdot meter^{2}`. This means changing how Quantity sorts relative to Symbol.\n3. Neither requirement is settled by the spec. The issue is about LaTeX degree notation. It never mentions the pretty printer, the exact `°` glyph format, or the ordering of units against symbols. The latex degree test that matches the issue most closely (test_latex_degree) is not even graded.\n4. A reasonable fix adds a LaTeX printer rule so that `90*degree` renders as `90^\\circ`, or adds parsing support. Either would fail test_degree_printing, because pretty output is untouched. It would also fail both test_units tests, because those need a Mul ordering change (units after symbols) that the issue never hints at. Even a fix that adds pretty printing of degrees fails test_units unless it also reorders quantities.\n5. The graded tests exercise a different printer and an unrelated ordering behavior from what the issue describes, so the score is 4.",
+    "score": 4,
+    "explanation": "A fix that adds LaTeX (or parsing) support for degrees, which is what the issue asks for, fails. The graded tests instead require the pretty printer to output '90°'/'x°', and require Mul printing to place unit quantities after symbols (e.g. '3⋅x⋅y⋅kilogram⋅meter²', '2 \\cdot x \\cdot kilogram \\cdot meter^{2}'), which the issue never mentions.",
+    "overspecification_vector": "test_degree_printing: `assert pretty(expr1) == u'90°'`, `pretty(x*degree) == u'x°'`, `pretty(cos(x*degree + 90*degree)) == u'cos(x° + 90°)'`; test_units (pretty): `upretty(3*kg*x*m**2*y/s**2) == unicode_str2` / `pretty(...) == ascii_str2`; test_units (latex): `latex(2*kg*x*meter**2, mul_symbol='dot') == r'2 \\cdot x \\cdot kilogram \\cdot meter^{2}'`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFqNRbpPR7s4nNN1yxy",
+  "input_tokens": 4326,
+  "output_tokens": 1403,
+  "seconds": 14.1
+}

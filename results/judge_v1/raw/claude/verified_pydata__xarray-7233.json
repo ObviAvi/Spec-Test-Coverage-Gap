@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-7233",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 14705,
+  "output": {
+    "reasoning": "1. The specification says `ds.coarsen(...).construct(...)` demotes non-dimensional coordinates such as `day` to data variables. Expected: \"All variables that were coordinates before the coarsen.construct stay as coordinates afterwards.\" It names the entry point `Coarsen.construct`.\n2. What the test requires:\n   - It builds the exact MVCE: `da` with non-dimensional coord `day`, and `ds = da.to_dataset(name='T')`.\n   - It calls `coarsen(time=12).construct(time=('year','month'))` on both the DataArray and the Dataset.\n   - It asserts `list(da.coords) == list(result.coords)`.\n3. Each requirement against the specification:\n   - Dataset case: settled verbatim by the issue's example and its expected behavior.\n   - DataArray case: the same public method on the closely related input, also covered by \"all variables that were coordinates ... stay as coordinates\".\n   - The list comparison is order-sensitive. However, only one coordinate (`day`) exists and `time` has no coordinate variable, so the result must be exactly `['day']`. Order cannot matter, and no extra or missing coordinate is acceptable under the spec.\n4. Any correct fix keeps `day` as the sole coordinate and passes. No reasonable fix fails.",
+    "score": 1,
+    "explanation": "The graded test runs the issue's MVCE (plus the same call on the DataArray) and checks that the coordinate list is exactly ['day'], which is precisely what the specification demands.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGr3bBN94mqQ1EKz8WK",
+  "input_tokens": 5976,
+  "output_tokens": 884,
+  "seconds": 9.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15863",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8586,
+  "output": {
+    "reasoning": "1. The specification identifies precision loss in the floatformat filter caused by converting Decimal inputs through float, illustrated with a Decimal formatted to 20 places. 2. The added assertion calls floatformat(Decimal(\"123456.123456789012345678901\"), 21) and requires the exact string \"123456.123456789012345678901\". It introduces no mocks, private APIs, or implementation requirements. 3. Preserving Decimal precision is settled by the reported bug and its explanation that \"Decimal numbers are converted to float instead.\" Calling floatformat directly exercises the explicitly implicated filter; the existing Decimal assertions establish its string-returning interface. The different number and precision are closely related inputs rather than arbitrary output choices: the input already has exactly 21 fractional digits, so preserving those digits determines the expected result. 4. No open requirement admits a reasonable correct alternative that would fail this assertion; losing digits on this input would leave the reported bug unresolved for a closely related case. 5. Score: 2.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix must preserve the Decimal's digits when floatformat is asked for its existing 21 fractional places; the test applies the reported precision-loss requirement to a closely related input.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1967,
+  "output_tokens": 437,
+  "seconds": 11.1
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-13992",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10468,
+  "output": {
+    "reasoning": "1. The specification identifies QuerySet.delete() after field-based distinct() as unsafe because it can delete the entire table. It explicitly permits either an error with a decent explanation or SQL that deletes the intended rows.\n2. The graded test calls Book.objects.distinct().delete() and Book.objects.distinct('id').delete(). Both must raise TypeError with a message containing 'Cannot call delete() after .distinct().'. Using SimpleTestCase also requires rejection without database access.\n3. Preventing unintended deletion through this public entry point is settled by the reported example. Requiring rejection rather than correct deletion is open: the specification explicitly permits both. Rejecting argument-free distinct() is also open; the report concerns distinct('post_id'), and a reasonable fix could preserve ordinary distinct(). Neither TypeError nor the required message wording is specified, and the supplied existing-code evidence establishes no convention requiring them.\n4. A reasonable implementation could generate safe SQL selecting the intended primary keys and then delete only those rows. Alternatively, it could reject field-based distinct() with a clear ValueError while continuing to support argument-free distinct(). Both resolve the reported problem and related inputs but fail these assertions.\n5. These restrictions concern observable public behavior, not implementation internals, so the appropriate score is 3.",
+    "score": 3,
+    "explanation": "The tests reject an explicitly permitted solution that generates correct deletion SQL, requiring TypeError instead. Even an error-based fix can fail by using different explanatory wording or preserving safe argument-free distinct().delete().",
+    "overspecification_vector": "msg = 'Cannot call delete() after .distinct().'; both occurrences of with self.assertRaisesMessage(TypeError, msg); Book.objects.distinct().delete(); Book.objects.distinct('id').delete()."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2366,
+  "output_tokens": 741,
+  "seconds": 16.3
+}

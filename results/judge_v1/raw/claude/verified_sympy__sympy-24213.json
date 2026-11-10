@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-24213",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8954,
+  "output": {
+    "reasoning": "1. The spec says SI._collect_factor_and_dimension raises a ValueError on A1*T1 + V1, even though acceleration*time is dimensionally equivalent to velocity. It names the private method directly and shows the reproduction.\n2. The test builds the same quantities (scale factors of 1 instead of 2/-9.8/5), calls SI._collect_factor_and_dimension(expr) and requires only that no exception is raised. It asserts no return value.\n3. Each requirement against the spec:\n- The method being called is settled, since the spec calls this exact private method.\n- The inputs are the reproduction with different scale factors. That is the same code path.\n- No value is asserted, so nothing is open.\n4. Any correct fix makes the addition check use dimensional equivalence, for example via get_dimension_system().equivalent_dims. Every such fix passes.",
+    "score": 1,
+    "explanation": "The test reproduces the issue's example nearly verbatim (only the scale factors differ) and asserts only that SI._collect_factor_and_dimension(A1*T1 + V1) no longer raises ValueError, which every correct fix satisfies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtGsTsTYDsDZLbm6Kyw3",
+  "input_tokens": 3469,
+  "output_tokens": 403,
+  "seconds": 5.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/astropy__astropy-14439",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13415,
+  "output": {
+    "reasoning": "1. The spec says `(u.Jy/u.beam).to_string('FITS')` gives 'beam-1 Jy' when 'Jy/beam' or 'Jy beam-1' is expected. In other words, the numerator should come first. It names no ordering rule beyond that one case.\n2. The tests assert exact strings across many formats (generic, ogip, fits, vounit) and in nddata str:\n   - 'erg / (Angstrom s cm2)'\n   - 'erg Angstrom-1 s-1 cm-2'\n   - 'erg.Angstrom**-1.s**-1.cm**-2'\n   - '10 erg / (nm s cm**2)'\n   - 'erg s-1 cm-2'\n   - 'm(5/2) kg(3/10) / s'\n   These imply one rule: bases sorted by power in descending order, with ties keeping their original insertion order rather than alphabetical order. That is why kg(3/10) now follows m(5/2) and cm2 comes after s.\n3. The spec settles only that positive powers come before negative ones, at least for Jy/beam. The full ordering rule is open: alphabetical vs insertion order within the same sign, and whether fractional positive powers are reordered by magnitude.\n4. A reasonable fix would be 'positive powers first, then negative, alphabetical within each group'. It gives 'Jy beam-1' and so resolves the issue, but it produces 'erg Angstrom-1 cm-2 s-1' and 'erg / (Angstrom cm2 s)'. It would also keep 'kg(3/10) m(5/2) / s'. That fails nearly all graded assertions.\n   Another reasonable fix emits 'Jy/beam' with a solidus in FITS, which also fails.\n   The tests pin one particular sort order among several valid ones.",
+    "score": 3,
+    "explanation": "A fix that moves positive-power units before negative ones but keeps alphabetical order within each group (e.g. 'erg Angstrom-1 cm-2 s-1', 'erg / (Angstrom cm2 s)', 'kg(3/10) m(5/2) / s') fully resolves the Jy/beam issue. It still fails, because the tests require sorting by descending power with original insertion order for ties.",
+    "overspecification_vector": "Expected strings such as \"erg / (Angstrom s cm2)\", \"erg Angstrom-1 s-1 cm-2\", \"erg.Angstrom**-1.s**-1.cm**-2\", \"10 erg / (nm s cm**2)\", \"erg s-1 cm-2\", \"[1 2 3] erg / (A s cm2)\", and \"m(5/2) kg(3/10) / s\" in test_format_styles, test_fits_scale_factor, test_vounit_details, test_nddata_str, test_multiple_solidus"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFmfEYNTzgUcJihpTMX",
+  "input_tokens": 5846,
+  "output_tokens": 1336,
+  "seconds": 13.2
+}

