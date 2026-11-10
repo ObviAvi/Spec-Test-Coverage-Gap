@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-11445",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 13995,
+  "output": {
+    "reasoning": "1. The spec says that when rst_prolog is set, a first heading that starts with a role such as :mod: is not rendered and is missing from the toctree. It describes a symptom only. The cause is clear in the existing code: `prepend_prolog` uses `docinfo_re = ':\\w+:.*?'` to skip docinfo field lines. That regex matches ':mod:`foo`', so the prolog is inserted between the heading text and its underline.\n2. The graded tests call the existing `sphinx.util.rst.prepend_prolog(content, prolog)`. The content starts with ':mod:`foo`' followed by an underline, and the prolog is given once with and once without a trailing newline. The tests assert the exact `xitems()` list: prolog lines from '<rst_prolog>', then a ('<generated>', 0, '') blank line, then the original content unchanged with its original line numbers.\n3. Settlement of each requirement:\n- `prepend_prolog` is an existing utility that already has tests in this file. It is the function that implements rst_prolog insertion and the root of the bug. Settled by existing code.\n- The output layout (prolog lines, then a '<generated>' blank line, then the content) is the existing behavior when no docinfo is detected, as the existing tests show. Settled by convention.\n- The only open behavior is that ':mod:`foo`' must not count as docinfo. Any correct fix must achieve this, because otherwise the heading still breaks. That is settled by the spec.\n- Trailing newline in the prolog: `splitlines` handles it the same way in both cases, so any natural fix passes.\n4. Each natural fix gives the identical output: a stricter field-marker regex, requiring whitespace after the closing colon, or checking whether the next line is a section underline. A fix placed somewhere other than `prepend_prolog`, such as parsing the prolog separately, would be contrived given that this function is clearly the culprit.\n5. Score 2.",
+    "score": 2,
+    "explanation": "The tests call the existing `prepend_prolog` function, which is the source of the bug. They check that a role-prefixed heading is not treated as docinfo, so the prolog is inserted before it with the existing '<generated>' blank-line layout, and every reasonable fix to the docinfo detection produces exactly this output.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusydkm39PRautxVfaMt",
+  "input_tokens": 5399,
+  "output_tokens": 1557,
+  "seconds": 17.2
+}

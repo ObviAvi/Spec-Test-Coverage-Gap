@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-2905",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11153,
+  "output": {
+    "reasoning": "1. The spec says assigning an object that has a `.values` attribute through `.loc`/`Variable.__setitem__` stores `array(5)` instead of the object itself. It names `Variable.__setitem__` in the title and links the line added by PR #1746, which is the `__setitem__` call into `as_compatible_data`. The coercion itself comes from `getattr(data, 'values', data)` inside `as_compatible_data`.\n\n2. What the graded test requires:\n- It builds `Variable(dims=(), data=CustomWithValuesAttr(np.arange(3)))`, going through the constructor rather than `__setitem__`.\n- It asserts `orig._data.item()` is a `CustomWithValuesAttr` instance.\n\n3. Settled vs. open:\n- Not coercing objects with `.values` is settled: \"prevents storing objects inside arrays of dtype==object ... if the RHS has a values property\".\n- That the Variable constructor must also stop unwrapping `.values` is open. The spec only shows the `__setitem__`/`.loc` path.\n- Inspecting `_data` is internal, but for a numpy-backed 0-d object array it is equivalent to the data, so this part is benign.\n\n4. A reasonable fix that fails: a developer could target only `__setitem__`. Before PR 1746, `__setitem__` assigned raw values straight into the numpy array. A fix could restore that, for example by wrapping non-array, non-xarray RHS values with `np.asarray(value, dtype=object)` or by skipping the `.values` unwrap only in the setitem path. That fix leaves `as_compatible_data` unchanged to avoid changing constructor semantics. It resolves the reported `.loc` case and related assignment inputs, but the constructor test would still see `array(arange(3))` and fail. Fixing the shared helper `as_compatible_data`, the root cause, passes. The test checks observable constructor behavior on a closely related public entry point, which places it between 3 and 4. I judge it mildly overspecified, since the constructor and `__setitem__` share the helper that the linked line calls.\n\n5. Score: 3.",
+    "score": 3,
+    "explanation": "The graded test checks the `Variable` constructor (`Variable(dims=(), data=obj_with_values)`) rather than `__setitem__`/`.loc`. A correct fix that stops the coercion only in the `__setitem__` assignment path, without changing `as_compatible_data` for construction, would resolve the reported issue but fail the test.",
+    "overspecification_vector": "orig = Variable(dims=(), data=array)\nassert isinstance(orig._data.item(), CustomWithValuesAttr)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut13ucJPUuVUfY4hny4",
+  "input_tokens": 4307,
+  "output_tokens": 2496,
+  "seconds": 24.8
+}

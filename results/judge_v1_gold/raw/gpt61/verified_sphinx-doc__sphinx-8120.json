@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8120",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12592,
+  "output": {
+    "reasoning": "The specification describes ignored user-provided sphinx-domain translations and expects them to override bundled translations. It explicitly says the local .po is compiled automatically and describes the goal as changing or adding translations, not merely fixing two particular Danish captions.\n\nThe test requires: (1) a local locales/de/LC_MESSAGES/sphinx.po containing Quick search → QUICK SEARCH to be compiled to sphinx.mo; (2) the existing app.translator.gettext interface to return that override after application construction; and (3) the generated HTML to contain QUICK SEARCH. Compilation is settled by the reported gettext_auto_build behavior. German and Quick search are reasonably inferred related inputs to the general translation-override requirement. The uppercase string is supplied by the test catalog, not an arbitrary output format imposed on the implementation.\n\nThe initialization-time checks follow the existing architecture shown in the evidence: _init_i18n already compiles catalogs and assigns app.translator. They check that this existing translation initialization incorporates the local override, rather than requiring a newly introduced helper or representation. locale.translators.clear() is setup and cleanup of an existing cache, not an asserted implementation choice; app.outdir is used to inspect the actual build output. There are no mocks or required new names. No open requirement identifies a reasonable alternative fix that would be rejected: restricting overrides to captions or bypassing the initialized system translator would not generally resolve the reported catalog-precedence problem.",
+    "score": 2,
+    "explanation": "The test reasonably generalizes the reported Danish caption overrides to another language and system message, checking that the supplied translation wins both through the existing translator and in generated HTML.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3012,
+  "output_tokens": 1785,
+  "seconds": 50.7
+}

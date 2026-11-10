@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pytest-dev__pytest-9911",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3220,
+  "output": {
+    "reasoning": "The issue asks for a more helpful error when `()` or `None` is passed to `pytest.raises()`. It even proposes wording: \"Passing `expected_exception=()` is an error, because it's impossible to raise an exception which is not an instance of any type...\". It names no exception class. The tests demand two things the spec never states:\n1. The exception must be a `ValueError`. `TypeError` would be a plausible, arguably more natural choice for a wrong argument type.\n2. The message must match the regex \"Expected an exception type or\". The issue's suggested message contains no such phrase.\n\nA developer who used the issue's own wording, or raised `TypeError`, would fail both tests despite a correct fix. The required message and exception type are details of the original implementation that the spec does not reveal.",
+    "score": 4,
+    "explanation": "The tests require a `ValueError` whose message contains \"Expected an exception type or\". The issue never specifies that exception type, and its suggested message is different, so a fix that follows the issue text would fail.",
+    "overspecification_vector": "with pytest.raises(ValueError, match=\"Expected an exception type or\"): (in both test_raises_does_not_allow_none and test_raises_does_not_allow_empty_tuple)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut9RTcyUrPCyicFnceN",
+  "input_tokens": 1479,
+  "output_tokens": 545,
+  "seconds": 6.2
+}

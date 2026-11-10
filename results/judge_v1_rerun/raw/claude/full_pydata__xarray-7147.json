@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pydata__xarray-7147",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10871,
+  "output": {
+    "reasoning": "1. The spec says the time-decoding error raised by decode_cf does not include the problematic variable's name. It asks that the message name the variable. It does not give any wording for the new message.\n\n2. What the test requires of a fix:\n- Calling decode_cf on a Dataset containing a scalar variable 'invalid' with value 1e36 and units 'days since 2000-01-01' raises ValueError. This is settled: the existing error is already a ValueError.\n- The error message matches the regex \"Failed to decode variable 'invalid'\". This exact phrasing is open; the spec never states it.\n\n3. Alternatives that would fail the regex:\n- Appending \"(variable: 'invalid')\" to the existing message.\n- Writing \"unable to decode time units ... for variable 'invalid'\".\n- Writing \"Error decoding variable invalid\" without quotes.\n\nEach of these correctly includes the variable's name, which is all the spec asks for, yet each fails the test.\n\n4. The check is on the observable error message, not on internals, so this is mild overspecification: the test pins one wording among many reasonable ones.",
+    "score": 3,
+    "explanation": "The test requires the error message to contain the exact phrase \"Failed to decode variable 'invalid'\". A fix that includes the variable name with different wording fails the test, for example \"unable to decode time units ... for variable 'invalid'\" or adding \"variable: invalid\".",
+    "overspecification_vector": "pytest.raises(ValueError, match=\"Failed to decode variable 'invalid'\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutCsrhJMfN7EGoaCEZm",
+  "input_tokens": 4173,
+  "output_tokens": 531,
+  "seconds": 6.1
+}

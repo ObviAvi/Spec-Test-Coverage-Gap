@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14122",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8651,
+  "output": {
+    "reasoning": "Step 1: The spec says that when Meta.ordering applies, its fields still end up in the GROUP BY of aggregation queries, which breaks the counts. It names no function; it describes a symptom and implies the fix: leave Meta.ordering fields out of GROUP BY.\n\nStep 2: The graded test uses existing models and fixtures (Article, author_1, author_2). It calls the public API `values('author').annotate(count=Count('author'))` and asserts the grouped counts with assertCountEqual, so row order does not matter.\n\nStep 3: Each requirement is settled.\n- The query shape is the canonical case described in the spec (values plus annotate on a model with Meta.ordering).\n- The expected counts, 3 and 1, are simply the correct aggregation result.\n- Using assertCountEqual avoids pinning any row order.\n\nStep 4: Any correct fix that drops Meta.ordering fields from GROUP BY produces these results. No internal state, SQL text or private method is asserted.",
+    "score": 1,
+    "explanation": "The test checks only that a values().annotate(Count) query on a model with Meta.ordering returns correct, order-independent grouped counts, which is exactly the bug in the spec.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusw66DAGqTXB8GqEW5A",
+  "input_tokens": 3258,
+  "output_tokens": 427,
+  "seconds": 6.4
+}

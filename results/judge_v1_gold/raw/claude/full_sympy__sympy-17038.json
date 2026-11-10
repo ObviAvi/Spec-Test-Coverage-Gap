@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-17038",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12693,
+  "output": {
+    "reasoning": "1. Spec: `isqrt` in `sympy.core.power` returns wrong results for large inputs because the float fast-path bound is too large. It suggests lowering the bound, or keeping `int(_sqrt(n))` and verifying the result before falling back to the integer path. Negative inputs are never mentioned.\n\n2–4. Requirements and status:\n- Correct results for 4503599761588224 and 9999999999999999. Settled: these are the spec's own examples.\n- Correct results near the limit, including Rational inputs like limit+1/2 and 10**100 - tiny. Mostly settled: the old code accepted Rationals, and any fix that floors or verifies handles them.\n- Patching `power._sqrt` with a grossly inaccurate function and expecting isqrt(9)==3. The `_sqrt` alias already exists, and the spec says we cannot assume correct rounding and recommends verification. Partly open: a fix that only lowers the bound to 2**52+2**27, which the spec presents as safe under its assumptions, would return 2 and fail. Still arguably settled by the spec's guidance.\n- ValueError for isqrt(-1), isqrt(-10**1000), isqrt(-S.Half) and isqrt(-tiny). Open: the spec says nothing about negative inputs.\n  - Old behavior: math.sqrt(-1) raised ValueError, but -10**1000 would raise OverflowError on float conversion.\n  - Concrete failing fix: keep `if n < 4503599761588224: s=int(_sqrt(n)); if s*s <= n < (s+1)**2: return s`, then `return integer_nthroot(int(n),2)[0]`, without an explicit sign check.\n  - For -tiny: _sqrt(-1e-1000 as float) = sqrt(-0.0) = -0.0, so s=0. The check fails and the fallback returns integer_nthroot(0,2)[0] = 0, with no ValueError raised.\n  - For -10**1000: OverflowError instead of ValueError.\n  - This fix correctly resolves everything the spec describes but fails the negative-input assertions.\n\n5. The tests pin unspecified edge-case behavior (an explicit ValueError for every negative input) on observable outputs, so this is a 3.",
+    "score": 3,
+    "explanation": "The tests require `isqrt` to raise ValueError for all negative inputs, including -10**1000 and -Rational(1, 10**1000). The spec never mentions negatives, and a verify-and-fallback fix without an explicit `if n < 0: raise ValueError` would return 0 for -tiny or raise OverflowError for -10**1000.",
+    "overspecification_vector": "raises(ValueError, lambda: isqrt(-10**1000)); raises(ValueError, lambda: isqrt(-S.Half)); raises(ValueError, lambda: isqrt(-tiny)); also the power._sqrt mock asserting isqrt(9)==3 with _sqrt returning 2.999999999"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutGdmV5eQj8Pbv3Jeo7",
+  "input_tokens": 5053,
+  "output_tokens": 2805,
+  "seconds": 26.9
+}

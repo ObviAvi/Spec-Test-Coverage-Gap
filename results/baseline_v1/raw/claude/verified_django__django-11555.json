@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11555",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3429,
+  "output": {
+    "reasoning": "The issue reports a crash when calling order_by() on a child model in multi-table inheritance while the parent's Meta.ordering contains expressions such as OrderBy or F objects. The test orders ChildArticle by 'article_ptr' and asserts the resulting order. Django already has a defined rule for ordering by a relation: it expands to the related model's Meta.ordering. So a correct fix must not only stop the crash but also apply the parent's ordering, expressions included, in the right directions. The expected sequence [ca4, ca2, ca1, ca3] follows directly from Article's Meta.ordering: pub_date descending, then headline, then author name. A fix that simply dropped expression entries could give a different order for the ca1/ca2 tie. Such a fix would arguably be incorrect, since it silently ignores part of the declared ordering. The test does not check SQL text, internal function names or any implementation detail, only the resulting row order. The issue never states the expected ordering explicitly, but it is implied by established Django semantics.",
+    "score": 2,
+    "explanation": "The test checks only that ordering by the parent pointer no longer crashes and yields the order implied by the parent's Meta.ordering, which any correct fix should produce. It asserts no implementation details.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusw6RZ4xKWb33RWvvfH",
+  "input_tokens": 1688,
+  "output_tokens": 998,
+  "seconds": 11.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-13236",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17959,
+  "output": {
+    "reasoning": "Spec: factorial(n) % n should simplify to 0, and ideally factorial(n) % k to 0 for an integer k with 1<=k<=n. Graded tests go well beyond this.\n\nWhat the spec settles:\n- `assert factorial(n) % n == 0` follows directly from the spec.\n- `factorial(n + 2) % n == 0` is the related-input case, so it is reasonably implied.\n\nWhat the tests also require, none of it in the spec:\n- test_Mod expects Mod denesting with real t, e.g. Mod(Mod(x,2*t),t)==Mod(x,t) and Mod(-Mod(x,t),-2*t)==-Mod(x,t).\n- test_Mod expects new symbolic Mod results: Mod(-2,p+3)==p+1 and Mod(p+5,-p-3)==-p-1.\n- test_Mod expects Mod(x,0) to raise ZeroDivisionError.\n- test_Mod expects k**m % k == 0 and (-2*k)**m % k == 0.\n- test_Mod expects modular exponentiation for an unevaluated Pow.\n- test_Mul_is_prime_composite and test_Pow_is_prime_composite expect composite inference for products and powers.\n- test_composite expects a positive, even, non-prime Dummy to be integer and composite.\n- test_issue_9115_9150 expects factorial(n+2).is_even to be True.\n- test_issue_7426 changes a.equals(b) for Mod expressions to return None instead of False.\n- test_factorint expects factorint to work on unevaluated factorial(200, evaluate=False).\n- Many other core tests (test_pow_E, test_add_flatten, test_leadterm, and others) are graded and presumably fail because of broader structural changes in the PR to Mod, assumptions, or exprtools.\n\nA reasonable fix would add a check in Mod.eval: when the dividend is a factorial of an integer and the divisor is a positive integer known to be <= its argument, return 0. That fix satisfies the spec but fails nearly all of the graded tests above: denesting, ZeroDivisionError, composite assumptions, evenness of factorials, the changed equals() result, and factorint on unevaluated factorials. These require new behaviors in unrelated functions (Mul/Pow is_composite, factorint, Expr.equals) that the spec never mentions, so the tests exercise different code paths.",
+    "score": 4,
+    "explanation": "A fix that makes Mod simplify factorial(n) % k to 0 fails the graded tests. They also require unrelated new behavior: Mul/Pow is_composite inference, factorial(n+2).is_even, Mod denesting with symbolic real moduli, Mod(x,0) raising ZeroDivisionError, Expr.equals returning None for a Mod comparison, and factorint accepting unevaluated factorials. None of this is in the issue.",
+    "overspecification_vector": "test_Mul_is_prime_composite/test_Pow_is_prime_composite is_composite assertions; test_composite Dummy(positive,even,prime=False).is_composite; test_issue_9115_9150 factorial(n+2).is_even is True; test_issue_7426 f1.equals(f2) is None; test_Mod denesting with t, Mod(-2,p+3)==p+1 etc., raises(ZeroDivisionError) Mod(x,0), Mod(Pow(4,13,evaluate=False),497); test_factorint factorint(fac(200, evaluate=False)); plus many other graded core tests (test_pow_E, test_add_flatten, test_leadterm, ...) tied to broader PR changes"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutFbBRwsUm1fLNTqSnH",
+  "input_tokens": 8023,
+  "output_tokens": 1252,
+  "seconds": 12.6
+}

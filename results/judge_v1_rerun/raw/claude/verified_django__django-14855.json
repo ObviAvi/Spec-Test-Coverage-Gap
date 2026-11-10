@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14855",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10785,
+  "output": {
+    "reasoning": "1. The specification says get_admin_url in django.contrib.admin.helpers reverses without current_app, so readonly FK links in a custom admin site point to /admin/. It names the function and suggests passing current_app=self.model_admin.admin_site.name.\n\n2. The graded test registers ReadOnlyRelatedField and Language on site2 (namespace 'namespaced_admin'). This is test setup, not a requirement on the fix. It then GETs the change view in the custom site. It asserts that the readonly FK links reverse to the namespaced_admin URLs for auth_user and language, including a quoted string PK. It also asserts that an unregistered model (Chapter) renders as plain text.\n\n3. Requirements and whether they are settled:\n- Links must use the custom site namespace. Settled by the spec: \"the url generated for the link is /admin/... instead of /custom-admin/...\".\n- The auth_user link must resolve within namespaced_admin. auth User is presumably already registered on site2 in the existing test admin, so this is setup rather than a fix requirement.\n- The Chapter case is already-existing behavior.\n- No exact rendering details beyond the existing HTML pattern.\n\n4. Any correct fix passes. That includes passing current_app to reverse, or using the admin site's name in the URL namespace directly (e.g. reverse(f'{site.name}:...')). Both produce the same URL. No open requirements remain.",
+    "score": 1,
+    "explanation": "The test asserts that readonly FK links on a custom admin site point to that site's URLs, which is exactly the behavior the issue describes, so any correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut5hVQnGd25LGXPS2RR",
+  "input_tokens": 4058,
+  "output_tokens": 564,
+  "seconds": 6.7
+}

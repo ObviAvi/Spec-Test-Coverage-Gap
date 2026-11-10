@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-11315",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 28010,
+  "output": {
+    "reasoning": "1. The specification says `_BaseComposition._set_params` raises a ValueError when there are no estimators, e.g. `ColumnTransformer([]).set_params(n_jobs=2)`. The natural fix is to guard the `zip(*getattr(self, attr))` unpacking in `_set_params` (and likely `_get_params`) so an empty list works.\n\n2. What the graded tests require:\n- `remainder` accepts an estimator instance (`remainder=DoubleTrans()`, `SparseMatrixTrans()`, `StandardScaler()`), and that estimator is fitted and applied to the leftover columns.\n- `transformers_` gets an appended `('remainder', <est or 'drop'/'passthrough'>, [cols])` tuple whenever remaining columns exist, and none when no columns remain.\n- `get_params` exposes `remainder__with_mean` etc., and `set_params(remainder__with_std=False)` works.\n- Invalid `remainder` raises the exact message \"remainder keyword needs to be one of 'drop', 'passthrough', or estimator.\"\n- `test_column_transformer_no_estimators` uses `ColumnTransformer([], remainder=StandardScaler())` and expects `get_params()['remainder__with_mean']` and `transformers_[-1][2] == [0, 1, 2]`.\n- The dataframe and remainder tests assert the exact length and contents of `transformers_` including the remainder entry.\n\n3. Settled or open:\n- The issue only settles that empty-estimator `set_params` must not crash.\n- Everything else is open. The remainder-as-estimator feature, the `transformers_` remainder tuple format, the `remainder__*` nested params and the new error wording are never mentioned. The issue only references #11315 in passing as a separate effort (\"might be interesting to support alongside #11315\").\n\n4. A competent fix that only guards `_set_params` for empty estimator lists fails every graded test. Those tests depend on a different feature: estimator remainder, internal `transformers_` contents, and a new error string. Even the `no_estimators` test requires `remainder=StandardScaler()` support and a remainder entry in `transformers_`.\n\n5. The tests check internal fitted state and an entirely unspecified feature, so this is severe overspecification.",
+    "score": 4,
+    "explanation": "A correct fix that makes `_set_params`/`_get_params` handle an empty estimator list still fails the graded tests. They require an unrelated, unspecified feature: `remainder` accepting an estimator, a `('remainder', est, cols)` entry appended to `transformers_`, `remainder__*` nested params, and a new exact error message.",
+    "overspecification_vector": "ColumnTransformer(..., remainder=DoubleTrans()/SparseMatrixTrans()/StandardScaler()); assert ct.transformers_[-1][0] == 'remainder' and assert_array_equal(ct.transformers_[-1][2], [1]) / [1, 2] / == [0, 1, 2]; 'remainder__with_mean' / 'remainder__copy' / 'remainder__with_std' in get_params; error message \"remainder keyword needs to be one of 'drop', 'passthrough', or estimator.\""
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutDkxzEkCM8mNXwRaAZ",
+  "input_tokens": 11850,
+  "output_tokens": 1217,
+  "seconds": 11.0
+}

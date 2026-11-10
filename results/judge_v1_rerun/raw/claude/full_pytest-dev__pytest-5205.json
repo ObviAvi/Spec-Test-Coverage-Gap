@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pytest-dev__pytest-5205",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11744,
+  "output": {
+    "reasoning": "The spec describes a symptom: the record_property output puts <properties> inside <testcase>, which is invalid per the JUnit schema. It suggests the properties should live under <testsuite>, or the feature might be removed. It names no new API.\n\nThe graded tests require:\n1. A new fixture named `record_testsuite_property`. Open: the spec never mentions this name.\n2. Calling it emits <testsuite><properties><property name=... value=...> entries, in call order, with non-string values stringified ('10').\n3. With junitxml disabled, the fixture must still exist and be a no-op.\n4. A non-string name raises TypeError with the exact message 'name parameter needs to be a string, but int given', both with and without --junitxml.\n\nAlternative fixes a competent developer could plausibly write from this spec:\n- Change record_property to emit at the suite level.\n- Remove or deprecate per-testcase properties.\n- Add a warning for xunit2.\n- Add a differently named fixture, such as record_suite_property.\n\nAll of these fail every graded test, because the tests depend on the fixture name `record_testsuite_property`. The type-check message is also arbitrary. This is a new unspecified name the fix must introduce.",
+    "score": 4,
+    "explanation": "The tests require a brand-new fixture named exactly `record_testsuite_property`, which the spec never mentions. They also require it to raise TypeError with the exact message 'name parameter needs to be a string, but int given'. Fixes that move record_property's output to the testsuite level, or that use a different fixture name, fail all graded tests.",
+    "overspecification_vector": "def test_func1(record_testsuite_property): record_testsuite_property(\"stats\", \"all good\"); result.stdout.fnmatch_lines([\"*TypeError: name parameter needs to be a string, but int given\"]); properties_node = node.find_first_by_tag(\"properties\") under testsuite"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutD7H5sD41z7CirafyF",
+  "input_tokens": 4545,
+  "output_tokens": 657,
+  "seconds": 8.0
+}

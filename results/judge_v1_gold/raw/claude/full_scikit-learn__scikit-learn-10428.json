@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-10428",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12645,
+  "output": {
+    "reasoning": "1. The specification asks for a new common check in sklearn/utils/estimator_checks.py. The check should verify that est.method(X[mask]) == est.method(X)[mask] for predict, predict_proba, decision_function, score_samples and transform. It names no function name and no error message.\n\n2. What the graded test requires:\n- check_estimator(NotInvariantPredict) must raise an AssertionError.\n- The error must match the regex \"predict of NotInvariantPredict is not invariant when applied to a subset.\"\n- The estimator returns 1s when it gets more than one row and 0s for a single row. The check must therefore compare one-sample calls against the full-batch call, or use some subset that includes a single sample.\n- No other check in check_estimator may fail first on this estimator.\n\n3. Status of each requirement:\n- Raising an AssertionError: settled by the convention that common checks fail with assertions.\n- Detecting this estimator: mostly settled. The spec says \"Testing that predictions for individual samples match the predictions across the dataset might be sufficient\". A check using only random multi-row boolean masks would miss it, though, and the spec explicitly allows \"any boolean mask\".\n- The exact message wording: open. The spec never gives a message.\n\n4. A reasonable correct fix that fails: a developer implements the check exactly as described but uses a message such as \"Estimator NotInvariantPredict's predict output differs on subsets\". Equally, they could rely on assert_allclose's default message without a custom err_msg. Either way assert_raises_regex fails, even though the check correctly detects the non-invariance.\n\n5. The failing detail is observable output (an error message) rather than internal state, so this is a 3.",
+    "score": 3,
+    "explanation": "The test requires the AssertionError text to match the exact phrase \"predict of NotInvariantPredict is not invariant when applied to a subset.\", which the specification never states. A correct subset-invariance check with different wording, or with assert_allclose's default message, would fail.",
+    "overspecification_vector": "msg = (\"{method} of {name} is not invariant when applied \"\n           \"to a subset.\").format(method=method, name=name)\n    assert_raises_regex(AssertionError, msg, check_estimator, NotInvariantPredict)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutDcZyPodrHNjy16k7R",
+  "input_tokens": 4764,
+  "output_tokens": 1060,
+  "seconds": 11.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-7671",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10767,
+  "output": {
+    "reasoning": "1. The specification identifies minversion as the entry point and reports a TypeError when comparing a release version such as '1.14.3' against a development version such as '1.14dev'. Its parse_version example explicitly shows that comparison should return True.\n2. The added test requires minversion(test_module, '0.12dev') to be truthy when test_module.__version__ is '0.12.2', without raising an exception. The ModuleType object and __version__ attribute are part of the existing test setup, not newly required implementation details.\n3. Calling minversion with a dev-suffixed minimum is settled by the specification. Substituting '0.12.2' and '0.12dev' is a closely related input, and the True result follows the same release-versus-development ordering demonstrated in the issue. Supporting the existing module-object interface is established by the unchanged test context.\n4. No open implementation choice is constrained: restoring parse_version, using another suitable version parser, or repairing the comparison can all satisfy this assertion. A fix that handles only the literal reported version numbers would not reasonably resolve the described bug.\n5. The test is a straightforward generalization of the reproduction, so the score is 2.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should make minversion return truthy for installed version '0.12.2' against minimum '0.12dev', directly generalizing the successful release-versus-development comparison shown in the issue.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2606,
+  "output_tokens": 595,
+  "seconds": 14.6
+}

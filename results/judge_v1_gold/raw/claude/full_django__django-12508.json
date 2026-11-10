@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-12508",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 25579,
+  "output": {
+    "reasoning": "Spec: add `dbshell -c SQL` so specific SQL can be run directly, matching `shell -c`. It names only the CLI option `-c`.\n\nWhat the graded tests require:\n- `DatabaseClient.settings_to_cmd_args(settings, parameters)` (MySQL) must take a new positional `parameters` list and append it to the command, e.g. `['mysql','somedbname','--help']`.\n- `DatabaseClient.runshell_db(dbinfo, parameters)` (PostgreSQL) must take a second positional argument. Existing tests (test_basic, test_sigint, etc.) are now graded because the helper passes `parameters` positionally.\n- SQLite `client.runshell(parameters)` must append the list verbatim.\n- `CommandError(returncode=3)` must exist, `cm.exception.returncode` must equal 3, and `sys.exit` must use that returncode.\n\nSettled or open:\n- The spec asks for a `-c SQL` option. A natural fix adds `-c/--command` to dbshell and passes the SQL to each backend's runshell. For psql that means building `-c sql`; for mysql `-e sql`; for sqlite3 the SQL as a positional argument. It could use a keyword like `runshell(command=None)`.\n- The tests instead require a generic passthrough of arbitrary parameters (e.g. `--help`, `-help`), passed as a new positional argument to backend methods. The spec never mentions passthrough or a `parameters` argument. A `-c`-specific fix with an optional argument would fail all MySQL and PostgreSQL tests, since `settings_to_cmd_args(settings, ['--help'])` would either error or not append `--help`.\n- The `CommandError` `returncode` kwarg and exit-code propagation are entirely unmentioned in the spec, and test_system_exit fails without them.\n\nThese are unspecified new signatures and new names that a correct fix implementing the spec's `-c` would not introduce, so the tests depend on how the fix was written.",
+    "score": 4,
+    "explanation": "A fix implementing the requested `dbshell -c SQL` (translating it to backend-specific flags, perhaps via an optional keyword) fails because the tests require backend methods to accept a new positional `parameters` list that is appended verbatim. Tests also require an unspecified `CommandError(returncode=...)` attribute that propagates to `sys.exit`.",
+    "overspecification_vector": "DatabaseClient.settings_to_cmd_args(connection_settings, parameters) expecting ['mysql','somedbname','--help']; DatabaseClient.runshell_db(dbinfo, parameters) and runshell_db({}, []); client.runshell(parameters) expecting ['sqlite3','test.db.sqlite3','-help']; CommandError(returncode=3) with cm.exception.returncode == 3 and SystemExit code 3"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut9CK6oYSqSL5nGYaM7",
+  "input_tokens": 10097,
+  "output_tokens": 986,
+  "seconds": 10.4
+}

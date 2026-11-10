@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13253",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 16263,
+  "output": {
+    "reasoning": "1. The issue requests DataFrame support in OneHotEncoder/OrdinalEncoder without whole-frame conversion, specifically to \"preserve the datatypes per column,\" and explicitly identifies categories_ dtype as affected behavior. 2. The only graded test is test_encoder_dtypes_pandas. It uses OneHotEncoder(categories='auto'), fit, transform, and categories_; checks an all-int64 DataFrame and a mixed integer/string/float DataFrame; requires the mixed columns' category dtypes to be int, object, and float respectively; and checks the corresponding six-column one-hot output. 3. Per-column category dtypes are settled directly by the requested dtype preservation. The constructor, public methods, feature ordering, and one-hot values follow the existing test's API and encoding behavior; adding a third column does not introduce a new policy. The other tests in the patch are not graded. 4. There are no open requirements that would reject a reasonable correct fix: changing these mixed columns to a shared dtype would fail the stated preservation goal, while changing their encoded values would regress existing encoder semantics.",
+    "score": 1,
+    "explanation": "The graded assertion that mixed DataFrame columns retain integer, object, and float category dtypes directly checks the requested per-column dtype preservation; the output assertions retain existing one-hot encoding behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3988,
+  "output_tokens": 730,
+  "seconds": 20.5
+}

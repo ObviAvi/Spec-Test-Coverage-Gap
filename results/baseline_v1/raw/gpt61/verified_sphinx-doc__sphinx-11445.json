@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-11445",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5923,
+  "output": {
+    "reasoning": "Both graded tests exercise the reported failure directly: a document beginning with a role-based heading must remain intact when a prolog is inserted, with or without a trailing newline. However, they assert the complete internal StringList representation, including exact blank-line counts, source labels, and line offsets. The issue requires correct heading rendering and toctree inclusion, not this particular intermediate representation; an otherwise correct fix using different harmless spacing or source bookkeeping could fail these assertions.",
+    "score": 3,
+    "explanation": "The scenarios are well aligned with the bug, but exact StringList equality mildly overspecifies the fix. Correct rendering does not inherently require the precise generated-line layout and provenance asserted here.",
+    "overspecification_vector": "In test_prepend_prolog_with_roles_in_sections_with_newline and test_prepend_prolog_with_roles_in_sections_without_newline: `assert list(content.xitems()) == [...]`, particularly the exact `('<rst_prolog>', 0, ...)`, `('<rst_prolog>', 1, ...)`, `('<generated>', 0, '')`, and `('dummy.rst', ..., ...)` tuples."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1562,
+  "output_tokens": 550,
+  "seconds": 15.4
+}

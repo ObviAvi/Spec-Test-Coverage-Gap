@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14017",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10603,
+  "output": {
+    "reasoning": "1. The spec says `Q(...) & Exists(...)` raises a TypeError while `Exists(...) & Q(...)` works. It states that `&` and `|` should be commutative on Q/Exists pairs. It names Q's `__and__`/`_combine` and suggests a missing `__rand__`.\n\n2. The graded tests require:\n   - `Q(salary__gte=30) & Exists(is_ceo)` used in a filter returns `[max]`.\n   - `Q(salary__lt=15) | Exists(is_poc)` used in a filter returns `[ceo, max]`.\n   - `Exists & Q()`, `Q() & Exists`, `Exists | Q()` and `Q() | Exists` each used in a filter return `[max]`.\n\n3. Each requirement against the spec:\n   - `Q() & Exists` is the literal reproduction case.\n   - The `|` variant is settled by \"The & (and |) operators should be commutative\".\n   - Non-empty Q operands are the same operator on related inputs.\n   - The expected query results follow from commutativity: they match what the already-working `Exists & Q` ordering gives.\n   - No messages, private APIs or internal structure are asserted; only filter results are checked.\n\n4. Any reasonable fix produces a conditional expression that filters correctly, so it passes. Examples:\n   - accepting conditional expressions in `Q._combine`;\n   - wrapping `other` in `Q(other)`;\n   - returning NotImplemented and adding `__rand__`/`__ror__` on Combinable/Exists.\n\n   No reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "The tests only assert that `Q(...) & Exists(...)` and `Q(...) | Exists(...)`, including with an empty `Q()`, filter to the same rows as the reverse order, which is exactly the commutativity the issue asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusxa7xEeshuKnugMHeL",
+  "input_tokens": 4066,
+  "output_tokens": 1352,
+  "seconds": 13.8
+}

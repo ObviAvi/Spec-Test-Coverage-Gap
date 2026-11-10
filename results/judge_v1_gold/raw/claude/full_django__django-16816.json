@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16816",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 14343,
+  "output": {
+    "reasoning": "1. The spec says `list_display = [\"choice\"]`, where `choice` is a reverse FK accessor, passes system checks but crashes at render time. The reporter writes: \"I suggest that error E108 be updated to cover this case as well.\" It names a symptom and a desired check ID (E108).\n2. The tests require that `list_display = [\"song\"]` (reverse FK) and `[\"featured\"]` (reverse M2M related_name) on Band produce error id \"admin.E109\" with the exact message \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\"\n3. Detecting the case as a check error is settled by the spec. The error ID and message are open, and the spec actually points the other way by asking for E108. E109 and its message already exist in the codebase for M2M fields and some reverse FKs, so extending E109 is one reasonable option. Emitting E108 (\"refers to 'choice', which is not a callable...\"), as the issue explicitly suggests, is another.\n4. A developer who follows the spec literally and makes reverse relations fail with admin.E108 has a correct fix: the misconfiguration is caught at check time. That fix fails both tests, which assert E109 and its specific message. The tests check observable output (check ID and message), not internals.",
+    "score": 3,
+    "explanation": "The issue explicitly asks for E108 to cover reverse relations, but the tests require admin.E109 with the message \"must not be a many-to-many field or a reverse foreign key.\" A fix that emits E108 as the spec suggests would fail both tests.",
+    "overspecification_vector": "self.assertIsInvalid(TestModelAdmin, Band, \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\", \"admin.E109\") in test_invalid_related_field and test_invalid_m2m_related_name"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutB74PbVNm1WuHyxaAS",
+  "input_tokens": 5336,
+  "output_tokens": 1140,
+  "seconds": 12.7
+}

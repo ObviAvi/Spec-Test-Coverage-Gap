@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-11905",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9692,
+  "output": {
+    "reasoning": "1. The specification says '__isnull should not allow for non-boolean values' and proposes to 'raise an error for non-boolean values.' It specifies lookup behavior, not a particular validation method. 2. The shown graded test constructs filters with alias__isnull=1, author__isnull=1, games__isnull=1, and stock__isnull=1, then requires qs.exists() to emit RemovedInDjango40Warning containing the supplied deprecation message. 3. Rejecting integer 1 is settled by the non-boolean requirement; coverage of ordinary fields and related lookups is a reasonable generalization, especially given the reported JOIN problem. The deprecation warning category, message wording, and requirement that filter construction succeed before the warning occurs during exists() are open: no staged deprecation or validation timing is specified. 4. A reasonable fix could raise ValueError for non-boolean RHS values, either when constructing or executing the query. That directly implements the requested error but fails this test. A warning-based implementation with different clear wording would also fail. These are externally observable choices, not internal implementation requirements. 5. The most overspecified visible assertion therefore merits 3. test_iterator is listed as graded, but its body is not supplied, so no further requirement can be established from it.",
+    "score": 3,
+    "explanation": "A correct fix that raises ValueError for non-boolean __isnull values would fail because the test instead requires a RemovedInDjango40Warning during qs.exists(). The test additionally requires particular deprecation wording that the specification never supplies.",
+    "overspecification_vector": "with self.assertWarnsMessage(RemovedInDjango40Warning, msg): qs.exists(); msg = 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.'; the four Author/Article/Season/Freebie objects.filter(...__isnull=1) calls must complete before entering the warning assertion."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2239,
+  "output_tokens": 714,
+  "seconds": 17.2
+}

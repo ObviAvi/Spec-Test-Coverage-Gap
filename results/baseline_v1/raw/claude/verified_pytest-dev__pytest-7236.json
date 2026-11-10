@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7236",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 4748,
+  "output": {
+    "reasoning": "The issue: with --pdb, tearDown runs for skipped unittest tests, which is a regression. The test runs with --pdb, checks that the output contains '1 skipped in', and asserts that neither setUp nor tearDown was called (tracked == []).\n\nWould setUp be called for a test skipped via unittest.skip? Normally, unittest's TestCase.run checks for the skip attribute before calling setUp, so a skipped test never reaches setUp. So tracked == [] simply reflects the correct behavior: the test is skipped with no setUp or tearDown.\n\nOne possible concern is whether a valid fix might still call setUp. With unittest.skip, unittest itself never calls setUp. Pytest's --pdb handling replaces tearDown and later calls the original explicitly; the fix stops doing that when the test is skipped. Any correct fix keeps tearDown from running, and setUp never runs anyway.\n\nThe output check '* 1 skipped in *' is standard: the result should be just 1 skipped, with no errors. That is exactly what the issue expects.\n\nThe test uses runpytest_inprocess and a monkeypatched tracking list, which is just the test harness and does not constrain the fix. The tests are well aligned with the issue.",
+    "score": 1,
+    "explanation": "The test checks only the behavior the issue asks for: under --pdb, a skipped unittest test reports 1 skipped and neither setUp nor tearDown runs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguswt3wiNgBjjDa2f2Lm",
+  "input_tokens": 2344,
+  "output_tokens": 507,
+  "seconds": 6.1
+}

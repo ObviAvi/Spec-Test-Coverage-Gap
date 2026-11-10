@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13283",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11595,
+  "output": {
+    "reasoning": "1. The spec says the decision_function and average path length calculation in IsolationForest use too much memory for many estimators. It names a symptom and suggests per-tree computation, but prescribes no particular mechanism.\n\n2. What the tests require:\n- They patch `sklearn.ensemble.iforest.get_chunk_n_rows`, so the fix must import that name into iforest.py. Otherwise patch raises AttributeError.\n- They assert the mock is called exactly 3 times with contamination 0.25 and 2 times with 'auto'. That means the fix must call get_chunk_n_rows once per score computation over X (fit's threshold computation plus predict), not once per tree and not once per chunk.\n- test_iforest_works must still pass.\n\n3. Settledness:\n- Use of get_chunk_n_rows: open. The spec never mentions chunking or this utility.\n- The call count: open. It ties the test to where and how often the helper is called.\n\n4. Alternatives that would fail:\n- The spec's own suggestion is per-tree accumulation: loop over trees, add each tree's depths into a running (n_samples,) array, and divide at the end. That fixes the memory problem without chunking rows, and it fails because iforest has no get_chunk_n_rows attribute.\n- A fix that chunks with a fixed batch size or a custom helper also fails.\n\nThe tests pin an internal implementation detail: a specific helper name and its call count.",
+    "score": 4,
+    "explanation": "The tests patch `sklearn.ensemble.iforest.get_chunk_n_rows` and assert its exact call count. A correct memory fix that accumulates per-tree depths (as the issue suggests) or chunks rows another way would fail with an AttributeError or a mismatched call count.",
+    "overspecification_vector": "@patch(\"sklearn.ensemble.iforest.get_chunk_n_rows\", ...) ; assert mocked_get_chunk.call_count == n_predict_calls"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutEGWzD54f7vLH89now",
+  "input_tokens": 4440,
+  "output_tokens": 671,
+  "seconds": 7.1
+}

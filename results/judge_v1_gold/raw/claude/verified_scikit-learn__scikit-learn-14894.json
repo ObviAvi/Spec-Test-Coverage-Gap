@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14894",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11026,
+  "output": {
+    "reasoning": "1. The spec says sparse SVM fitting raises ZeroDivisionError in `_sparse_fit` when `support_vectors_` is empty. Expected: no error and `self.dual_coef_ = sp.csr_matrix([])`.\n2. What the test requires:\n   - `svm.SVR(kernel='linear').fit` on the issue's sparse X/y completes without error. It uses default C rather than the issue's C, but support vectors are still empty.\n   - `model.support_vectors_.data.size == 0`.\n   - `model.dual_coef_.data.size == 0`.\n3. How each is settled:\n   - No error: settled by the spec (\"No error is thrown\").\n   - Empty `support_vectors_`: an existing behavior of the solver on this data, which the spec states is the triggering case. The fix doesn't change it.\n   - Empty `dual_coef_` data: settled by the spec (\"self.dual_coef_ = sp.csr_matrix([])\").\n4. Alternatives:\n   - A fix building `sp.csr_matrix((n_class, 0))` has `.data.size == 0`.\n   - A fix computing indptr safely, e.g. `np.zeros(n_class+1)`, also has empty data.\n   - Any fix that keeps `dual_coef_` sparse, as the spec says, passes.\n   - Only a fix that made `dual_coef_` a dense ndarray would lack `.data` with this meaning. That contradicts the spec's explicit `sp.csr_matrix`.\n5. Score: the test is essentially the issue's reproduction plus the spec's stated expected result.",
+    "score": 1,
+    "explanation": "The test runs the issue's reproduction on sparse data and asserts that `dual_coef_` (and `support_vectors_`) hold no data, which matches the spec's expected `sp.csr_matrix([])` result for any non-crashing sparse fix.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut539KckZ8LQ4U6ii3H",
+  "input_tokens": 4384,
+  "output_tokens": 1062,
+  "seconds": 11.5
+}

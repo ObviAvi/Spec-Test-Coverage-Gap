@@ -1,0 +1,19 @@
+{
+  "task_id": "full/matplotlib__matplotlib-24334",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 2199,
+  "output": {
+    "reasoning": "The issue offers two remedies. The baseline is to \"at least check that kwargs are valid Text properties in all cases\". The stronger option is to \"even consider making any kwargs an error if labels is not set\". The test passes `alpha=0.5`, which is a perfectly valid Text property. A fix that only validates kwargs, the minimum the issue asks for, would accept `alpha` and raise nothing, so it fails the test. Only the stronger, optional behaviour passes.\n\nThe test also requires a `ValueError`. That type is never stated in the issue, though it is a natural choice for rejecting unexpected arguments. An implementation built on matplotlib's usual property validation would typically raise `AttributeError` for bad properties, but that path doesn't apply here anyway since `alpha` is valid.\n\nThe spec does name the stronger option, so an attentive developer could choose it. But a fix satisfying the stated minimum requirement is rejected, which makes this mild-to-moderate overspecification.",
+    "score": 3,
+    "explanation": "The test only accepts the optional \"error on any kwargs without labels\" behaviour, using a valid kwarg (`alpha`), so the issue's baseline fix of validating kwargs would fail it; it also requires `ValueError`, a type the issue never specifies.",
+    "overspecification_vector": "with pytest.raises(ValueError):\n        ax.xaxis.set_ticks(ticks, alpha=0.5)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7ccHNTsJmXbV5rrKu",
+  "input_tokens": 1246,
+  "output_tokens": 800,
+  "seconds": 8.3
+}

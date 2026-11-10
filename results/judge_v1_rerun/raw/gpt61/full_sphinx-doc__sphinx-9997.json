@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9997",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 41776,
+  "output": {
+    "reasoning": "1. The specification describes a rendering/linking bug in autodoc parameter descriptions: “Literal ... should link to typing.Literal in CPython's docs, just like int does.” It does not prescribe helper APIs, signature serialization, or annotation-node construction.\n\n2. The graded tests require several groups of behavior. Annotation-parser tests require particular pending_xref nodes, including reftype=\"obj\", reftarget=\"typing.Literal\" or \"typing.Dict\", the displayed label \"Literal\", and specific punctuation/literal nodes. Utility tests require stringify() to accept the string modes \"smart\" and \"fully-qualified\", returning precisely qualified or tilde-prefixed representations for Any, containers, Callable, Union/Optional, Literal, and nested combinations. Signature tests require typing-qualified names throughout stringify_signature() output, including type variables and nested annotations. Autodoc tests likewise require changed directive text for Generator, mocked Any annotations, Math's Optional[Any], tuple_args, and preserve-defaults annotations.\n\n3. Settled: the rendered Literal reference must reach typing.Literal, and closely related parameterized annotations should link correctly. Convention/existing behavior supports preserving annotation arguments, literal values, builtin names, and defaults. Open: the new stringify mode interface, changing ordinary signature/directive serialization to include typing prefixes, exact internal reference roles/node layouts, and shortening an explicitly qualified Literal label. None is required by the stated linking outcome.\n\n4. A reasonable fix could correct cross-reference construction or resolution for parameterized types in autodoc description fields, retaining qualified reference targets while preserving the existing stringify boolean interface and signature output. That would fix the reported case and related parameterized types but fail the new utility-mode assertions and the signature/directive snapshots. It could also generate working links without producing the exact parser nodes asserted here.\n\n5. The strongest gap is implementation-level: graded tests demand an unspecified utility API and intermediate representations rather than merely successful links. Score: 4.",
+    "score": 4,
+    "explanation": "A correct fix could repair parameterized-type links in autodoc descriptions while retaining the existing stringify interface and signature formatting. It would still fail tests requiring the new \"fully-qualified\"/\"smart\" modes and typing-prefixed signature strings, neither of which the issue requests.",
+    "overspecification_vector": "test_stringify_type_hints_containers: assert stringify(List[int], \"fully-qualified\") == \"typing.List[int]\"; assert stringify(List[int], \"smart\") == \"~typing.List[int]\". test_stringify_type_Literal: assert stringify(Literal[1, \"2\", \"\\r\"], \"fully-qualified\") == \"typing.Literal[1, '2', '\\\\r']\". test_signature_annotations: assert stringify_signature(sig) == '(x: typing.List[int]) -> typing.List[int]'. test_wrapped_function_contextmanager: '.. py:function:: feeling_good(x: int, y: int) -> typing.Generator'. test_parse_annotation/test_parse_annotation_suppress: direct _parse_annotation() assertions requiring pending_xref reftype=\"obj\" and the exact displayed label \"Literal\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 10808,
+  "output_tokens": 1592,
+  "seconds": 41.0
+}

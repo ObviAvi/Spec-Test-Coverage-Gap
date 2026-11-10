@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12858",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8502,
+  "output": {
+    "reasoning": "1. Spec: the models.E015 system check wrongly flags an ordering that ends in a lookup which is not a transform (e.g. 'supply__product__parent__isnull'), even though order_by accepts it. The entry point is the model check, i.e. Model.check().\n2. The test defines a model with a CharField 'test' and ordering ('test__isnull',), then asserts that Model.check() == [].\n3. Requirements:\n   - The check must accept an ordering ending in a non-transform lookup such as isnull. This is settled: the spec says E015 is raised for 'supply__product__parent__isnull' and calls that wrong.\n   - The test uses a direct field (test__isnull) rather than a chain of related fields. This is a closely related input. A correct fix should handle a lookup on any field, not only on related fields.\n   - The expected result is an empty error list. This is the only reasonable outcome.\n4. Could a reasonable fix still fail? Only one that special-cased isnull on related fields, and that would be a literal-only fix. A fix that accepts any registered lookup (get_lookup) as well as transforms (get_transform) at the end of the path would pass. The test only checks that the ordering is valid; it does not pin exactly which lookups are allowed.",
+    "score": 2,
+    "explanation": "The test asserts that Model.check() returns no errors for an ordering ending in '__isnull', which is the spec's reported case applied to a plain field; any fix that accepts lookups in the ordering check passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7LhKfm8e5SRoKPdz9",
+  "input_tokens": 3168,
+  "output_tokens": 514,
+  "seconds": 6.0
+}

@@ -50,10 +50,18 @@ Caveat: the false-flag rate is measured on Verified only, so the corrected Pro p
 
 ### 4. Ablations and a baseline on dev
 
-About $10 each:
-- gold-patch prompt (`judge_v1_gold`)
-- rerun of `judge_v1` into a separate cache to measure run-to-run noise
-- a plain one-paragraph prompt as a baseline
+Done on dev (138 tasks). Reports: `results/compare_dev.md` (`python -m stcg compare --prompts judge_v1_rerun,judge_v1_gold,baseline_v1`) and `results/<prompt>/eval_dev.md`.
+
+| Prompt | Recall | False flags | Kappa | Panel flags changed vs `judge_v1` |
+|---|---|---|---|---|
+| `judge_v1` | 81% (61/75) | 3% (2/63) | 0.78 | |
+| `judge_v1_rerun` (identical text) | 80% (60/75) | 5% (3/63) | 0.77 | 6 |
+| `judge_v1_gold` (adds the gold patch) | 87% (65/75) | 5% (3/63) | 0.87 | 5 |
+| `baseline_v1` (one paragraph) | 72% (54/75) | 6% (4/63) | 0.78 | 9 |
+
+- Noise: two identical runs differ on 6 of 138 panel flags, so differences of 1-2 tasks in either metric mean nothing.
+- Gold patch: detection is within noise of `judge_v1`. The judges agree with each other more (kappa 0.87, 5 uncertain against 10).
+- Baseline: recall drops 9 points (7 flags lost, none gained). 6 of the 7 are GPT dropping below 3, and 6 of the 7 are Pro tasks. Claude alone is unchanged (81% against 83%).
 
 ### 5. Relax, validate, regrade (RQ3)
 

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14017",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10603,
+  "output": {
+    "reasoning": "The specification requires '& (and |) operators [to] be commutative on Q-Exists pairs' and explicitly reproduces Q() & Exists(...). The graded additions require: (1) Q(salary__gte=30) & Exists(is_ceo) to filter to [self.max]; (2) Q(salary__lt=15) | Exists(is_poc) to return the CEO and self.max; and (3) both operand orders of & and | with Q() and Exists(is_poc) to return [self.max]. Operator support and operand symmetry are explicitly settled. The particular matching rows follow ordinary Q lookup, Exists, and Employee.objects.filter semantics, using Company.point_of_contact and OuterRef('pk'); they impose no implementation choice. Empty-Q neutrality follows existing handling, whose visible comment says to ignore an empty Q. assertCountEqual imposes no result ordering. These are straightforward related-input and regression checks. There is no open requirement that a reasonable correct fix could violate, and the tests do not require the suggested __rand__ implementation or the official fix's conditional check.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix must support both operand orders for & and | while preserving ordinary filtering and empty-Q behavior, which are the only results these tests assert.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2511,
+  "output_tokens": 1082,
+  "seconds": 27.7
+}

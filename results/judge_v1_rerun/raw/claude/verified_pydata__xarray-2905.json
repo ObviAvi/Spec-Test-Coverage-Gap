@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-2905",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10207,
+  "output": {
+    "reasoning": "1. The spec says `Variable.__setitem__` (reached via `DataArray.loc[...] = obj`) wrongly unwraps any RHS object that has a `.values` attribute. It names `__setitem__` and points at the line from PR 1746. That line is the `as_compatible_data` call path, where `getattr(data, 'values', data)` does the unwrapping.\n2. The graded test makes no `__setitem__` or `.loc` call. It requires:\n   - `Variable(dims=(), data=CustomWithValuesAttr(np.arange(3)))` keeps the object rather than its `.values`;\n   - `orig._data.item()` is an instance of `CustomWithValuesAttr`.\n3. Settlement:\n   - Not unwrapping arbitrary `.values` objects is settled by the spec: \"prevents storing objects inside arrays of dtype==object ... if the RHS has a values property.\"\n   - Doing this in the Variable constructor is not stated. It is only implied if the fix goes into the shared helper `as_compatible_data`, which is the natural root-cause fix: restrict `.values` extraction to pandas objects.\n   - Checking via `_data` is internal, but for a numpy-backed Variable it is equivalent to `.values`.\n4. A competent developer could fix only `__setitem__`, the entry point the spec names. For example, they could wrap non-Variable RHS values into a 0-d object array before coercion, or pass a flag so `__setitem__` skips `.values` extraction. They might do this to avoid changing constructor semantics for arbitrary inputs. That fix resolves the reported `.loc` assignment, but the graded constructor test still sees `array(...)` unwrapped and fails. Most developers would edit `as_compatible_data` and pass. The assertion is on public constructor behavior sharing the same helper, so this is a mild rather than severe gap.",
+    "score": 3,
+    "explanation": "The test checks the `Variable(...)` constructor path, not the `__setitem__`/`.loc` assignment named in the issue. A fix scoped to `__setitem__` that leaves `as_compatible_data`'s generic `getattr(data, 'values', data)` unwrapping in place for construction would fix the reported bug but fail the test.",
+    "overspecification_vector": "array = CustomWithValuesAttr(np.arange(3)); orig = Variable(dims=(), data=array); assert isinstance(orig._data.item(), CustomWithValuesAttr)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut1ddtJ5SvJkLMqXJiU",
+  "input_tokens": 3942,
+  "output_tokens": 2258,
+  "seconds": 22.0
+}

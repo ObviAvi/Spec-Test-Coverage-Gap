@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-13447",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8346,
+  "output": {
+    "reasoning": "1. The spec asks for the model class to be added to each model dict in the admin app_list context. It also wants _build_app_dict made public, but the graded test does not check that. It never names the dict key for the class.\n2. The graded test reads each_context(request)['available_apps'] and asserts article['model'] == Article and user['model'] == User. So the fix must store the class under the key 'model'.\n3. Requirement status:\n- That the class is included is settled: \"have access to the model class\".\n- That it is the actual class object, not a string, is settled by the same phrase.\n- The key name 'model' is open. The spec says only \"model class\". Existing keys are 'name', 'object_name', 'perms', 'admin_url', 'add_url', 'view_only'. None of them forces the new key's name.\n4. A competent developer could reasonably name the key 'model_class', since the issue title and body both say \"model class\". 'class' or 'model_cls' are also plausible. Such a fix correctly exposes the class but fails with KeyError on article['model']. 'model' is the most natural choice, but it is not the only reasonable one.\n5. The test pins one valid choice for an observable context field, so the score is 3.",
+    "score": 3,
+    "explanation": "The test requires the model class under the dict key 'model', which the issue never names. A fix that adds the class under 'model_class', the issue's own wording, would raise KeyError and fail.",
+    "overspecification_vector": "self.assertEqual(article['model'], Article); self.assertEqual(user['model'], User)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut9gqaxqmTyKAk1my8W",
+  "input_tokens": 3073,
+  "output_tokens": 809,
+  "seconds": 10.3
+}

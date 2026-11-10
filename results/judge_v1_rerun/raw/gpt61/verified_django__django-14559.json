@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14559",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8931,
+  "output": {
+    "reasoning": "The specification names bulk_update() and requests a matched-row count instead of None, explaining that its update() return values could be 'added and returned.' The graded requirements are: (1) empty input returns 0 while preserving the existing zero-query behavior; this is the conventional empty sum and a basic regression check; (2) 2,000 existing objects return 2,000, directly following the requested count of rows matched, even if values are unchanged; (3) a duplicate object within one batch returns 1, following update()'s matched-row semantics because only one database row matches; and (4) the same object in two batches returns 2, following the specification's described aggregation of successive update() results. The tests use the named public entry point and check observable return values, not implementation details. No requirement remains meaningfully open: counting globally distinct primary keys across batches would differ from the additive update()-result semantics described in the issue.",
+    "score": 2,
+    "explanation": "The assertions are reasonable extensions of the requested sum of update() return values: empty input contributes 0, and a row matched in two separate batches contributes once to each batch's count.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2043,
+  "output_tokens": 1515,
+  "seconds": 40.6
+}

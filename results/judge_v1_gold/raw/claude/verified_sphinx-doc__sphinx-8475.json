@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8475",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10400,
+  "output": {
+    "reasoning": "Step 1. The specification identifies the problem: when a HEAD request raises TooManyRedirects, linkcheck reports the link as broken and never tries GET. The requested fix is to extend the except clause so the checker retries with GET in this case. The entry point is the linkcheck builder's URI checking.\n\nStep 2. The graded test runs a local server where HEAD responds with an infinite 302 loop and GET returns 200. It builds with the linkcheck builder and asserts the output.json entry has these values:\n- status 'working'\n- code 0\n- info ''\n- uri 'http://localhost:7777/'\n- filename 'index.rst'\n- lineno 1\n\nStep 3. Each requirement:\n- Status 'working' after the GET fallback is settled by the specification: \"retry with a GET request for such scenarios.\"\n- The code, info, uri, filename and lineno values are settled by existing code. They come from the existing output format for a working link that is not redirected: code 0 and empty info are what the repo already emits for working links, as earlier tests show.\n- The GET itself goes to the same URL and gets a 200 with no redirect, so it is reported as plain 'working' rather than 'redirected'.\n\nStep 4. Possible alternative fixes:\n- Catching RequestException more broadly would still pass.\n- Restructuring the retry logic would still pass, as long as GET is used on TooManyRedirects.\n- No reasonable fix produces a different result here.",
+    "score": 2,
+    "explanation": "The test asserts that a URL whose HEAD request loops forever but whose GET succeeds is reported as 'working', which is exactly the GET fallback the issue asks for; the remaining fields come from the existing output format.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut48S3NLTpPXpDaXm4z",
+  "input_tokens": 3877,
+  "output_tokens": 596,
+  "seconds": 7.8
+}

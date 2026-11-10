@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9997",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 56301,
+  "output": {
+    "reasoning": "1. The specification describes a rendered-documentation bug: parameterized type hints fail to link. The settled requirement is that “Literal (in the parameter description) should link to typing.Literal in CPython's docs,” with equivalent support for closely related parameterized types and existing links such as int preserved. It does not prescribe a utility API or intermediate representation.\n2. The graded tests require several additional details. Parser tests call _parse_annotation directly and require pending_xref nodes with reftype='obj' for typing.Literal and typing.Dict, plus the shortened display text 'Literal'. Stringification tests require new positional selector values 'smart' and 'fully-qualified', with exact recursive qualification for Any, containers, Callable, Union/Optional, Literal, and nested/custom types. Signature and autodoc tests require exact intermediate strings containing typing.List, typing.Optional, typing.Any, typing.Generator, and other qualified names, including mocked constructors and preserved-default signatures.\n3. Literal values, parameter structure, and preservation of ordinary types are reasonable regression expectations. However, the string selector interface, exact serialized qualification, abbreviated display text, and parser node metadata are open choices: none is required by the requested hyperlink behavior. The removed test lines also establish that utility and signature output previously omitted many typing prefixes.\n4. A reasonable fix could generate qualified object references when rendering type descriptions, or improve annotation-reference resolution generally, while retaining the existing stringify interface and signature serialization. Such a fix could link parameterized typing constructs correctly without implementing stringify(annotation, 'fully-qualified'), changing unrelated Any/Generator signatures, or producing the exact tested parser nodes.\n5. The tests therefore impose an unspecified utility-interface refactor and internal representation, not merely the requested links. This warrants score 4.",
+    "score": 4,
+    "explanation": "A correct fix could repair type-hint reference generation or resolution while preserving the existing stringify interface and serialized signatures. It would nevertheless fail tests requiring the new 'fully-qualified' selector, exact typing-prefixed intermediate strings, and specific _parse_annotation cross-reference metadata.",
+    "overspecification_vector": "test_util_typing.py: assert stringify(Any, \"fully-qualified\") == \"typing.Any\"; assert stringify(List[int], \"fully-qualified\") == \"typing.List[int]\"; analogous new selector assertions for containers, Callable, Union, and Literal. test_util_inspect.py: assert stringify_signature(sig) == '(x: typing.List[int]) -> typing.List[int]'. test_ext_autodoc_automodule.py: assert '.. py:class:: Inherited(*args: typing.Any, **kwargs: typing.Any)' in actual. test_domain_py.py: direct _parse_annotation calls with assert_node(..., reftype=\"obj\", reftarget=\"typing.Literal\") and reftarget=\"typing.Dict\", plus the exact pending_xref display text \"Literal\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 14336,
+  "output_tokens": 1640,
+  "seconds": 44.6
+}

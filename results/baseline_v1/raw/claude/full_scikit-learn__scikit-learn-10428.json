@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-10428",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3220,
+  "output": {
+    "reasoning": "The issue asks for a new common check in estimator_checks.py verifying that `est.method(X[mask]) == est.method(X)[mask]` for prediction and transformation methods. It names no function and specifies no error message.\n\nThe graded test runs `assert_raises_regex(AssertionError, msg, check_estimator, NotInvariantPredict)`, where `msg` is the exact string \"{method} of {name} is not invariant when applied to a subset.\" This wording appears nowhere in the issue. A correct implementation that raises an AssertionError with any other message, such as \"Predictions differ on subset\" or a plain numpy `assert_allclose` failure, would fail the regex match.\n\nThe test also relies on the new check running within `check_estimator` and being the first failure for this estimator. That part is reasonable given the issue's suggestion to compare predictions on individual samples.\n\nThe exact-message requirement is the dominant problem: the test hinges entirely on matching an arbitrary string that a developer would almost certainly not reproduce. Many valid solutions would fail.",
+    "score": 4,
+    "explanation": "The test requires an exact, unspecified assertion message (\"predict of NotInvariantPredict is not invariant when applied to a subset.\"), so most correct implementations with different wording would be rejected.",
+    "overspecification_vector": "msg = (\"{method} of {name} is not invariant when applied \"\n           \"to a subset.\").format(method=method, name=name)\nassert_raises_regex(AssertionError, msg, check_estimator, NotInvariantPredict)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut9UQDnktzuYNiuz4iZ",
+  "input_tokens": 1544,
+  "output_tokens": 808,
+  "seconds": 9.1
+}

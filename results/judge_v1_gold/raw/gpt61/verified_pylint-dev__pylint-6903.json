@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pylint-dev__pylint-6903",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12677,
+  "output": {
+    "reasoning": "The specification identifies the --jobs=0 entry point and explains that quota -1 and cpu.shares 2 cause a fractional CPU allocation to become zero. It explicitly requires that pylint not crash and that the calculated count never be zero. The test reproduces those reported cgroup values by mocking file reads and the existing Path file-existence check, then invokes Run on a Python file with --jobs=0. These inputs and the exercised entry point are settled by the report. Run's SystemExit protocol and exit code 0 for successful linting of a clean file are existing runner conventions. The reporter, temporary working directory, and file/path patches are test setup; there are no assertions about mock calls, _query_cpu's return value, a particular worker count, or where the correction is implemented. No open implementation choice is pinned: reasonable fixes that clamp the CPU calculation or guard the selected job count can both pass.",
+    "score": 1,
+    "explanation": "The test reproduces the reported fractional-CPU case through the pylint runner and checks successful completion, without requiring a particular implementation or exact CPU count.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3242,
+  "output_tokens": 903,
+  "seconds": 27.0
+}

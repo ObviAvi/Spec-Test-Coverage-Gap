@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-13236",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 28924,
+  "output": {
+    "reasoning": "1. The specification asks that `factorial(n) % n` simplify to 0, and ideally `factorial(n) % k` for integer 1<=k<=n. The natural entry points are Mod evaluation and factorial.\n\n2-3. Requirements of the graded tests, marked against the spec:\n- `factorial(n) % n == 0` and `factorial(n + 2) % n == 0`: settled by the spec.\n- `(factorial(n+4) % (n+5)).func is Mod`: reasonable, roughly settled.\n- `Mod(x, 0)` raises ZeroDivisionError: open; not in spec.\n- `k**m % k == 0` and `(-2*k)**m % k == 0`, while `x**m % x` stays a Mod: open; not in spec.\n- New Mod denesting rules, e.g. `Mod(Mod(x,2*t),t)==Mod(x,t)` and `Mod(-Mod(x,t),-2*t)==-Mod(x,t)`: open; unrelated to the spec.\n- Expanded 'by difference' results, e.g. `Mod(-2, p+3) == p+1` and `Mod(p+5, -p-3) == -p-1`: open; unrelated.\n- Modular exponentiation of unevaluated Pow: open.\n- test_issue_7426 now requires `f1.equals(f2) is None`: open.\n- test_Mul_is_prime_composite and test_Pow_is_prime_composite require new `_eval_is_composite` logic on Mul and Pow, e.g. `((x+1)*(y+1)).is_composite is True` and `((-x-1)**(2*y)).is_composite is True`: open; entirely different feature.\n- test_composite requires a new assumption rule so that `Dummy(positive, even, prime=False).is_composite is True`: open.\n- test_issue_9115_9150 requires `factorial(n+2).is_even is True`: open.\n- test_factorint requires `factorint(fac(200, evaluate=False))` to work via Legendre's formula: open; a different function and feature.\n- Many other graded tests (test_pow_E, test_leadterm, test_gcd_terms, ...) presumably depend on the changed assumption system or Mod behavior.\n\n4. A competent developer who adds `factorial._eval_Mod` (returning 0 when q is an integer with |q| <= n), hooked into Mod.eval, fully solves the issue. That fix fails test_factorint, the composite and prime tests, the Mod denesting and difference assertions, the ZeroDivisionError check, and test_issue_7426. These tests exercise different functions and code paths (factorint, is_composite on Mul and Pow, assumption rules) that the spec never mentions.",
+    "score": 4,
+    "explanation": "A correct fix that only makes Mod simplify factorial(n) % k to 0 fails most graded tests. Those tests require unrelated new behavior: factorint on unevaluated factorials, Mul/Pow is_composite logic, a new assumption rule, factorial.is_even, new Mod denesting and difference rules, Mod(x,0) raising ZeroDivisionError, and `a % c` equals returning None.",
+    "overspecification_vector": "test_factorint: `factorint(fac(200, evaluate=False))`; test_Mul_is_prime_composite / test_Pow_is_prime_composite: `((x+1)*(y+1)).is_composite is True`, `((-x-1)**(2*y)).is_composite is True`; test_composite: `Dummy(positive=True, even=True, prime=False).is_composite is True`; test_issue_9115_9150: `factorial(n + 2).is_even is True`; test_Mod: `raises(ZeroDivisionError): Mod(x, 0)`, `Mod(-2, p + 3) == p + 1`, `Mod(Mod(x, 2*t), t) == Mod(x, t)`, `Mod(Pow(4, 13, evaluate=False), 497)`; test_issue_7426: `f1.equals(f2) is None`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutFXBpvxXLmH4LGj3uL",
+  "input_tokens": 12169,
+  "output_tokens": 1682,
+  "seconds": 15.1
+}

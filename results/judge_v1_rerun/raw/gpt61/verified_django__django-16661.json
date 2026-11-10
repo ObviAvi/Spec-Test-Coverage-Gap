@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16661",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9858,
+  "output": {
+    "reasoning": "1. The specification identifies ModelAdmin.lookup_allowed() and says it incorrectly treats a primary-key relationship as concrete inheritance, shortening 'restaurant__place__country' and rejecting an explicitly configured filter. Its reproduction explicitly requires a True result.\n2. The graded test uses the same isolated model setup, OneToOneField(primary_key=True), ModelAdmin subclass, and lookup_allowed() entry point. It requires True for 'restaurant__place__country' with value '1', 'restaurant__place__country__id__exact' with value '1', and 'restaurant__place__country__name' with value 'test_value'. Both the country and country-name paths are explicitly configured in list_filter.\n3. The model setup, entry point, original relationship path, and literal True result are directly settled by the reproduction. The country-name case is a closely related input exercising the same erroneous shortening, using the name field already present in the reproduction. The id__exact suffix is reasonably inferred from standard Django lookup semantics: it explicitly addresses the related country's primary key with an exact comparison. Changing the ordinary comparison value to '1' does not introduce a separate authorization requirement.\n4. These extensions do not select among reasonable implementations. Rejecting the configured country-name path would leave the same relationship-traversal bug unresolved; rejecting its standard primary-key exact lookup would leave a closely related form unresolved. No reasonable correct alternative is excluded, and no internal implementation details are asserted.",
+    "score": 2,
+    "explanation": "Every reasonable general fix should allow the reported configured relationship path, its explicitly configured name-field extension, and its standard primary-key exact-lookup form; the latter two are reasonable extensions of the reproduction.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2220,
+  "output_tokens": 842,
+  "seconds": 25.6
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16614",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 71854,
+  "output": {
+    "reasoning": "The issue requests HTTPS as the default for schemeless URLField input. The tests instead require an unstated migration design: retain HTTP as the current default, introduce an assume_scheme constructor argument, and emit RemovedInDjango60Warning with prescribed text announcing a Django 6.0 change. They also require that warning during ModelForm class creation. A correct fix that simply changes the default to HTTPS would fail these tests.",
+    "score": 4,
+    "explanation": "The tests significantly overspecify a deprecation strategy and new API absent from the issue. Their requirement that the default remain HTTP would reject a direct implementation of the requested HTTPS default.",
+    "overspecification_vector": "tests/forms_tests/field_tests/test_urlfield.py::test_urlfield_assume_scheme: `f = URLField(); self.assertEqual(f.clean(\"example.com\"), \"http://example.com\")`, plus required `URLField(assume_scheme=\"http\")` and `URLField(assume_scheme=\"https\")` behavior. tests/forms_tests/field_tests/test_urlfield.py::test_urlfield_raises_warning: prescribed Django 6.0 warning message, `self.assertWarnsMessage(RemovedInDjango60Warning, msg)`, and HTTP default assertion. tests/model_forms/tests.py::test_url_modelform_assume_scheme_warning: requires the prescribed warning during HomepageForm class definition. tests/model_forms/tests.py::test_https_prefixing: requires the unstated `forms.URLField(assume_scheme=\"https\")` API."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 15794,
+  "output_tokens": 567,
+  "seconds": 14.0
+}

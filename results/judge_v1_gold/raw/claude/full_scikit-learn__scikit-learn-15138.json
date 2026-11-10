@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-15138",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 21960,
+  "output": {
+    "reasoning": "1. The spec asks for a new option on the Stacking estimators so that final_estimator is trained on the base-model predictions plus the original features. It points to mlxtend's `use_features_in_secondary` but never names a parameter for sklearn.\n\n2. What the graded tests require:\n- a constructor kwarg named exactly `passthrough` on both StackingClassifier and StackingRegressor;\n- `transform()` output that includes the original features when the flag is on (10 or 7 columns for iris, 12 or 11 for diabetes);\n- the original features placed as the LAST columns (`X_trans[:, -4:]`, `X_trans[:, -10:]`);\n- for sparse input, sparse output in the same format as the input (`X_test.format == X_trans.format`).\n\n3. Settlement of each requirement:\n- Parameter name `passthrough`: open. The spec says only \"add an option\" and cites mlxtend's `use_features_in_secondary`. A developer could reasonably use that name, or something like `use_original_features`; every graded test would then fail with a TypeError on construction.\n- Including X in `transform` output: arguably inferable, since transform returns the meta-features.\n- Original features last: open. mlxtend itself puts the original X first (`hstack((X, meta_features))`), so a fix following the cited reference would put X first and fail the slice checks.\n- Preserving sparse format: open. A fix that densifies the output, or returns CSR regardless of input format, also handles the feature correctly and fails `issparse` or the format equality check.\n\n4. The most severe gap is the unspecified new parameter name, which every graded test depends on.",
+    "score": 4,
+    "explanation": "Every graded test constructs the estimators with `passthrough=...`, a name the spec never mentions; a fix that follows the cited mlxtend reference and calls it `use_features_in_secondary` fails all tests. The tests also require the original features to be appended last, whereas mlxtend puts them first, and require sparse output in the input's exact format.",
+    "overspecification_vector": "StackingClassifier(..., passthrough=passthrough) / StackingRegressor(..., passthrough=passthrough); assert_allclose(X_test, X_trans[:, -4:]) and X_trans[:, -10:]; assert sparse.issparse(X_trans); assert X_test.format == X_trans.format"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutEsvDnhJH7yKTsBjud",
+  "input_tokens": 8905,
+  "output_tokens": 1005,
+  "seconds": 10.3
+}

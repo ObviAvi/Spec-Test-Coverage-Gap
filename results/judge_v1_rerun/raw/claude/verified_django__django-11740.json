@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11740",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10552,
+  "output": {
+    "reasoning": "1. Spec: when a field is altered from a non-FK (UUIDField) to a ForeignKey pointing to a model in another app, makemigrations (the autodetector) does not add a dependency on the other app, so migrations fail with 'Related model cannot be resolved'. The expected outcome is stated: 'the correct solution will be create dependency for App2.'\n\n2. Test requirements:\n- Call get_changes on autodetector states going from IntegerField to FK (otherapp.Book.author -> testapp.Author).\n- Assert one migration in otherapp.\n- Assert the operation type is AlterField.\n- Assert the migration dependencies are exactly [('testapp', '__first__')].\n\n3. Settledness:\n- Dependency on testapp: settled by the spec ('create dependency for App2').\n- '__first__' form: settled by convention. Since Author has no migrations in the test, existing autodetector behavior (e.g. test_fk_dependency_other_app, shown in context) produces ('otherapp', '__first__'). The dependency resolution machinery picks this automatically.\n- AlterField operation type: settled by existing behavior. The autodetector already emits AlterField for this change. A fix that switched to remove+add would be contrived.\n- One migration: also existing behavior.\n\n4. Natural fix: in generate_altered_fields, compute dependencies via _get_dependencies_for_foreign_key and pass them to add_operation. Any fix that adds the dependency goes through the same machinery and yields '__first__'. No reasonable alternative fails.\n\nThe test uses IntegerField rather than UUIDField, but that is the same code path, a closely related input.",
+    "score": 2,
+    "explanation": "Any fix that makes the autodetector add the cross-app dependency for an altered-to-FK field passes. The asserted dependency [('testapp', '__first__')] follows directly from the spec's request plus the existing dependency resolution convention.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut6WgZgnbnZifk22fHG",
+  "input_tokens": 3971,
+  "output_tokens": 675,
+  "seconds": 7.5
+}

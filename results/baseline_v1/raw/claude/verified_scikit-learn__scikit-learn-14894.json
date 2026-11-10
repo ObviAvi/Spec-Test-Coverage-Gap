@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14894",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3410,
+  "output": {
+    "reasoning": "The test fits SVR on the issue's sparse example and asserts two things: `model.support_vectors_.data.size` is 0 and `model.dual_coef_.data.size` is 0. The issue states the expected outcome directly: no error, and `self.dual_coef_ = sp.csr_matrix([])`. The `.data.size` check needs a scipy sparse matrix, which matches what the issue specifies and what sparse fit already returns. Any empty sparse matrix passes, whatever its shape (for example (1,0) or (n_class-1, 0)). Any reasonable fix that avoids the division by zero and produces an empty sparse `dual_coef_` would pass. Nothing about internal structure or exact shape is tested.",
+    "score": 1,
+    "explanation": "The test only checks that fitting succeeds and that `support_vectors_` and `dual_coef_` are empty sparse matrices, which is exactly what the issue's expected results describe.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut2Ug9UcXVWkd6XFdLZ",
+  "input_tokens": 1872,
+  "output_tokens": 602,
+  "seconds": 7.1
+}

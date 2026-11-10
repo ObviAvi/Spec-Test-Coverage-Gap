@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11555",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10625,
+  "output": {
+    "reasoning": "1. The specification says order_by() crashes in multi-table inheritance when the parent model's Meta.ordering contains expressions, because get_order_dir receives an OrderBy object instead of a string. It names get_order_dir as the crash site and gives no explicit expected result beyond 'should not crash'.\n2. What the test requires:\n- A new test model ChildArticle(Article), added in the test patch itself.\n- ChildArticle.objects.order_by('article_ptr') must run without crashing.\n- The result must equal [ca4, ca2, ca1, ca3].\n3. Status of each requirement:\n- The crash fix is settled by the spec. Ordering by the parent pointer expands to the parent's Meta.ordering, which contains expressions; this is exactly the reported bug.\n- The expected sequence is settled by convention. Article's Meta.ordering is -pub_date, then headline, then author name. That gives ca4 (latest date), then the two h2 rows ordered by author (ca2 then ca1), then ca3. Any correct fix must honor the parent's Meta.ordering, expressions included, so the order is determined by existing semantics, not an arbitrary choice.\n4. Could a reasonable fix fail? A fix that silently dropped the expressions would leave ties unordered, but that does not resolve the issue correctly. A fix that resolves the expressions with proper join relabeling would yield the same rows in the same order. No reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "The test calls order_by('article_ptr') on a child of a model whose Meta.ordering contains expressions, which is exactly the reported crash. The asserted order [ca4, ca2, ca1, ca3] follows directly from honoring the parent's Meta.ordering, so every correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusw6L6GqCzZVB4MNMMs",
+  "input_tokens": 3947,
+  "output_tokens": 1349,
+  "seconds": 14.2
+}

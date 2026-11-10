@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13807",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3918,
+  "output": {
+    "reasoning": "The issue is about table names that are SQL keywords in SQLite's check_constraints. It points to two PRAGMA calls that interpolate the table name without quoting.\n\nThe test model goes further than the issue:\n- the table is named 'order' (a keyword, as in the issue);\n- the primary key column is named 'select';\n- the FK column is named 'where'.\n\nThe test calls check_constraints(table_names=['order']) and expects an IntegrityError for a bad FK.\n\nWhen check_constraints finds a violation, it runs a further query: 'SELECT %s, %s FROM %s WHERE rowid = %%s', filled with the primary key column, the FK column and the table name. A fix that quotes the table name everywhere would pass with the 'order' table alone. That covers both PRAGMAs and the SELECT, which is the full fix for what the issue describes. But that fix would still fail here, because the unquoted 'select' and 'where' columns cause an OperationalError instead of an IntegrityError.\n\nSo the test requires quoting column identifiers too, which the issue never mentions. A careful developer would likely quote every identifier once they touch the SELECT, and the upstream fix did exactly that. Still, a valid fix scoped to the stated problem (table names) would be rejected. This is mild overspecification.",
+    "score": 3,
+    "explanation": "The test model also uses SQL keywords as column names ('select', 'where'), which the issue (about table names only) never mentions. A fix that correctly quotes table names everywhere but leaves column names unquoted would fail the test.",
+    "overspecification_vector": "id = models.AutoField(primary_key=True, db_column='select'); reporter = models.ForeignKey(Reporter, models.CASCADE, db_column='where')"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut4FesHBwj5fUAt3ooS",
+  "input_tokens": 1929,
+  "output_tokens": 1388,
+  "seconds": 14.5
+}

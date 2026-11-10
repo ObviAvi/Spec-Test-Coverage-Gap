@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15240",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 8366,
+  "output": {
+    "reasoning": "The core assertion that deleted migration records are removed while existing migration records remain matches the issue. However, the specification explicitly leaves the integration point open, allowing automatic cleanup or a separate management command, whereas the tests require migrate with prune=True. They also require an app label, although project-wide cleanup would satisfy the request. The safety requirement is to retain records referenced by replaces; a correct implementation could preserve those records and prune other obsolete records rather than refuse pruning altogether. Finally, several assertions require exact output text and formatting that the specification never defines.",
+    "score": 4,
+    "explanation": "The tests impose an unspecified command interface, app-label restriction, safety-handling policy, and exact messages. These requirements would reject implementations that correctly clean obsolete records and protect replaced migrations using other approaches expressly permitted by the issue.",
+    "overspecification_vector": "test_migrate_prune: call_command('migrate', 'migrations', prune=True, ...) and self.assertEqual(out.getvalue(), 'Pruning migrations:\\n' '  Pruning migrations.0001_initial OK\\n' '  Pruning migrations.0002_second OK\\n'); test_prune_deleted_squashed_migrations_in_replaces: self.assertEqual(out.getvalue(), ...) requiring the exact refusal and instructions to remove 'replaces'; test_prune_no_migrations_to_prune: self.assertEqual(out.getvalue(), 'Pruning migrations:\\n' '  No migrations to prune.\\n'); test_prune_no_app_label: with self.assertRaisesMessage(CommandError, 'Migrations can be pruned only when an app is specified.'): call_command('migrate', prune=True)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1992,
+  "output_tokens": 725,
+  "seconds": 17.4
+}

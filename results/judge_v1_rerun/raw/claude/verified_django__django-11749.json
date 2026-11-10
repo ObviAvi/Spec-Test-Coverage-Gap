@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11749",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10018,
+  "output": {
+    "reasoning": "1. The specification says `call_command('my_command', shop_id=1)` raises 'Error: one of the arguments --shop-id --shop is required' when the option belongs to a required mutually exclusive group. The entry point is `call_command`, and the cause is that only individually required options from kwargs are forwarded to `parse_args`.\n\n2. The tests require:\n- (a) `call_command('mutually_exclusive_required', foo_id=1)` succeeds, and the output contains 'foo_id'.\n- (b) The same holds for `foo_name='foo'`.\n- (c) Calling with no args raises `CommandError` containing 'Error: one of the arguments --foo-id --foo-name is required'.\n\n3. Status of each requirement:\n- (a) and (b) are settled by the specification; they are its reproduction with renamed options. The output check is trivial: `handle` prints the option keys, which are always present through their defaults. So it only checks that no error is raised.\n- (c) is settled by existing behaviour. The message is argparse's own, with Django's existing 'Error: ' prefix, and it matches the format quoted in the issue. A correct fix must still enforce the group when nothing is passed, so this is a basic regression check.\n\n4. No requirement is open. Any reasonable fix that forwards kwargs for options in required groups to `parse_args` passes, and argparse still produces the same error when none is given.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes: the test mirrors the issue's reproduction (`call_command` with a kwarg for a required mutually-exclusive-group option) and adds a regression check that the unchanged argparse error still appears when no option is given.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusw6THm5hih9H9hvPw8",
+  "input_tokens": 3676,
+  "output_tokens": 969,
+  "seconds": 11.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10673",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10063,
+  "output": {
+    "reasoning": "1. The specification describes a user-facing toctree problem: entries named 'genindex', 'modindex', and 'search' produce nonexistent-document warnings. It requests that the illustrated directive be supported without errors; it specifies no internal representation.\n2. The test builds an XML project containing an ordinary document with index/module content and a second toctree containing those three special names. It then reads app.env.tocs['index'], requires an exact nested bullet_list/list_item/compact_paragraph/addnodes.toctree structure, and inspects toctree[0][1][1]. That node must have caption='Indices', glob=False, hidden=False, titlesonly=False, maxdepth=-1, numbered=0, and entries=[(None, 'genindex'), (None, 'modindex'), (None, 'search')]. There are no mocks or explicit assertions about generated links or warning text.\n3. Supporting the three input names is settled by the specification's requested directive. Preserving their source order and the supplied caption is reasonably inferred. The option values correspond to ordinary toctree defaults. However, storing the result in this exact intermediate tree and retaining None as every entry's title are open implementation details, not requirements stated by the issue.\n4. A reasonable fix could recognize generated-page entries during directive parsing and populate their generated display titles immediately, rather than retain None and derive those titles later during resolution. Such a fix could render correct links without nonexistent-document warnings while storing entries such as ('Index', 'genindex'). It would fail the asserted entries list despite satisfying the requested behavior.\n5. The decisive restriction is on internal intermediate state, so the score is 4.",
+    "score": 4,
+    "explanation": "The test requires special-page entries to remain title-less tuples in a particular internal toctree node. A correct implementation that assigns generated-page titles during parsing would eliminate the reported warnings and produce working links, but fail the required entries=[(None, ...)] assertion.",
+    "overspecification_vector": "toctree = app.env.tocs['index']; assert_node(toctree[0][1][1], addnodes.toctree, ...); entries=[(None, 'genindex'), (None, 'modindex'), (None, 'search')]"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2450,
+  "output_tokens": 1524,
+  "seconds": 37.6
+}

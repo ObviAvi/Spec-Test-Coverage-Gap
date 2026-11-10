@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13283",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11595,
+  "output": {
+    "reasoning": "1. The specification reports excessive memory use when decision_function accumulates per-sample results for all trees and passes the full matrix to _average_path_length. It asks for memory-efficient scoring; moving calculations to individual estimators is explicitly only a 'Possible Solution'.\n2. The graded tests run the existing test_iforest_works with contamination=0.25 and 'auto', while patching sklearn.ensemble.iforest.get_chunk_n_rows to return 3 or 10. Both tests require exactly 3 calls to that helper for contamination=0.25 and exactly 2 for 'auto'.\n3. Preserving IsolationForest's scoring behavior is settled by the requested memory-efficiency fix, and reusing an existing functional test is a reasonable regression check. However, introducing or exposing get_chunk_n_rows in this module, using it for scoring, and calling it those exact numbers of times are all open implementation details. The specification neither names this helper nor requires sample chunking.\n4. A reasonable correct fix could accumulate adjusted path lengths tree by tree into a one-dimensional array, discard each tree's temporary results, and normalize the accumulated depths afterward. This removes the estimator-count-dependent intermediate matrices and the large _average_path_length allocation while preserving scores. Such a fix need not define or call get_chunk_n_rows, so these tests would fail during patching or on their call-count assertions.\n5. The tests therefore enforce an unspecified internal implementation rather than merely checking that memory-efficient scoring works.",
+    "score": 4,
+    "explanation": "A correct fix using a one-dimensional running sum of per-tree adjusted path lengths would remove the reported memory growth without using get_chunk_n_rows. The tests nevertheless require that helper at a specific module path and require exactly 3 or 2 calls depending on contamination.",
+    "overspecification_vector": "@patch(\"sklearn.ensemble.iforest.get_chunk_n_rows\", side_effect=Mock(**{\"return_value\": 3})) and the corresponding patch returning 10; @pytest.mark.parametrize(\"contamination, n_predict_calls\", [(0.25, 3), (\"auto\", 2)]); assert mocked_get_chunk.call_count == n_predict_calls in both graded test functions."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2706,
+  "output_tokens": 801,
+  "seconds": 20.8
+}

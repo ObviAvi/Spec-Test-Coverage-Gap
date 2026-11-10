@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16816",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13133,
+  "output": {
+    "reasoning": "1. The spec: `list_display = [\"choice\"]` on QuestionAdmin, where `choice` is a reverse FK name, passes system checks but crashes the changelist. The reporter suggests \"error E108 be updated to cover this case as well\". No message wording is given.\n2. What the tests require:\n- Band admin with `list_display = [\"song\"]` (a reverse FK) is reported as invalid.\n- Band admin with `list_display = [\"featured\"]` (a reverse M2M related_name) is reported as invalid.\n- Both must raise error id `admin.E109`.\n- Both must use the exact message \"The value of 'list_display[0]' must not be a many-to-many field or a reverse foreign key.\"\n3. Settled vs open:\n- Detecting reverse relations is settled; it is the core of the spec.\n- The error id is open, and the spec even points the other way (\"E108 be updated\"). E109 already covers ManyToManyField, so extending it is reasonable, but E108 is equally reasonable and is what the spec suggests.\n- The message is open. The tests require new wording for E109, replacing the old \"must not be a ManyToManyField\", that the spec never mentions.\n- Covering the reverse M2M related_name case is a reasonable extension of the same bug.\n4. Fixes that fail:\n- Following the issue literally and emitting admin.E108 (e.g. \"refers to 'song', which is not a callable...\") fails on the error id.\n- Extending E109 but keeping its existing message, or adding a new id such as E129 with its own wording, fails on the exact message string.\n5. These are observable outputs, but the tests pin one arbitrary choice among several. Score 3.",
+    "score": 3,
+    "explanation": "A fix that does what the issue suggests and reports reverse relations via admin.E108, or one that keeps E109's existing \"must not be a ManyToManyField\" wording, fails. The tests require id admin.E109 and the exact new message \"must not be a many-to-many field or a reverse foreign key.\"",
+    "overspecification_vector": "\"The value of 'list_display[0]' must not be a many-to-many field or a \"\n\"reverse foreign key.\",\n\"admin.E109\" (in both test_invalid_related_field and test_invalid_m2m_related_name)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutBAPpKywa5RrV3k48P",
+  "input_tokens": 4912,
+  "output_tokens": 1454,
+  "seconds": 15.5
+}

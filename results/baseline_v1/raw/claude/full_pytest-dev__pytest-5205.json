@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pytest-dev__pytest-5205",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5595,
+  "output": {
+    "reasoning": "The issue reports a problem: `record_property` puts `<properties>` inside `<testcase>`, which is invalid under the JUnit XSD. It does not say how to fix it, and even floats removing the feature. The tests, by contrast, require a brand-new fixture named exactly `record_testsuite_property` that writes properties under the `<testsuite>` node. They also require it to raise a TypeError with the exact message \"name parameter needs to be a string, but int given\" when the name is not a string, whether or not junitxml is enabled. None of these details (fixture name, signature, type checking, error text) can be derived from the issue. Many valid fixes would fail these tests, for example: moving the existing `record_property` output to the testsuite level, removing properties from testcase entirely, or choosing a different fixture name.",
+    "score": 4,
+    "explanation": "The tests require a new fixture with a specific name, `record_testsuite_property`, and a specific TypeError message, neither of which the issue mentions, so most reasonable fixes would fail.",
+    "overspecification_vector": "def test_func1(record_testsuite_property): record_testsuite_property(\"stats\", \"all good\"); result.stdout.fnmatch_lines([\"*TypeError: name parameter needs to be a string, but int given\"]); node = dom.find_first_by_tag(\"testsuite\"); properties_node = node.find_first_by_tag(\"properties\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut8ukgWFCmYYDNBgiDG",
+  "input_tokens": 2629,
+  "output_tokens": 618,
+  "seconds": 6.9
+}

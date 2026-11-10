@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-3151",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10554,
+  "output": {
+    "reasoning": "The issue identifies combine_by_coords as the entry point and says identical coordinate dimensions must be ignored even when non-monotonic; the reproduction must return without error. The graded test uses that same reproduction: two Datasets with variable data, disjoint x coordinates [1, 2, 3] and [4, 5, 6, 7], and identical y coordinates ['a', 'c', 'b']. It requires combine_by_coords((ds1, ds2)) to succeed and assert_identical(expected, actual), where expected concatenates the original data along x and preserves y. The inputs and successful combination are explicitly settled by the reproduction. Preserving the data, variable name, and coordinates is the ordinary meaning of combining these datasets; preserving the non-monotonic y order also follows from the statement that unchanged coordinate dimensions are ignored. The random values impose no particular numeric result beyond retaining the supplied data. There are no private APIs, implementation requirements, exact error messages, or open output choices that could reasonably cause a correct fix to fail.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the test reproduces the reported case and asserts that combining succeeds with the original data concatenated along x and the unchanged non-monotonic y coordinate preserved.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2655,
+  "output_tokens": 518,
+  "seconds": 15.3
+}

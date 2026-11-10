@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-13992",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11419,
+  "output": {
+    "reasoning": "1. The bug is that deleting a queryset using distinct('post_id') can ignore its selection and delete the whole table. The specification explicitly permits either 'raise an error with a decent explanation' or 'produce a desired SQL according to the query'. 2. The graded test calls Book.objects.distinct().delete() and Book.objects.distinct('id').delete(), requiring both to raise TypeError with a message containing 'Cannot call delete() after .distinct().'. SimpleTestCase also means these calls must fail before accessing the database. There are no mocks or required new internal APIs. 3. Using distinct(...).delete() is settled by the reproduction; another field is a related input. Requiring rejection rather than correct deletion is open because the specification expressly permits both. TypeError is consistent with the existing rejection of delete() after values(), but is not mandated by the issue. The message wording is open. Rejecting fieldless distinct() is also open: the issue does not require banning deletion when ordinary DISTINCT can be handled safely. 4. A correct fix could generate deletion SQL preserving the queryset's selected rows, reject unsupported DISTINCT ON deletion with a differently worded clear exception, or reject field-specific distinct while continuing to support safe fieldless distinct deletion. Each could fail this test. 5. These restrictions concern observable public behavior, not implementation details, so the score is 3.",
+    "score": 3,
+    "explanation": "A fix that correctly deletes only the selected rows would fail because the test requires an exception, although the specification explicitly allows correct SQL. Even an error-based fix would fail if it used different explanatory wording or continued to support safe fieldless distinct deletion.",
+    "overspecification_vector": "msg = 'Cannot call delete() after .distinct().'; both `with self.assertRaisesMessage(TypeError, msg):` assertions around `Book.objects.distinct().delete()` and `Book.objects.distinct('id').delete()`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2592,
+  "output_tokens": 749,
+  "seconds": 20.7
+}

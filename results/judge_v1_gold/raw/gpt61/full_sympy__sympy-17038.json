@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-17038",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12693,
+  "output": {
+    "reasoning": "1. The issue identifies incorrect floor-square-root results from `sympy.core.power.isqrt`, particularly when floating-point sqrt rounds upward. It explicitly supplies the two regression inputs and discusses reducing the floating-point range, allowing bounded sqrt inaccuracies, or validating the result.\n2–3. Settled requirements: the two reported integers must return 67108864 and 99999999. The new limit 4503599761588223 and nearby boundary cases follow the bound calculated in the issue. Existing tests already establish support for fractional inputs; the `S.Half` cases and `Rational(1, 10**1000)` cases exercise the conventional floor-square-root meaning, including preserving exactness immediately below integers. Rejecting -1, -10**1000, -S.Half, and the tiny negative rational with ValueError follows the standard negative-domain convention. `integer_nthroot` is used as a result oracle, not required as the implementation.\n4. Open requirement: the tests replace the private dependency `power._sqrt` with a constant-returning function and require correct answers even when sqrt(10000) is approximately 3. The specification discusses realistic rounding errors and explicitly describes `int(_sqrt(n + 0.5))` as safe below `2**50` under a two-ulp accuracy assumption; it does not require tolerance of arbitrarily corrupted sqrt results. A reasonable fix could reject negatives, convert inputs exactly to integers, use that smaller floating-point fast path, and use exact integer roots otherwise. It would resolve the reported bug and related real rounding cases, including the rational tests, but return 2 for both monkeypatched calls.\n5. The strongest mismatch is therefore the artificial fault injection into a private implementation dependency, rather than the ordinary boundary-value assertions.",
+    "score": 4,
+    "explanation": "A reasonable fix using the issue's smaller fast-path bound and `int(_sqrt(n + 0.5))`, with exact integer handling elsewhere, would fix the actual rounding bug but fail when the tests replace `_sqrt` with a constant near 3. This imposes robustness against arbitrary corruption of an internal dependency, beyond the numerical inaccuracies described in the specification.",
+    "overspecification_vector": "power._sqrt = lambda x: 2.999999999\nassert isqrt(9) == 3\nassert isqrt(10000) == 100"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3293,
+  "output_tokens": 2580,
+  "seconds": 70.5
+}

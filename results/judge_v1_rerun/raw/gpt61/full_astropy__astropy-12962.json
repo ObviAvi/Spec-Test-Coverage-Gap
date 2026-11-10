@@ -1,0 +1,18 @@
+{
+  "task_id": "full/astropy__astropy-12962",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11234,
+  "output": {
+    "reasoning": "The issue requests a way to turn CCDData into an ImageHDU and explicitly proposes alternative interfaces, labeled Options A, B, and C. The conversion tests require to_hdu(as_image_hdu=False) to start with a PrimaryHDU and to_hdu(as_image_hdu=True) to start with an ImageHDU. These match Option A, but choosing Option A rather than another proposed option remains open. The writer tests additionally require write(..., as_image_hdu=False) to produce one HDU and write(..., as_image_hdu=True) to produce two, with an ImageHDU second. That keyword is proposed for to_hdu, not write; the proposed writer interface is instead write(..., append=True). The disk layout is conventional once image-extension writing is supported, but requiring this writer interface is open. A reasonable implementation of Option B would provide the requested conversion yet fail the to_hdu keyword calls; implementing Option A alone could fail the writer calls. The tests therefore pin public interface choices rather than internal implementation details.",
+    "score": 3,
+    "explanation": "A correct fix could implement the explicitly proposed fits.ccddata_to_image_hdu(ccd_image) interface instead of Option A and fail these tests. Even an Option A implementation need not add the unrequested as_image_hdu keyword to CCDData.write, which the writer test requires.",
+    "overspecification_vector": "ccd_data.to_hdu(as_image_hdu=False); ccd_data.to_hdu(as_image_hdu=True); ccd_data.write(filename, as_image_hdu=False); ccd_data.write(filename, as_image_hdu=True)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2796,
+  "output_tokens": 1905,
+  "seconds": 49.4
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-13447",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8346,
+  "output": {
+    "reasoning": "1. The specification requests access to the actual model class in app_list entries (\"have access to the model class\") and making _build_app_dict public. It does not specify a dictionary key for the added class reference. 2. The graded additions require the Article entry to retain object_name == 'Article', and require article['model'] == Article and user['model'] == User. The object_name assertion preserves an existing assertion; the class values directly match the requested functionality. Making _build_app_dict public is not checked by these additions. 3. Providing the actual classes is settled by the specification, and retaining object_name is settled by existing behavior. The exact new key 'model' is open: neither the specification nor the shown existing code establishes it. 4. A reasonable fix could add 'model_class': model to each model dictionary, making the class accessible to custom admin views, and also expose the requested public builder. That fix satisfies both requests but fails these tests with KeyError because they require the unspecified new name 'model'. 5. The tests therefore impose an unspecified API name, warranting score 4 under the stated rubric.",
+    "score": 4,
+    "explanation": "A correct fix could expose each class under 'model_class' and make the builder public. It would fail because the tests require the newly introduced dictionary key to be exactly 'model', which the specification never names.",
+    "overspecification_vector": "self.assertEqual(article['model'], Article)\nself.assertEqual(user['model'], User)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1899,
+  "output_tokens": 830,
+  "seconds": 14.6
+}

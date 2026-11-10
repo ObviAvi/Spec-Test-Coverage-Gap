@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11880",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9790,
+  "output": {
+    "reasoning": "1. The spec says Field.__deepcopy__ does not copy the error_messages dict, so every copy of a field shares one dict. It names the method and the attribute.\n2. The test deep-copies a CharField subclass and asserts two things: the copy is an instance of CustomCharField, and copy.error_messages is not field.error_messages.\n3. Both requirements are settled.\n   - The copy being the same subclass already holds, since copy.copy(self) preserves the type.\n   - The distinct dict is exactly the fix the spec asks for: \"does not include additional treatment for the error_messages dictionary... all copies share the same dictionary\".\n4. Any reasonable fix makes error_messages a distinct object: a shallow copy, copy.deepcopy, dict(...), or {**...}. The spec also mentions modifying \"the error message itself\". A deepcopy would also handle that, and the identity assertion passes either way. No reasonable correct fix fails.",
+    "score": 1,
+    "explanation": "The test asserts that the deep-copied field's error_messages is a different object from the original's, which is exactly the shared-dictionary bug the spec describes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7cfWENbUzjfPuve6S",
+  "input_tokens": 3610,
+  "output_tokens": 399,
+  "seconds": 5.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13253",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11393,
+  "output": {
+    "reasoning": "1. The specification asks OneHotEncoder and OrdinalEncoder to process DataFrames column by column instead of converting them to one contiguous array. That way each column keeps its own dtype, and a mixed int/str DataFrame is not coerced to an all-object array. It names the encoders' fit/transform as the entry point and notes that `categories_` dtype may change for mixed columns.\n\n2. The graded test `test_encoder_dtypes_pandas` requires:\n   (a) an all-int64 3-column DataFrame gives int64 categories and the standard one-hot output;\n   (b) a DataFrame with int, object (str) and float columns gives `categories_` dtypes of int, object and float respectively, plus the standard one-hot output.\n\n3. Each requirement is settled:\n   - (a) is existing behaviour, a regression check.\n   - (b) is settled by the spec: \"it would be rather easy to preserve the datatypes per column\", \"avoid converting a potentially mixed-dtype DataFrame (eg ints and object strings) to a full object array\", and \"we could still do a `check_array` on each column / coerce each column to a numpy array\".\n   - Converting each column separately with check_array or np.asarray gives int64, object and float64. That is the only reasonable outcome of per-column dtype preservation.\n   - The transform output matrix is the standard one-hot encoding.\n\n4. There is no open detail. Any fix that preserves per-column dtypes passes. The `== int` and `== float` comparisons hold for int64 and float64 on standard platforms.",
+    "score": 2,
+    "explanation": "The graded assertion that each `categories_[i].dtype` matches its DataFrame column's dtype (int, object, float) is exactly the per-column dtype preservation the issue asks for, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutEDUBUKM4ZigQU1XvU",
+  "input_tokens": 4618,
+  "output_tokens": 932,
+  "seconds": 9.3
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-11560",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10133,
+  "output": {
+    "reasoning": "1. The spec says ExtractYear on a DurationField produces a broken SQL comparison against dates. The title asks to raise a ValueError for Extract lookups that don't work properly with DurationField. Only year is named explicitly.\n2. What the test requires:\n- `Extract('duration', lookup)` raises ValueError for each of year, iso_year, month, week, week_day, quarter.\n- The error is raised at annotate time (resolve_expression), because the queryset is never evaluated.\n- The message must contain exactly \"Cannot extract component '<lookup>' from DurationField 'duration'.\"\n3. Status of each requirement:\n- ValueError type: settled by the title.\n- Raising at annotate/resolve time: follows existing convention. The context shows similar DateField/TimeField checks in resolve_expression raising ValueError, so this is fairly natural.\n- Set of lookups: partly open. Year is named; iso_year, month, week, week_day and quarter must be inferred. A developer might reasonably include only year/iso_year, which are the lookups with the date-range optimisation. A developer could also reason that month or quarter can be derived from intervals on some backends.\n- Exact message text: open. The spec gives no wording. Existing messages say \"Cannot extract time component '%s' from DateField '%s'.\", so a developer following that pattern might write \"Cannot extract date component 'year' from DurationField 'duration'.\" or something else entirely. That would fail assertRaisesMessage.\n4. A reasonable fix raising ValueError with different wording fails. So does a fix that blocks only year/iso_year.\n5. The test pins observable but unspecified details (the message and the lookup list), so score 3.",
+    "score": 3,
+    "explanation": "The test requires the exact message \"Cannot extract component '<lookup>' from DurationField 'duration'.\" and requires the error for all of year, iso_year, month, week, week_day and quarter. A correct fix with different wording, such as \"Cannot extract date component ...\", or one that blocks a different set of lookups fails.",
+    "overspecification_vector": "msg = \"Cannot extract component '%s' from DurationField 'duration'.\"; for lookup in ('year', 'iso_year', 'month', 'week', 'week_day', 'quarter'): with self.assertRaisesMessage(ValueError, msg % lookup)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut8HDztgQWbE5D3vPfy",
+  "input_tokens": 3775,
+  "output_tokens": 1149,
+  "seconds": 14.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7236",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 13000,
+  "output": {
+    "reasoning": "The specification reports that a method decorated with @unittest.skip incorrectly executes tearDown under --pdb and says, \"I would have expected the test to be skipped, even with --pdb.\" Its reproduction also includes a failing setUp, establishing that neither lifecycle method should execute. The sole graded parameter is @unittest.skip; the @pytest.mark.skip variant is not graded. The test runs the same unittest.TestCase scenario through pytest with --pdb, requires the normal '1 skipped' summary, and asserts tracked == [], recording any setUp or tearDown calls. These requirements directly match the reported behavior. The different skip reason and harmless test body do not introduce new requirements. The monkeypatched pytest attribute and self.id() are instrumentation used by the generated test, not APIs or implementation details that a fix must introduce or access. No open requirement excludes a reasonable correct fix.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix should report the decorated test as skipped under --pdb without calling setUp or tearDown, exactly as the summary and tracked == [] assertions require.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3120,
+  "output_tokens": 577,
+  "seconds": 14.9
+}

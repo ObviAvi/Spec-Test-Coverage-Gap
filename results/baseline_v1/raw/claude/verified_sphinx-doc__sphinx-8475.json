@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8475",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 2840,
+  "output": {
+    "reasoning": "The test starts a local server that keeps redirecting HEAD requests to the same URL and answers GET requests with 200. It then checks that output.json reports the link as working with code 0. That outcome is exactly what the issue asks for: when HEAD fails with TooManyRedirects, retry with GET.\n\nThe JSON format and field values (code 0, status working, empty info) are the existing linkcheck output conventions, not details chosen by the reference fix. Any correct fallback would produce this same result.\n\nOne possible variation would be treating the eventual GET success as a redirect instead. But the GET hits the original URL and gets a 200 directly, so the status would be \"working\" with code 0 regardless. The test does not depend on implementation specifics.",
+    "score": 1,
+    "explanation": "The test checks only the behavior the issue describes: the link is reported as working once the GET fallback handles TooManyRedirects on HEAD.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut1jvtmZ3LE4u4HutZv",
+  "input_tokens": 1471,
+  "output_tokens": 324,
+  "seconds": 4.5
+}

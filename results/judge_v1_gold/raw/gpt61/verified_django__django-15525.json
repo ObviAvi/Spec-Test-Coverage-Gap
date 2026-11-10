@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15525",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 15624,
+  "output": {
+    "reasoning": "The specification identifies loaddata on a non-default database as the failing entry point, specifically when a model's natural key dereferences a foreign key. Its reproduction loads JSON containing an author followed by a book, omits primary keys, and expresses the author reference as a natural key. The graded test reproduces that structure using Person and NaturalKeyWithFKDependency, then calls management.call_command('loaddata', ..., database='other'). This is settled by the reported command, 'loaddata --database other --format json'. Loading a fixture file rather than stdin changes only the input source, not the required database behavior. The test requires exactly one dependent object on 'other', with its fixture-provided name and its author's fixture-provided name. Those assertions directly check successful, faithful loading of the reported relationship; the particular strings are input data, not prescribed implementation choices. Restricting the test to the 'other' database matches the requirement that loading there not depend on records in the default database. The new model, manager, dependency metadata, and fixture are test scaffolding, not interfaces the fix must introduce. No graded assertion inspects internal state, prescribes a repair strategy, or depends on the unrelated SQLite test change. There is no open requirement that would reject a reasonable correct fix.",
+    "score": 1,
+    "explanation": "The graded test directly reproduces the reported failure and checks that loaddata stores the object and its natural-key foreign-key relationship correctly on the non-default database, without requiring any particular implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3788,
+  "output_tokens": 723,
+  "seconds": 19.5
+}

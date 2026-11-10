@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16333",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8951,
+  "output": {
+    "reasoning": "1. The specification identifies the entry point explicitly: custom-user ManyToMany form data is not saved because “UserCreationForm.save(commit=True) omits to call self.save_m2m().”\n2. The graded test subclasses UserCreationForm, selects CustomUserWithM2M through Meta.model, adds the orgs field, creates an Organization, submits its primary key alongside username/password data, checks form validity, calls save(commit=True), and checks that the returned user's orgs contains that organization.\n3. Saving the submitted relationship is directly settled by the specification's requirement to save data from ManyToMany form fields. Subclassing and Meta configuration are standard ModelForm usage. The validity check and returned user follow the existing form/save contracts; the particular username, passwords, organization name, and primary-key representation are fixture inputs, not arbitrary required outputs. The single-element sequence assertion imposes no ordering choice.\n4. No meaningful requirement remains open. A reasonable correct fix must persist this submitted relationship through save(commit=True). The test does not require calling save_m2m specifically or otherwise constrain the implementation.\n5. The test directly reproduces the reported failure.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because asserting that user.orgs.all() contains the submitted organization directly checks the specified ManyToMany persistence behavior of UserCreationForm.save(commit=True).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2039,
+  "output_tokens": 483,
+  "seconds": 11.4
+}

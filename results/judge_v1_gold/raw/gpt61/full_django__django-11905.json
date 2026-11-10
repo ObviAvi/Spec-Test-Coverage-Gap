@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-11905",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11354,
+  "output": {
+    "reasoning": "1. The specification says '__isnull should not allow for non-boolean values' and proposes 'raise an error for non-boolean values.' It describes lookup behavior, without prescribing a warning category, message, deprecation schedule, or validation timing.\n2. The shown graded test constructs QuerySets using Author.alias__isnull=1, Article.author__isnull=1, Season.games__isnull=1, and Freebie.stock__isnull=1, then calls qs.exists(). Freebie supplies a composite ForeignObject fixture using stock_id and gift_product. For each query, assertWarnsMessage requires RemovedInDjango40Warning containing 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.' QuerySet construction occurs outside that assertion. No assertions for the listed test_iterator are supplied.\n3. Covering scalar fields and several relationship types is settled by the general prohibition on non-boolean lookup values and the stated concern about joins. These are ordinary public query operations, not implementation-specific entry points. The fixtures do not require the fix to introduce corresponding implementation names. However, warning rather than error, the Django 4.0 warning category, the required message substring, and emission during evaluation rather than construction are all open choices not settled by the specification.\n4. A reasonable fix could strictly validate the RHS and raise ValueError for every non-boolean value, either when constructing or compiling the query. That directly implements the requested prohibition but fails these warning assertions. Even a deprecation-based fix with different clear wording could fail the required message check.\n5. The mismatch concerns externally observable validation behavior, not internal implementation, so the appropriate score is 3.",
+    "score": 3,
+    "explanation": "A correct fix that rejects non-boolean __isnull values with ValueError would fail because the tests instead require successful evaluation with a RemovedInDjango40Warning. They also require a particular warning message substring and warning timing that the specification never establishes.",
+    "overspecification_vector": "The required msg value: 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.'; and `with self.assertWarnsMessage(RemovedInDjango40Warning, msg): qs.exists()`, with the QuerySets constructed beforehand."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2630,
+  "output_tokens": 1106,
+  "seconds": 28.2
+}

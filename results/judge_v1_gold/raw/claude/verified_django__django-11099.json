@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11099",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10080,
+  "output": {
+    "reasoning": "1. The spec says the regex '^[\\w.@+-]+$' in ASCIIUsernameValidator and UnicodeUsernameValidator accepts usernames ending in a newline. It names the classes and suggests using \\A and \\Z.\n\n2. The graded tests add 'trailingnewline\\n' to the invalid usernames for both validators and expect a ValidationError. Existing valid and invalid cases stay the same.\n\n3. Rejecting a trailing newline is settled by the spec: \"in order to reject usernames that end with a newline\". The two classes are named in the spec, and raising ValidationError through RegexValidator is existing behavior.\n\n4. The test_help_text test for UserAttributeSimilarityValidatorTest is listed as FAIL_TO_PASS, but the patch does not touch it. It is likely a listing artifact or flaky, and no reasonable fix would affect it.\n\n5. Any reasonable fix (\\A...\\Z, ^...\\Z, or fullmatch) passes. A fix that also strips whitespace would not be reasonable, because the spec asks for rejection.",
+    "score": 1,
+    "explanation": "The tests assert that 'trailingnewline\\n' is rejected by both validators, which is exactly what the issue describes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut6poUi1mwt2VMCfPRE",
+  "input_tokens": 3814,
+  "output_tokens": 452,
+  "seconds": 5.3
+}

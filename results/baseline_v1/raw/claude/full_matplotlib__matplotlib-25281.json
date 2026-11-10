@@ -1,0 +1,19 @@
+{
+  "task_id": "full/matplotlib__matplotlib-25281",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 11429,
+  "output": {
+    "reasoning": "The issue only asks that invalid `loc` values raise an error up front, just as invalid strings already do. Every failing test uses `pytest.raises(ValueError, match=...)` with one exact message: 'loc must be string, coordinate tuple, or an integer 0-10, not <repr>'. That wording appears nowhere in the issue and cannot be inferred from it. The existing string error uses a different format (\"'abcd' is not a valid value for loc; supported values are ...\"), so a developer copying that style would fail. A fix that raises TypeError for a dict, which is natural for a wrong type, would also fail `test_loc_invalid_type`. The tests further expect the repr of the offending value in the message (tuple, list and dict forms). Almost any correct, independently written validation would be rejected for message mismatch alone.",
+    "score": 4,
+    "explanation": "The tests require a specific, undisclosed error message string (and ValueError even for wrong types), so most valid fixes that raise early with different wording or exception type would fail.",
+    "overspecification_vector": "pytest.raises(ValueError, match=('loc must be string, coordinate tuple, or an integer 0-10, not \\(1.1,\\)')); match=('loc must be string, coordinate tuple, or an integer 0-10, not \\[1.1, 2.2, 3.3\\]'); match=(\"loc must be string, coordinate tuple, or an integer 0-10, not {'not': True}\"); match=('loc must be string, coordinate tuple, or an integer 0-10, not 11') / 'not -1'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7qKGQi8w2AkV16pV9",
+  "input_tokens": 5715,
+  "output_tokens": 698,
+  "seconds": 7.1
+}

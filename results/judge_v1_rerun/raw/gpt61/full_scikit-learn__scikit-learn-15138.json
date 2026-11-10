@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-15138",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 16203,
+  "output": {
+    "reasoning": "1. The specification requests an optional mode where the final estimator is trained on both base-estimator predictions and the original features, with prediction-only behavior otherwise. It illustrates this with the reference option `use_features_in_secondary : bool (default: False)`; it never names `passthrough`.\n2. The graded tests require both StackingClassifier and StackingRegressor to accept the new keyword `passthrough`. They exercise existing fit, predict, score, decision_function, transform, estimator-dropping, CV, alternate-final-estimator, and prediction-keyword behavior. These existing API operations and related inputs are reasonable regression coverage. Dense transform widths must increase by the original feature count: 6 to 10 and 3 to 7 for classification, and 2 to 12 and 1 to 11 for regression. This matches combining existing prediction features with original features. Tests additionally require original features to occupy the final columns. Sparse tests require successful fitting, original features in the final columns, sparse transform output, and exactly the same sparse format as X_test.\n3. Open requirements: the keyword name `passthrough` is not specified. A competent developer could implement the requested behavior using the reference name `use_features_in_secondary`, with the stated default, and every graded test would fail at construction. Feature order is also open: prepending original features rather than appending them implements the same requested combination but fails the trailing-column assertions. Sparse compatibility is reasonable related-input coverage, but exact sparse-format preservation is not settled; consistently returning CSR for sparse inputs can implement the feature correctly while failing the format assertion for CSC inputs.\n4. The unspecified new constructor keyword is decisive under the scoring rules: tests depend on a name the specification never requires, rather than accepting a correct implementation through another reasonable option name.",
+    "score": 4,
+    "explanation": "A correct implementation exposing `use_features_in_secondary=False`, as illustrated by the specification, would fail because all graded tests instead pass the unspecified keyword `passthrough`. The tests also reject otherwise valid choices to prepend original features or normalize sparse output to CSR.",
+    "overspecification_vector": "Constructor arguments `passthrough=passthrough` and `passthrough=True`; trailing-feature assertions `assert_allclose(X_test, X_trans[:, -4:])`, `assert_allclose(X_test, X_trans[:, -10:])`, and their `assert_allclose_dense_sparse` equivalents; `assert X_test.format == X_trans.format`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3986,
+  "output_tokens": 1196,
+  "seconds": 30.6
+}

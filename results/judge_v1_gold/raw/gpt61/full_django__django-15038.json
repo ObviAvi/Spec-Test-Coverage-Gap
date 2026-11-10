@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15038",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10193,
+  "output": {
+    "reasoning": "1. The specification identifies squashmigrations overwriting an existing migration when --squashed-name collides, and explicitly requires it to \"exit with an error instead of overwriting existing migration files.\"\n2. The graded test invokes call_command('squashmigrations', 'migrations', '0001', '0002', squashed_name='initial', interactive=False, verbosity=0) with an existing migration module. It requires CommandError containing 'Migration 0001_initial already exists. Use a different name.' No internal methods or implementation details are asserted.\n3. Rejecting the collision is settled by the specification. Supplying an explicit start migration is a closely related input to the reported invocation. CommandError is the conventional management-command error type. The required message wording is open: the specification gives no error text.\n4. A reasonable fix could detect the destination file before writing and raise CommandError('Cannot squash migrations: target file 0001_initial.py already exists.'). This prevents overwriting and clearly reports the error, but fails the test's required message substring.\n5. The test therefore mildly overspecifies observable error wording.",
+    "score": 3,
+    "explanation": "A correct fix that refuses to overwrite the existing migration and raises CommandError with different clear wording would fail. The specification does not require the message 'Migration 0001_initial already exists. Use a different name.'",
+    "overspecification_vector": "msg = 'Migration 0001_initial already exists. Use a different name.'; with self.assertRaisesMessage(CommandError, msg):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2323,
+  "output_tokens": 532,
+  "seconds": 14.3
+}

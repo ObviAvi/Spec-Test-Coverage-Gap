@@ -1,0 +1,69 @@
+You are auditing one task from a software-engineering benchmark such as SWE-bench.
+
+In these benchmarks an agent receives a task specification (a bug report or feature request) and the repository, writes a fix, and is graded by tests it never sees. The tests come from the pull request that originally fixed the issue, so they were written to confirm that one fix. Sometimes they check details the specification never settles, and then a different but correct fix is graded as a failure. Decide whether this task's tests do that, and how badly.
+
+<specification>
+{{SPEC}}
+</specification>
+
+<fail_to_pass_tests>
+{{FAIL_TO_PASS}}
+</fail_to_pass_tests>
+
+<test_patch>
+{{TEST_PATCH}}
+</test_patch>
+
+How to read the inputs:
+- The specification is everything the developer is told about the task. Anything it states explicitly counts as specified, including names, signatures, messages, and values given in a Requirements or Interface section.
+- The FAIL_TO_PASS tests are the graded ones: they fail before the fix and must pass after it. Python test definitions that are graded are also tagged `# <-- FAIL_TO_PASS` in the test patch. Tests that are not graded do not matter.
+- In the test patch, `+` lines are added test code, `-` lines are removed test code, and lines starting with a space are unchanged context. Score what the `+` lines require. The `-` and context lines show how the code already behaved and what already exists.
+- You cannot see the repository. The specification and the `-` and context lines are your evidence of what already exists in it.
+
+The question:
+
+Picture competent developers who work in this repository, have read the specification, and have seen neither these tests nor the original fix. Each writes a correct fix: one that resolves what the specification describes, for the reported case and for closely related inputs. Would every such fix pass the graded tests?
+
+Only reasonable fixes count. A fix counts if a competent developer could plausibly write it from this specification. A contrived fix, a fix that ignores part of the specification, or a fix that patches only the literal example and leaves the same bug in closely related inputs does not count.
+
+A detail the tests check is settled if the specification states it or leaves only one reasonable choice. Mentioning a function, field, or behavior does not settle every value, order, name, or edge-case result a test checks on it.
+
+Score from 1 to 4.
+
+Every reasonable correct fix passes:
+
+1 - Directly specified. The graded tests check the behavior the specification describes, or its reproduction example, near-verbatim. No outside assumptions, private APIs, or arbitrary choices.
+  Example: the issue says "`q.clear()` leaves items behind in the queue." The test is `q.clear(); assert len(q) == 0`.
+
+2 - Reasonably specified. The tests add only what a careful reader would infer: a standard exception type, behavior that matches an existing pattern, basic null or regression checks, or the same function run on related inputs. What they assert is the only reasonable reading of the specification.
+  Example: the issue says "`round_half(2.5)` returns 2.0 instead of 3.0." The test checks `round_half(2.5) == 3.0` and also `round_half(-2.5) == -3.0`.
+
+Some reasonable correct fix fails:
+
+3 - Mildly overspecified. The tests check externally observable behavior but pin one valid choice among several, such as an exact message, an order, or a specific value. A correct fix that made a different reasonable choice fails.
+  Example: the issue says "Exporting with an unknown format should give a clear error instead of a KeyError." The test requires the exact message `"Unsupported format: 'xls'"`, so a fix that raises a clear error with different wording fails.
+
+4 - Significantly overspecified. The tests check how the fix was written, not whether the problem is gone. They require a magic or sentinel value, assert internal or intermediate state, call a private method directly, depend on a name the fix must introduce that the specification never mentions, or exercise a different code path than the one the specification implicates. A correct fix made through the natural entry point can fail.
+  Example: the issue says "Saving a user whose name contains an emoji crashes." The test skips `save()`, calls the private `_normalize_name()` directly, and asserts the emoji is replaced with `"?"`. Or the issue shows the bug through `Report.render()` but the test calls `Formatter.format_cell()` directly and checks its return value.
+
+Scoring rules:
+- Score the most overspecified graded assertion. One assertion that rejects a reasonable correct fix is enough for a 3 or 4.
+- Score what a correct fix would actually fail on. A private method or specific value that only appears in the test is not a problem unless a graded assertion depends on it.
+- 2 or 3: is the asserted detail the only reasonable choice (2), or one of several the author happened to pick (3)?
+- 3 or 4: do the tests assert observable external behavior (3), or internal state, a sentinel, a private method, an unspecified new name, or a different code path (4)?
+- Different arguments to the same function are the same code path. A different function is a different code path.
+- If you can describe a reasonable correct fix that fails, score 3 or 4, even if you expect most developers would make the same choice the tests did. The question is whether a reasonable alternative is rejected, not which fix is most likely.
+
+Work through these steps before scoring:
+
+1. What does the specification say is wrong or missing? Does it name a function or entry point, or only describe a symptom?
+2. List what the graded tests require of a fix: each function, class, constant, or field they call or reference; each value, order, type, and message they assert; each input they use; each mock or patched attribute the fix must read, call, or define.
+3. Mark each requirement as settled by the specification (quote the text), settled by convention or existing code (say which), or open.
+4. For each open requirement, describe a reasonable correct fix that would violate it, or say why no reasonable fix would.
+5. Choose the score.
+
+Return JSON with these fields:
+- `reasoning`: a compact pass through the steps: the requirements, each marked settled (with the specification text), convention, or open; and for each open one, the reasonable fix that violates it or why there is none.
+- `score`: 1, 2, 3, or 4.
+- `explanation`: for a score of 3 or 4, one or two sentences naming what a reasonable correct fix would get wrong against the tests. A later repair step reads this, so be concrete. For a score of 1 or 2, one sentence on why every reasonable fix passes, naming the assertion that maps to the specification.
+- `overspecification_vector`: the exact line(s), value(s), or method(s) in the test patch that cause the gap, or "None" for a score of 1 or 2.

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pytest-dev__pytest-9064",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 13683,
+  "output": {
+    "reasoning": "1. The specification identifies a CLI behavior bug and explicitly requests that '--stepwise-skip should act the same as --stepwise --stepwise-skip'. It also notes that the existing dependency is absent from the help text, but prescribes no replacement wording.\n2. test_stepwise_skip_is_independent runs pytest with '--tb no --stepwise-skip' on three failing tests. It requires two failures, failure reports for test_one followed by test_two, and the existing stepwise interruption message. These are settled by the requested equivalence and the specification's reproduction output; the generated filename simply identifies the test file. No internal implementation is required.\n3. test_sw_skip_help runs pytest with '-h' and requires a line matching '*implicitly enables --stepwise.'. This exact lowercase wording and terminal period are open: neither the specification nor the pre-existing help text establishes them.\n4. A reasonable correct fix could enable stepwise behavior whenever --stepwise-skip is supplied and document it as 'Enable stepwise mode, ignoring the first failure and stopping on the next.' That would implement and explain the requested behavior but fail the help-text assertion.\n5. The most overspecified assertion pins externally observable wording rather than implementation details, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could make --stepwise-skip independently enable stepwise behavior and describe that accurately using different help text. It would still fail test_sw_skip_help because the test requires the specific phrase 'implicitly enables --stepwise.'",
+    "overspecification_vector": "result.stdout.fnmatch_lines(\"*implicitly enables --stepwise.\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3214,
+  "output_tokens": 557,
+  "seconds": 14.7
+}

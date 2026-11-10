@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-11905",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3543,
+  "output": {
+    "reasoning": "The specification asks to reject non-boolean __isnull values and explicitly suggests raising an error. The added test instead requires queries using 1 to execute while emitting RemovedInDjango40Warning with particular wording. A correct implementation that immediately raises ValueError, or raises it when the query executes, would fail. Covering scalar fields and several relationship types is reasonable; prescribing a deprecation warning rather than rejection is not supported by the specification. No added assertions for test_iterator are shown.",
+    "score": 4,
+    "explanation": "The test mandates a specific deprecation mechanism and warning message where the issue requests rejecting non-boolean values. It would reject a straightforward, specification-compliant fix that raises an error.",
+    "overspecification_vector": "msg = ('Using a non-boolean value for an isnull lookup is deprecated, ' 'use True or False instead.'); with self.assertWarnsMessage(RemovedInDjango40Warning, msg): qs.exists(); the Author/Article/Season/Freebie .filter(...__isnull=1) calls outside that context also preclude immediate rejection."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 918,
+  "output_tokens": 589,
+  "seconds": 16.8
+}

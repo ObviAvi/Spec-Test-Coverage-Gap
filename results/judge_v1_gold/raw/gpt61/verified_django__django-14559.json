@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14559",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10697,
+  "output": {
+    "reasoning": "1. The specification names bulk_update() and requests the number of rows matched instead of None. It also explains the counting semantics: 'the return values could simply be added and returned.'\n2. The added assertions require bulk_update([], ['note']) to return 0; updating 2,000 existing Note objects to return 2000; passing [note, note] in one batch to return 1; and passing those duplicates with batch_size=1 to return 2. There are no new mocks, private APIs, messages, or implementation-specific names. The empty-input query guard already existed.\n3. Returning 0 for empty input follows the conventional empty count. Returning 2000 implements the expressly requested matched-row count, including rows whose values are unchanged. The duplicate expectations follow the specified accumulation of update() return values and existing update semantics: a single query matches the duplicated primary key once, while two separate batch queries each match it once.\n4. No asserted detail remains an arbitrary choice. Returning a globally deduplicated count of 1 across two batches would differ from the specification's described sum of the individual update() counts. Alternative implementations of that counting behavior would pass.",
+    "score": 2,
+    "explanation": "The tests cover ordinary counting edge cases consistent with the requested sum of update() return values: zero for empty input, one match for duplicate keys within a batch, and two cumulative matches across two batches.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2448,
+  "output_tokens": 1235,
+  "seconds": 35.2
+}

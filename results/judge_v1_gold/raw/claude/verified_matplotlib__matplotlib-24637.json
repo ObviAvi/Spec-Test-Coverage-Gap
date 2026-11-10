@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24637",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12038,
+  "output": {
+    "reasoning": "1. The specification says that a gid set on an AnnotationBbox via set_gid() does not appear in saved SVG output. It points to PR #15087, which fixed missing gids for other artists. That PR's pattern is to wrap the artist's draw in renderer.open_group(name, gid=self.get_gid()) / close_group.\n2. The test requires:\n- building an AnnotationBbox exactly as in the issue's example and calling set_gid;\n- saving the figure to SVG;\n- the string '<g id=\"<gid>\">' appearing in the output.\n3. Settlement of each requirement:\n- The reproduction is near-verbatim from the issue.\n- 'gid appears in SVG' is settled by the spec: \"the gid label for the images are not included\".\n- The `<g id=...>` form is settled by convention. The issue cites #15087, where every artist's gid is emitted through open_group, and the existing SVG renderer writes that as `<g id=\"...\">`.\n4. The only alternative is pushing the gid onto a child, such as the inner image element. That would attach the id to a sub-element rather than the AnnotationBbox artist and would break the established per-artist convention, so it is not a reasonable competing choice. Any fix that follows the referenced pattern produces `<g id=\"...\">` and passes.",
+    "score": 2,
+    "explanation": "The test only asserts that the AnnotationBbox's gid shows up as a `<g id=...>` group in the SVG. That is exactly what the issue asks for and what the open_group(gid=...) convention from the referenced PR #15087 produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut3xymHtjDvRTmaynAu",
+  "input_tokens": 4583,
+  "output_tokens": 1103,
+  "seconds": 12.0
+}

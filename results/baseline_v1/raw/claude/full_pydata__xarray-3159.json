@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pydata__xarray-3159",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3297,
+  "output": {
+    "reasoning": "The issue asks only that a scalar `data` value be broadcast to fill an array whose shape comes from the coords. The first assertion, `DataArray(3, dims, coords)` equals `np.full`, checks exactly that.\n\nThe test then checks several behaviors the issue never mentions:\n\n1. **Missing dim size.** Dimension `w` has no coordinate and must silently get size 1. A valid implementation might instead raise an error here.\n2. **No data at all.** `DataArray(coords=...)` with data omitted must produce a NaN-filled array. The issue asks for passing a value, not for a NaN default when data is absent.\n3. **0-d arrays.** A 0-d numpy array (`np.array(1)`) must *not* be broadcast. It has to raise a `KeyError` when given dict coords, and a `ValueError` with a specific message when given list coords. The reference fix uses `is_scalar(data, include_0d=False)`. A natural fix using xarray's own `is_scalar` default, or one that treats 0-d arrays as scalars (arguably more consistent), would broadcast `np.array(1)` and fail both `raises` assertions.\n\nThese are design choices of the reference patch that the issue does not determine. Valid alternative solutions could be rejected. The core feature, though, is tested directly.",
+    "score": 3,
+    "explanation": "Beyond the requested scalar broadcasting, the test also requires a NaN default when data is omitted, size 1 for dims without coords, and specifically non-broadcasting of 0-d arrays with particular exception types. None of these are stated in the issue, so reasonable alternatives could fail.",
+    "overspecification_vector": "with pytest.raises(KeyError):\n    DataArray(np.array(1), coords={\"x\": np.arange(10)}, dims=[\"x\"])\nwith raises_regex(ValueError, \"does not match the 0 dim\"):\n    DataArray(np.array(1), coords=[(\"x\", np.arange(10))]); actual = DataArray(coords=[(\"x\", np.arange(10)), (\"y\", [\"a\", \"b\"])]) expecting NaN fill; DataArray(0, dims=[\"w\",\"x\",\"y\"], coords={x,y}) expecting w of size 1"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7tUWWLBmS35wKZa4v",
+  "input_tokens": 1678,
+  "output_tokens": 1819,
+  "seconds": 18.7
+}

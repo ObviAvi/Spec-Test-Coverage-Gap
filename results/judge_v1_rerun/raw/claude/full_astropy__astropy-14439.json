@@ -1,0 +1,19 @@
+{
+  "task_id": "full/astropy__astropy-14439",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13415,
+  "output": {
+    "reasoning": "1. The spec says `(u.Jy/u.beam).to_string('FITS')` gives 'beam-1 Jy'. Users expect 'Jy/beam', or at least the positive-power unit first. It names `to_string` with the FITS format and describes only that symptom. It says nothing about how other units should be ordered.\n2. The graded tests require exact orderings across many formats:\n   - generic: 'erg / (Angstrom s cm2)'\n   - fits: 'erg Angstrom-1 s-1 cm-2'\n   - vounit: 'erg.Angstrom**-1.s**-1.cm**-2'\n   - ogip: '10 erg / (nm s cm**2)'\n   - generic with fraction=False: 'erg s-1 cm-2'\n   - test_multiple_solidus: 'm(5/2) kg(3/10) / s'\n   - test_nddata_str: '[1 2 3] erg / (A s cm2)'\n   These match a stable sort by power, descending. Positive powers come first, larger exponents earlier, and ties keep composition order. It is not alphabetical.\n3. Putting positive powers before negative ones is reasonably implied by the issue. The ordering within the same sign, and the swap of m(5/2) ahead of kg(3/10), are open. The spec never addresses them.\n4. Two reasonable correct fixes fail:\n   - Put positive powers first and keep alphabetical order within each group. FITS would give 'Jy beam-1', which solves the issue. The flux example would then be 'erg Angstrom-1 cm-2 s-1', not 'erg Angstrom-1 s-1 cm-2'. Generic would still give 'erg / (Angstrom cm2 s)', and vounit would give 'kg(3/10) m(5/2) / s'. Several graded asserts fail.\n   - Make the FITS formatter emit a solidus ('Jy/beam'). This fails the FITS string asserts outright.\n   The tests pin one particular sorting scheme among several valid ones. This is observable output, not internals, so it is a 3.",
+    "score": 3,
+    "explanation": "The tests pin a specific sort order (stable sort by descending power, e.g. 'erg Angstrom-1 s-1 cm-2', 'erg / (Angstrom s cm2)', 'm(5/2) kg(3/10) / s'). A fix that puts positive powers first but keeps alphabetical order within each sign group fixes 'Jy beam-1' yet fails these asserts.",
+    "overspecification_vector": "test_format_styles expected strings ('erg / (Angstrom s cm2)', 'erg Angstrom-1 s-1 cm-2', 'erg.Angstrom**-1.s**-1.cm**-2', '10 erg / (nm s cm**2)'); test_fits_scale_factor ' erg Angstrom-1 s-1 cm-2'; test_vounit_details; test_multiple_solidus 'm(5/2) kg(3/10) / s'; test_nddata_str '[1 2 3] erg / (A s cm2)'; non_default_fraction 'erg s-1 cm-2'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut8EP6Ee25n2Ux9ouiY",
+  "input_tokens": 5846,
+  "output_tokens": 1566,
+  "seconds": 14.8
+}

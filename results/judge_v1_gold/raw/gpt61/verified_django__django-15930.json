@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15930",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9826,
+  "output": {
+    "reasoning": "The specification identifies Case/When with ~Q(pk__in=[]) as the failing entry point and states that all rows should match the condition. The test uses the same Case, When, Q, Value, and annotate operations. It requires evaluation without a SQL error, preservation of the row count, and every object's selected annotation to equal the then-value. Matching every row is settled by \"annotate all rows with the value True since they all match\"; preserving rows follows from annotation semantics. Using string results (\"selected\" and \"not selected\") instead of booleans, a test model, and the annotation name selected are ordinary related inputs, not implementation requirements. Selecting the then-value when the condition matches is standard Case/When behavior. No requirement remains open: a fix restricted to the literal boolean example would leave the same bug on closely related inputs and would not count as a reasonable correct fix.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix passes: the assertion that all annotations equal \"selected\" checks the specified always-matching condition, using string results rather than the example's booleans.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2236,
+  "output_tokens": 561,
+  "seconds": 18.6
+}

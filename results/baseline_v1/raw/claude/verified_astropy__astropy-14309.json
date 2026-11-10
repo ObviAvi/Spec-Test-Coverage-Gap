@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-14309",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 6602,
+  "output": {
+    "reasoning": "The test calls connect.is_fits(\"\", \"foo.bar\", None) with no extra args and asserts a falsy result. Any reasonable fix will satisfy this: returning False/None when the filepath is not a FITS name, or guarding args[0] with a length check. The fix site is the is_fits function, which appears in the traceback, so it is clear where the change belongs. A fix made only in the registry's identify_format, such as catching the IndexError there, would not pass a direct call to is_fits. However, the traceback points directly at is_fits, and fixing the identifier itself is the natural correct fix. Other identifiers would have similar issues, so patching the registry alone would be an unusual approach. The assertion is `not`, so it accepts either None or False.",
+    "score": 1,
+    "explanation": "The test calls is_fits directly with no extra args and checks for a falsy result, which is exactly the crashing case named in the issue.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusy1Vw9PucVKwg4J1ca",
+  "input_tokens": 3012,
+  "output_tokens": 319,
+  "seconds": 4.5
+}

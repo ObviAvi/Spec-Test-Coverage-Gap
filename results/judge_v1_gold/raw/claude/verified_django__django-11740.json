@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11740",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12746,
+  "output": {
+    "reasoning": "The specification says that when an existing non-FK field is changed to a ForeignKey pointing at a model in another app, the autodetector creates an AlterField migration with no dependency on that other app. It expects the migration to depend on the other app. The symptom is in makemigrations, which runs through the autodetector.\n\nThe test calls the standard autodetector harness, `get_changes`, and asserts three things:\n1. There is one migration for `otherapp`. This matches existing behaviour.\n2. Its operations are exactly `['AlterField']`. This also matches existing behaviour; the report itself says a new migration was created.\n3. Its dependencies are `[('testapp', '__first__')]`.\n\nThe third assertion is the only one in question. It is settled by convention. The existing `test_fk_dependency_other_app` asserts the same `('testapp', '__first__')` form for a FK to an unmigrated other app, and that form comes from the existing helper `_get_dependencies_for_foreign_key`.\n\nCould a reasonable fix produce something else?\n- A fix that pointed the dependency at the last migration would still go through the autodetector's standard resolution. With no migration graph, that yields `__first__`.\n- A fix that converted AlterField into RemoveField plus AddField would be unreasonable and would also break existing tests.\n- Exact list equality is not a concern: the only dependency that should appear is the one on the other app.\n\nThe test uses the natural entry point and checks the behaviour the specification asks for, following an existing pattern.",
+    "score": 2,
+    "explanation": "The test asserts only that the AlterField migration depends on the other app via the standard autodetector dependency resolution, which is exactly what the issue requests and mirrors the existing test_fk_dependency_other_app pattern.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut66cTRqpM2FjkNMiZg",
+  "input_tokens": 4692,
+  "output_tokens": 614,
+  "seconds": 7.8
+}

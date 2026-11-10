@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-15869",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3463,
+  "output": {
+    "reasoning": "The issue only says to deprecate the length_is filter in favor of length used with {% if %}. The test checks two things.\n\n1. **Warning class:** it expects RemovedInDjango51Warning. A Django contributor could reasonably infer this from the deprecation policy and the current development cycle.\n2. **Message text:** it uses assertRaisesMessage, which requires the warning to contain this text: \"The length_is template filter is deprecated in favor of the length template filter and the == operator within an {% if %} tag.\" That wording is never given in the issue.\n\nA correct deprecation with a different but equally clear message (e.g., \"length_is is deprecated; use length instead\") would fail. The message loosely paraphrases the issue's intent, but the exact phrase with \"== operator within an {% if %} tag\" is unlikely to be reproduced verbatim. So valid implementations would be rejected for wording alone, which is overspecification. The behavior itself (emit a deprecation warning) is clearly specified, so this is mild rather than severe.",
+    "score": 3,
+    "explanation": "The test requires an exact deprecation message string that the issue never specifies, so a valid deprecation with different wording would fail.",
+    "overspecification_vector": "msg = (\"The length_is template filter is deprecated in favor of the length \" \"template filter and the == operator within an {% if %} tag.\")\nwith self.assertRaisesMessage(RemovedInDjango51Warning, msg):"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut73FpeFNpFgvvbHarh",
+  "input_tokens": 1675,
+  "output_tokens": 740,
+  "seconds": 7.8
+}

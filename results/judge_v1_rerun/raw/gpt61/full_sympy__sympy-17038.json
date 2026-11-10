@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-17038",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11310,
+  "output": {
+    "reasoning": "The specification identifies incorrect floor-square-root results from sympy.core.power.isqrt, particularly when floating-point sqrt rounds upward. It gives two exact regressions and discusses possible remedies without mandating an implementation.\n\nThe tests require: (1) the two reported answers, 67108864 and 99999999—directly settled by the examples; (2) correct results around 4503599761588224, including half-integer arguments—reasonable boundary coverage, with fractional inputs already present in the existing tests; (3) ValueError for negative integers and rationals—conventional handling of the square-root domain; and (4) exact results for positive rationals extremely close to integer or square boundaries—reasonable extensions of the existing fractional-input behavior and the function's floor-square-root semantics.\n\nThe additional requirement is that sympy.core.power retain a readable `_sqrt` attribute so the test can save and replace it, and that isqrt remain correct when that attribute returns 2.999999999 for both 9 and 10000. The specification discusses inaccurate sqrt implementations, but does not require preserving this internal alias or tolerating arbitrarily large errors in it. Although `_sqrt` is mentioned when explaining the existing implementation, its continued existence is not an interface requirement.\n\nA reasonable fix could validate nonnegativity and use integer_nthroot(int(n), 2)[0] for all inputs, removing the now-unneeded `_sqrt` import. This gives every requested mathematical result, including the fractional cases, but fails at `old_sqrt = power._sqrt` before the mock assertions run. Thus the tests impose an internal implementation dependency on an otherwise correct fix.",
+    "score": 4,
+    "explanation": "An exact integer-only fix could remove the unused `_sqrt` alias while correctly handling every tested input. The test would nevertheless fail when it reads `power._sqrt` to install its mock, requiring preservation of an internal implementation detail.",
+    "overspecification_vector": "old_sqrt = power._sqrt\npower._sqrt = lambda x: 2.999999999\ntry:\n    assert isqrt(9) == 3\n    assert isqrt(10000) == 100\nfinally:\n    power._sqrt = old_sqrt"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2889,
+  "output_tokens": 1798,
+  "seconds": 48.4
+}

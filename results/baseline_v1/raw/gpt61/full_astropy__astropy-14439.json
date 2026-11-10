@@ -1,0 +1,18 @@
+{
+  "task_id": "full/astropy__astropy-14439",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 7266,
+  "output": {
+    "reasoning": "The issue concerns FITS serialization of Jy/beam, not a library-wide change to unit ordering. A correct fix could produce the requested FITS representation while retaining existing formatting for other units and formats. These tests would reject that fix because they require exact reordered strings in generic, OGIP, VOUnit, and FITS output, as well as NDData display and fractional-power units. In particular, requiring 'Angstrom s cm2' instead of 'Angstrom cm2 s', or 'm(5/2) kg(3/10)' instead of 'kg(3/10) m(5/2)', is unrelated to the reported problem.",
+    "score": 4,
+    "explanation": "The tests mandate broad, exact unit-ordering changes that the Jy/beam FITS issue does not specify. A targeted fix satisfying the request would fail these assertions despite preserving valid existing behavior elsewhere.",
+    "overspecification_vector": "astropy/nddata/tests/test_nddata.py::test_nddata_str: assert str(arr) == \"[1 2 3] erg / (A s cm2)\"; astropy/units/tests/test_format.py::test_format_styles: changed expected strings for generic, s, >25s, ogip, fits, and vounit; test_format_styles_non_default_fraction: (\"generic\", False, \"erg s-1 cm-2\", ...); test_vounit_details: assert x == \"erg.Angstrom**-1.s**-1.cm**-2\"; test_fits_scale_factor: both assertions requiring string + \" erg Angstrom-1 s-1 cm-2\"; astropy/units/tests/test_units.py::test_multiple_solidus: assert x.to_string() == \"m(5/2) kg(3/10) / s\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2448,
+  "output_tokens": 741,
+  "seconds": 18.5
+}

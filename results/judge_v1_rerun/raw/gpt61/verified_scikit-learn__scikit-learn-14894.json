@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14894",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9559,
+  "output": {
+    "reasoning": "The specification identifies a division-by-zero during sparse SVR fitting when support_vectors_ is empty, and explicitly expects: \"No error is thrown\" and \"self.dual_coef_ = sp.csr_matrix([])\". The test constructs the same CSR training matrix and target values, then calls SVR(kernel='linear').fit using defaults for the other parameters. This exercises the same reported empty-support condition, not a different feature or code path. Successful completion of fit is directly specified. The assertion that support_vectors_.data.size is zero confirms the empty-support scenario described in the issue. The assertion that dual_coef_.data.size is zero directly matches the requested empty CSR dual coefficients. The test imposes no additional shape, message, implementation, or helper-method requirements. There are no open requirements for which a reasonable correct fix would fail.",
+    "score": 1,
+    "explanation": "The test directly reproduces the reported sparse empty-support case and checks the specified outcomes: fitting succeeds and the dual coefficients contain no stored data.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2406,
+  "output_tokens": 818,
+  "seconds": 25.4
+}

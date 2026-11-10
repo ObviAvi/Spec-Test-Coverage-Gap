@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15240",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 18552,
+  "output": {
+    "reasoning": "1. The specification requests removing obsolete django_migrations records while protecting records referenced by surviving migrations' replaces lists. It explicitly permits automatic cleanup ('when executor runs, or inside the migrate mcommand') or a separate manual command; it specifies no flag, command name, app-label restriction, or output text.\n2. The graded tests require call_command('migrate', ..., prune=True), using MIGRATION_MODULES fixtures and MigrationRecorder to set up and inspect records. They require deletion of two nonexistent migrations while retaining the existing squashed migration; exact pruning output in a particular order; a specific warning when deleted migrations remain in a replaces list; exact no-work output and silence at verbosity=0; and CommandError with an exact message when no app is supplied.\n3. Removing obsolete records and preserving the existing squashed record are settled by 'includes only migrations that actually exist.' Protecting replaced records is settled by 'not removing migrations mentioned in replaces lists.' MigrationRecorder and MIGRATION_MODULES are existing infrastructure used to exercise this behavior. Respecting verbosity=0 follows a normal command convention. However, introducing migrate's prune option, requiring an app label, refusing cleanup rather than skipping protected records, and all exact output wording are open choices.\n4. A reasonable correct fix could automatically prune obsolete records during migration execution, excluding every key referenced by replaces. It would satisfy the requested behavior and safeguard but fail because it never introduces the prune option. A separate cleanup command is also expressly permitted and would fail these tests. Even an implementation using migrate --prune could reasonably clean all apps when no label is supplied, or silently preserve replaced records rather than emit the required refusal message.\n5. The strongest mismatch is dependence on an unspecified newly introduced option, so the score is 4; the exact messages additionally impose externally observable choices warranting 3 on their own.",
+    "score": 4,
+    "explanation": "The tests require a new migrate --prune interface that the specification never selects. A correct automatic cleanup implementation, or the explicitly permitted separate management command, would fail these calls despite removing obsolete records safely; the tests also impose an unspecified app-label restriction and exact messages.",
+    "overspecification_vector": "call_command('migrate', 'migrations', prune=True, stdout=out, no_color=True); call_command('migrate', prune=True); self.assertRaisesMessage(CommandError, 'Migrations can be pruned only when an app is specified.'); exact stdout assertions requiring 'Pruning migrations:\\n  Pruning migrations.0001_initial OK\\n  Pruning migrations.0002_second OK\\n', 'Pruning migrations:\\n  No migrations to prune.\\n', and the warning beginning '  Cannot use --prune because the following squashed migrations have their \\'replaces\\' attributes and may not be recorded as applied:'."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4175,
+  "output_tokens": 1118,
+  "seconds": 30.6
+}

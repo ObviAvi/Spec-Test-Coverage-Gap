@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-16661",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11427,
+  "output": {
+    "reasoning": "1. The specification identifies ModelAdmin.lookup_allowed() and explicitly requires lookup_allowed('restaurant__place__country', 'test_value') to return True when that path is in list_filter. It attributes the failure to treating a relational primary key as a concrete-inheritance parent. 2. The graded test reproduces the same Country, Place, Restaurant, and Waiter models, including Restaurant.place as a OneToOneField(primary_key=True), and asserts True for three lookups. 3. The model definitions, entry point, original list_filter path, and boolean result are directly settled by the reproduction. Changing the value to '1' is a related input, not an arbitrary required output. Adding 'restaurant__place__country__name' to list_filter and requiring that lookup to succeed is the same reported traversal bug with an explicitly permitted terminal field. Accepting 'restaurant__place__country__id__exact' follows standard Django lookup semantics: it expresses exact matching on the related object's primary key for the already permitted country filter. 4. These additions introduce no open implementation choices, private APIs, messages, or internal-state assertions. A fix that still misclassifies the relational primary key on these closely related traversals would leave the reported bug incompletely resolved; rejecting the ordinary id/exact spelling would also break expected filter normalization. No reasonable correct alternative is excluded.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should allow the explicitly listed restaurant__place__country path and its closely related, conventionally equivalent id__exact lookup, as well as the explicitly listed country__name traversal.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2552,
+  "output_tokens": 691,
+  "seconds": 19.9
+}

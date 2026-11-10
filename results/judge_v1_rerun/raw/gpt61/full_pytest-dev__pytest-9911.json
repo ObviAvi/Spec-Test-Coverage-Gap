@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pytest-dev__pytest-9911",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9369,
+  "output": {
+    "reasoning": "1. The specification asks for explicit rejection of empty tuples with a helpful error in pytest.raises(), and mentions handling None similarly \"for bonus points.\" It also discusses warns() and xfail(), which these graded tests do not exercise.\n2. Both tests call the public pytest.raises() function using expected_exception, with either () or None. They require an immediate ValueError whose message matches \"Expected an exception type or\". No mocks, private APIs, or implementation details are involved.\n3. The entry point and inputs are explicitly covered by the specification. Immediate argument validation reasonably follows from requesting an explicit input check. However, neither ValueError specifically nor the required message fragment is settled by the specification. Its suggested messages instead begin \"Passing `expected_exception=()` is an error\" and the corresponding None wording.\n4. A reasonable fix could immediately raise ValueError for both inputs using the specification's suggested explanatory messages. It would resolve the reported problem but fail both regex assertions. TypeError would also be a plausible choice for an invalid expected-exception argument, rather than the tests' required ValueError.\n5. The tests therefore constrain public error behavior to one choice among reasonable alternatives, warranting score 3.",
+    "score": 3,
+    "explanation": "A correct fix could reject both () and None with ValueError and the specification's suggested helpful messages, yet fail because those messages do not contain \"Expected an exception type or\". The tests also require ValueError although the specification does not prescribe an exception class.",
+    "overspecification_vector": "Both added occurrences of: with pytest.raises(ValueError, match=\"Expected an exception type or\"):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2133,
+  "output_tokens": 1165,
+  "seconds": 29.9
+}

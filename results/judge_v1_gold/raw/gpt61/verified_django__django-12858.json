@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-12858",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9609,
+  "output": {
+    "reasoning": "1. The specification identifies a false models.E015 error when model ordering uses a lookup that is not a transform, demonstrated by a terminal '__isnull' lookup in a related-field path during './manage.py check'.\n2. The graded test defines a minimal model with a CharField(max_length=100), sets Meta.ordering = ('test__isnull',), and asserts Model.check() == []. It requires no new names, helpers, mocks, or exact diagnostic text.\n3. Accepting 'isnull' in ordering is settled by the reported bug. Using it directly on a CharField rather than after foreign-key traversal is a closely related input reasonably covered by the issue's general description. Calling Model.check() is the conventional model-validation interface underlying the reported system check. Expecting an empty error list follows from the otherwise valid minimal model.\n4. There is no open behavioral choice that a reasonable correct fix would need to make differently. A fix restricted to foreign-key paths would leave the same non-transform-lookup validation bug on ordinary fields and would not adequately address closely related inputs.\n5. The test is a straightforward generalization of the reproduction rather than an implementation constraint.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should make Model.check() return [] for ordering = ('test__isnull',), a direct-field instance of the non-transform lookup ordering that the specification says must be accepted.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2181,
+  "output_tokens": 531,
+  "seconds": 13.8
+}

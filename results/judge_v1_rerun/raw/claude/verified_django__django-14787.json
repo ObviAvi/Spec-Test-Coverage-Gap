@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14787",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8711,
+  "output": {
+    "reasoning": "1. The spec says method_decorator passes a functools.partial to the decorator. That partial lacks __name__, __module__ and similar attributes, so a decorator that reads func.__name__ fails. The fix must make the passed function carry the wrapper assignments.\n\n2. What the test requires:\n- Using method_decorator with a decorator that uses @wraps, calling the method must not error.\n- Inside the decorator, func.__name__ must equal 'method'.\n- func.__module__ must not be None.\n\n3. How each requirement is settled:\n- Preserving __name__ and __module__ is settled by the spec text: \"does not have any of the attributes expected from a function i.e. __name__, __module__\".\n- The name being the original method's name is the only reasonable value; preserving wrapper assignments means copying them from the original method.\n- __module__ being non-None follows naturally from the same preservation.\n\n4. Possible alternatives: a fix could use update_wrapper(partial(...), method) or a wrapped def with @wraps(method). Either way both attributes match the method's. No reasonable fix would set __name__ to anything other than the method name. The test mirrors the issue's reproduction almost verbatim.",
+    "score": 1,
+    "explanation": "The test reproduces the issue's example: a @wraps decorator reading func.__name__ and func.__module__ through method_decorator, asserting the name is 'method' and the module is not None. Any fix that preserves the wrapper assignments passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut4SLKRaJQy2s7m7X4f",
+  "input_tokens": 3170,
+  "output_tokens": 514,
+  "seconds": 6.7
+}

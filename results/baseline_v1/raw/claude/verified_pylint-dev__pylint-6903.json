@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pylint-dev__pylint-6903",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5557,
+  "output": {
+    "reasoning": "The test simulates the cgroup values from the issue (quota -1, shares 2) and checks that `Run` with `--jobs=0` exits cleanly instead of crashing.\n\nIt does this by patching `builtins.open` and `pylint.lint.run.Path`, which ties it to how the existing `_query_cpu` reads those files. Both are pre-existing pieces of the module, and the fix the issue suggests (`or 1`, or any clamp to at least 1) would not touch them.\n\nAny reasonable placement of the clamp would pass:\n- inside `_query_cpu`\n- in `_cpu_count`\n- where `jobs` is set\n\nThe test checks behavior, not a specific code path or message. The only theoretical risk is a fix that rewrites how the cgroup files are read, for example with `os.path` or `Path.read_text`, which could bypass the mocks. That is an unusual way to fix this bug.",
+    "score": 2,
+    "explanation": "The test checks the behavior the issue asks for (no crash with a fractional CPU result), and the issue's own suggested fix passes it. Its only coupling is mocking the existing `open` and `Path` used for reading the cgroup files, which a sensible fix would leave alone.",
+    "overspecification_vector": "with patch(\"builtins.open\", _mock_open):\n    with patch(\"pylint.lint.run.Path\", _mock_path):"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut34AnXtM16SzrZKDHY",
+  "input_tokens": 2765,
+  "output_tokens": 930,
+  "seconds": 10.2
+}

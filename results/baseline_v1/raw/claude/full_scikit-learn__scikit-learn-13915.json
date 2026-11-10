@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13915",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 15662,
+  "output": {
+    "reasoning": "The issue concerns `min_max_axis` raising a TypeError for CSC matrices with int64 `indptr` on 32-bit Windows. The obvious fix is to cast the indices in `_minor_reduce` so `ufunc.reduceat` works.\n\nNone of the graded FAIL_TO_PASS tests exercise that behaviour:\n- `test_euclidean_distances_upcast` and `test_euclidean_distances_upcast_sym` import and test the private function `_euclidean_distances_upcast`. They check its batch handling when Y != X and when X is Y (issue #13910).\n- `test_one_hot_encoder_feature_names_drop` checks that `OneHotEncoder.get_feature_names()` handles the `drop` parameter. It expects specific names such as `['x0_c', 'x2_b']`.\n\nBoth are separate bug fixes bundled into the same commit; they are not described in the issue. The test that does relate to the issue (`test_min_max` with `large_indices`) is not graded, presumably because it already passes on 64-bit platforms.\n\nA developer who correctly fixes `min_max_axis` would fail every graded test. The tests check behaviour the specification never mentions, so they would reject any solution that only addresses the stated issue.",
+    "score": 4,
+    "explanation": "The graded tests cover euclidean-distance batching and OneHotEncoder feature names with `drop`, neither of which appears in the min_max_axis/int64 indptr issue. A correct fix for the stated problem would fail all of them.",
+    "overspecification_vector": "test_euclidean_distances_upcast (all parametrizations) and test_euclidean_distances_upcast_sym, which import and test the private `_euclidean_distances_upcast` batch handling (issue #13910); test_one_hot_encoder_feature_names_drop, which asserts `ohe.get_feature_names()` returns `['x0_c', 'x2_b']` / `['x0_b', 'x2_a']` with `drop` set. All are unrelated to the min_max_axis issue."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutAX5jhqf4jmKbntzuS",
+  "input_tokens": 7709,
+  "output_tokens": 874,
+  "seconds": 8.6
+}

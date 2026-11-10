@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7236",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10897,
+  "output": {
+    "reasoning": "1. The spec says that with --pdb, a unittest.TestCase test decorated with @unittest.skip has its tearDown executed, causing an error. The expected behavior is that the test is simply skipped, as it is without --pdb. The repro also has setUp raising, and setUp was not executed.\n2. The graded test (the @unittest.skip parametrization only) builds a TestCase whose setUp and tearDown append to a list, with test_1 skipped via @unittest.skip. It runs `--pdb` and requires:\n   - the output matches \"* 1 skipped in *\";\n   - the tracking list is empty, meaning neither setUp nor tearDown ran.\n3. Each requirement is settled:\n   - \"1 skipped\": settled by \"I would have expected the test to be skipped, even with `--pdb`\" and by the non-pdb output \"1 skipped in 0.02s\". This is standard pytest summary formatting.\n   - tearDown not called: settled by the title \"tearDown executed on skipped tests when running --pdb\".\n   - setUp not called: settled by the repro, where setUp contains `xxx` and is not executed. unittest itself never calls setUp for skip-decorated tests, so any fix that leaves pytest's normal skip flow intact satisfies this.\n4. A fix might check whether the test is skipped before deferring or replacing tearDown, or restore the deferred tearDown handling. Either way it produces the same observable result: the test is skipped and no hooks run. There are no private names, messages, or internal state checks beyond the user-visible outcome.",
+    "score": 1,
+    "explanation": "The graded test is essentially the issue's reproduction: running a @unittest.skip test with --pdb must report '1 skipped' and must not run setUp or tearDown, which is exactly the expected behavior stated.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgusxPZxawmN82yDtLYpr",
+  "input_tokens": 4260,
+  "output_tokens": 1065,
+  "seconds": 11.6
+}

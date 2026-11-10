@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-15930",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8552,
+  "output": {
+    "reasoning": "The specification identifies Case(When(~Q(pk__in=[]), ...)) as the failing expression and explicitly expects all rows to match the condition. The test uses the same public entry point, objects.annotate(), and the same Case, When, Q, and Value expressions. Its row-count assertion is settled by the expectation to annotate all rows. Its assertion that every selected value equals the then value is settled by the stated expectation that all rows match. Using CaseTestModel, the alias selected, and string results instead of Boolean results is a related-input variation: normal Case semantics require returning the supplied then value, and the adjacent existing test already demonstrates string-valued annotations. Omitting ordering and an explicit output_field introduces no arbitrary requirement. No open detail rejects a reasonable correct fix; a Boolean-only workaround would leave the same bug in closely related inputs.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix must preserve all rows and return the then value for the always-true condition; the test merely checks that behavior with string-valued branches.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1957,
+  "output_tokens": 694,
+  "seconds": 21.0
+}

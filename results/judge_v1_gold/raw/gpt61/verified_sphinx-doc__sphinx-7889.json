@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7889",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10140,
+  "output": {
+    "reasoning": "1. The specification reports that autodoc mocking fails when generic classes involve a TypeVar: mock._make_subclass attempts to concatenate a str with a TypeVar. The required outcome is that documentation can still build with generics.\n2. The added test creates T = TypeVar('T'), defines SubClass2(mock.SomeClass[T]) with a docstring, instantiates it, and checks that its docstring is preserved and its instance is an instance of SubClass2.\n3. Supporting TypeVar subscription during mocked-base subclassing follows from the reported bug. Preserving an explicitly supplied class docstring and ordinary subclass instantiation follows Python conventions and the existing test's non-parameterized subclassing pattern. The particular TypeVar and docstring strings are inputs, not mandated generated values.\n4. The synthetic example reasonably isolates the reported failure. It does not require string conversion, a particular generated mock name, or a direct call to _make_subclass. No reasonable correct fix would need to violate these assertions.",
+    "score": 2,
+    "explanation": "The test reasonably reproduces generic mocked-base subclassing and checks ordinary class behavior; every reasonable fix should allow SubClass2(mock.SomeClass[T]) to be defined and instantiated while preserving its supplied docstring.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2445,
+  "output_tokens": 706,
+  "seconds": 18.7
+}

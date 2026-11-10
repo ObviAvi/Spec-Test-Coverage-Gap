@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15525",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 15624,
+  "output": {
+    "reasoning": "Spec: loaddata with --database other fails when a model's natural_key() follows a foreign key, because the temporary instance built in build_instance looks up the related object on the default database. Entry point named: loaddata / build_instance (traceback).\n\nTest requirements:\n- New test models and fixture (NaturalKeyWithFKDependency, nk_with_foreign_key.json) are supplied by the test patch itself. Settled.\n- call_command('loaddata', ..., database='other') succeeds. This is the reported scenario. Settled.\n- The object exists on 'other' with the correct name and author name. This is the natural outcome. Settled.\n- The sqlite test_features change is not graded. It is irrelevant.\n\nAny reasonable fix will pass. Examples: set obj._state.db = db, use a router or using context, or catch the exception. Each makes loaddata succeed on the other DB, and the assertions are plain observable outcomes. There are no exact messages and no internal state checks.",
+    "score": 1,
+    "explanation": "The graded test runs loaddata with database='other' on a fixture that mirrors the issue's Book/Author example, then checks that the loaded object and its author exist. Any fix that resolves the reported failure passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut14qQiUfXKRSiiszPw",
+  "input_tokens": 6183,
+  "output_tokens": 428,
+  "seconds": 6.0
+}

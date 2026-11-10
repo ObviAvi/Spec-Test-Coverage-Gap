@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11749",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11457,
+  "output": {
+    "reasoning": "1. The specification identifies call_command() as the entry point: keyword arguments belonging to a required mutually exclusive group incorrectly fail required-group validation. It explicitly demonstrates shop_id=1 and describes both members of the group.\n2. The graded test requires call_command() to accept either foo_id=1 or foo_name='foo', deliver the supplied option to the command (observed through its output), and still raise CommandError with 'Error: one of the arguments --foo-id --foo-name is required' when neither member is supplied. It uses a command fixture and StringIO, with no mocks or required implementation helpers.\n3. Acceptance of either keyword is settled by the reported problem and closely related inputs. Delivery of the supplied option follows the existing call_command keyword-argument contract. Rejecting an invocation with neither option follows group.required=True. The exception type and diagnostic preserve the existing parser behavior illustrated by the specification's CommandError, with the fixture's declared option names substituted.\n4. There are no open implementation requirements. The output checks do not prescribe how group validation is fixed, and the missing-option check is a basic regression check of existing behavior. No reasonable correct alternative needs to violate these assertions.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should accept either required-group member through kwargs while preserving the existing CommandError when neither is provided; the tests cover the reported behavior and a straightforward regression case.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2601,
+  "output_tokens": 740,
+  "seconds": 21.8
+}

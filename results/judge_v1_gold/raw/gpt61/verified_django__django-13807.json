@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13807",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12401,
+  "output": {
+    "reasoning": "The specification identifies reserved table names and explicitly names check_constraints(), PRAGMA foreign_key_check, and PRAGMA foreign_key_list. Calling connection.check_constraints(table_names=['order']) is therefore settled. Creating an invalid foreign key and expecting IntegrityError follows the existing purpose of constraint checking; the transaction setup and orphan value 30 impose no arbitrary implementation requirement. However, the test also gives the primary-key and foreign-key columns reserved names, 'select' and 'where'. Those are open: the report concerns table-name quoting, not column-name quoting. A reasonable fix could quote table identifiers in both PRAGMAs and the violation-reporting SELECT, resolving the reported failure for reserved table names while leaving ordinary column identifiers unchanged. That fix would fail this test because its diagnostic SELECT encounters the reserved column names and raises OperationalError rather than IntegrityError. This is an extra observable-behavior requirement within the specified function, not an implementation-detail assertion.",
+    "score": 3,
+    "explanation": "A reasonable fix that quotes table names throughout check_constraints() would resolve the reported table-name bug but still fail this test. The test additionally requires support for reserved column names, because its violation-reporting query must handle columns named 'select' and 'where' before raising IntegrityError.",
+    "overspecification_vector": "id = models.AutoField(primary_key=True, db_column='select')\nreporter = models.ForeignKey(Reporter, models.CASCADE, db_column='where')\nwith self.assertRaises(IntegrityError):\n    connection.check_constraints(table_names=['order'])"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2778,
+  "output_tokens": 1829,
+  "seconds": 45.6
+}

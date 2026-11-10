@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13536",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 2833,
+  "output": {
+    "reasoning": "The test calls `pytest.raises(ValueError, match=\"Pipeline.fit does not accept the sample_weight parameter\")`, so it requires that exact phrase to appear in the error message. The issue only asks for a friendlier message that explicitly describes the correct format for passing sample_weight to a step. A correct fix could raise ValueError with a message like \"Invalid parameter sample_weight. To pass sample_weight to a step, use stepname__sample_weight\" and it would fail this test.\n\nThe exception type, ValueError, is reasonable to expect because the original code already raised one. The problem is the message text. No developer could infer \"Pipeline.fit does not accept the sample_weight parameter\" from the issue. That phrasing is natural enough that some developers might produce something close, but matching it verbatim is unlikely. Many valid fixes would therefore fail.\n\nThis is a classic case of matching an exact error-message string that the spec never specifies. It sits between 3 and 4. A large share of reasonable fixes would fail the regex, so I score it 4.",
+    "score": 4,
+    "explanation": "The test requires the exact phrase \"Pipeline.fit does not accept the sample_weight parameter\" in the error message, which the issue never specifies, so most reasonable friendlier messages would fail.",
+    "overspecification_vector": "with pytest.raises(ValueError, match=\"Pipeline.fit does not accept \"\n                                         \"the sample_weight parameter\"):"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutARg41L68onffbxmSQ",
+  "input_tokens": 1524,
+  "output_tokens": 501,
+  "seconds": 6.1
+}

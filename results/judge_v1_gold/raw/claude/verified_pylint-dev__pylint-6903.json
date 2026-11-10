@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pylint-dev__pylint-6903",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12677,
+  "output": {
+    "reasoning": "1. The spec says `_query_cpu()` returns 0 when cpu.cfs_quota_us = -1 and cpu.shares = 2, because int(2/1024) == 0. With `--jobs=0` this makes multiprocessing.Pool crash. Expected: \"The calculated number should never be 0\" and pylint should not crash.\n\n2. What the test requires:\n- It calls `Run([file, '--jobs=0'], reporter=Reporter())`, the public entry point.\n- It patches `builtins.open` so the cgroup files return quota -1 and shares 2. These are the values given in the issue.\n- It patches `pylint.lint.run.Path` so the cpu.shares file appears to exist.\n- It asserts SystemExit with code 0.\n\n3. Settlement of each requirement:\n- Entry point and inputs: settled. They reproduce the issue's command (`--jobs 0`) and its exact file values.\n- Exit code 0: settled by \"I expect pylint to not crash.\"\n- Mocks of `open` and `Path`: settled by existing code. `_query_cpu` already reads these files through `Path(...).is_file()` and `open`; the fix does not introduce them.\n\n4. Alternative fixes all pass, because the test only checks end-to-end behaviour:\n- adding `or 1` in `_query_cpu`;\n- clamping to `max(1, ...)` in `_cpu_count`;\n- clamping the jobs value in the linter;\n- returning None so the code falls back to os.cpu_count.\n\nOnly a fix that rewrote the file-reading mechanism (e.g. switching to os.path) could dodge the mocks. That would be an unnecessary refactor, not a reasonable fix for this issue.",
+    "score": 2,
+    "explanation": "The graded test replays the issue's exact scenario (quota -1, shares 2, --jobs=0) through the public `Run` entry point and only asserts a clean exit, so any fix that keeps the worker count at 1 or more passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut5vxmxyWDZaHtD6MqT",
+  "input_tokens": 5059,
+  "output_tokens": 1172,
+  "seconds": 12.3
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14983",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10577,
+  "output": {
+    "reasoning": "The issue identifies repr() on RepeatedKFold and RepeatedStratifiedKFold as broken and explicitly shows parameter-bearing representations, with n_splits before n_repeats. The graded tests instantiate both named classes with n_splits=2 and n_repeats=6, call repr(), and require the exact string '<ClassName>(n_repeats=6, n_splits=2, random_state=None)'. The classes, entry point, parameter names, class names, and inclusion of random_state=None are settled by the examples. Using nondefault split and repeat counts is a reasonable related-input check: a correct representation should reflect those values. However, requiring n_repeats before n_splits is not settled by the specification; it reverses the displayed expected order. A reasonable fix could follow the specification's order for all parameter values, returning 'RepeatedKFold(n_splits=2, n_repeats=6, random_state=None)' and the corresponding stratified representation. That correct fix would fail the exact-string assertions. This is an externally observable formatting restriction, not an implementation-internal requirement.",
+    "score": 3,
+    "explanation": "A reasonable fix that preserves the specification's displayed order, n_splits before n_repeats, would fail both tests. The tests instead require n_repeats before n_splits through exact string equality.",
+    "overspecification_vector": "repeated_cv_repr = ('{}(n_repeats=6, n_splits=2, random_state=None)'.format(repeated_cv.__class__.__name__)); assert repeated_cv_repr == repr(repeated_cv)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2607,
+  "output_tokens": 490,
+  "seconds": 10.6
+}

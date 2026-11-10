@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-13199",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 15337,
+  "output": {
+    "reasoning": "1. The specification says `HttpResponseBase.delete_cookie()` emits a Set-Cookie header without SameSite. In the reported case, the messages app deletes its cookie and Firefox warns about it. The title asks that delete_cookie \"preserve cookie's samesite\". The reporter's experimental patch reuses the session settings (secure, httponly, samesite) but says \"Definitely wouldn't want to use the session cookie settings for everything\".\n\n2. What the graded tests require:\n   (a) `response.delete_cookie('c', samesite='lax')` sets `cookies['c']['samesite']` to 'lax'.\n   (b) The messages cookie storage deletion sets samesite to `SESSION_COOKIE_SAMESITE`.\n   (c) The session middleware deletion produces exactly `sessionid=\"\"; expires=...; Max-Age=0; Path=/; SameSite=Lax`, with no HttpOnly and no Secure.\n   (d) The same exact string with a custom domain and path.\n\n3. Settledness:\n   (a) A `samesite` keyword is strongly suggested by convention, since `set_cookie` already uses that name and the title asks delete_cookie to handle samesite. This is mostly settled.\n   (b) Settled. The messages app is the reported case, and the reporter copied the messages kwargs, which use `SESSION_COOKIE_SAMESITE`.\n   (c, d) Open in two ways.\n   - The session middleware is never mentioned. A developer could reasonably fix delete_cookie plus the messages caller, as reported, and leave the session middleware alone. That fix fails both session tests.\n   - The assertions are exact full-string comparisons. The reporter's suggested kwargs include `httponly=settings.SESSION_COOKIE_HTTPONLY or None`, which defaults to True. A developer who follows that and passes httponly (or adds httponly/secure parameters) when deleting the session cookie would emit `HttpOnly` in the header. That is a reasonable fix that fully solves the SameSite problem, yet it fails the exact string match.\n\n4. Choosing the score: the tests pin specific observable choices, namely which callers are updated and the exact header attribute set. They do not check internals, so this is a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "The session-middleware tests require the session middleware to pass `samesite=settings.SESSION_COOKIE_SAMESITE` to delete_cookie, which the issue never mentions. They also compare the exact Set-Cookie string with no `HttpOnly`/`Secure`, so a fix that skips the session caller, or that follows the reporter's suggestion of also forwarding httponly/secure, fails.",
+    "overspecification_vector": "sessions_tests.tests.SessionMiddlewareTests.test_session_delete_on_end and test_session_delete_on_end_with_custom_domain_and_path: exact string assertion 'Set-Cookie: {}=\"\"; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/; SameSite={}' (and the Domain/Path=/example/ variant)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut9KAqu7f1wtwqVEJe2",
+  "input_tokens": 6071,
+  "output_tokens": 2111,
+  "seconds": 21.9
+}

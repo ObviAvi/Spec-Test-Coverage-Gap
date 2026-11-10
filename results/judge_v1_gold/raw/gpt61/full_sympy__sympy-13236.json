@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-13236",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 28924,
+  "output": {
+    "reasoning": "1. The specification requests automatic simplification of factorial(n) % n to 0 for positive integer n, preferably generalized to factorial(n) % k when integer 1 <= k <= n is known. It does not request broader changes to factorization, primality assumptions, or modulo normalization.\n\n2. Settled assertions: `factorial(n) % n == 0` directly implements the request, and `factorial(n + 2) % n == 0` exercises the explicitly requested generalization. Leaving `factorial(n + 4) % (n + 5)` unevaluated is a reasonable conservative regression check because the stated divisibility condition does not hold.\n\n3. Additional graded requirements are open. `test_Mod` requires ZeroDivisionError for Mod(x, 0), particular unevaluated forms for symbolic powers, simplification of powers of integer multiples, expanded nested-modulo reductions, several sign-dependent remainder forms, and modular evaluation of an unevaluated integer power. These are not specified by factorial divisibility. Some preserve existing conventions, but the new simplifications and representation choices need not follow from a factorial-specific fix. The Wilson-theorem equality expressions lack assertions, so their displayed remainder values are not enforced as assertions.\n\n4. More decisively, graded tests require separate APIs to gain new behavior: `test_composite` requires a positive even nonprime Dummy to infer composite=True; the Mul/Pow assumption tests require additional exact True/False/None results for primality and compositeness; `test_issue_9115_9150` requires factorial parity inference and a symbolic lower bound; `test_issue_7426` changes the required result of an unrelated symbolic-modulo `.equals` comparison to None; and `test_factorint` requires factoring unevaluated factorials of 150, 200, and 10000. These are open requirements, not consequences that an implementation must expose merely to simplify the requested remainders. Additions to the ungraded `test_monotonic_sign` are not counted.\n\n5. A reasonable correct fix could recognize factorial operands in modulo evaluation and return zero whenever the argument and divisor are suitable integers with 1 <= divisor <= argument, while retaining existing behavior elsewhere. This handles the reported case and its requested generalization without adding unevaluated-factorial support to factorint or changing general assumption inference. It would fail the new graded factorint assertions, among others. Since those exercise a different function rather than the specified modulo behavior, the strongest mismatch warrants score 4.",
+    "score": 4,
+    "explanation": "A correct factorial-specific modulo fix can satisfy the stated divisibility cases without adding support for `factorint(factorial(..., evaluate=False))`. The graded tests nevertheless require that separate feature, as well as broader assumption-inference changes.",
+    "overspecification_vector": "assert multiproduct(factorint(fac(200, evaluate=False))) == fac(200)\nfor b, e in factorint(fac(150, evaluate=False)).items():\n    assert e == fac_multiplicity(150, b)\nassert len(factorint(fac(10000, evaluate=False))) == 1229\nIn test_composite: x = Dummy(positive=True, even=True, prime=False); assert x.is_composite is True\nIn test_issue_9115_9150: assert factorial(n + 2).is_even is True"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 8183,
+  "output_tokens": 2136,
+  "seconds": 53.0
+}

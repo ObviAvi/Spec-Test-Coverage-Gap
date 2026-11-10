@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-11905",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9692,
+  "output": {
+    "reasoning": "Spec: raise an error for non-boolean __isnull values. The test instead expects a RemovedInDjango40Warning (a deprecation warning, not an error) carrying the exact message 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.' A fix that follows the spec literally and raises ValueError fails, and so does any fix that emits a warning with a different class or wording. Requirements: (1) RemovedInDjango40Warning instead of an error: open, and it contradicts the spec's 'raise an error'. (2) Exact message: open. (3) Freebie model with a ForeignObject: test infrastructure only. (4) Warning raised on qs.exists(): compatible with either the lookup-init or query-build path. (5) test_iterator is listed as failing, probably because the new Freebie model changes setup; no constraint on the fix. A reasonable fix raising ValueError('The QuerySet value for an isnull lookup must be True or False.') would fail. The deprecation path is something only the PR chose. The behavior is still externally observable, but it differs fundamentally from what the spec asks for.",
+    "score": 4,
+    "explanation": "The spec asks to raise an error, but the test requires a RemovedInDjango40Warning with the exact deprecation message, so a fix that raises ValueError (or warns with other wording) fails. The deprecation-warning mechanism is never mentioned in the spec.",
+    "overspecification_vector": "with self.assertWarnsMessage(RemovedInDjango40Warning, msg); msg = 'Using a non-boolean value for an isnull lookup is deprecated, use True or False instead.'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut93k9h6ufCLYW6G2RG",
+  "input_tokens": 3695,
+  "output_tokens": 553,
+  "seconds": 6.2
+}

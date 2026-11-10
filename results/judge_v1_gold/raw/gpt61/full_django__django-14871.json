@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-14871",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9744,
+  "output": {
+    "reasoning": "1. The specification describes Select2 failing to load translations for language subtags, exemplified by LANGUAGE_CODE=\"pt-BR\", because of lowercasing. It does not prescribe an HTML attribute or implementation entry point.\n2. The graded test calls the autocomplete widget's build_attrs() and adds an exact expected dictionary entry, 'lang': 'en'. The surrounding attributes are existing expectations, not new requirements. The test does not assert successful loading of a subtag translation or require the internal i18n_name field.\n3. Correct subtag translation loading is settled by the specification. The choice to expose a lang attribute, including its presence for English, is open: neither the issue nor the existing test context requires it.\n4. A reasonable fix could configure Select2's language option using the correctly cased translation identifier, through JavaScript initialization or a data-language attribute, while ensuring the matching translation asset loads. Such a fix could resolve pt-BR and related subtags without returning 'lang': 'en' from build_attrs(), and would fail this test.\n5. The assertion therefore pins one externally observable widget-attribute choice among several valid solutions, warranting score 3.",
+    "score": 3,
+    "explanation": "A correct fix could supply the case-correct locale through Select2's language option rather than an HTML lang attribute. It would fix subtag translation loading but fail the test's exact requirement that build_attrs() include 'lang': 'en'.",
+    "overspecification_vector": "test_build_attrs: the added expected dictionary entry `+            'lang': 'en',`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2243,
+  "output_tokens": 2051,
+  "seconds": 54.2
+}

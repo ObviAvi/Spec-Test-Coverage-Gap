@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-14309",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12751,
+  "output": {
+    "reasoning": "The issue identifies an empty-args crash in fits.connect.is_fits, reached through identify_format, and explains: \"When filepath is a string without a FITS extension, the function was returning None, now it executes isinstance(args[0], ...)\". The graded test calls that existing, explicitly implicated function with origin=\"\", filepath=\"foo.bar\", fileobj=None, and no additional arguments, requiring a falsy result without an exception. The function and empty-args condition are settled by the traceback and description. The unfamiliar extension is a closely related input to the reported \"bububu.ecsv\" case. Returning a non-match is settled by the stated previous None behavior and the purpose of FITS identification; importantly, `assert not` accepts either None or False rather than prescribing one implementation. The empty origin is not explicitly specified, but the shown filename-detection branch is not origin-dependent, so it adds no reasonable behavioral distinction for this case. No reasonable alternative fix needs to reject this call or identify the unsupported filename as FITS. The test therefore adds only a straightforward regression check on related inputs.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes the assertion that is_fits returns a falsy result, rather than raising IndexError, for a non-FITS filename with no additional arguments—the failure condition explicitly described in the issue.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3144,
+  "output_tokens": 986,
+  "seconds": 27.9
+}

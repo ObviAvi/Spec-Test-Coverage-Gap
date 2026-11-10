@@ -1,0 +1,18 @@
+{
+  "task_id": "full/matplotlib__matplotlib-25281",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17578,
+  "output": {
+    "reasoning": "1. The specification identifies missing eager validation in the public legend(loc=...) entry point: “Errors should be raised when invalid arguments are passed to loc,” rather than during show(). 2. The graded tests call ax.legend with malformed tuples ((1.1,), a three-number tuple, and a number/string pair), a three-number list, a dictionary, and out-of-range integers 11 and -1. They require immediate ValueError exceptions. These are closely related invalid inputs; ValueError follows the specification’s invalid-string example. The numeric test also accepts 0, 1, 5, and 10, which are reasonable regression checks for valid integer location codes. No mocks, private methods, or internal state are involved. 3. Every exception assertion additionally requires the wording “loc must be string, coordinate tuple, or an integer 0-10, not ” followed by the offending value’s representation. This wording is open: the specification’s example uses a different message and does not prescribe new diagnostic text. 4. A reasonable fix could validate all these inputs immediately and raise ValueError with shape-specific messages such as “loc must contain exactly two numeric coordinates,” or report an invalid integer using the existing supported-values style. That fix resolves the bug but fails the message matches. 5. The overspecification concerns observable error-message wording, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix that immediately raises ValueError for every tested invalid loc can still fail because the tests require the specific diagnostic phrase “loc must be string, coordinate tuple, or an integer 0-10, not …”. Clear alternative messages are not excluded by the specification.",
+    "overspecification_vector": "The pytest.raises(ValueError, match=...) assertions in test_loc_invalid_tuple_exception, test_loc_invalid_list_exception, test_loc_invalid_type, and test_loc_validation_numeric_value require the literal phrase 'loc must be string, coordinate tuple, or an integer 0-10, not ' followed by the tested value's representation."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4897,
+  "output_tokens": 953,
+  "seconds": 21.4
+}

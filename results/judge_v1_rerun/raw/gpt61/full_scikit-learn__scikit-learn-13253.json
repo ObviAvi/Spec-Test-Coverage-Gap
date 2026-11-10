@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13253",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11393,
+  "output": {
+    "reasoning": "1. The specification requests DataFrame support without whole-frame array conversion, specifically to \"preserve the datatypes per column\" for mixed inputs. It also explicitly identifies categories_ dtypes as affected behavior. 2. Only test_encoder_dtypes_pandas is graded. It fits OneHotEncoder on a three-column int64 DataFrame and a DataFrame containing integer, object-string, and float columns. It checks category dtypes and the resulting six-column one-hot encoding through fit and transform. 3. The mixed-input assertion categories_[i].dtype == X_type[i], with X_type = [int, object, float], directly checks the requested per-column dtype preservation. The homogeneous integer check preserves existing behavior. The expected encoded values and feature order extend the existing two-column test to a third column; they follow established OneHotEncoder behavior rather than impose a new implementation choice. 4. No open implementation detail is constrained: the test does not require a helper, conversion strategy, or private state. A fix retaining whole-frame object coercion would fail the dtype assertion, but would also fail the specification's stated dtype-preservation goal. The added one-dimensional-input and missing-value tests are not graded here.",
+    "score": 1,
+    "explanation": "The graded test directly checks the requested preservation of integer, object-string, and float column dtypes in categories_, while retaining the existing one-hot encoding behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2850,
+  "output_tokens": 1056,
+  "seconds": 28.1
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14855",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11889,
+  "output": {
+    "reasoning": "1. The specification identifies get_admin_url and the observable bug: a readonly ForeignKey link in a custom Admin Site points to '/admin/...' instead of that site's URL. It explicitly identifies the current AdminSite name as the relevant URL-resolution context.\n2. The graded test invokes the existing readonly-link test helper with 'namespaced_admin'. It requests a ReadOnlyRelatedField change page and expects registered User and Language objects to link to their change pages in that same site. It also retains the existing string-primary-key quoting, link labels/markup, and plain-text rendering for an unregistered related model. The added registrations make the related models available in the custom site.\n3. The custom-site URL assertions are settled directly by the reported bug. The fixture's particular namespace is an input, not a required implementation name. Primary-key quoting is present in the specification's original and proposed code. Labels, markup, and unregistered-model behavior are established by the existing test and are unchanged by the patch.\n4. There is no open implementation choice that the graded assertions constrain: they inspect the rendered admin page, not whether the fix calls reverse with a particular keyword or modifies a particular function. Any reasonable fix that selects the current custom site's related-object URLs while preserving existing rendering passes.",
+    "score": 1,
+    "explanation": "The graded test directly reproduces the reported behavior by asserting that readonly ForeignKey links on a custom Admin Site point to that site's related-object change pages rather than the default admin.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2690,
+  "output_tokens": 849,
+  "seconds": 23.6
+}

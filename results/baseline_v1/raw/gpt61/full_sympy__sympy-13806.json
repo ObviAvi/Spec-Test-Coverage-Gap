@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-13806",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 4391,
+  "output": {
+    "reasoning": "The issue requests support for degree notation and gives cos(90 degrees) = 0 as its motivating example. Degree-symbol rendering is relevant, but the tests require a particular implementation surface: expressions using sympy.physics.units.degree must produce exact pretty-printer strings, including a Unicode degree sign through pretty(). More importantly, the graded test_units assertions require unrelated changes to the ordering and formatting of kilograms, meters, and symbolic factors. A correct degree-specific implementation could leave that existing unit formatting unchanged and therefore fail these tests.",
+    "score": 4,
+    "explanation": "The tests impose exact degree-printing conventions that the issue does not establish and require unrelated general-unit formatting changes. They would reject a valid degree-support fix that preserves existing kilogram/meter formatting.",
+    "overspecification_vector": "assert pretty(expr1) == u'90°'; assert pretty(expr2) == u'x°'; assert pretty(expr3) == u'cos(x° + 90°)'; assert upretty(3*kg*x*m**2*y/s**2) == unicode_str2; assert pretty(3*kg*x*m**2*y/s**2) == ascii_str2; assert latex(expr, mul_symbol='dot') == r'2 \\cdot x \\cdot kilogram \\cdot meter^{2}'"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1396,
+  "output_tokens": 804,
+  "seconds": 21.6
+}

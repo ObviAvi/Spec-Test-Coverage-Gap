@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16786",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12086,
+  "output": {
+    "reasoning": "1. The specification identifies late resolution of FilteredRelation conditions, causing missing JOINs and unknown aliases when expressions reference related fields. It explicitly suspects an underlying problem with JOIN detection for nested field references, rather than a Coalesce-only defect.\n2. The tests use the public QuerySet.annotate()/filter() interface with FilteredRelation, Q, and F. They require correct results for a condition referencing editor__name, a second filtered relation referencing the first filtered relation's name, and a condition comparing the book's title with author__name. Each query must return [self.book1]. There are no mocks, private methods, SQL-string assertions, or required implementation attributes.\n3. Correct resolution of expression-dependent joins is settled by the issue's description of the missing JOIN. Direct F references, chained filtered-relation references, and self-references are reasonably inferred related inputs exercising that same dependency-resolution behavior. The expected matching records follow ordinary ORM filtering semantics. The model fields and annotation aliases are supplied query inputs, not names the implementation must introduce. Singleton results impose no additional ordering requirement.\n4. No open implementation choice is constrained: resolving conditions earlier or otherwise ensuring their join dependencies are available can satisfy these assertions. A Coalesce-specific workaround that leaves equivalent F-reference dependencies broken would not address the underlying bug across closely related inputs.",
+    "score": 2,
+    "explanation": "The assertions extend the reported missing-JOIN problem to closely related FilteredRelation conditions and check only the resulting records, without prescribing how join dependencies are resolved.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2685,
+  "output_tokens": 1195,
+  "seconds": 36.0
+}

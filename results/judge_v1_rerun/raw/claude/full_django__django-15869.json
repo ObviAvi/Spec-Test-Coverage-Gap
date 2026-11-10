@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-15869",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9612,
+  "output": {
+    "reasoning": "1. The spec asks for the length_is template filter to be deprecated in favor of length, used with {% if %} and ==. It names the filter, but gives no warning class and no message text.\n\n2. The graded test requires three things:\n- Rendering the template {{ string|length_is:3 }} raises a RemovedInDjango51Warning.\n- The warning message contains the exact text \"The length_is template filter is deprecated in favor of the length template filter and the == operator within an {% if %} tag.\"\n- The warning is raised during rendering.\n\n3. Settlement of each requirement:\n- Warning class: settled by convention. Django's deprecation policy uses RemovedInDjangoXXWarning for the version two releases ahead. At 4.2 that is RemovedInDjango51Warning, and existing context code imports it, so a competent Django developer would pick this class. It is mostly settled.\n- Warning raised on render: settled by \"Deprecate length_is\". The natural place is inside the filter function.\n- Exact message: open. The spec gives no text. A developer might write \"The length_is template filter is deprecated. Use the length filter with {% if %} instead.\" or \"length_is is deprecated in favor of length.\" assertRaisesMessage checks for a substring, so these alternatives fail.\n\n4. A reasonable fix that warns with RemovedInDjango51Warning but uses different wording fails the test.",
+    "score": 3,
+    "explanation": "The test asserts the exact deprecation message text, which the spec never states. A correct fix that raises RemovedInDjango51Warning from length_is with differently worded text (e.g. \"length_is is deprecated; use length with ==\") fails assertRaisesMessage.",
+    "overspecification_vector": "msg = (\"The length_is template filter is deprecated in favor of the length \" \"template filter and the == operator within an {% if %} tag.\"); with self.assertRaisesMessage(RemovedInDjango51Warning, msg)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutAfaDbPcVektcUYHJC",
+  "input_tokens": 3591,
+  "output_tokens": 668,
+  "seconds": 7.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-16334",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9894,
+  "output": {
+    "reasoning": "The specification identifies an incorrect unknown result from `.is_positive` for a zero base raised to a real, nonzero exponent, explicitly requiring False. The tests for `(p**q).is_positive` and `(p**j).is_positive` are settled by that requirement: a nonzero even exponent is also real. The assertions for literal powers, powers of I, and a nonpositive base are conventional regression checks. Two additional requirements are open: `(p**q).is_negative` must return False through a separate assumptions query, and symbolic zero exponents must produce positive=True and negative=False, although the issue explicitly restricts the exponent to nonzero values. A reasonable fix could teach only the positivity evaluator that a zero base with a real, nonzero exponent is not positive. This resolves the reported case and its nonzero-exponent variants while leaving the independent negativity evaluator and symbolic zero-exponent inference unchanged. Such a fix can fail these added assertions. The separate `.is_negative` query is the most severe gap under the different-code-path rule.",
+    "score": 4,
+    "explanation": "A reasonable fix confined to `.is_positive` for zero bases and real nonzero exponents can leave `(p**q).is_negative` unknown, failing a test of a separate assumptions query. The tests also demand symbolic zero-exponent inference despite the specification explicitly excluding zero exponents.",
+    "overspecification_vector": "assert (p**q).is_negative is False\nassert (x**y).is_positive is True   # 0**0\nassert (x**y).is_negative is False"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2424,
+  "output_tokens": 2090,
+  "seconds": 52.5
+}

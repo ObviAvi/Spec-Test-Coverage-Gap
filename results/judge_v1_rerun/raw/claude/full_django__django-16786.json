@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16786",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12086,
+  "output": {
+    "reasoning": "1. The specification says a FilteredRelation condition can contain an F() (here inside Coalesce) that references a field needing a JOIN. That JOIN is never added, so the SQL refers to an unknown alias. The title points to the root cause: the condition is resolved too late. It describes a symptom and does not name an API to change.\n\n2. The graded tests only use public ORM calls: `annotate(FilteredRelation(...))`, then `filter(<alias>__isnull=False)`, then compare the result set to `[self.book1]`. They cover three inputs:\n- (a) a condition whose F() spans a join (`F(\"editor__name\")`);\n- (b) a second FilteredRelation whose condition references another FilteredRelation alias (`F(\"contains_editor_author__name\")`);\n- (c) a condition on the base model that references the relation's own path (`F(\"author__name\")`).\n\n3. Settlement of each case:\n- (a) is the reported bug: an F() in the condition that needs a JOIN. It is settled by the specification: \"if any of the fields referenced by Coalesce requires a JOIN... the JOIN not actually getting added\".\n- (b) and (c) are closely related inputs: other F references inside conditions that need joins or alias resolution. The title, \"resolves its conditions too late which can result in unknown alias references\", covers them. They are settled as the same bug class.\n- The expected results are just correct query semantics, with no arbitrary values, messages, orderings, private APIs, or new names.\n\n4. Any reasonable correct fix passes. A typical fix resolves the condition, and so sets up its joins, when the filtered relation is added, rather than at compile time. Such a fix yields the correct rows for all three cases. A fix that only handled the literal Coalesce case would not be a correct fix of the described root cause.",
+    "score": 2,
+    "explanation": "The tests only check that querysets with FilteredRelation conditions referencing joined fields (directly, via another filtered relation, or via the relation path itself) return the correct rows, which is exactly the behavior the issue says is broken.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutB5RudzuekxuNBJnZh",
+  "input_tokens": 4519,
+  "output_tokens": 1748,
+  "seconds": 18.4
+}

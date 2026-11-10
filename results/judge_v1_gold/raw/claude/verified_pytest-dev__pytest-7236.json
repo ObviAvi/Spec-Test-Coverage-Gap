@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7236",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 13000,
+  "output": {
+    "reasoning": "1. The spec says that with --pdb, tearDown runs for a unittest test skipped via @unittest.skip, which produces an error. The expected behavior is that the test is simply skipped and tearDown is not run. The symptom shows up through running pytest --pdb.\n2. The graded test is the @unittest.skip variant only. It writes a TestCase whose setUp and tearDown record calls, runs pytest --pdb in-process, and asserts two things: the output contains '* 1 skipped in *' and the tracked list is empty, meaning neither setUp nor tearDown was called.\n3. Each requirement:\n- tearDown not called: settled by the spec ('I would have expected the test to be skipped, even with --pdb').\n- setUp not called: settled by the normal semantics of a skipped unittest test, where unittest itself never calls setUp. It is also implied by the spec's example, since setUp contains xxx and would raise.\n- '1 skipped' with no error: settled by the spec's expected output.\n4. Could a reasonable fix fail? Possible fixes include not postponing tearDown when the test is skipped, or restoring tearDown properly. Either way, setUp is never called for a unittest-skipped test, because unittest's run checks the skip before calling setUp. So any fix that avoids the postponed explicit tearDown call passes. No reasonable correct fix fails.",
+    "score": 1,
+    "explanation": "The test asserts exactly the spec's expectation: with --pdb, a @unittest.skip test reports '1 skipped' and neither setUp nor tearDown runs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgusxGpA7uCCum7WFgnmw",
+  "input_tokens": 5077,
+  "output_tokens": 543,
+  "seconds": 6.8
+}

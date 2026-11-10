@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14787",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 2562,
+  "output": {
+    "reasoning": "The issue is that method_decorator passes a functools.partial object to the decorator. That partial lacks attributes such as __name__ and __module__.\n\nThe test checks two things:\n- the function seen inside the decorator has __name__ == 'method';\n- its __module__ is not None.\n\nBoth follow directly from the issue's request to preserve the attributes a function is expected to have. Any reasonable fix would satisfy them, for example:\n- calling update_wrapper or wraps on the partial;\n- using a real function wrapper instead of a partial.\n\nThe module check only requires a non-None value, which is lenient. Nothing here depends on implementation details.",
+    "score": 1,
+    "explanation": "The test checks only that the function passed to the decorator has the correct __name__ and a non-None __module__, which is exactly what the issue asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut1SWeegF2sTxPF5Scy",
+  "input_tokens": 1254,
+  "output_tokens": 299,
+  "seconds": 4.0
+}

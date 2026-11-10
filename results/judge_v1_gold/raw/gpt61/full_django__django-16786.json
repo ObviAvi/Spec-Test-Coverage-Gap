@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-16786",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 25315,
+  "output": {
+    "reasoning": "1. The specification identifies late resolution of FilteredRelation conditions: a field reference requiring a JOIN can produce an unknown alias. Coalesce is the reported trigger, but the description explicitly suspects an underlying JOIN-resolution problem.\n2. The tests use the public Book.objects.annotate(...).filter(...) interface with FilteredRelation, Q, and F. They require: author__name__icontains=F('editor__name') to support an additional JOIN; a second FilteredRelation to reference contains_editor_author__name; and title__icontains=F('author__name') to support a relation reference on the condition's right-hand side. Each query filters its annotation with __isnull=False and must return exactly [self.book1]. There are no mocks, private-method calls, SQL-shape assertions, or required implementation names.\n3. Supporting JOINs introduced by condition expressions is settled by the reported missing-JOIN defect. Using direct F expressions instead of Coalesce, chaining filtered annotations, and referencing the annotated relation are reasonably inferred related inputs. The field lookups, supplied annotation aliases, non-null filtering, and singleton results follow ordinary queryset semantics; a singleton expectation imposes no ordering choice.\n4. The specification does not prescribe these exact fixtures or query spellings, but they introduce no competing valid outcome. A fix that handles only Coalesce while leaving equivalent JOIN dependencies unresolved would leave the same bug in closely related inputs, rather than constitute a reasonable correct alternative.\n5. These are behavioral regression tests extending the reproduction to related expressions, so the appropriate score is 2.",
+    "score": 2,
+    "explanation": "Every reasonable general fix should make these FilteredRelation queries resolve the JOINs needed by their F expressions and return the expected matching book, including when one filtered annotation references another.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5615,
+  "output_tokens": 1348,
+  "seconds": 36.9
+}

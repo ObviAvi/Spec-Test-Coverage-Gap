@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11555",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10625,
+  "output": {
+    "reasoning": "The specification identifies a crash in “order_by() a parent model” when “Meta.ordering contains expressions,” specifically during multi-table inheritance because an OrderBy object is treated as a string. The graded test creates a multi-table subclass, ChildArticle, and calls ChildArticle.objects.order_by('article_ptr'); this is the reported operation through the public ORM API. Its inputs—headline, publication date, author, and an omitted author—are ordinary model data exercising that ordering. The assertion requires evaluation without crashing and the sequence [ca4, ca2, ca1, ca3]. Avoiding the crash is explicitly specified. Preserving the parent model's existing Meta.ordering, including its expression semantics, is settled by ORM convention: ordering by a related model uses that model's default ordering. The exact fixture values and subclass name are test setup, not names or constants the fix must introduce. Although the issue does not spell out the four-object sequence, it is an application of the existing ordering rather than a newly chosen ordering policy. A fix that simply drops expressions or substitutes pointer-ID ordering could fail this assertion, but would not correctly resolve expression-based ordering. There are no mocks, private-method assertions, or implementation requirements, and no reasonable alternative correct fix is identified that would fail.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix must let order_by('article_ptr') honor the parent's existing Meta.ordering expressions without crashing; the asserted object sequence checks that ordinary ordering behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2433,
+  "output_tokens": 931,
+  "seconds": 25.0
+}

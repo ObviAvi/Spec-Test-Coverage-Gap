@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11299",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 13932,
+  "output": {
+    "reasoning": "1. The specification requires mixed AND/OR CheckConstraints to generate unqualified column references, avoiding SQLite migration failures and incorrect Oracle SQL. It mentions Col and SimpleCol as a suspected cause, but does not require a particular expression representation or Query method change.\n2. The only graded test constructs Query(Author) and calls build_where() with Q(num__gt=2, name__isnull=False) | Q(num__lt=F('id'))). It requires a particular nested children layout and ordering, GreaterThan/IsNull/LessThan lookup classes, SimpleCol instances for both nested AND lookup left-hand sides, and SimpleCol instances for both sides of the final comparison. The migration test is not graded.\n3. Mixed AND/OR handling is settled by the specification. The lookup operators have conventional meanings, and the F-expression comparison is a related input. However, the expression-tree layout and exact SimpleCol representation are internal requirements not settled by the requested SQL behavior. Mentioning SimpleCol in the diagnosis does not mandate its use throughout Query.build_where().\n4. A reasonable fix could recursively normalize column expressions during CheckConstraint SQL compilation, or compile constraint column references without table qualifiers, while leaving generic Query.build_where() results unchanged. That would fix the reported case and related nested constraints on both databases, but the graded test would still find Col instances in the nested AND branch.\n5. The test therefore imposes an internal implementation requirement rather than checking whether the constraint SQL is correct.",
+    "score": 4,
+    "explanation": "A correct fix could remove table qualification specifically during CheckConstraint SQL compilation without changing Query.build_where(). It would still fail the test's assertions that nested lookup operands must already be SimpleCol instances.",
+    "overspecification_vector": "Direct inspection of Query(Author).build_where(...), particularly self.assertIsInstance(num_gt_lookup.lhs, SimpleCol) and self.assertIsInstance(name_isnull_lookup.lhs, SimpleCol); also the prescribed where.children layout and SimpleCol assertions for num_lt_lookup.lhs and num_lt_lookup.rhs."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3270,
+  "output_tokens": 958,
+  "seconds": 26.3
+}

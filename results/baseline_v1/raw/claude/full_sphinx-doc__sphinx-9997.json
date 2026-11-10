@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9997",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 35627,
+  "output": {
+    "reasoning": "The issue only asks that parametrized types such as `Literal[...]` in autodoc typehints link to their documentation, as `int` does. The tests demand much more than that.\n\n1. **New `stringify` API.** They require `sphinx.util.typing.stringify` to take a mode string with the values \"fully-qualified\" and \"smart\". This replaces the old boolean argument and adds a new third output mode. Neither the API nor its string literal values are mentioned in the issue.\n\n2. **Changed signature output.** They require `stringify_signature` and autodoc signature output to switch to fully-qualified names such as `typing.List[int]` and `typing.Any`. This is a large visible formatting change across many tests, also not derivable from the issue.\n\n3. **Specific choices in `_parse_annotation`.** They require pending_xref nodes to use `reftype=\"obj\"` instead of \"class\" for typing.Dict. They also require the displayed text for `typing.Literal[...]` to be shortened to \"Literal\".\n\nA correct fix that made `Literal` link without these API and formatting changes would fail most of the tests. Even a fix that did use fully-qualified internal strings would likely fail on the exact mode names and the default behaviors.",
+    "score": 4,
+    "explanation": "The tests require a new stringify mode API with specific string values ('fully-qualified', 'smart'), fully-qualified typing names in all signature output, and reftype='obj'. None of this follows from the issue, which only asks that parametrized type hints get links.",
+    "overspecification_vector": "test_util_typing.py: `stringify(X, \"fully-qualified\")` / `stringify(X, \"smart\")` throughout; test_util_inspect.py: `stringify_signature(sig) == '(x: typing.List[int]) -> typing.List[int]'` etc.; test_ext_autodoc_*: `'-> typing.Generator'`, `'*args: typing.Any'`, `'o: typing.Optional[typing.Any] = None'`; test_domain_py.py: `reftype=\"obj\", reftarget=\"typing.Dict\"` and `[pending_xref, \"Literal\"]`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutAsZmqMXGiTr6aFXKQ",
+  "input_tokens": 15990,
+  "output_tokens": 915,
+  "seconds": 11.1
+}

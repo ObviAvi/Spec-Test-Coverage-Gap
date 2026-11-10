@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14765",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9185,
+  "output": {
+    "reasoning": "1. Spec: ProjectState.__init__() should stop converting a non-set real_apps into a set and instead \"just assert that it's a set when non-None\". The entry point is named: ProjectState.__init__.\n\n2. The single graded test calls ProjectState(real_apps=['contenttypes']) and expects AssertionError.\n\n3. Requirements and how each is settled:\n- Constructor entry point: settled, the spec names ProjectState.__init__().\n- AssertionError type: settled by the spec's \"assert that it's a set\". A Python assert statement raises AssertionError.\n- List input: settled as \"when non-None\" and not a set.\n\n4. Could a reasonable fix fail?\n- A fix raising TypeError would contradict the spec's explicit wording \"assert\", so it is not a reasonable reading.\n- One edge case: running Python with -O strips asserts. The test suite doesn't run that way, so this is irrelevant.\n- The original code used `if real_apps:`, which skips falsy values. A fix that kept that check would still assert for the non-empty list ['contenttypes'], so it passes.\n\nEvery fix following the spec passes. The test is essentially the spec's statement made concrete, scoring 1 or 2; the AssertionError follows directly from \"assert\", so 1.",
+    "score": 1,
+    "explanation": "The spec says to \"assert that it's a set when non-None\", and the test checks only that ProjectState(real_apps=[...]) raises AssertionError, which any assert-based fix does.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut6g19G9HfcDdnc9NSr",
+  "input_tokens": 3339,
+  "output_tokens": 536,
+  "seconds": 6.7
+}

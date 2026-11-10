@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-14983",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10577,
+  "output": {
+    "reasoning": "1. The spec says repr(RepeatedKFold()) and repr(RepeatedStratifiedKFold()) show the default object repr instead of a parameter repr. Its expected output is 'RepeatedKFold(n_splits=5, n_repeats=10, random_state=None)', with n_splits listed first. It names no implementation entry point.\n\n2. The test builds RepeatedCV(n_splits=2, n_repeats=6) and asserts repr == '{cls}(n_repeats=6, n_splits=2, random_state=None)'.\n\n3. Requirements:\n- Class name prefix and parameter values: settled by the spec.\n- Including random_state=None: settled by the spec.\n- Parameter order n_repeats, n_splits, random_state (alphabetical): open, and it actually contradicts the spec, which shows n_splits first. The alphabetical order comes from the existing _build_repr helper, which sorts parameter names.\n\n4. A competent developer could write a custom __repr__ (or format string) that reproduces the spec's expected output exactly, e.g. f'{cls}(n_splits={n_splits}, n_repeats={n_repeats}, random_state={random_state})'. That fix is correct per the spec but fails the test because of ordering. Developers who reuse _build_repr pass, but the spec-faithful alternative is rejected. The pinned detail is observable output order, not internals.",
+    "score": 3,
+    "explanation": "The test requires the parameters in alphabetical order, 'n_repeats=6, n_splits=2, random_state=None', as produced by the existing _build_repr helper. A fix that matches the spec's stated expected output order (n_splits, n_repeats, random_state) fails.",
+    "overspecification_vector": "repeated_cv_repr = ('{}(n_repeats=6, n_splits=2, random_state=None)'.format(repeated_cv.__class__.__name__)) — the n_repeats-before-n_splits ordering contradicts the spec's example 'RepeatedKFold(n_splits=5, n_repeats=10, random_state=None)'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut3uL1FNXssZB5wVoyu",
+  "input_tokens": 4193,
+  "output_tokens": 981,
+  "seconds": 9.6
+}

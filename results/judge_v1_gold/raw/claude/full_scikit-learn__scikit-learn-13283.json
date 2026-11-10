@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13283",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 16355,
+  "output": {
+    "reasoning": "Spec: IsolationForest score computation uses too much memory; suggests moving per-tree computation into base estimator or averaging per estimator. It names no chunking helper. Tests patch `sklearn.ensemble.iforest.get_chunk_n_rows` and assert it is called exactly 3 times (contamination=0.25) or 2 times (auto). Requirements: (1) iforest module must import the name `get_chunk_n_rows` into its namespace (patch target must exist, otherwise patch raises AttributeError); open, not in spec. (2) Fix must call get_chunk_n_rows exactly once per score_samples call; open. A reasonable fix that keeps per-tree accumulation (which the official fix partly already does) or parallelizes per-tree with joblib, or chunks using gen_batches with a fixed batch size, would not reference get_chunk_n_rows and fails. Even the spec's own suggested solution (moving per-tree scoring into the base estimator/bagging) fails. This depends on an unspecified internal helper name and call count, i.e., implementation details.",
+    "score": 4,
+    "explanation": "Tests patch `sklearn.ensemble.iforest.get_chunk_n_rows` and assert its call count, so any memory-efficient fix that doesn't import and call that exact utility once per scoring pass fails. Examples include per-tree averaging, joblib parallelism, or chunking via another mechanism.",
+    "overspecification_vector": "@patch(\"sklearn.ensemble.iforest.get_chunk_n_rows\", side_effect=Mock(**{\"return_value\": 3})) ... assert mocked_get_chunk.call_count == n_predict_calls"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutESHcNNh5nR4HhJTYo",
+  "input_tokens": 6187,
+  "output_tokens": 571,
+  "seconds": 6.0
+}

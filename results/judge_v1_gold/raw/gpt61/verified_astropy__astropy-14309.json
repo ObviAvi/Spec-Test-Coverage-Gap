@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-14309",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 13756,
+  "output": {
+    "reasoning": "The specification reports identify_format crashing because is_fits accesses args[0] when no positional data arguments exist. It explicitly identifies the relevant case: “filepath is a string without a FITS extension” previously returned None. The sole graded assertion calls the existing connect.is_fits function with an empty origin, a non-FITS filename ('foo.bar'), no file object, and no additional arguments, and requires a falsy result without an exception. Calling is_fits is grounded in the traceback and diagnosis, not an unrelated internal helper. The filename is a closely related input, and the existing filename-detection code does not depend on origin. Falsiness follows from the reported previous behavior and the purpose of the format detector; the assertion accepts both None and False rather than prescribing a particular return value or implementation. There is no consequential open requirement that would reject a reasonable correct fix.",
+    "score": 2,
+    "explanation": "The assertion checks the diagnosed non-FITS-filename, empty-arguments case directly in is_fits, accepting any falsy result rather than imposing an exact return value or repair strategy.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3407,
+  "output_tokens": 740,
+  "seconds": 20.8
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pytest-dev__pytest-9911",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9369,
+  "output": {
+    "reasoning": "1. The spec asks that pytest.raises() give a more helpful error when it receives an empty tuple (and, for bonus points, None). It names the entry point. It suggests example messages but does not name an exception type.\n2. The graded tests require that pytest.raises(expected_exception=None) and pytest.raises(expected_exception=()) raise ValueError when called, before any context manager is entered, and that the message matches the regex \"Expected an exception type or\".\n3. Status of each requirement:\n- Erroring on () and None at the pytest.raises entry point is settled by the spec.\n- ValueError as the type is open. TypeError is just as plausible, especially for None, which is a wrong-type input. A generic error could also be plausible.\n- The message text is open. The spec's own suggested wording is \"Passing `expected_exception=()` is an error, because it's impossible to raise an exception which is not an instance of any type...\". That does not contain \"Expected an exception type or\".\n- Raising eagerly at call time is reasonable and probably the natural choice.\n4. Two reasonable fixes fail:\n- A developer who follows the spec's suggested message verbatim and raises ValueError fails the match regex.\n- A developer who raises TypeError fails the type check.\nSo the tests pin an exact message prefix that the spec does not give, and even contradicts with its own example wording. This is observable behavior, so it is a 3, not a 4.",
+    "score": 3,
+    "explanation": "The tests require a ValueError whose message matches \"Expected an exception type or\". A fix that uses the spec's own suggested wording (\"Passing `expected_exception=()` is an error, because...\") fails, and so does a fix that raises TypeError.",
+    "overspecification_vector": "with pytest.raises(ValueError, match=\"Expected an exception type or\"): in both test_raises_does_not_allow_none and test_raises_does_not_allow_empty_tuple"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutDhMT1ebB5aCeSA9FA",
+  "input_tokens": 3395,
+  "output_tokens": 649,
+  "seconds": 7.1
+}

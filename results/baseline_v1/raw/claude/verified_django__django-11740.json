@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11740",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 4403,
+  "output": {
+    "reasoning": "The issue: changing a plain field (UUIDField) into a ForeignKey to a model in another app gives an AlterField migration that lacks a dependency on the other app.\n\nThe test does three things:\n1. It changes an IntegerField to a ForeignKey pointing to testapp.Author, within otherapp.\n2. It asserts that one migration with a single AlterField operation is produced.\n3. It asserts that the migration depends on ('testapp', '__first__').\n\nThe AlterField operation type is what the autodetector already generates for a field type change, so any fix keeps it. The ('testapp', '__first__') form is not chosen by the fix. It comes from the existing machinery: `_get_dependencies_for_foreign_key` together with `_build_migration_list` resolving dependencies when there is no graph. Any reasonable fix that adds the FK's dependencies to the AlterField operation will produce exactly this. That matches the existing test_fk_dependency_other_app, which expects `__first__` for AddField/CreateModel.\n\nThe test checks only the behavior the issue asks for, a cross-app dependency on the FK target. It does not check implementation details, and switching IntegerField for UUIDField is immaterial.",
+    "score": 1,
+    "explanation": "The test checks only that an AlterField-to-FK migration gets a dependency on the related model's app. The exact form of that dependency comes from the existing autodetector machinery, so any correct fix would pass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut3FYQBaSknTW5JBe3A",
+  "input_tokens": 2055,
+  "output_tokens": 886,
+  "seconds": 9.5
+}

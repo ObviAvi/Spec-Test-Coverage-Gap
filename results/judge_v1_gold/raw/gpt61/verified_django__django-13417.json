@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13417",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9878,
+  "output": {
+    "reasoning": "1. The issue names QuerySet.ordered and says it remains truthy for GROUP BY queries whose Meta.ordering produces no ORDER BY clause. The requested behavior is for the property to reflect whether the queryset is ordered.\n2. The tests create Tag querysets with annotate(num_notes=Count('pk')), both directly and after values('name'). They require qs.ordered to be exactly False, and qs.order_by('name').ordered to be exactly True. They use no mocks or implementation-specific assertions.\n3. False for the directly annotated queryset is settled by the reported bug: the SQL has no ORDER BY while ordered incorrectly remains truthy. The values().annotate() variant is a closely related GROUP BY input, reasonably covered by the issue title. True after explicit order_by() follows from the property's stated purpose and the existing annotated-ordering test shown in context. Boolean identity is consistent with this boolean property's existing contract. Tag, the annotation alias, and the selected field introduce no additional behavioral requirement.\n4. No open choice rejects a reasonable correct fix: a fix must recognize the lack of effective default ordering for both grouping forms while continuing to recognize explicit ordering.\n5. Score 2 because the tests include a related grouping input and a straightforward explicit-ordering regression check beyond the reproduction.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should return False for these unordered GROUP BY querysets and True when order_by('name') explicitly orders them; the values() variant is a closely related application of the same requirement.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2303,
+  "output_tokens": 643,
+  "seconds": 19.5
+}

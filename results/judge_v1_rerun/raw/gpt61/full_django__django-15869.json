@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15869",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9612,
+  "output": {
+    "reasoning": "1. The specification requests: \"Deprecate length_is template filter in favor of length,\" recommending length comparisons within an {% if %} tag. It does not specify warning wording or a removal release.\n2. The graded test renders '{{ string|length_is:3 }}' with string='good' through engine.render_to_string(). It requires a RemovedInDjango51Warning during rendering whose message contains the complete prescribed sentence. It does not assert the rendered output.\n3. Exercising length_is through template rendering is settled by the specification's examples; using a deprecation warning is a reasonable convention. However, the particular RemovedInDjango51Warning category and required message wording are open: neither is supplied by the specification, and the provided existing-code context establishes no release-selection rule.\n4. A reasonable fix could emit RemovedInDjango51Warning during rendering with the message 'length_is is deprecated; use length with a comparison in an if tag instead.' This implements the requested deprecation and migration guidance but fails the required message assertion. Thus the observable warning text alone establishes overspecification, regardless of whether the selected warning category follows repository convention.\n5. Score 3: the test pins an externally observable wording choice rather than an implementation detail.",
+    "score": 3,
+    "explanation": "A correct fix could deprecate length_is using the expected warning category but phrase the migration guidance differently. It would fail because assertRaisesMessage requires the particular sentence chosen by the test, which the specification never supplies.",
+    "overspecification_vector": "The msg value, \"The length_is template filter is deprecated in favor of the length template filter and the == operator within an {% if %} tag.\", required by self.assertRaisesMessage(RemovedInDjango51Warning, msg). The specific RemovedInDjango51Warning category is also not specified."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2225,
+  "output_tokens": 717,
+  "seconds": 19.0
+}

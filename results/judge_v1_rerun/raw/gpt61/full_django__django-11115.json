@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-11115",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10719,
+  "output": {
+    "reasoning": "1. The specification requests more informative AlreadyRegistered exceptions: 'more details about the already-registered model' to identify 'which package/app is clashing.' Its traceback identifies AdminSite.register() as the entry point. 2. The graded tests register Person twice, both with the default admin and with a locally defined PersonAdmin. They require AlreadyRegistered and message substrings \"The model Person is already registered in app 'admin_registration'.\" and \"The model Person is already registered with 'admin_registration.PersonAdmin'.\" No mocks or internal-state assertions are involved. 3. Duplicate registration and AlreadyRegistered are settled by the issue and existing test. Covering a custom ModelAdmin is a reasonable related input. Providing identifying information is specified, but the wording, punctuation, identifier format, and distinction between reporting an app versus an admin class are open. 4. A reasonable fix could report the model's qualified app/model identifier and the existing admin's fully qualified class in both cases, for example, 'The model admin_registration.Person is already registered (admin class: ...).' This supplies the requested diagnostic information but contains neither required message substring. 5. These are externally observable message constraints, so the overspecification is mild rather than implementation-level.",
+    "score": 3,
+    "explanation": "The tests require particular message substrings, including a specific app/admin reporting format and punctuation, that the specification does not prescribe. A correct fix reporting the qualified model identifier and existing admin class with different wording would fail both tests.",
+    "overspecification_vector": "msg = \"The model Person is already registered in app 'admin_registration'.\"; msg = \"The model Person is already registered with 'admin_registration.PersonAdmin'.\"; both enforced by self.assertRaisesMessage(admin.sites.AlreadyRegistered, msg)."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2440,
+  "output_tokens": 682,
+  "seconds": 18.3
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-11560",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8917,
+  "output": {
+    "reasoning": "1. The specification explicitly requests “Raise ValueError in Extract lookups that don't work properly with DurationField” and illustrates ExtractYear('duration') producing an invalid date comparison when filtered.\n2. The added tests call DTModel.objects.annotate(extracted=Extract('duration', lookup)) for year, iso_year, month, week, week_day, and quarter. They require ValueError during annotate(), without filtering or evaluating the queryset, and require the message substring \"Cannot extract component '<lookup>' from DurationField 'duration'.\" There are no mocks or required new implementation symbols.\n3. Settled: ValueError is explicitly requested, and annotation of a DurationField is the reported public operation. Reasonably inferred: testing generic Extract and related unsupported calendar components fits the title's broader scope. Open: the error wording, inclusion of the field name, and eager validation timing are not specified. The unchanged non-native-duration test shows evaluation-time validation but does not establish the newly required message or timing.\n4. A reasonable fix could reject all these components during annotation with ValueError(\"Extracting year from a DurationField is unsupported\") or similarly clear wording. It would resolve the specified problem but fail assertRaisesMessage. Another reasonable implementation could validate during query compilation, which the unevaluated annotate() calls would not trigger. These are observable behavioral choices rather than implementation-internal requirements.",
+    "score": 3,
+    "explanation": "The tests require the specific message \"Cannot extract component '<lookup>' from DurationField 'duration'.\", although the specification only requires ValueError. A correct fix rejecting the same unsupported components with different clear wording would fail; validation deferred until query compilation could also fail the eager exception check.",
+    "overspecification_vector": "msg = \"Cannot extract component '%s' from DurationField 'duration'.\"; with self.assertRaisesMessage(ValueError, msg % lookup): DTModel.objects.annotate(extracted=Extract('duration', lookup))"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2014,
+  "output_tokens": 1399,
+  "seconds": 40.3
+}

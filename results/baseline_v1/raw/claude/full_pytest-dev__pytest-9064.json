@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pytest-dev__pytest-9064",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 6223,
+  "output": {
+    "reasoning": "test_stepwise_skip_is_independent checks the behavior the issue asks for. Running with only --stepwise-skip should give 2 failures and the interrupt message. That matches the spec and is fair.\n\ntest_sw_skip_help is a different matter. It requires the help output to contain a line ending in the exact phrase \"implicitly enables --stepwise.\"\n- The issue only says the combo requirement \"is not mentioned in the help text\". It never asks for a help-text change, let alone that wording.\n- A correct fix could leave the help text as is, or reword it differently, for example \"also enables --stepwise\" or \"(implies --stepwise)\".\n- Any such fix would fail this test.\n\nThis is one of only two FAIL_TO_PASS tests, and matching an unspecified exact phrase is very unlikely without seeing the upstream change. Most valid solutions would therefore be rejected.",
+    "score": 4,
+    "explanation": "test_sw_skip_help requires the help text to contain the exact phrase \"implicitly enables --stepwise.\", which the issue never specifies, so most correct behavioral fixes would fail it.",
+    "overspecification_vector": "result.stdout.fnmatch_lines(\"*implicitly enables --stepwise.\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut9GDVnMGrEJDuoErzG",
+  "input_tokens": 2591,
+  "output_tokens": 632,
+  "seconds": 6.9
+}

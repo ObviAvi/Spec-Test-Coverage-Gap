@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16614",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 71854,
+  "output": {
+    "reasoning": "The issue only asks that URLField assume 'https' instead of 'http' for scheme-less input. The obvious correct fix is to change the default scheme in to_python to https.\n\nThe tests require a very different design:\n1. A new `assume_scheme` keyword argument on forms.URLField. Many tests pass `assume_scheme=\"https\"`, so they raise TypeError without it.\n2. The default must stay 'http' during a deprecation period. test_urlfield_assume_scheme asserts `URLField().clean(\"example.com\") == \"http://example.com\"`, which contradicts the issue's literal request.\n3. A RemovedInDjango60Warning must be raised, with an exact message: \"The default scheme will be changed from 'http' to 'https' in Django 6.0. Pass the forms.URLField.assume_scheme argument to silence this warning.\"\n4. The warning must also fire when a ModelForm is built from a model URLField (test_url_modelform_assume_scheme_warning).\n\nNone of this is in the issue: the parameter name, the deprecation path, the warning class or the message. A solution that simply changes the default to https would fail the warning tests and test_urlfield_assume_scheme. Even a solution that adds a configurable parameter under another name, or uses a different warning text, would fail. The tests encode Django's specific deprecation-policy implementation rather than the requested behavior.",
+    "score": 4,
+    "explanation": "The tests demand an undisclosed `assume_scheme` kwarg, keep 'http' as the default, and require a RemovedInDjango60Warning with an exact message, so the direct fix of switching the default to https is rejected.",
+    "overspecification_vector": "test_urlfield_assume_scheme: `self.assertEqual(f.clean(\"example.com\"), \"http://example.com\")` and `URLField(assume_scheme=\"https\")`; test_urlfield_raises_warning / test_url_modelform_assume_scheme_warning: `assertWarnsMessage(RemovedInDjango60Warning, \"The default scheme will be changed from 'http' to 'https' in Django 6.0. Pass the forms.URLField.assume_scheme argument to silence this warning.\")`; test_urlfield_clean: `URLField(required=False, assume_scheme=\"https\")`; HttpsURLField `super().__init__(assume_scheme=\"https\", **kwargs)`; test_https_prefixing `forms.URLField(assume_scheme=\"https\")`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut73n64MDoQ6eS1raMH",
+  "input_tokens": 30832,
+  "output_tokens": 1128,
+  "seconds": 11.4
+}

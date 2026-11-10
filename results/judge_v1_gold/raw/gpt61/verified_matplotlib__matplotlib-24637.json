@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24637",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12038,
+  "output": {
+    "reasoning": "The specification reports that an AnnotationBbox's set_gid value is missing from saved SVG, preventing access to the associated image. The test closely reproduces the supplied setup: OffsetImage inside AnnotationBbox, the same positioning and arrow options, set_gid, add_artist, and savefig(format='svg'). These are settled by the example; the synthetic image and different gid string are reasonable input variations. Preserving the supplied gid in the SVG is explicitly required. However, the assertion additionally requires the exact opening tag '<g id=\"a test for issue 20044\">'. The specification does not settle which SVG element must carry the identifier. A reasonable fix could forward the AnnotationBbox gid to its rendered image, producing an <image> element with that id and making the image accessible as requested, without creating the required <g> tag. Thus the test pins an externally observable representation rather than merely checking that the gid is exported.",
+    "score": 3,
+    "explanation": "A fix that propagates the AnnotationBbox gid to the rendered SVG image would resolve the reported inability to access the image by its gid, but fail because the test specifically requires that identifier on an exact <g> opening tag.",
+    "overspecification_vector": "expected = '<g id=\"a test for issue 20044\">'\nassert expected in buf"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2807,
+  "output_tokens": 2304,
+  "seconds": 60.3
+}

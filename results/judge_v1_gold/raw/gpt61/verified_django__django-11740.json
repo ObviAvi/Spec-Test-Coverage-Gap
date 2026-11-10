@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11740",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12746,
+  "output": {
+    "reasoning": "1. The specification reports that changing an existing scalar field to a cross-app ForeignKey generates a migration without the required target-app dependency: \"the correct solution will be create dependency for App2.\"\n2. The graded test uses get_changes() with an unchanged target model and a source field changing from IntegerField to ForeignKey. It requires one source-app migration, a single AlterField operation, and dependencies [('testapp', '__first__')]. There are no mocks or newly required implementation symbols.\n3. Adding the target-app dependency is directly settled by the specification. Testing IntegerField rather than UUIDField is a reasonable closely related input: the missing dependency concerns introducing a relation, not UUID-specific storage. One AlterField in one migration follows the existing-field alteration described in the issue and ordinary migration autodetection behavior. The '__first__' dependency representation follows the existing cross-app dependency convention visible in the adjacent test_fk_dependency_other_app test.\n4. No requirement introduces an unsupported implementation choice. The test checks generated migration behavior, not which helper computes dependencies. A reasonable fix to the general scalar-to-ForeignKey dependency bug should produce the asserted migration using the established dependency convention.",
+    "score": 2,
+    "explanation": "The test reasonably generalizes UUIDField-to-ForeignKey to IntegerField-to-ForeignKey and checks the requested target-app dependency using the existing cross-app migration convention.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2926,
+  "output_tokens": 1011,
+  "seconds": 28.5
+}

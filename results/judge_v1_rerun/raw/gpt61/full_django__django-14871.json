@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-14871",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7858,
+  "output": {
+    "reasoning": "1. The specification describes missing Select2 translations for language codes with subtags, exemplified by LANGUAGE_CODE=\"pt-BR\", and attributes this to lowercasing that prevents finding the i18n static file. It does not prescribe an attribute-building API or HTML language attribute. 2. The graded addition requires the attribute dictionary checked by AutocompleteMixinTests.test_build_attrs to contain exactly 'lang': 'en'. The other attributes are pre-existing context. 3. Correct subtag translation loading is settled by the specification; adding a lang key to this intermediate dictionary, including for English, is open. No visible existing convention requires that addition. 4. A reasonable fix could resolve language codes to Select2's correctly cased locale filenames and configure the corresponding language during Select2 initialization, leaving the default English widget attributes unchanged. Alternatively, it could add a language override only where subtag handling requires one. Either could fix the reported problem and related inputs while failing this assertion. 5. The test therefore constrains intermediate widget-attribute construction to one implementation strategy rather than checking whether subtag translations load.",
+    "score": 4,
+    "explanation": "A correct fix could canonicalize Select2 locale filenames and configure language selection without adding a lang attribute to the default English widget. It would fail because the test requires the intermediate build_attrs dictionary to contain 'lang': 'en', a requirement absent from the issue.",
+    "overspecification_vector": "AutocompleteMixinTests.test_build_attrs: added expected dictionary entry `'lang': 'en',`"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1770,
+  "output_tokens": 1317,
+  "seconds": 35.7
+}

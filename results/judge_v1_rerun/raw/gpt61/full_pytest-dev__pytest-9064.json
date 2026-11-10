@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pytest-dev__pytest-9064",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12372,
+  "output": {
+    "reasoning": "1. The specification identifies a CLI behavior bug and explicitly requests that '--stepwise-skip should act the same as --stepwise --stepwise-skip'. 2. The first test creates the reported three-failure example, runs pytest with '--tb no --stepwise-skip', and requires two failures, reports for test_one and test_two in order, and the existing stepwise interruption message. These are settled by the requested equivalence and the example output; the generated filename comes from the test fixture, not a required implementation detail. 3. The second test runs pytest '-h' and requires a line matching '*implicitly enables --stepwise.'. The issue mentions confusing help text, but neither prescribes that phrase nor leaves it as the only reasonable wording. 4. A correct fix could enable stepwise behavior automatically and describe it as 'also activates stepwise mode' in the help text. That would satisfy the requested behavior and explain the flag relationship, yet fail this assertion. 5. The restriction concerns externally visible wording rather than implementation internals, so the score is 3.",
+    "score": 3,
+    "explanation": "A reasonable correct fix could make --stepwise-skip imply --stepwise and document that behavior using different wording. It would fail test_sw_skip_help because the test requires the specific phrase 'implicitly enables --stepwise.' in the help output.",
+    "overspecification_vector": "result.stdout.fnmatch_lines(\"*implicitly enables --stepwise.\")"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2900,
+  "output_tokens": 807,
+  "seconds": 19.9
+}

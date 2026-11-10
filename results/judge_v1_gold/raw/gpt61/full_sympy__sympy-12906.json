@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-12906",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 13566,
+  "output": {
+    "reasoning": "Only test_canonical is graded. The specification explicitly identifies non-idempotence: `r.canonical == r.canonical.canonical` is False. The test requires idempotence for several related inequalities, including the analogous rational-expression case `x**2 > -x/y`; this is directly specified or a straightforward generalization. It also requires a relation and its reversal to have the same canonical form, including after reconstruction with evaluate=False. That is conventional canonicalization behavior already reflected in the previous implementation's handling of reversed inequalities. The requirement that a Number not appear on the left when the right is nonnumeric follows the existing documented highest-priority canonicalization rule and previous tests. Finally, Gt(3, 2, evaluate=False) must remain relational so its canonical form supports .canonical, .reversed, .lhs, and .rhs; the old implementation already preserved unevaluated relations. No exact representative, sign convention, or ordering between symbolic expressions is imposed. These checks extend the reported property while preserving existing behavior, rather than choosing an arbitrary fix.",
+    "score": 2,
+    "explanation": "The tests check the reported idempotence property on related inputs, together with existing canonicalization conventions: agreement under reversal, numeric operands on the right, and preservation of unevaluated relations. They do not require the official fix's particular symbolic ordering.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3566,
+  "output_tokens": 1933,
+  "seconds": 54.5
+}

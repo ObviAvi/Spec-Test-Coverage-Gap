@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-16661",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11427,
+  "output": {
+    "reasoning": "1. The specification says `ModelAdmin.lookup_allowed('restaurant__place__country', ...)` wrongly returns False when an intermediate model's primary key is a OneToOneField that is not a parent link. The admin treats it like concrete inheritance and collapses the lookup to `restaurant__country`. The entry point is named.\n\n2. What the tests require: with list_filter `['restaurant__place__country', 'restaurant__place__country__name']`, `lookup_allowed` must return True for three lookups:\n- `restaurant__place__country` with value '1'\n- `restaurant__place__country__id__exact` with value '1'\n- `restaurant__place__country__name` with value 'test_value'\n\n3. How each requirement is settled:\n- The first lookup is settled by the spec; it is the reproduction case nearly verbatim.\n- `country__name` is settled as a related input. The same broken path collapsing applies to any lookup that runs through `place`, and a correct fix must stop collapsing `place` for all of them.\n- `country__id__exact` is settled by convention. The existing code comment says that filtering on `employee__department__id` is allowed because the id would already be found from `employee__department_id`. Existing tests such as the `employee__department__code` test cover this pattern, so it must be preserved.\n\n4. Checking a natural alternative fix: keep the `target_fields` shortcut only when the target field is not itself a relation, or only skip parent links. Then `place` is appended, `country` is appended, and `id` is skipped as the FK target. `name` is appended. All three assertions pass. A fix that removed the `target_fields` shortcut entirely would break existing behavior, so it would not count as a reasonable correct fix. No reasonable fix that preserves existing behavior and fixes the reported bug fails these assertions.",
+    "score": 2,
+    "explanation": "The tests assert the reported lookup `restaurant__place__country` is allowed, plus two closely related lookups (`__name`, and `__id__exact`, the latter allowed by the existing pk-shortcut pattern), which any correct, non-regressing fix satisfies.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CguswaTGzdDEX1366XYkE",
+  "input_tokens": 4211,
+  "output_tokens": 1272,
+  "seconds": 13.4
+}

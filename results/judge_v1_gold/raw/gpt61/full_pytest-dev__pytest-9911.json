@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pytest-dev__pytest-9911",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10478,
+  "output": {
+    "reasoning": "The specification requests explicit, helpful errors for empty tuples passed to pytest.raises() and pytest.warns(), and mentions pytest.raises(None) as a bonus case. The graded tests cover only the public pytest.raises(expected_exception=...) entry point, using () and None. Those inputs are explicitly discussed, and the expected_exception keyword appears in the specification. Both tests additionally require the call itself to raise ValueError with a message matching \"Expected an exception type or\". The exception class and that message fragment are open: the specification names no exception class, and its example message instead begins \"Passing `expected_exception=()` is an error\". A reasonable fix could raise ValueError for both inputs using the specification's suggested explanatory wording, yet fail both regex assertions. TypeError for an invalid expected-exception argument is another plausible choice. Validation timing is also not expressly settled by the context-manager description; validation upon context entry could address that usage without raising at the bare call. These tests constrain observable public behavior, not private implementation details, so the gap is mild overspecification.",
+    "score": 3,
+    "explanation": "A correct fix could reject both () and None with helpful ValueError messages following the issue's suggested \"Passing expected_exception=... is an error\" wording. Both tests would nevertheless fail because they require the unstated message fragment \"Expected an exception type or\"; they also mandate an unspecified exception class.",
+    "overspecification_vector": "Both added tests use: with pytest.raises(ValueError, match=\"Expected an exception type or\"):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2395,
+  "output_tokens": 1086,
+  "seconds": 32.3
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-13236",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 17959,
+  "output": {
+    "reasoning": "1. The requested behavior is factorial divisibility through `%`: “factorial(n) % n would simplify automatically to 0,” preferably also modulo any known integer k with 1 <= k <= n. It does not request general changes to factorization, primality assumptions, or modular arithmetic.\n\n2. Among the graded additions, factorial(n) % n == 0 is directly settled. factorial(n + 2) % n == 0 is a closely related instance of the stated generalization. Leaving factorial(n + 4) % (n + 5) unevaluated is a reasonable soundness check, although requiring its exact outer constructor to remain Mod constrains representation.\n\n3. Other graded test_Mod additions require ZeroDivisionError for modulus zero; particular evaluation or non-evaluation of powers; symbolic Mod denesting with signs and scaled moduli; specified positive/negative symbolic remainders; modular evaluation of an unevaluated power; and Wilson-theorem results factorial(p - 1) % p == p - 1 and factorial(p - 1) % -p == -1 for prime p. These are open relative to this issue. They are not necessary consequences of recognizing divisibility when the modulus lies between 1 and the factorial argument. The bare numeric Wilson/composite expressions lack assertions, so their written equality values are not graded requirements.\n\n4. Additional graded paths are also open: test_composite requires positive even nonprime symbols to be recognized as composite; test_Mul_is_prime_composite and test_Pow_is_prime_composite require new composite/prime deductions and particular None results; test_issue_9115_9150 requires factorial parity and lower-bound deductions; test_issue_7426 changes equality of unrelated symbolic remainders from False to None. These may be useful improvements, but the specification does not require them. A localized factorial-remainder fix need not change those inference or equality paths.\n\n5. Most decisively, test_factorint requires factorint to support unevaluated factorial inputs at 150, 200, and 10000, returning correct prime multiplicities, reconstructing 200!, and producing 1229 distinct factors for 10000!. This is a different function and code path, not a requirement of factorial remainder simplification. Existing context tests evaluated factorial integers, not unevaluated factorial expressions.\n\nA reasonable complete fix could add factorial-specific modular evaluation whenever the argument and positive integer divisor have the required known ordering, while preserving other APIs. That resolves the reported case and its requested generalization but can fail the new factorint and independent assumption tests. Thus the graded suite significantly exceeds the specification.",
+    "score": 4,
+    "explanation": "A correct factorial-remainder fix need not add support for unevaluated factorial expressions to factorint, yet the graded tests require that support for 150!, 200!, and 10000!. They also require independent prime/composite inference changes that a localized fix could reasonably leave untouched.",
+    "overspecification_vector": "assert multiproduct(factorint(fac(200, evaluate=False))) == fac(200)\nfor b, e in factorint(fac(150, evaluate=False)).items():\n    assert e == fac_multiplicity(150, b)\nassert len(factorint(fac(10000, evaluate=False))) == 1229\nAdditional independent requirements include test_Mul_is_prime_composite, test_Pow_is_prime_composite, and test_composite."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5357,
+  "output_tokens": 1769,
+  "seconds": 45.6
+}

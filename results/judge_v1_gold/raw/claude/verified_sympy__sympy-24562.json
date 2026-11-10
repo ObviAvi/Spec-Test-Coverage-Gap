@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-24562",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 8820,
+  "output": {
+    "reasoning": "1. The spec says Rational('0.5', '100') returns 1/100100 instead of the correct 1/200. When both arguments are non-integers, the denominator is computed wrongly. The entry point is the Rational constructor with two arguments.\n2. The graded test requires two things. First, `Rational('0.5', '100') == Rational(1, 200)`. Second, for every combination of p and q drawn from ('1.5', 1.5, 2), `Rational(p, q).as_numer_denom()` must equal `Rational('p/q').as_numer_denom()`.\n3. The first assertion is settled by the spec's literal example: \"the value is 1/200, this value is the true value\". The cross-product assertion is the same constructor run on related mixed str/float/int inputs. It compares against the existing string-parsing path ('p/q'), which the fix does not touch and which already works. as_numer_denom of a canonical Rational is just (p, q) in reduced form, so any fix that computes the correct rational value passes. The float 1.5 is exactly representable, so there is no float-precision ambiguity.\n4. No open requirements remain. Any correct fix produces the mathematically correct, gcd-reduced Rational, and that is all the test checks. A fix that only special-cased strings would leave the bug for (str, float) pairs, so it would not be a correct fix in the first place.",
+    "score": 2,
+    "explanation": "The tests assert only that Rational(p, q) has the correct reduced value, both for the reported case ('0.5', '100') giving 1/200 and for closely related str/float/int combinations, so every correct fix of the denominator computation passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusxas7Chw93z1ioQdWq",
+  "input_tokens": 3346,
+  "output_tokens": 1123,
+  "seconds": 11.6
+}

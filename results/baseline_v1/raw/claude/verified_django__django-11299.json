@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11299",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 6700,
+  "output": {
+    "reasoning": "The issue is about the generated CHECK constraint SQL on SQLite/Oracle. When an AND group sits inside an OR, the AND clause uses fully qualified column names (Col), while the OR branch uses unqualified ones (SimpleCol).\n\nThe only FAIL_TO_PASS test, test_simplecol_query, does not check SQL output or migration behaviour. It inspects internal objects returned by Query.build_where and asserts that the lookups' lhs/rhs are SimpleCol instances.\n\nThe issue does say the cause relates to Col vs SimpleCol, so a developer is pointed toward making nested Q children use SimpleCol. Still, other correct fixes are plausible and would fail this test:\n- generating unqualified SQL in CheckConstraint._get_check_sql, e.g. via a compiler or alias handling;\n- fixing it in the schema editor.\n\nThe test also asserts that the F('id') right-hand side resolves to SimpleCol. The issue never mentions F() expressions, so a fix that only threads simple_col through nested Q objects would still fail. The behavioural test (test_add_or_constraint) is not in the FAIL_TO_PASS list.\n\nSo the test locks onto internal representation choices and one implementation detail beyond the stated scope.",
+    "score": 3,
+    "explanation": "The graded test asserts internal SimpleCol instances from build_where, including for an F() right-hand side the issue never mentions, rather than checking the generated SQL or constraint behaviour. Valid alternative fixes, or ones that only handle nested Q left-hand sides, would fail.",
+    "overspecification_vector": "self.assertIsInstance(num_gt_lookup.lhs, SimpleCol); self.assertIsInstance(name_isnull_lookup.lhs, SimpleCol); self.assertIsInstance(num_lt_lookup.rhs, SimpleCol) (F('id') rhs not mentioned in issue); self.assertIsInstance(num_lt_lookup.lhs, SimpleCol)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguszmbazyqu2p5jkfMMW",
+  "input_tokens": 3181,
+  "output_tokens": 1199,
+  "seconds": 13.2
+}

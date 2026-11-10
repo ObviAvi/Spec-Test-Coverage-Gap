@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-24637",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10823,
+  "output": {
+    "reasoning": "The specification reports that AnnotationBbox.set_gid succeeds but its gid is missing from saved SVG, preventing access to the associated image. The test follows the reproduction through OffsetImage, AnnotationBbox, set_gid, add_artist, and savefig; these entry points and the annotation settings are settled by the example. Using a synthetic image and another user-selected gid is a reasonable variation, not a hidden sentinel requirement. However, the assertion requires the exact opening tag '<g id=\"a test for issue 20044\">'. Preserving the gid in the SVG is specified; attaching it specifically to a group element is not. A reasonable alternative could forward the AnnotationBbox gid to its rendered image, producing an <image> element with that id across OffsetImage inputs. That would support the user's stated image-access use case but fail this assertion.",
+    "score": 3,
+    "explanation": "The test requires the gid on a particular SVG group tag, rather than checking that the rendered image is accessible by the requested gid. A fix that propagates the AnnotationBbox gid to the SVG image element could satisfy the reported use case while failing the test.",
+    "overspecification_vector": "expected = '<g id=\"a test for issue 20044\">'; assert expected in buf"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2524,
+  "output_tokens": 2348,
+  "seconds": 65.4
+}

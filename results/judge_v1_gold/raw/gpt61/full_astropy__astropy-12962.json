@@ -1,0 +1,18 @@
+{
+  "task_id": "full/astropy__astropy-12962",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 14427,
+  "output": {
+    "reasoning": "1. The issue requests a direct way to obtain an ImageHDU from CCDData and proposes alternative interfaces: to_hdu(as_image_hdu=True), a convenience function, or write(..., append=True).\n2. test_to_hdu_as_imagehdu requires to_hdu to accept as_image_hdu=False and return a PrimaryHDU at index 0, and accept True and return an ImageHDU there. The True behavior is explicitly described under Option A; False preserving the existing PrimaryHDU behavior is a conventional boolean-option default. However, requiring Option A rather than another proposed interface is open.\n3. test_ccddata_writer_as_imagehdu additionally requires CCDData.write to accept as_image_hdu=False and produce a one-HDU file, and accept True and produce exactly two HDUs with an ImageHDU at index 1, as observed through fits.open. Preserving the ordinary primary-HDU output is consistent with existing behavior. Requiring this new writer keyword and extension-output mode is open: the specification mentions as_image_hdu only on to_hdu, while its proposed writer interface uses append=True.\n4. A reasonable complete fix could implement Option A exactly, preserving data, headers, and auxiliary HDUs, without changing CCDData.write. It would solve the requested conversion and pass the to_hdu test, yet fail the writer test because the writer does not accept as_image_hdu. Thus the strongest gap is testing an additional function/interface beyond the selected conversion entry point.",
+    "score": 4,
+    "explanation": "A correct implementation of the explicitly proposed to_hdu(as_image_hdu=True) interface could leave CCDData.write unchanged. The writer test would reject it for not also implementing write(as_image_hdu=...), an additional interface the specification never requests.",
+    "overspecification_vector": "ccd_data.write(filename, as_image_hdu=False)\nccd_data.write(filename, as_image_hdu=True)\nassert len(hdus) == 2\nassert isinstance(hdus[1], fits.ImageHDU)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3720,
+  "output_tokens": 1062,
+  "seconds": 25.8
+}

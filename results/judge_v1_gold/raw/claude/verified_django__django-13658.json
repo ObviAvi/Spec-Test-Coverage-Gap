@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13658",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11050,
+  "output": {
+    "reasoning": "1. Spec: ManagementUtility.execute creates CommandParser without prog=self.prog_name, so %(prog)s uses sys.argv[0]. When sys.argv[0] is None, exceptions happen. The spec even gives the exact fix.\n\n2. The test calls the public entry point execute_from_command_line(['django-admin', 'help', 'shell']) with sys.argv patched to [None, ...]. It asserts that stdout contains 'usage: django-admin shell' and that stderr is empty.\n\n3. Requirements:\n- The prog name must come from argv. This is settled by the spec: \"it should refer to self.prog_name\".\n- The 'usage: django-admin shell' output comes from the existing help subcommand path. That path already uses prog_name for the subcommand parser, so this is existing behavior.\n- An empty stderr means no exception occurs. This is settled by the spec, which wants to avoid the exceptions caused by a None sys.argv[0].\n\n4. Any reasonable fix makes the preprocessing parser use the prog name derived from argv. Examples: passing prog=self.prog_name, or substituting the prog name into the usage string. Either way the crash with None is avoided and the help output is unaffected. No reasonable correct fix fails.",
+    "score": 1,
+    "explanation": "The test reproduces the issue's scenario (sys.argv[0] is None, argv passed explicitly) and checks that no error occurs and the usage line shows the argv-derived program name, which is exactly what the spec prescribes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut6sUibHLFUKfP4oNHT",
+  "input_tokens": 4131,
+  "output_tokens": 535,
+  "seconds": 6.0
+}

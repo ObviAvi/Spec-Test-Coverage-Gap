@@ -95,6 +95,14 @@ def cmd_prevalence(args):
     print(f"report: {run_dir(args.prompt) / f'prevalence_{args.set}.md'}")
 
 
+def cmd_compare(args):
+    from .compare import compare
+    from .validation import load_validation
+
+    compare(load_validation(args.split), args.judges.split(","), args.base, args.prompts.split(","), args.split)
+    print(f"report: {config.RESULTS / f'compare_{args.split}.md'}")
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(prog="stcg", description="Spec-Test Coverage Gap judge pipeline")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -124,9 +132,15 @@ def main(argv=None):
     v.add_argument("--judges", default=",".join(config.PANEL))
     v.add_argument("--prompt", default="judge_v1", help="prompt version in prompts/")
 
+    c = sub.add_parser("compare", help="ablations: compare cached prompt versions against a base prompt")
+    c.add_argument("--prompts", required=True, help="comma-separated prompt versions to compare against --base")
+    c.add_argument("--base", default="judge_v1")
+    c.add_argument("--split", default="dev", choices=["dev", "test", "all"])
+    c.add_argument("--judges", default=",".join(config.PANEL))
+
     args = p.parse_args(argv)
     {"build": cmd_build, "split": cmd_split, "judge": cmd_judge, "evaluate": cmd_evaluate,
-     "prevalence": cmd_prevalence}[args.cmd](args)
+     "prevalence": cmd_prevalence, "compare": cmd_compare}[args.cmd](args)
 
 
 if __name__ == "__main__":

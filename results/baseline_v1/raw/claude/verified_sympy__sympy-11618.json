@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-11618",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 1436,
+  "output": {
+    "reasoning": "The issue reports that `Point(2,0).distance(Point(1,0,2))` returns 1 when it should return `sqrt(5)`. The cause is that zip truncates to the shorter dimension, dropping the third coordinate.\n\nThe test checks `Point3D(1,0,2).distance(Point2D(2,0)) == sqrt(5)`. This differs from the issue example in two ways: the order is reversed (3D point calling distance on a 2D point), and it uses the explicit Point3D and Point2D subclasses.\n\nA correct fix for the issue should make distance symmetric and treat missing coordinates as zero, for example by using zip_longest with fillvalue 0. Such a fix naturally handles both directions and both subclasses, since they share Point.distance.\n\nThe expected value, `sqrt(5)`, is exactly what the issue states. Mixed dimensions are therefore meant to be padded, not rejected with an error.\n\nThe main risk is a hypothetical fix that only handles the case where self is the smaller-dimension point. That would be an incomplete fix, not a valid alternative. The test checks a direct consequence of the stated behavior.",
+    "score": 2,
+    "explanation": "The test checks the issue's expected sqrt(5) result with the arguments in reverse order, which any correct, symmetric fix to mixed-dimension distance will satisfy. Only the swapped direction is beyond the literal example, and it follows naturally from the issue.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgusyLwEp4LLJpdPYbu8m",
+  "input_tokens": 935,
+  "output_tokens": 1122,
+  "seconds": 12.2
+}

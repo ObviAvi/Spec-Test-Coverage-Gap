@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9997",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 56301,
+  "output": {
+    "reasoning": "Spec: with autodoc_typehints=description, Literal in Literal['a','b'] isn't linked via intersphinx, while int is. The symptom is a missing link, and no function is named.\n\nWhat the graded tests require:\n- stringify() must take a mode string instead of a boolean, with the values 'fully-qualified' and 'smart'. Calls like stringify(int, \"smart\") and stringify(Any, \"fully-qualified\") == 'typing.Any' depend on this. It is a new API design the spec never mentions.\n- stringify_signature must output fully qualified typing names such as 'typing.List[int]' and 'typing.Any', and autodoc signature output changes to match ('typing.Optional[typing.Any]'). That is an output format change the spec doesn't mention.\n- _parse_annotation must produce a pending_xref with reftype='obj' for typing.* targets and display text 'Literal' rather than 'typing.Literal'.\n\nWhich of these are open:\n- The mode-string API is open. A reasonable fix could keep the boolean smartref argument, or fix the problem elsewhere, for example by making the intersphinx resolver try both class and obj roles. Such a fix would fail test_stringify when it calls stringify(int, \"smart\") (a truthy string may coincidentally work, but 'fully-qualified' would be treated as smart). Concretely, stringify(Any, \"fully-qualified\") == 'typing.Any' fails with the old boolean.\n- The reftype='obj' choice is open. One alternative is to make the resolver fall back across roles.\n- The text stripping is open.\n- Changing the default signature output to 'typing.X' is open.\n\nThe root cause could be fixed in many ways: for example, mapping 'Literal' to typing.Literal during cross-referencing, or making the missing-reference handler search obj types. The tests pin a newly introduced parameter design (mode string values) and internal node attributes. This goes beyond observable behavior and depends on new unspecified names and values.",
+    "score": 4,
+    "explanation": "The tests require a redesigned `stringify(annotation, mode)` API taking the unspecified string modes 'fully-qualified' and 'smart'. They also require `stringify_signature` to emit fully qualified 'typing.X' names and pending_xref nodes with reftype='obj'. A fix that makes Literal link through another route, such as resolving with an obj-role fallback or qualifying names in the description field, fails these assertions.",
+    "overspecification_vector": "test_util_typing.py: stringify(X, \"fully-qualified\") / stringify(X, \"smart\") calls (e.g. `stringify(Any, \"fully-qualified\") == \"typing.Any\"`); test_util_inspect.py: `stringify_signature(sig) == '(x: typing.List[int]) -> typing.List[int]'` etc.; test_domain_py.py: `reftype=\"obj\", reftarget=\"typing.Dict\"` and `[pending_xref, \"Literal\"]`; autodoc tests expecting 'typing.Any', 'typing.Generator', 'typing.Optional[typing.Any]'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutEymTfiL5Fy5nRzDBD",
+  "input_tokens": 23564,
+  "output_tokens": 1072,
+  "seconds": 10.4
+}

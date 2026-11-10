@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14122",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10194,
+  "output": {
+    "reasoning": "1) The specification identifies incorrect aggregation caused by including Meta.ordering fields in GROUP BY: “Meta.ordering fields must not be included in GROUP BY clause.” It names no particular function or required implementation. 2–3) The test uses existing Article fixtures, assigns three articles to self.author_1 and one to self.author_2 using filter/exclude and update, then calls values('author').annotate(count=Count('author')). Its sole assertion requires two dictionaries containing the authors' primary keys and counts 3 and 1, without requiring result order. Grouping independently of default ordering is directly settled by the specification; primary-key values, the explicitly supplied 'count' alias, and the counts follow existing ORM aggregation semantics and the fixture data. The headline strings and author objects are reproduction inputs, not new implementation requirements. 4) No open requirement rejects a reasonable correct fix: the test neither inspects generated SQL nor requires a particular compiler change, private method, or ordering. Any correct fix preventing default ordering from splitting these author groups yields the asserted results. 5) This directly tests the reported aggregation bug.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the assertion checks that default ordering does not split the requested author groups, yielding the correct counts of 3 and 1.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2358,
+  "output_tokens": 670,
+  "seconds": 18.0
+}

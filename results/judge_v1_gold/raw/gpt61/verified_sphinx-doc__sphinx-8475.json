@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8475",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10400,
+  "output": {
+    "reasoning": "1. The specification identifies HEAD requests entering infinite redirect loops and explicitly requests retrying with GET when the exception is TooManyRedirects. 2. The graded test runs the normal linkcheck build against a local server whose HEAD response repeatedly redirects to itself and whose GET response is 200. It then checks output.json for status='working', code=0, info='', and the fixture's URI, filename, and line number. There are no mocks or requirements on newly introduced functions or implementation details. 3. Falling back to GET and treating its successful response as a working link are directly settled by 'retry with a GET request for such scenarios.' The JSON representation and source-location fields follow the existing linkcheck reporting convention; they do not prescribe how to implement the fallback. The local HTTP URL is a controlled reproduction of the described problem. 4. No open requirement rejects a reasonable correct fix: different exception-handling or retry implementations can all produce the ordinary successful-link report.",
+    "score": 1,
+    "explanation": "The test directly reproduces an infinite HEAD redirect loop followed by a successful GET, and its working-link assertion matches the behavior explicitly requested by the specification.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2369,
+  "output_tokens": 600,
+  "seconds": 16.2
+}

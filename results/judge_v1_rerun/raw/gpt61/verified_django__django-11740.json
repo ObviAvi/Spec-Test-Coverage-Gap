@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11740",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10552,
+  "output": {
+    "reasoning": "The issue describes migration generation omitting a cross-app dependency when an existing scalar field becomes a ForeignKey: it explicitly requests a \"dependency for App2.\" The test uses get_changes() with an unchanged target model and a source field changed from IntegerField to ForeignKey, then requires one migration containing one AlterField and a dependency on the target app. The dependency requirement is directly specified. IntegerField rather than UUIDField is a closely related input exercising the same missing-dependency behavior; a UUID-only fix would leave the underlying bug unresolved. One AlterField in one migration follows the existing migration operation convention for this single field alteration. The exact dependency form, ('testapp', '__first__'), follows the cross-app ForeignKey convention demonstrated by the adjacent existing test, rather than introducing a new arbitrary sentinel. Model and app names merely identify the source and target in the fixture. There are no mocks, required new implementation names, or assertions about how dependencies are computed. No open requirement presents a reasonable alternative fix that these assertions would reject.",
+    "score": 2,
+    "explanation": "The test checks the requested cross-app dependency for a scalar-to-ForeignKey alteration, using a closely related scalar type and the existing dependency representation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2473,
+  "output_tokens": 685,
+  "seconds": 18.6
+}

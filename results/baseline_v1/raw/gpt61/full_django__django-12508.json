@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-12508",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 10709,
+  "output": {
+    "reasoning": "The issue requests a user-facing `dbshell -c SQL` option. A correct implementation could parse that option and execute SQL using backend-specific mechanisms without introducing arbitrary argument forwarding or changing the signatures of backend client helpers. The tests instead require parameter-list arguments on those helpers, forwarding unrelated help flags, and exact argument ordering. Thus, several existing-behavior tests also become coupled to the chosen internal API through their modified helpers. More decisively, the user-command test requires a new `CommandError(returncode=3)` capability and propagation of that code to `SystemExit`, neither of which is required to execute SQL through dbshell. These requirements would reject otherwise correct implementations.",
+    "score": 4,
+    "explanation": "The tests prescribe a generalized argument-forwarding implementation rather than just the requested `-c SQL` behavior. They additionally require an unrelated CommandError return-code API, making the suite significantly overspecified.",
+    "overspecification_vector": "tests/dbshell/test_mysql.py: `DatabaseClient.settings_to_cmd_args(connection_settings, parameters)` and the expected `['mysql', 'somedbname', '--help']`; tests/dbshell/test_postgresql.py: `DatabaseClient.runshell_db(dbinfo, parameters)`, `DatabaseClient.runshell_db({}, [])`, and the expected `(['psql', 'dbname', '--help'], {})`; tests/dbshell/test_sqlite.py: `client.runshell(parameters)` and the expected `['sqlite3', 'test.db.sqlite3', '-help']`; tests/user_commands/management/commands/dance.py: `raise CommandError(returncode=3)`; tests/user_commands/tests.py: `self.assertEqual(cm.exception.returncode, 3)` and `self.assertEqual(cm.exception.code, 3)`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2572,
+  "output_tokens": 810,
+  "seconds": 19.4
+}

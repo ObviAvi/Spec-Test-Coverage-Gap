@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-13447",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9255,
+  "output": {
+    "reasoning": "1. The specification requests access to the model class in app_list context: \"have access to the model class (currently the dictionary is a serialized model).\" It also requests making _build_app_dict public, but the graded additions do not test that request.\n2. The added assertions retain object_name == 'Article' and require the Article and User entries to expose their corresponding classes through article['model'] and user['model'].\n3. Preserving object_name is established by the existing test. Exposing the actual model classes is settled by the specification; checking two existing model entries reasonably covers that behavior. However, the exact new dictionary key 'model' is open: neither the specification nor the supplied existing code establishes that name.\n4. A competent developer could add 'model_class': model to every model dictionary, making the classes accessible throughout app_list context, and separately make the requested method public. That satisfies the request but fails both new class assertions with KeyError.\n5. The tests therefore depend on an unspecified name that the fix must introduce, warranting score 4 under the stated rubric.",
+    "score": 4,
+    "explanation": "A reasonable fix could expose each model class under 'model_class' rather than 'model'. The tests require the unspecified new key 'model', so that correct alternative would fail.",
+    "overspecification_vector": "self.assertEqual(article['model'], Article)\nself.assertEqual(user['model'], User)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2112,
+  "output_tokens": 633,
+  "seconds": 17.2
+}

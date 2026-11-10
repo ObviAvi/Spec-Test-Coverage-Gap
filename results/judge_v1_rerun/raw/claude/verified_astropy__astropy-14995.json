@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-14995",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11321,
+  "output": {
+    "reasoning": "1. Spec: in v5.3, NDDataRef arithmetic with handle_mask=np.bitwise_or fails when one operand has no mask (TypeError from int | None). Expected: \"When one of the operand does not have mask, the mask that exists should just be copied over to the output.\" The entry point is NDDataRef.multiply.\n\n2. Test requirements:\n- no mask * constant gives mask None. Settled: the spec marks this as OK.\n- no mask * no mask gives None. Settled: the spec marks this as OK.\n- mask * constant gives the existing mask. Settled by \"the mask that exists should just be copied over.\"\n- mask * mask gives the mask. Settled: the spec shows that output, and bitwise_or of a mask with itself is the mask.\n- mask * no mask gives the mask. Settled by the same expected-behavior text.\n- other_mask * mask gives bitwise_or(mask, other_mask). This is a regression check that existing behavior is preserved; settled by convention.\n- The test uses np.testing.assert_equal on values, so a copy or the same object both pass.\n\n3. All requirements are settled. A reasonable alternative such as treating the missing mask as zeros would also give the same values. Every reasonable fix passes.",
+    "score": 1,
+    "explanation": "The test replicates the issue's reproduction example nearly verbatim and asserts the existing mask is copied when one operand lacks a mask, exactly as the spec's expected behavior states.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut2BhwdkLU8EbFNMe6y",
+  "input_tokens": 4572,
+  "output_tokens": 518,
+  "seconds": 5.2
+}

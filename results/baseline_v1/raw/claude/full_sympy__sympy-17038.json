@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-17038",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5161,
+  "output": {
+    "reasoning": "The issue asks for correct `isqrt` results, particularly for inputs at or above 2**52 + 2**27, and suggests verifying the float-based result. The core assertions `isqrt(4503599761588224) == 67108864` and `isqrt(9999999999999999) == 99999999` follow directly from the issue. The non-integer tests also come from the documented contract 'largest integer <= sqrt(n)', and the old test already passed S.Half inputs, so rational inputs were in scope.\n\nThe test adds several requirements the issue never mentions.\n\n1. Negative inputs must raise ValueError:\n   - `isqrt(-10**1000)` hits the `_sqrt` path. A fix that only lowers the bound and adds a correctness check would get OverflowError (int too large to convert to float), not ValueError.\n   - `isqrt(-tiny)`: `float(-tiny)` becomes -0.0, so the float path returns 0. The verification step can also fall back to `integer_nthroot(int(n))` and return 0. Either way no error is raised.\n   The issue says nothing about input validation, so a natural fix could fail these lines.\n\n2. The monkeypatch of `power._sqrt` to an inaccurate function requires that the fix verifies the float result. A fix that just lowers the threshold to 2**52 + 2**27 would fail it. The issue does present that as safe under the IEEE and correct-rounding assumptions. However, the issue also openly worries about inaccurate `math.sqrt` and suggests verification, so this part is reasonably signposted.\n\nThe negative-input ValueError assertions are the main hidden requirement and could reject otherwise-correct fixes.",
+    "score": 3,
+    "explanation": "The core correctness checks follow from the issue, but the test also requires ValueError for all negative inputs, including huge and tiny negative rationals, which the issue never mentions; a natural bound-lowering-plus-verification fix would raise OverflowError or return 0 instead.",
+    "overspecification_vector": "raises(ValueError, lambda: isqrt(-10**1000)); raises(ValueError, lambda: isqrt(-tiny)); power._sqrt = lambda x: 2.999999999 ... assert isqrt(9) == 3"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutBjBnMzY6uGJZjD43a",
+  "input_tokens": 2552,
+  "output_tokens": 2179,
+  "seconds": 21.3
+}

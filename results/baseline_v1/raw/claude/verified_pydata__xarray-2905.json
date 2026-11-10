@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-2905",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 4058,
+  "output": {
+    "reasoning": "The issue is about `Variable.__setitem__` (via `.loc` assignment) unwrapping any object that has a `.values` attribute. The root cause is in `as_compatible_data`, which does `getattr(data, 'values', data)`. The upstream fix restricts this unwrapping to pandas and xarray objects.\n\nThe graded test never exercises `__setitem__` or `.loc`. Instead it builds a 0-d `Variable` directly from an object whose `.values` attribute is a NumPy array, then checks that `_data.item()` returns that object.\n\nMost developers would fix `as_compatible_data`, since it is shared by the constructor and `__setitem__`, and such a fix passes. Two kinds of valid fix would still fail:\n- A fix scoped to `__setitem__` only, which matches the issue title and resolves the reported example, would not change constructor behaviour.\n- A heuristic fix that uses `.values` only when it is array-like would solve the issue's `values = 5` example, but would unwrap the test's `np.arange(3)` and fail on the shape mismatch with `dims=()`.\n\nThe second heuristic is debatable as a complete fix. The first is a defensible reading of the issue. The test checks a different code path (the constructor) than the one described, so it mildly overspecifies where the fix must go.",
+    "score": 3,
+    "explanation": "The test checks the `Variable` constructor rather than the `__setitem__` path described in the issue, so a valid fix confined to `__setitem__` would fail, although the natural fix in the shared `as_compatible_data` passes.",
+    "overspecification_vector": "array = CustomWithValuesAttr(np.arange(3))\norig = Variable(dims=(), data=array)\nassert isinstance(orig._data.item(), CustomWithValuesAttr)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgusybiUaT3w6wcFrNpWe",
+  "input_tokens": 2026,
+  "output_tokens": 1552,
+  "seconds": 15.7
+}

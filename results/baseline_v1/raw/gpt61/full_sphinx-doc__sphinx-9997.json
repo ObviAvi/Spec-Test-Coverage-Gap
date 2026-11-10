@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9997",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 35627,
+  "output": {
+    "reasoning": "The issue requires parameterized type hints, particularly Literal in parameter descriptions, to link to their documented types. The tests additionally prescribe a particular implementation: new string-valued stringify modes ('fully-qualified' and 'smart'), fully qualified typing names throughout signature generation, and corresponding changes to unrelated autodoc output. A correct fix could resolve typing names during cross-reference processing or qualify references specifically in descriptions while preserving the existing stringify interface and signature output. Such a fix would satisfy the requested behavior but fail many of these graded assertions.",
+    "score": 4,
+    "explanation": "The tests require a broad formatting/API redesign rather than merely working links for parameterized type hints. They would reject correct solutions that preserve existing signatures and implement reference resolution differently.",
+    "overspecification_vector": "tests/test_util_typing.py::test_stringify: `assert stringify(Any, \"fully-qualified\") == \"typing.Any\"` and `assert stringify(Integral, \"smart\") == \"~numbers.Integral\"`; test_stringify_type_hints_containers: `assert stringify(List[int], \"fully-qualified\") == \"typing.List[int]\"`, plus analogous mode assertions in the Callable, Union, and Literal tests. tests/test_util_inspect.py::test_signature_annotations: `assert stringify_signature(sig) == '(x: typing.List[int]) -> typing.List[int]'` and the other changed signature expectations requiring `typing.` prefixes. tests/test_ext_autodoc_configs.py::test_autodoc_typehints_signature: `'.. py:class:: Math(s: str, o: typing.Optional[typing.Any] = None)'`. tests/test_ext_autodoc_autofunction.py::test_wrapped_function_contextmanager: `'.. py:function:: feeling_good(x: int, y: int) -> typing.Generator'`. tests/test_ext_autodoc_automodule.py::test_subclass_of_mocked_object and tests/test_ext_autodoc_preserve_defaults.py::test_preserve_defaults: changed expectations requiring `typing.Any` in otherwise unrelated signatures."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 9487,
+  "output_tokens": 837,
+  "seconds": 19.2
+}

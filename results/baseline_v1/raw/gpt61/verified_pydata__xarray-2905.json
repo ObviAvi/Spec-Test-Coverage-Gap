@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-2905",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 4058,
+  "output": {
+    "reasoning": "The issue requires preserving objects with a `.values` attribute when assigning them into object-dtype arrays. The added test instead requires direct, zero-dimensional Variable construction to preserve such an object, even when its `.values` attribute contains a non-scalar array. A correct fix could prevent coercion specifically during object-dtype assignment while retaining existing constructor normalization behavior, and would fail this test. The test is closely related to the underlying coercion problem, but extends the required behavior beyond the reported assignment scenario.",
+    "score": 3,
+    "explanation": "The test imposes object-preservation behavior on Variable construction, whereas the specification concerns assignment into object-dtype arrays. An assignment-specific fix could satisfy the issue without passing this constructor test.",
+    "overspecification_vector": "orig = Variable(dims=(), data=array)\nassert isinstance(orig._data.item(), CustomWithValuesAttr)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1181,
+  "output_tokens": 653,
+  "seconds": 18.5
+}

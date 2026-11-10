@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10673",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3914,
+  "output": {
+    "reasoning": "The issue asks that `genindex`, `modindex` and `search` be accepted in a toctree without warnings, and presumably rendered as links. The natural fix is for the toctree directive to stop dropping these special names and keep them in the node's `entries` list as `(None, docname)`, which is the standard toctree entry format. The test checks exactly that, along with standard default attributes such as caption, hidden and maxdepth.\n\nA fix that only silenced the warnings while still discarding the entries would fail. That fix arguably doesn't solve the user's problem anyway, since the links would not appear in the toctree.\n\nA fix that stored these entries in a different form would also fail. Examples are rewriting them to URLs like `genindex.html`, attaching explicit titles, or injecting them only at render time in the adapter. These are plausible but less natural designs.\n\nOverall the test checks a reasonable, mostly implied representation, with small room for valid alternatives to be rejected.",
+    "score": 2,
+    "explanation": "The test requires the special pages to be kept as plain `(None, 'genindex')`-style entries in the toctree node, which is the natural representation. Less common alternative designs, such as handling the pages only at render time or encoding them differently, would fail.",
+    "overspecification_vector": "assert_node(toctree[0][1][1], addnodes.toctree, ..., entries=[(None, 'genindex'), (None, 'modindex'), (None, 'search')])"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusxw4YhJK1DG1wsrhGk",
+  "input_tokens": 1954,
+  "output_tokens": 905,
+  "seconds": 10.0
+}

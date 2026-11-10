@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11880",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8948,
+  "output": {
+    "reasoning": "The specification explicitly identifies Field.__deepcopy__ and shared error_messages dictionaries as the bug: “all copies of the same field share the same dictionary.” The test constructs a CharField subclass with a custom error_messages dictionary and calls copy.deepcopy(field). Its assertion that the copied error_messages dictionary is a different object is directly settled by the requested isolation. Its assertion that the copy remains a CustomCharField is settled by standard deepcopy semantics: copying a field should preserve its class and subclass behavior. Using a subclass is a closely related input, not a different code path. The custom message is fixture data; its exact text is never asserted. No open requirement rejects a reasonable correct fix. The test does not verify deep copying mutable message values, but that is limited coverage rather than overspecification.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix provides an independent error_messages dictionary while preserving the copied field’s subclass, satisfying both graded assertions.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2040,
+  "output_tokens": 600,
+  "seconds": 16.4
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12858",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9609,
+  "output": {
+    "reasoning": "1. The spec says the system check models.E015 wrongly fires for an ordering that ends in a lookup that is not a transform, such as __isnull, even though the queryset ordering itself works. The natural entry point is Model.check(), specifically _check_ordering.\n\n2. What the test requires: a model with a CharField 'test' and Meta.ordering = ('test__isnull',) must give Model.check() == [].\n\n3. Settlement:\n- The spec settles the core behavior: isnull used as the final part of an ordering should not raise E015.\n- The test puts isnull directly on a local field rather than at the end of a related chain. That is a closely related input. A correct fix should accept any lookup at the end of an ordering path, regardless of whether a relation precedes it.\n- The check returning an empty list is the only reasonable outcome; no other warning would make sense here.\n\n4. Alternatives considered:\n- A fix that accepts lookups via get_lookup works.\n- A fix that special-cases only isnull also passes this test.\n- A fix that also emits some other warning would be unreasonable, since the spec says the ordering works.\n- No reasonable correct fix fails this test.",
+    "score": 2,
+    "explanation": "The test asserts that Model.check() returns no errors for ordering ('test__isnull',), which is the spec's own symptom (E015 on an __isnull ordering) applied to a local field instead of a related chain, so any correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7AW9t734wqyLgX7XR",
+  "input_tokens": 3523,
+  "output_tokens": 502,
+  "seconds": 6.1
+}

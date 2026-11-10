@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-14871",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 1709,
+  "output": {
+    "reasoning": "The issue only says that Select2 translations with subtags (e.g. pt-BR) do not load because the language code is lowercased. It does not mention any new HTML attribute on the widget.\n\nThe upstream fix took a specific route: it added a `lang` attribute, holding the Select2 i18n name, to the widget's attrs and had the JS read it. The graded test asserts the full attrs dict from `build_attrs` with assertEqual and now requires `'lang': 'en'`.\n\nOther valid fixes would fail this test:\n- Fixing the case mapping or the Select2 language configuration in a different way, such as a `data-language` attribute or a JS-side config.\n- Correcting the static file lookup alone.\nThese might work perfectly well, but because they do not add exactly a `lang` key, the exact dict comparison rejects them. The attribute name and its presence are implementation details that the issue gives no hint of.",
+    "score": 4,
+    "explanation": "The test requires a new `lang` attribute in the widget's build_attrs output, which the issue never mentions. Other valid fixes to the subtag translation problem would fail the exact dict comparison.",
+    "overspecification_vector": "'lang': 'en', added to the expected dict in test_build_attrs (exact assertEqual on build_attrs output)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut6HBhd9TNU9oSguCvQ",
+  "input_tokens": 977,
+  "output_tokens": 943,
+  "seconds": 10.4
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13283",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 16355,
+  "output": {
+    "reasoning": "1. The specification identifies excessive memory use in IsolationForest's decision_function and _average_path_length calculations, especially as the estimator count grows. It suggests per-estimator computation and averaging as a possible solution, but does not mandate chunking or a particular helper.\n2. The graded tests run the existing test_iforest_works with contamination=0.25 and 'auto'. They patch sklearn.ensemble.iforest.get_chunk_n_rows to return 3 or 10, then require exactly 3 helper calls for contamination=0.25 and 2 for 'auto'.\n3. Preserving the existing functional behavior across these contamination settings is conventional regression coverage. However, introducing get_chunk_n_rows into the iforest module's namespace, consulting that exact binding, and making those exact numbers of calls are all open implementation choices. Neither the specification nor existing code shown requires them; the official fix introduces the binding.\n4. A reasonable correct fix could bound temporary memory by processing samples in batches using its own batch-size calculation, without importing or calling get_chunk_n_rows. It would address the memory spike while preserving scores, yet these tests would fail when patching the missing attribute or asserting its call count. Even a fix using the same utility through a different module namespace could fail the patch requirement. The tests therefore constrain internal implementation rather than merely verifying reduced memory use and correct results.",
+    "score": 4,
+    "explanation": "A correct bounded-memory implementation using its own batching logic would fail because the tests require sklearn.ensemble.iforest.get_chunk_n_rows to exist and be called exactly 3 or 2 times. Neither that helper binding nor its invocation count is specified.",
+    "overspecification_vector": "Both @patch(\"sklearn.ensemble.iforest.get_chunk_n_rows\", side_effect=Mock(**{\"return_value\": 3 or 10})) decorators; the parametrized values [(0.25, 3), (\"auto\", 2)]; and both assertions `assert mocked_get_chunk.call_count == n_predict_calls`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3828,
+  "output_tokens": 901,
+  "seconds": 22.1
+}

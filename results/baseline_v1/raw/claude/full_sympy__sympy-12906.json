@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-12906",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 4277,
+  "output": {
+    "reasoning": "The issue says `Relational.canonical` is not idempotent. The only graded test is `test_canonical`, which checks three properties over several relations:\n1. Idempotence: `c.canonical == c`. This is exactly the issue.\n2. Reversal invariance: `i.reversed.canonical == c`. The issue does not state this, but `r.reversed` is the same mathematical relation written the other way. A canonical form should map both to one representative, which is the ordinary meaning of \"canonical\". The old test already relied on reversal behaviour (`isreversed`).\n3. No number on the lhs with a non-number on the rhs. This matches the existing convention, which the old tests checked (e.g. `(-x < 1).canonical == (x > -1)`).\n\nThe test does not pin an exact output form. For example, it does not dictate how signs are normalized for `x**2 > -x/y`. It only checks structural properties any reasonable canonicalization should have.\n\nA fix aimed narrowly at idempotence might not guarantee reversal invariance. Still, that requirement follows from the word \"canonical\" and from existing behaviour, so it is a reasonable implicit requirement rather than an arbitrary implementation detail. The changes to `test_solvers` and `test_sums_products` are not in FAIL_TO_PASS, so they are not graded.",
+    "score": 2,
+    "explanation": "The graded test checks idempotence (the stated issue) plus reversal invariance and the numbers-on-rhs convention. These are implied by the meaning of a canonical form and by existing behaviour, not by the specific implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutAtBjiQpcP2u4iWvBs",
+  "input_tokens": 2330,
+  "output_tokens": 1035,
+  "seconds": 11.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13658",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9779,
+  "output": {
+    "reasoning": "1. The spec says ManagementUtility.__init__ computes self.prog_name from the argv passed in. But execute() builds CommandParser without prog, so argparse falls back to sys.argv[0]. When sys.argv[0] is None this raises exceptions. The proposed fix is to pass prog=self.prog_name.\n\n2. What the test requires:\n- It calls the public execute_from_command_line(['django-admin', 'help', 'shell']) while sys.argv is patched to [None, 'help', 'shell'].\n- It asserts 'usage: django-admin shell' appears in stdout.\n- It asserts stderr is empty.\n\n3. How each requirement is settled:\n- The sys.argv[0] = None scenario is exactly the user's described environment: \"sys.argv[0] is incorrectly None\".\n- The absence of exceptions is what the spec asks for: \"passing my own argv to execute_from_command_line avoided all the ensuing exceptions\".\n- The usage text 'usage: django-admin shell' comes from the existing help path, which already passes self.prog_name to print_help. A fix only has to stop the CommandParser from touching sys.argv[0].\n\n4. Any fix that makes the pre-parser use self.prog_name instead of sys.argv[0] passes, whether via the suggested prog= argument or something equivalent. No reasonable correct fix would change the help output format or write to stderr.",
+    "score": 1,
+    "explanation": "The test reproduces the reported scenario (sys.argv[0] is None while a custom argv is passed) and checks only that help runs without errors and uses the argv-derived program name, which the specified fix achieves.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7KDGZ4jkTY4QQQgK2",
+  "input_tokens": 3693,
+  "output_tokens": 937,
+  "seconds": 10.2
+}

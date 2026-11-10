@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pydata__xarray-5455",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3405,
+  "output": {
+    "reasoning": "The issue describes two behaviours. First, xarray should always register its own backends. Second, when no installed backend matches, the error should suggest backends to install whose guess_can_open reports a match. The behavioural part of the tests is reasonable: guess_engine('foo.nc') must raise an error that suggests uninstalled matching backends, even when list_engines is mocked. However, the tests match three exact phrases:\n- \"did not find a match in any\"\n- \"found the following matches with the input\"\n- \"xarray is unable to open\"\n\nNone of these appear in the issue. The only example message the issue gives is \"Xarray cannot find a matching installed backend for this file in the installed backends [...]. Consider installing one of the following backends which reports a match: [...]\". A developer who followed that example wording exactly would fail every assertion. A correct implementation would therefore be rejected purely because of message wording that only the original patch defines.",
+    "score": 4,
+    "explanation": "The tests regex-match specific error-message phrases that appear nowhere in the issue, which proposes different wording. Correct implementations will almost certainly fail on message text alone.",
+    "overspecification_vector": "pytest.raises(ValueError, match=r\"did not find a match in any\"); pytest.raises(ValueError, match=r\"found the following matches with the input\"); pytest.raises(ValueError, match=r\"xarray is unable to open\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut8MrJmchzXkdmY5Nb7",
+  "input_tokens": 1618,
+  "output_tokens": 717,
+  "seconds": 7.1
+}

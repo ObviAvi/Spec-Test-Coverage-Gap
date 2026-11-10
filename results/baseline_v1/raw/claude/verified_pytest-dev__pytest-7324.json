@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7324",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 1730,
+  "output": {
+    "reasoning": "The issue says compiling a mark expression such as \"False\" crashes a debug-build interpreter: the code generates ast.Name nodes for True/False/None, which CPython's compiler forbids. The test `test_valid_idents` is parametrized over identifiers. It checks that `evaluate(ident, {ident: True}.__getitem__)` returns True, meaning each identifier is looked up through the matcher. \"True\" and \"False\" were already in this list before the patch, so treating them as plain identifiers is established existing behavior. The patch only adds \"None\", which fits the same pattern. A correct fix must stop emitting reserved names as ast.Name nodes, for example by prefixing or mangling names, or by switching to a custom evaluator. It must also keep the existing behavior that these keywords resolve through the matcher. Any reasonable fix that avoids the crash while keeping current semantics passes. The issue text does not spell out the semantics for \"None\", but treating it like True and False is the obvious, consistent choice. The tests do not check any implementation detail such as a prefix scheme.",
+    "score": 2,
+    "explanation": "The tests only require that True, False and None keep being treated as matcher-looked-up identifiers, which is existing behavior plus its natural extension to None; any crash fix that preserves current semantics passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusw67SpLtnx6G7pa765",
+  "input_tokens": 1002,
+  "output_tokens": 846,
+  "seconds": 10.2
+}

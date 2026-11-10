@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13417",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9878,
+  "output": {
+    "reasoning": "1. The spec says QuerySet.ordered returns True for an annotate() GROUP BY query on a model with Meta.ordering, even though the SQL has no ORDER BY. The expected fix is that ordered returns False in that case. Entry point: the qs.ordered property.\n\n2. What the tests require:\n- Tag.objects.annotate(num_notes=Count('pk')).ordered is False.\n- The same queryset with .order_by('name') has ordered True.\n- The values('name').annotate(...) variant has ordered False.\n- That variant with .order_by('name') has ordered True.\n- Tag presumably has Meta.ordering, as implied by the test names.\n\n3. How each requirement is settled:\n- ordered is False for the annotate case: settled by the spec, which complains that it \"seems to stay truthy, even if the resulting SQL query will not have an ORDER BY clause\". This mirrors the issue's example.\n- The values() + annotate variant: a closely related input that also produces GROUP BY with no default ordering. Any fix that checks group_by covers it.\n- order_by on top returns True: existing behavior, and it follows naturally.\n\n4. Alternative fixes considered:\n- Changing the SQL compiler to keep the default ordering instead. That would contradict Django's deliberate behavior and the issue's framing of the ordered property as wrong, so it is not a reasonable fix.\n- Checking the compiler's actual ordering output. It would still yield False here.\n\nAll reasonable fixes pass. The tests are a near-verbatim reproduction plus one related input.",
+    "score": 2,
+    "explanation": "The tests assert that annotate() on a model with Meta.ordering, plus the related values().annotate() case, yields ordered False, and that adding order_by() yields True. This is exactly what the spec says should happen, so any fix of the ordered property passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgusySWbYZtdVCNgLXaiT",
+  "input_tokens": 3734,
+  "output_tokens": 648,
+  "seconds": 7.3
+}

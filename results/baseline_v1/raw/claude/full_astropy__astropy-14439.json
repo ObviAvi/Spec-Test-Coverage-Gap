@@ -1,0 +1,19 @@
+{
+  "task_id": "full/astropy__astropy-14439",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 7266,
+  "output": {
+    "reasoning": "The issue only asks that FITS output for Jy/beam put the positive-power unit first, e.g. 'Jy beam-1' instead of 'beam-1 Jy'. The reference fix goes further. It changes the general unit-ordering rule for all formats: units are sorted by power in descending order, and ties keep their original insertion order.\n\nThe tests encode that exact ordering:\n- generic: 'erg / (Angstrom s cm2)'\n- FITS: 'erg Angstrom-1 s-1 cm-2'\n- vounit: 'erg.Angstrom**-1.s**-1.cm**-2'\n- test_multiple_solidus: 'm(5/2) kg(3/10) / s'\n\nA natural, correct alternative would put positive powers before negative ones and keep alphabetical order within each group. That would give FITS output 'erg Angstrom-1 cm-2 s-1' and generic output 'erg / (Angstrom cm2 s)', and it fully resolves the issue. Yet it fails almost every listed test, including the ones for generic, ogip and vounit formats that the issue never mentions. Nothing in the issue implies sorting by power magnitude or keeping insertion order for ties, so the tests pin down implementation details well beyond the stated requirement.",
+    "score": 4,
+    "explanation": "The tests require one specific new ordering rule (descending power, ties kept in insertion order) across all formats, while the issue only asks that the positive-power unit come first in FITS output, so many valid fixes would be rejected.",
+    "overspecification_vector": "assert x.to_string(format=\"fits\") == string + \" erg Angstrom-1 s-1 cm-2\"; (\"fits\", \"erg Angstrom-1 s-1 cm-2\", ...); (\"generic\", \"erg / (Angstrom s cm2)\", ...); assert x == \"erg.Angstrom**-1.s**-1.cm**-2\"; assert x.to_string() == \"m(5/2) kg(3/10) / s\"; assert str(arr) == \"[1 2 3] erg / (A s cm2)\"; (\"generic\", False, \"erg s-1 cm-2\", ...)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut4ikYXuQCY2SCCMkJk",
+  "input_tokens": 3930,
+  "output_tokens": 1218,
+  "seconds": 12.2
+}

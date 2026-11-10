@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7889",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10140,
+  "output": {
+    "reasoning": "Spec: autodoc's mock `_make_subclass` raises a TypeError when it concatenates a str with a TypeVar, which happens when a mocked class is subscripted with a TypeVar (a generic base). Expected outcome: docs build when generics are involved.\n\nWhat the test requires:\n1. Defining `class SubClass2(mock.SomeClass[T])` with `T = TypeVar('T')` must not raise.\n   - Settled. This is exactly the reported scenario: a generic class with a mocked base.\n2. `SubClass2.__doc__` must be preserved.\n   - Settled by convention. The same assertion already exists for the plain subclassing case in the context lines.\n3. `SubClass2()` must be instantiable and the result must be an instance of SubClass2.\n   - Settled. This is basic expected behavior, mirroring the existing subclass test.\n\nThe test uses only public mock behavior: subscripting a mock and subclassing the result. It does not check the name produced by `str(key)` or any repr. Alternative correct fixes would also pass:\n- `repr(key)`\n- returning `self` from `__getitem__`\n- using `getattr(key, '__name__', ...)`\n\nAll of these avoid the TypeError and keep subclassing working. No open requirement rejects a reasonable fix.",
+    "score": 1,
+    "explanation": "Every reasonable fix passes: the test simply subclasses `mock.SomeClass[T]` with a TypeVar (the reported failing case) and checks the existing subclass behavior (docstring kept, instantiable), without pinning any display name.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusx5JrcLzmo5GFHxwUu",
+  "input_tokens": 3936,
+  "output_tokens": 559,
+  "seconds": 6.7
+}

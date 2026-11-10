@@ -1,0 +1,19 @@
+{
+  "task_id": "full/pytest-dev__pytest-5205",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 14797,
+  "output": {
+    "reasoning": "1. The spec says the record_property fixture writes <properties> inside <testcase>, which is invalid under the JUnit schema; properties should sit inside <testsuite>. It does not prescribe a fix and floats removing the feature as one option.\n\n2. The graded tests require:\n- a new fixture named `record_testsuite_property` that takes (name, value);\n- that the recorded properties appear as <property> children of a <properties> node under <testsuite>, in call order;\n- that non-string values are converted to strings (10 -> \"10\");\n- that the fixture works as a no-op when --junitxml is not passed;\n- that passing an int as name raises exactly `TypeError: name parameter needs to be a string, but int given`, both with and without junitxml.\n\n3. Status of each requirement:\n- Fixture name `record_testsuite_property`: open. The spec never mentions it.\n- Placement under <testsuite>: settled by the spec.\n- String conversion of values: convention.\n- Exact TypeError message: open.\n- Type check in no-op mode: open.\n\n4. Reasonable alternatives that fail:\n- A developer could change record_property itself to emit at suite level.\n- A developer could drop the feature, which the spec suggests.\n- A developer could add a fixture under another name, such as `record_global_property`.\nAll of these fail every test, because the fixture name is required and unspecified. Even a fix using the same name would fail the type-checking tests unless it raised exactly this TypeError message.\n\n5. The tests depend on a new public name and an exact error message, neither of which the spec gives. This is a score of 4.",
+    "score": 4,
+    "explanation": "The tests require a brand-new fixture named `record_testsuite_property` that the issue never mentions. They also require an exact TypeError message, \"name parameter needs to be a string, but int given\", even when junitxml is disabled. Fixing record_property's placement, or adding a differently named fixture, fails every test.",
+    "overspecification_vector": "fixture name `record_testsuite_property` used in all tests; `result.stdout.fnmatch_lines([\"*TypeError: name parameter needs to be a string, but int given\"])`; assertion of `result.ret == 1` without --junitxml"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutD7LZfHsTVCSGoodA8",
+  "input_tokens": 5717,
+  "output_tokens": 760,
+  "seconds": 9.8
+}

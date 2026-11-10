@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14311",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 2711,
+  "output": {
+    "reasoning": "The expected child command directly matches the issue: preserve the full dotted module name after '-m'. However, the fixture replaces __main__ with main_module while setting sys.argv[0] to the package's __main__.py, not main_module.py as a real launch would. A correct fix that consults sys.argv[0] to distinguish package execution from ordinary module execution could therefore fail this inconsistent fixture.",
+    "score": 3,
+    "explanation": "The expected output is justified, but the mocked launch state is inconsistent. This mildly overspecifies the fix by potentially rejecting implementations that correctly use the actual launch path.",
+    "overspecification_vector": "@mock.patch('sys.argv', [test_main.__file__, 'runserver']) combined with @mock.patch.dict(sys.modules, {'__main__': test_main_module})"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 746,
+  "output_tokens": 1701,
+  "seconds": 35.3
+}

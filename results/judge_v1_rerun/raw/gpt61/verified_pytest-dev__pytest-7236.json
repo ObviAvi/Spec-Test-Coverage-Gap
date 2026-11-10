@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7236",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10897,
+  "output": {
+    "reasoning": "1. The issue reports that pytest --pdb incorrectly executes unittest.TestCase.tearDown for a skipped test and states: \"I would have expected the test to be skipped, even with --pdb.\"\n2. The only graded parameter is @unittest.skip. It runs pytest with --pdb on a TestCase whose skipped method has setUp and tearDown callbacks that record calls. It requires a '1 skipped' summary and an empty call log.\n3. Both requirements are settled by the reported behavior and reproduction: the test must remain skipped, without executing its lifecycle callbacks. The reproduction already places undefined names in both setUp and tearDown, so replacing those failures with call tracking merely observes the same behavior. The monkeypatched pytest attribute is test instrumentation; the implementation need not introduce, reference, or preserve any particular internal attribute.\n4. There are no open implementation choices constrained by the assertions. Any reasonable fix that restores the reported skip behavior will produce the skipped result without invoking either callback. The @pytest.mark.skip parameter is not among the graded tests.",
+    "score": 1,
+    "explanation": "The graded test directly reproduces the reported unittest.skip case under --pdb, asserting the expected skipped result and absence of setUp or tearDown execution without prescribing an implementation.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2609,
+  "output_tokens": 578,
+  "seconds": 16.3
+}

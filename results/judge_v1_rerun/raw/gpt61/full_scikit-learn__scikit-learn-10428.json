@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-10428",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9369,
+  "output": {
+    "reasoning": "1. The specification requests a common check in sklearn/utils/estimator_checks.py that predictions and transformations are invariant across batches and subsets. It explicitly says comparing individual-sample predictions against dataset predictions may suffice.\n2. The added test supplies NotInvariantPredict, a BaseEstimator whose fit validates its inputs and whose predict returns ones for multiple samples but zeros for a single sample. It calls check_estimator with that class and requires an AssertionError matching 'predict of NotInvariantPredict is not invariant when applied to a subset.'.\n3. Detecting this estimator's batch-dependent predict behavior is settled by the specification's invariance requirement and explicit allowance for single-sample comparisons. Using check_estimator with an estimator class and reporting failed checks through AssertionError follows the existing test context. The fixture's validation helpers and class name do not require corresponding implementation details. However, the required diagnostic wording is open: the specification supplies no error-message requirement, and the surrounding assertions do not establish this particular wording.\n4. A reasonable correct fix could integrate the invariance check into check_estimator and raise AssertionError with 'Predictions differ between batch and individual samples', or use an array-comparison assertion with its standard diagnostic. Such a fix would detect the supplied estimator correctly but fail the required message regex.\n5. The diagnostic is observable behavior rather than an internal implementation constraint, so the most overspecified assertion warrants score 3.",
+    "score": 3,
+    "explanation": "A correct invariance check could reject NotInvariantPredict with an AssertionError using different diagnostic wording. The graded test would fail because it requires the particular phrase 'predict of NotInvariantPredict is not invariant when applied to a subset.'.",
+    "overspecification_vector": "msg = (\"{method} of {name} is not invariant when applied \" \"to a subset.\").format(method=method, name=name); assert_raises_regex(AssertionError, msg, check_estimator, NotInvariantPredict)"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2146,
+  "output_tokens": 707,
+  "seconds": 16.4
+}

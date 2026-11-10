@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13807",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12401,
+  "output": {
+    "reasoning": "1. The specification says SQLite's DatabaseWrapper.check_constraints builds PRAGMA and SQL statements by interpolating identifiers without quoting them. With a keyword table name such as 'order', this raises OperationalError instead of performing the check. The entry point is check_constraints, which loaddata calls.\n2. What the test requires:\n- It calls connection.check_constraints(table_names=['order']), the public entry point named in the specification.\n- The table is 'order', the pk column is 'select' and the FK column is 'where'.\n- A deliberately broken FK must produce IntegrityError rather than OperationalError.\n3. How each requirement is settled:\n- Table name 'order' and check_constraints are settled by the spec: \"PRAGMA foreign_key_check(%s)\" and \"PRAGMA foreign_key_list(%s)\".\n- IntegrityError is settled by existing behavior: the existing test_check_constraints already expects it for violations.\n- To raise IntegrityError, the function must reach the SELECT that fetches the bad value, so the SELECT must quote the table name. This follows because the same unquoted 'order' crashes there; any fix that leaves it unquoted still crashes on keyword tables whenever a violation exists.\n- Keyword column names ('select', 'where') in that SELECT are the one detail beyond the literal issue. They are the same bug class, unquoted identifiers, in the same statement of the same function.\n4. The remaining edge is a fix that quotes table names everywhere but not column names. That fix would fail here. It leaves the identical quoting bug in closely related inputs, since keyword identifiers sit in the same SQL statement. A competent fix applying quote_name throughout check_constraints, which is the natural approach, passes.\n5. The test exercises the specified function with closely related inputs and asserts the established exception type. Score 2.",
+    "score": 2,
+    "explanation": "The graded assertion is that check_constraints(table_names=['order']) raises IntegrityError rather than OperationalError, which directly reflects the reported crash in check_constraints. The keyword column names only extend the same identifier-quoting fix within that function.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7HRNDNr7Pfx5nBQUG",
+  "input_tokens": 4637,
+  "output_tokens": 1261,
+  "seconds": 13.5
+}

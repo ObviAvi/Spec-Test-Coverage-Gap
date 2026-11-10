@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-15240",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 18552,
+  "output": {
+    "reasoning": "Spec: proposes truncating django_migrations of nonexistent migrations, either automatically (preferred) or via a new command; mentions not removing replaced migrations. No option name, no messages, no app_label requirement. Tests require: a `prune` kwarg to the migrate command (unspecified new name; spec even prefers automatic approach); exact output 'Pruning migrations:\\n  No migrations to prune.\\n'; exact multi-line refusal message about 'replaces' attributes; CommandError with exact text 'Migrations can be pruned only when an app is specified.' All open. A reasonable fix doing automatic pruning in the executor, or a separate management command, or a --prune option with different messages, or allowing pruning without app_label, would fail. Also the behavior of refusing to prune when squashed migrations still have replaces contradicts the spec's suggested remedy (treat replaced as existing and keep them). The tests depend on a new unspecified option name and an arbitrary design (app-label requirement, refusal), plus exact strings.",
+    "score": 4,
+    "explanation": "The tests require a new `prune` option on `migrate` (spec never names it and prefers automatic pruning), exact output strings, a CommandError requiring an app label, and a refusal message when squashed migrations retain `replaces`, contradicting the spec's suggested remedy of keeping replaced entries. Any automatic-pruning or separate-command fix, or one with different messages/semantics, fails.",
+    "overspecification_vector": "call_command('migrate', ..., prune=True, ...); 'Pruning migrations:\\n  No migrations to prune.\\n'; \"Cannot use --prune because the following squashed migrations have their 'replaces' attributes...\"; 'Migrations can be pruned only when an app is specified.'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutAAfQkwLNSzgRiBd1Y",
+  "input_tokens": 6645,
+  "output_tokens": 603,
+  "seconds": 6.6
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-17512",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 7519,
+  "output": {
+    "reasoning": "The issue asks for two behaviours. First, `Range(range(10))` should stop being accepted, while sympifying a builtin `range` should still produce a `Range`. Second, `ImageSet` should sympify its arguments and raise if the second one is not a `Set`.\n\nThe test patch checks the first part directly with `raises(TypeError, lambda: Range(builtin_range(1)))` and `S(builtin_range(10)) == Range(10)`. Those lines follow from the issue, though the specific `TypeError` type is not stated in it.\n\nHowever, the same `test_Range_set` function also contains a large rewrite of `Range` semantics that the issue never mentions:\n- Symbolic `Range` support, e.g. `Range(x, y, t)` with args preserved, `ir.reversed`, `ir[-1] == i + 18`, `len(ir) == 10`, `ir.inf`/`ir.sup`, and `Range(ip)[-1] == ip - 1`.\n- Infinite steps that used to raise now evaluate: `Range(1, 4, oo) == Range(1, 2)` and `Range(1, -4, -oo) == Range(1, 2)`.\n- `Range(-oo, oo).size == oo`, whereas this used to raise `ValueError`.\n- `Range(0, oo, 2)[-1]` now raises instead of returning `oo`.\n- `as_relational` now returns `Eq(x, floor(x))` instead of the old form.\n- `Range(x, x, y) == empty`.\n- `raises(TypeError, lambda: 1 in sr)`.\n\nA developer who correctly fixes the stated issue (rejecting a builtin `range` in `Range`, keeping sympification, and making `ImageSet` sympify and validate) would still fail this test. The failures would come from all the undescribed symbolic-Range and infinite-step changes. The graded test therefore depends on a big refactor that the specification does not describe.",
+    "score": 4,
+    "explanation": "The FAIL_TO_PASS test bundles many new `Range` behaviours that the issue never mentions, so a fix that only addresses the `range` conversion and `ImageSet` sympification would fail. These include symbolic Range args, infinite-step evaluation, `size` of infinite ranges, a new `as_relational` form, and new indexing errors.",
+    "overspecification_vector": "assert Range(1, -4, oo) == empty; assert Range(1, 4, oo) == Range(1, 2); assert Range(-oo, oo).size == oo; raises(ValueError, lambda: Range(0, oo, 2)[-1]); assert Range(x, x, y) == empty; assert Range(1, 4).as_relational(x) == (x >= 1) & (x <= 3) & Eq(x, floor(x)); entire '# symbolic Range' block (sr = Range(x, y, t); ir = Range(i, i + 20, 2); ir.reversed, ir[-1], len(ir), Range(ip)[-1], ir.as_relational, etc.)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutCFtVAWwad4uVTtjXh",
+  "input_tokens": 3782,
+  "output_tokens": 1183,
+  "seconds": 10.9
+}

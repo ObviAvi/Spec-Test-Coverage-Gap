@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11880",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9790,
+  "output": {
+    "reasoning": "The specification identifies Field.__deepcopy__ and says copies incorrectly \"share the same dictionary,\" allowing error-message changes to leak between fields. The test constructs a CharField subclass with an error_messages dictionary, calls copy.deepcopy(field), and requires a distinct error_messages object. This directly checks the specified defect. It also requires the copy to remain an instance of the subclass, which preserves existing behavior from copy.copy(self) and normal deepcopy semantics. The custom message is only setup; its exact text is not asserted. No requirement remains open, and no reasonable correct fix would fail these assertions. The test does not check independence of nested message objects, but that is undercoverage, not overspecification.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes: the distinct-dictionary assertion directly checks the reported sharing bug, while the subclass assertion preserves existing copying behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2238,
+  "output_tokens": 488,
+  "seconds": 14.7
+}

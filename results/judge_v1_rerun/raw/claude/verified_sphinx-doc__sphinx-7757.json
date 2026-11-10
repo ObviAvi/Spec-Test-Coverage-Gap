@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7757",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8653,
+  "output": {
+    "reasoning": "1. The specification says `.. py:function:: foo(a, b=0, /, c=1)` renders without the default `0` for the positional-only parameter `b`. It describes the symptom through the py domain and does not name a function. In the repository the domain parses arglists via `sphinx.util.inspect.signature_from_str`. That function builds a Signature from the AST, and the AST's `args.defaults` covers posonlyargs and args together. So the root cause sits there: defaults are mis-assigned when posonlyargs are present.\n\n2. What the test requires: `signature_from_str('(a, b=0, /, c=1)')` returns parameters a, b, c, where:\n- a is POSITIONAL_ONLY with no default;\n- b is POSITIONAL_ONLY with default '0';\n- c is POSITIONAL_OR_KEYWORD with default '1'.\n\n3. How each requirement is settled:\n- The input is the exact reproduction example from the issue.\n- The kinds were already asserted in the existing test (context and `-` lines).\n- Defaults are stored as unparsed strings ('0', '1'), which matches how the existing code already represents defaults for regular args. This is settled by the existing convention.\n- `signature_from_str` is an existing public utility, not a new name, and it is the function the domain calls to parse the reported directive.\n\n4. Could a reasonable fix fail? Only one that patched the domain's rendering without fixing the parsed signature. That is implausible, because the default is lost inside `signature_from_str`, and any fix of the root cause makes this test pass.",
+    "score": 2,
+    "explanation": "The test runs the issue's exact signature through the existing parser that the py domain uses and checks that b keeps its default '0' (string form, as for other defaults) and that c keeps '1', which any root-cause fix produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cguszxuiv6f9v1B6tT82h",
+  "input_tokens": 3300,
+  "output_tokens": 950,
+  "seconds": 11.3
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-13447",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9255,
+  "output": {
+    "reasoning": "1. The specification asks that each model entry in the admin app_list context give access to the model class, instead of only its serialized fields. It also suggests making _build_app_dict public. It never says which dict key should hold the class.\n2. The graded test requires each model dict in available_apps to have the key 'model', with value equal to the model class (Article, User).\n3. Status of each requirement:\n- Including the model class is settled: \"have access to the model class\".\n- The key name 'model' is open. The spec says \"model class\" but names no key.\n- Making _build_app_dict public is not tested, so it does not matter.\n4. A competent developer could name the key 'model_class', which is arguably clearer next to 'object_name', or 'class'. Either fix fully meets the spec and would fail `article['model']` with a KeyError. 'model' is the most likely choice, but it is not the only reasonable one.\n5. The test checks observable context output, not internal state, but it pins one naming choice among several. That makes it a 3.",
+    "score": 3,
+    "explanation": "The test requires the model class under the exact dict key 'model'. A correct fix that exposes it as 'model_class' (or another reasonable key) would fail with a KeyError.",
+    "overspecification_vector": "self.assertEqual(article['model'], Article); self.assertEqual(user['model'], User)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut9P7UmVNQg9opgfZAv",
+  "input_tokens": 3392,
+  "output_tokens": 789,
+  "seconds": 8.9
+}

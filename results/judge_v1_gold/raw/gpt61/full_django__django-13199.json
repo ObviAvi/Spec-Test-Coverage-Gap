@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-13199",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 15337,
+  "output": {
+    "reasoning": "The issue identifies HttpResponse.delete_cookie() dropping SameSite, with messages as the reproduction and other cookie deletion affected as well. The graded tests require: (1) delete_cookie('c', samesite='lax') to retain 'lax', consistent with the existing set_cookie keyword shown in the report; (2) deleted message cookies to use SESSION_COOKIE_SAMESITE, explicitly supported by the proposed code; and (3) session deletion, including custom domain/path, to include SESSION_COOKIE_SAMESITE, a reasonable extension to another affected caller. Existing expiration, domain, and path behavior is established by the test context. However, the session tests compare complete headers and therefore also require deletion headers to omit HttpOnly and other additional attributes. That restriction is open: the report itself proposes forwarding httponly and secure alongside samesite. A reasonable fix could add these options to delete_cookie() and have messages and sessions pass their own configured cookie attributes, avoiding the report's objection to applying session settings globally. Such a fix preserves SameSite correctly but produces a session deletion header containing HttpOnly, failing the exact comparisons.",
+    "score": 3,
+    "explanation": "A reasonable fix could preserve the session cookie's HttpOnly flag alongside SameSite, using caller-supplied options as suggested by the report. The session tests reject that correct deletion header because their complete-string comparisons require HttpOnly to be absent.",
+    "overspecification_vector": "The complete-header equality assertions in test_session_delete_on_end and test_session_delete_on_end_with_custom_domain_and_path, whose updated expected strings end with 'Max-Age=0; Path=/; SameSite={}' and 'Max-Age=0; Path=/example/; SameSite={}', respectively, allow no additional HttpOnly attribute."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3553,
+  "output_tokens": 3849,
+  "seconds": 97.0
+}

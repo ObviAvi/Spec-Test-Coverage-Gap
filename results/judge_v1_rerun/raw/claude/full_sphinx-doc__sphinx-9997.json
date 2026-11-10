@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sphinx-doc__sphinx-9997",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 41776,
+  "output": {
+    "reasoning": "Spec: typehints in description mode do not link parametrized types like Literal[\"a\",\"b\"]; expected that Literal links to typing.Literal. It names no function and describes only the symptom. Graded tests require: (1) stringify's second parameter changed from bool to a string mode ('fully-qualified', 'smart', default/unspecified), a new API never mentioned in the spec; (2) default stringify_signature output switched to fully-qualified 'typing.List[int]', 'typing.Any', etc., changing many autodoc signature outputs (test_autodoc_typehints_signature, preserve_defaults, wrapped_function_contextmanager); (3) _parse_annotation producing reftype='obj' instead of 'class' for typing.Dict/Literal and rendering 'typing.Literal' as text 'Literal'. None of this follows from the spec. A reasonable fix could, for example, make the description-mode typehint output qualify typing names, or adjust the xref resolution so Literal resolves via intersphinx, without changing stringify's signature to a string mode or changing all signature output to 'typing.' prefixes. Such a fix would fail test_stringify* (the API call stringify(x, 'smart') would error or misbehave), test_signature_annotations, and the autodoc tests expecting 'typing.Optional[typing.Any]'. The string-mode parameter is an unspecified new interface, and reftype 'obj' is an internal choice.",
+    "score": 4,
+    "explanation": "The tests require stringify() to accept a new string mode argument ('fully-qualified'/'smart') replacing the bool, signatures to default to fully-qualified 'typing.X' names, and _parse_annotation to emit reftype='obj' with a shortened 'Literal' text. None of this is mentioned in the issue, so a fix that simply makes Literal link correctly in description mode fails.",
+    "overspecification_vector": "stringify(Any, \"fully-qualified\") == \"typing.Any\"; stringify(X, \"smart\") calls throughout test_util_typing.py; stringify_signature(sig) == '(x: typing.List[int]) -> typing.List[int]'; '.. py:class:: Math(s: str, o: typing.Optional[typing.Any] = None)'; assert_node(doctree[0], pending_xref, refdomain=\"py\", reftype=\"obj\", reftarget=\"typing.Dict\"); [pending_xref, \"Literal\"] for typing.Literal"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutExw6mQBuBvX4WNrhq",
+  "input_tokens": 17906,
+  "output_tokens": 836,
+  "seconds": 8.7
+}

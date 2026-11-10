@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14311",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 2711,
+  "output": {
+    "reasoning": "The issue says that when Django is started with `python -m foo.bar.baz` (where `baz` is a plain module, not a package), the autoreloader rebuilds the command as `-m foo.bar`. It should rebuild it as `-m foo.bar.baz`.\n\nThe test does the following:\n- It mocks `sys.modules['__main__']` with a real module, `utils_tests.test_module.main_module`, whose `__spec__.name` is that dotted name.\n- It asserts that `get_child_arguments()` returns `[sys.executable, '-m', 'utils_tests.test_module.main_module', 'runserver']`.\n\nThis output follows directly from the described behavior.\n\nThe existing code already reads `__main__.__spec__`, so the natural fix is to use `spec.name`, or `spec.parent` when the name ends in `.__main__`. Any reasonable fix along those lines passes.\n\nThere is one small oddity: `sys.argv[0]` is mocked to the `__main__.py` path of the package rather than to `main_module.py`. A fix that unusually derived the module name from `argv[0]` would fail. That approach is not natural, though, since the existing mechanism is `__spec__`.\n\nThe test file `main_module.py` is supplied in the test patch, so it is not a hidden requirement on the fix.",
+    "score": 2,
+    "explanation": "The test checks exactly the behavior the issue describes (child args keep the full dotted module name) through the existing `__main__.__spec__` mechanism. The only quirk is that the mocked `argv[0]` is inconsistent with the mocked module, which would only trip up an unusual `argv`-based fix.",
+    "overspecification_vector": "@mock.patch('sys.argv', [test_main.__file__, 'runserver']) (argv[0] doesn't match the mocked __main__ module, so only __spec__-based solutions pass)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CguswtqpFesducY4Q5KuD",
+  "input_tokens": 1431,
+  "output_tokens": 1150,
+  "seconds": 12.1
+}

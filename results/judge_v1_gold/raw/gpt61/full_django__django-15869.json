@@ -1,0 +1,18 @@
+{
+  "task_id": "full/django__django-15869",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 11248,
+  "output": {
+    "reasoning": "1. The specification requests: “Deprecate length_is template filter in favor of length,” and recommends using length with comparison operators inside an if tag. It does not prescribe warning text or a removal release.\n2. The graded test renders '{{ string|length_is:3 }}' with string='good' through the existing template engine. It requires a RemovedInDjango51Warning whose message contains the full specified sentence. It does not assert the rendered result.\n3. Settled: length_is is the affected filter, and recommending length with == inside an if tag follows the specification's examples. Convention: emitting a deprecation warning while retaining the filter is a standard implementation of deprecation; rendering the filter is a natural public entry point. Open: the particular warning wording is not specified. The release-specific warning category is also not stated, though repository release conventions may determine it.\n4. A reasonable fix could use the same RemovedInDjango51Warning category but say 'length_is is deprecated; use the length filter with == inside an if tag instead.' This implements the requested deprecation and migration guidance but fails assertRaisesMessage because it lacks the required message substring. No alternative warning category is needed to establish the gap.\n5. The restrictive assertion concerns observable warning text, not implementation internals, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix could emit RemovedInDjango51Warning with clear, differently worded guidance to replace length_is with length and an if comparison. The test rejects it because assertRaisesMessage requires a particular sentence that the specification never supplies.",
+    "overspecification_vector": "msg = (\"The length_is template filter is deprecated in favor of the length \" \"template filter and the == operator within an {% if %} tag.\"); with self.assertRaisesMessage(RemovedInDjango51Warning, msg):"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2601,
+  "output_tokens": 922,
+  "seconds": 22.3
+}

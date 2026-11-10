@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-3151",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 4405,
+  "output": {
+    "reasoning": "The test mirrors the issue's MCVE. It builds two datasets with a non-monotonic y coordinate that is identical in both, calls combine_by_coords, and checks that the result is identical to the expected concatenation along x with y unchanged. The issue says this call should succeed and quotes the documentation stating that coordinate dimensions which do not vary between datasets are ignored. The natural expected result is therefore concatenation along x with y preserved as-is.\n\nCould a valid fix produce something different? One alternative would be to sort y, but the docs say such dimensions are ignored, so keeping y as given is the clear intended behavior. Another would be to drop the monotonicity check entirely, which would also pass the test. The test only exercises observable behavior, so any reasonable fix that skips the monotonic check for non-varying dimensions passes.",
+    "score": 1,
+    "explanation": "The test reproduces the issue's example exactly and checks the obviously expected result, so any correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut4688qWmtRjnHSUDWY",
+  "input_tokens": 2249,
+  "output_tokens": 343,
+  "seconds": 4.6
+}

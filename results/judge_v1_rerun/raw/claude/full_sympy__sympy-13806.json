@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-13806",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10540,
+  "output": {
+    "reasoning": "1. The specification is a vague user request: support for LaTeX `\\[{90^^\\circ }\\]`, meaning 90 degrees, as in cos(90 degree) = 0. It names no entry point. It could be read as LaTeX parsing, as LaTeX printing of degrees, or as evaluating trig functions of degree quantities. It says nothing about the pretty printer or about how unit quantities are ordered in products.\n\n2. What the graded tests require:\n- (a) test_degree_printing in test_pretty.py: `pretty(90*degree) == '90°'`, `pretty(x*degree) == 'x°'`, and `pretty(cos(x*degree + 90*degree)) == 'cos(x° + 90°)'`. These check the pretty printer, not LaTeX, with an exact glyph and no space.\n- (b) The graded test_units in test_latex.py (tagged FAIL_TO_PASS): `latex(2*kg*x*meter**2, mul_symbol='dot') == '2 \\cdot x \\cdot kilogram \\cdot meter^{2}'`. This requires the LaTeX Mul printer to place Quantity factors after ordinary symbols.\n\n3. Settledness of each requirement:\n- (a) Open. The issue mentions only LaTeX. The pretty-printer output, the ° glyph, and the absence of a space are never stated.\n- (b) Open. The issue never mentions unit ordering in products. It is an implementation side effect of the original fix, which reordered the args of Muls containing quantities.\n\n4. Reasonable fixes that fail:\n- A developer could add degree support to the LaTeX printer, or the LaTeX parser, and leave the pretty printer alone. That fails (a).\n- A developer could add a LaTeX `^\\circ` printer for degree without touching Mul argument ordering. That fails (b), since the default ordering would not put x before kilogram.\n- A developer who printed '90 °' or '90 deg' in pretty output would also fail (a).\n\n5. The tests pin a different code path (the pretty printer) and an unspecified reordering behavior in the LaTeX Mul printer.",
+    "score": 4,
+    "explanation": "A fix that adds LaTeX `^\\circ` support for degrees, which is what the issue asks about, would fail the graded tests on two counts. The tests also require pretty-printer output of exactly '90°'/'x°'. They also require the LaTeX Mul printer to order unit quantities after symbols ('2 \\cdot x \\cdot kilogram \\cdot meter^{2}'), which the issue never mentions.",
+    "overspecification_vector": "test_degree_printing: `assert pretty(expr1) == u'90°'`, `assert pretty(expr2) == u'x°'`, `assert pretty(expr3) == u'cos(x° + 90°)'`; test_latex.py test_units: `assert latex(expr, mul_symbol='dot') == r'2 \\cdot x \\cdot kilogram \\cdot meter^{2}'`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutFcAhyFLYcZmD2nd2t",
+  "input_tokens": 4326,
+  "output_tokens": 1462,
+  "seconds": 14.9
+}

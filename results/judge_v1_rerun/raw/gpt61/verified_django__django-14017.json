@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14017",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9562,
+  "output": {
+    "reasoning": "1. The specification identifies asymmetric boolean combination and explicitly says that “& (and |) operators should be commutative on Q-Exists pairs”; its reproduction uses an empty Q().\n2. The graded additions require Q(salary__gte=30) & Exists(is_ceo) to select [self.max], and Q(salary__lt=15) | Exists(is_poc) to select [self.example_inc.ceo, self.max]. They also require all four operand-order/operator combinations of Exists(is_poc) with Q() to select [self.max]. Company.objects.filter(), OuterRef('pk'), point_of_contact assignment, and save() establish the correlated-query fixture; Employee.objects.filter() evaluates the combinations. assertCountEqual imposes no result ordering, and there are no representation, message, or implementation assertions.\n3. Supporting both operators and operand orders is explicitly settled by the quoted requirement. The selected employees follow ordinary conjunction/disjunction semantics and the existing reverse-order behavior shown in the test context. Treating empty Q() as an omitted condition follows the existing empty-Q convention, also evidenced by the traceback comment, “If the other Q() is empty, ignore it and just use self.”\n4. No requirement leaves a meaningful implementation choice open: forwarding to reflected operators, changing Q combination handling, or another reasonable implementation can all satisfy these behavioral assertions. Returning all employees for the empty-Q disjunction would change the existing empty-Q convention rather than provide an alternative correct fix.\n5. Score 2: the tests cover the reported behavior plus straightforward query-evaluation and empty-Q regression cases.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should pass: the assertions require the specified commutativity of Q/Exists combinations, ordinary boolean filtering, and preservation of the existing empty-Q identity behavior.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2253,
+  "output_tokens": 1062,
+  "seconds": 27.8
+}

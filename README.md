@@ -31,7 +31,10 @@ python -m stcg judge --split dev         # 3. judge the dev set with both judges
 python -m stcg judge --split test --prompt judge_vN   # 5. once, with the frozen prompt
 python -m stcg judge --set verified --prompt judge_vN # Step 3: all 500 Verified tasks (--set pro for the 731 Pro tasks)
 python -m stcg prevalence --set verified               # Step 3 report: flag rate by repo; for Verified also by difficulty and agent resolve rate
+python -m stcg compare --prompts judge_v1_rerun,judge_v1_gold,baseline_v1   # ablations on dev against judge_v1 -> results/compare_dev.md
 ```
+
+Ablation prompts: `judge_v1_rerun` is a byte-identical copy of `judge_v1` (separate cache, measures run-to-run noise), `judge_v1_gold` adds the gold patch, `baseline_v1` is a one-paragraph prompt with the same inputs and output fields.
 
 Useful flags for `judge` / `evaluate`: `--source agent_consensus,openai_excluded`, `--ids django__django-16667`, `--judges claude,gpt61`, `--limit 5`, `--workers 8`.
 
@@ -39,7 +42,7 @@ Judge calls are cached per `(prompt version, judge, task)` in `results/<prompt>/
 
 ## Step 1: the judge
 
-- **Input** (`stcg/prompts.py`): the task specification (issue text; for SWE-bench Pro also the `requirements` and `interface` fields, since agents see those) and the test patch with the FAIL_TO_PASS tests listed and, for Python, tagged inline. No repo context; the gold patch is shown only by `judge_v1_gold` (an ablation, not yet run).
+- **Input** (`stcg/prompts.py`): the task specification (issue text; for SWE-bench Pro also the `requirements` and `interface` fields, since agents see those) and the test patch with the FAIL_TO_PASS tests listed and, for Python, tagged inline. No repo context; the gold patch is shown only by `judge_v1_gold` (an ablation).
 - **Judges** (`stcg/llm.py`): Claude and GPT, same prompt, provider-native structured output. Each returns `reasoning`, `score`, `explanation` (what a valid alternative fix would get wrong, for the later repair step) and `overspecification_vector`.
 - **Aggregation** (`stcg/judging.py`): final score = lower median of the judges' scores, so with 2 judges a task is flagged only when both flag it; tasks where judges differ by 2+ points are marked `uncertain` and reported separately.
 - **Agreement** (`stcg/evaluate.py`): on the binary flag, Fleiss' kappa across all judges and pairwise Cohen's kappa + raw agreement.
@@ -72,10 +75,12 @@ The dev targets (Step 2.4) are recall >= 70% on overspecified and a false-flag r
 ```
 stcg/            config.py, tasks.py (Task record), sources.py (downloads), prompts.py,
                  llm.py (provider clients), judging.py, metrics.py, evaluate.py,
-                 validation.py (Step 2 sets + split), prevalence.py (Step 3 report), cli.py
-prompts/         judge_v*.txt
+                 validation.py (Step 2 sets + split), prevalence.py (Step 3 report),
+                 compare.py (ablation table), cli.py
+prompts/         judge_v*.txt, baseline_v1.txt
 data/            tasks/verified.jsonl, tasks/pro.jsonl, validation/*.jsonl, raw/ (download cache, gitignored)
-results/         <prompt>/raw/<judge>/*.json, eval_<split>.md/json, judgments_<split>.jsonl, prevalence_<set>.md/json
+results/         <prompt>/raw/<judge>/*.json, eval_<split>.md/json, judgments_<split>.jsonl, prevalence_<set>.md/json,
+                 compare_<split>.md/json (across prompts)
 tests/           pytest, no API calls
 docs/            next_steps.md
 ```

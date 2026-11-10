@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-3151",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 12302,
+  "output": {
+    "reasoning": "1. The issue identifies combine_by_coords and requires that identical non-monotonic coordinates not cause an error: \"combine_by_coords should return without error,\" and coordinate dimensions that do not vary must be ignored.\n2. The graded test recreates the reported datasets: x=[1,2,3] and x=[4,5,6,7], with identical y=['a','c','b']. It calls combine_by_coords((ds1, ds2)) and uses assert_identical to require the concatenated data, x=[1,2,3,4,5,6,7], and unchanged y coordinates. It uses no mocks, private APIs, or new implementation names.\n3. Successful combination and the non-monotonic y input are explicitly settled by the reproduction. Preserving the bystander coordinate follows from the requirement to ignore invariant dimensions; concatenating the data along x follows from the existing operation's semantics. The shared random array simply makes preservation of the input data verifiable.\n4. There is no open implementation choice constrained by the test. Sorting the ignored y dimension or altering the data would not be a reasonable interpretation of this fix. Any reasonable correct implementation passes this near-verbatim reproduction.",
+    "score": 1,
+    "explanation": "The test directly reproduces the reported case, and assert_identical verifies successful concatenation while preserving the identical non-monotonic coordinate that the specification says to ignore.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3020,
+  "output_tokens": 456,
+  "seconds": 11.8
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-16786",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 25315,
+  "output": {
+    "reasoning": "1. The spec says that when a FilteredRelation condition contains an F() expression (e.g. inside Coalesce) referencing a field that needs a JOIN, the JOIN is never added to the query, giving 'Unknown column' errors. The title says conditions are resolved too late, i.e. at SQL compilation. It describes a symptom and a cause but names no API to add.\n\n2. The graded tests use only the public QuerySet API (annotate with FilteredRelation, filter on isnull=False) and assert the result set ([self.book1]). Each varies how the condition's RHS F() needs a join:\n- test_condition_spans_join: F('editor__name') needs a join to a different relation. This is the reported scenario almost verbatim (RHS references a field across a join), so it is settled by the spec.\n- test_condition_self_ref: F('author__name') with lhs 'title'. The RHS needs a join along the same relation path. This is a closely related input of the same bug and settled by the 'nested field references' description.\n- test_condition_spans_join_chained: F('contains_editor_author__name') references another FilteredRelation alias, which itself needs a join. This is again an RHS reference that needs a join, so it is closely related.\n\n3. Each test checks only externally observable query results. A fix that resolves conditions when the join is set up (the natural reading of 'resolves its conditions too late') resolves references through normal setup_joins. That handles regular relations, the same relation, and other FilteredRelation aliases alike.\n\n4. No internal names, messages, or private APIs are asserted. A fix that only handled the literal Coalesce case would be a narrow fix and does not count. Any reasonable fix that makes RHS references add their joins properly passes all three.",
+    "score": 2,
+    "explanation": "All three tests assert only queryset results for FilteredRelation conditions whose F() references need a JOIN, which is exactly the bug described ('the JOIN not actually getting added') applied to closely related inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutAvmWMt59jNRqMHq3L",
+  "input_tokens": 9314,
+  "output_tokens": 1594,
+  "seconds": 17.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15851",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9045,
+  "output": {
+    "reasoning": "1. The spec says psql needs all options before the database name, and that `dbshell -- -c ...` breaks because the extra parameters are appended after dbname. It states the fix: \"the args list just need to be constructed in the proper order, leaving the database name for the end of the args list.\" The entry point is the PostgreSQL client's argument construction.\n\n2. The graded test calls the existing `settings_to_cmd_args_env({\"NAME\": \"dbname\"}, [\"--help\"])`. It asserts the result is `([\"psql\", \"--help\", \"dbname\"], None)`.\n\n3. Each requirement:\n- Method name: settled by existing code. The method already exists and is used in the context line.\n- Order of parameters before dbname: settled by the spec text \"leaving the database name for the end of the args list\".\n- Env value `None`: unchanged existing behavior.\n- Where extra parameters go relative to -U/-h/-p: not exercised, since only NAME is set.\n\n4. The only conceivable deviation is passing the database with `-d dbname`. That contradicts the spec's explicit instruction to put the database name at the end, so it is not a fix the spec points to. Any fix that moves dbname after the parameters produces exactly this list.\n\n5. The test uses `--help` instead of `-c`, but it is the same function on a related input. Score 2.",
+    "score": 2,
+    "explanation": "The assertion `[\"psql\", \"--help\", \"dbname\"]` directly encodes the spec's instruction to leave the database name at the end of the args list, so every reasonable reordering fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut4wQYnX9n3swmb3Dvt",
+  "input_tokens": 3321,
+  "output_tokens": 926,
+  "seconds": 10.4
+}

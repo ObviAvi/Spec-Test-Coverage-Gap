@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8475",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8989,
+  "output": {
+    "reasoning": "1. Spec: when a HEAD request raises TooManyRedirects, linkcheck should fall back to a GET request instead of reporting the link as broken. This symptom is in the linkcheck builder's check logic. 2. The test runs a local server where HEAD always 302-redirects to itself and GET returns 200. It builds linkcheck and asserts output.json reports status 'working', code 0, info '', and the existing filename/lineno/uri values. 3. Each requirement: (a) GET fallback on TooManyRedirects is settled by the spec ('extends the except clause to retry with a GET request'). (b) The output.json format and the 'working' status with code 0 and empty info follow the existing builder's output for successful links (convention). (c) The test root and server port reuse existing test infrastructure. 4. Any reasonable fix that falls back to GET on TooManyRedirects yields a working result. Some fixes might also handle redirects differently: GET follows redirects, but here GET returns 200 directly, so there is no redirect. Code 0 is the existing convention for working links. No reasonable correct fix fails.",
+    "score": 1,
+    "explanation": "The test directly checks the described behavior: when HEAD hits an infinite redirect loop, the GET fallback makes the link report as 'working' in output.json.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut4aWwor1aCyf9vwUUx",
+  "input_tokens": 3387,
+  "output_tokens": 446,
+  "seconds": 5.5
+}

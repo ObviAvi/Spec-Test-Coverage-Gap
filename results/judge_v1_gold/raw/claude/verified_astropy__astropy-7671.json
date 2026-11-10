@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-7671",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 10767,
+  "output": {
+    "reasoning": "1. The specification says `minversion('numpy', '1.14dev')` raises a TypeError when the installed version is '1.14.3'. The cause is a LooseVersion bug when comparing an int part to a str part. It also shows that the correct answer is True, since `parse_version('1.14.3') >= parse_version('1.14dev')` is True. The entry point is `astropy.utils.minversion`.\n2. What the graded test requires:\n   - `minversion(test_module, '0.12dev')` returns True when the module has `__version__ = '0.12.2'`.\n   - The existing good versions ('0.12', '0.12.1', '0.12.0.dev') still return True.\n   - The existing bad versions ('1', '1.2rc1') still return False.\n3. Status of each requirement:\n   - The new case has the same shape as the reported one: a three-part installed version against an 'X.Ydev' requirement. The expected True is settled by the spec, which presents `parse_version` giving True as the correct behaviour.\n   - The other cases are pre-existing regression checks, settled by the existing code.\n4. Checking reasonable alternative fixes:\n   - Switch to `pkg_resources.parse_version`: 0.12.2 >= 0.12dev is True; 1.2rc1 and 1 are greater than 0.12.2, so both give False. Passes.\n   - Switch to `packaging.version`: same results. Passes.\n   - Strip non-numeric suffixes, as the official fix does: passes.\n   - Catch TypeError and fall back to a PEP 440 parser: passes.\n   No reasonable fix fails.",
+    "score": 2,
+    "explanation": "The added assertion `minversion(module_with_0.12.2, '0.12dev')` is the reported failure (X.Y.Z vs X.Ydev) on related inputs, and its expected True matches the spec's parse_version result, so any correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut1YGAhJTUnkujBVv7J",
+  "input_tokens": 4048,
+  "output_tokens": 1167,
+  "seconds": 11.3
+}

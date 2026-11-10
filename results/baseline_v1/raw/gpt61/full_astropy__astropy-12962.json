@@ -1,0 +1,18 @@
+{
+  "task_id": "full/astropy__astropy-12962",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5085,
+  "output": {
+    "reasoning": "The conversion and HDU-type assertions match the explicitly proposed Option A, and preserving PrimaryHDU behavior when the flag is false is reasonable. However, the issue presents Options A, B, and C as alternatives rather than requiring Option A. The writer test additionally requires CCDData.write() to accept as_image_hdu, which is not among the proposed interfaces. A correct implementation providing the convenience conversion function, or implementing only the proposed to_hdu interface without extending write(), would fail these tests. The two-HDU file layout itself is reasonable because a FITS file requires a primary HDU.",
+    "score": 3,
+    "explanation": "The tests select one of several proposed interfaces and additionally require an unrequested writer keyword. This mildly overspecifies the public API, rejecting otherwise valid solutions without imposing arbitrary internal implementation details.",
+    "overspecification_vector": "test_to_hdu_as_imagehdu: `ccd_data.to_hdu(as_image_hdu=False)` and `ccd_data.to_hdu(as_image_hdu=True)` mandate Option A over the proposed alternatives. test_ccddata_writer_as_imagehdu: `ccd_data.write(filename, as_image_hdu=False)` and `ccd_data.write(filename, as_image_hdu=True)` additionally mandate support for that keyword in write()."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1475,
+  "output_tokens": 797,
+  "seconds": 20.3
+}

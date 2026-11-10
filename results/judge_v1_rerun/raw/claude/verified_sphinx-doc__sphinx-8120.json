@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-8120",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10435,
+  "output": {
+    "reasoning": "1. The issue: a user-supplied locale/<lang>/LC_MESSAGES/sphinx.po is compiled to .mo, but its translations are ignored. Sphinx's built-in catalog takes precedence instead. The expected behavior is that user catalogs in locale_dirs override built-in Sphinx message translations. No function is named; this is a symptom about catalog precedence.\n\n2. What the test requires:\n- With language='de' and the default locale_dirs ('locales'), a sphinx.po in locales/de/LC_MESSAGES is compiled to sphinx.mo at app construction.\n- app.translator.gettext('Quick search') returns 'QUICK SEARCH'.\n- The built index.html contains 'QUICK SEARCH'.\n\n3. How each requirement is settled:\n- .mo creation: existing behavior. The issue says \"a locale/da/LC_MESSAGES/sphinx.mo is created (because of gettext_auto_build = True)\".\n- app.translator: an existing public attribute set up in _init_i18n, which the HTML template engine uses. Any fix that makes user catalogs override built-in ones must affect the app's translator, so the gettext result is just the specified behavior seen through the existing API.\n- HTML output containing the override: directly the expected behavior (custom translations used in output).\n- Using 'Quick search' rather than 'Fig. %s': this is a related input. Any fix that changes catalog precedence generally handles it. A fix special-casing only figure/listing labels would be a non-general, unreasonable fix.\n\n4. Open requirements: none really. The natural fix is to reorder locale_dirs so user dirs come before the package locale dir. Any alternative mechanism that makes user translations win would still have to be reflected in app.translator, since that is what the builders and templates use.",
+    "score": 2,
+    "explanation": "Every reasonable fix passes: the test checks that a user locale_dirs sphinx.po overrides the built-in translation (via the existing app.translator and the rendered HTML), which is exactly what the issue asks for, just with a different message ('Quick search').",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut3KKcQiLDkT25ZrjLk",
+  "input_tokens": 4024,
+  "output_tokens": 1637,
+  "seconds": 17.1
+}

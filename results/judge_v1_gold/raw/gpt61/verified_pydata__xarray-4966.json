@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pydata__xarray-4966",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 14370,
+  "output": {
+    "reasoning": "1. The issue asks xarray to interpret unsigned data carrying `_Unsigned=False` as signed, symmetrically with its existing unsigned conversion. It explicitly points to the CF coding location and suggests the condition `.kind == \"u\" and unsigned == False`.\n2. The graded tests call the existing `variables.UnsignedIntegerCoder().decode` on an `xr.Variable` with `_Unsigned=\"false\"`. For unsigned integer widths of 1, 2, 4, and 8 bytes, they require the maximum unsigned value to decode to -1 with the corresponding same-width signed dtype.\n3. The negative-value interpretation is settled by the reported bug. The textual attribute value and preservation of integer width follow the netCDF convention and the requested symmetry with existing unsigned decoding. Testing all four widths reasonably generalizes the suggested dtype-kind condition. Calling the existing coder exercises the conversion mechanism identified in the issue, rather than requiring a new helper or an unrelated implementation path.\n4. There are no material open choices pinned by these assertions: changing integer width or retaining the maximum unsigned value would not implement the requested symmetric signed interpretation. The tests do not constrain laziness, warning wording, backend plumbing, or fill-value implementation.",
+    "score": 2,
+    "explanation": "The assertions that unsigned maxima decode to -1 in the corresponding signed dtype directly exercise the requested symmetric conversion; the additional integer widths are reasonable related inputs.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3552,
+  "output_tokens": 1431,
+  "seconds": 38.7
+}

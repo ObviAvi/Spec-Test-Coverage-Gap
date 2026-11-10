@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-15240",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 8366,
+  "output": {
+    "reasoning": "The issue asks for stale entries in django_migrations to be cleaned up. It leaves the mechanism open: automatic in the executor or migrate, or a separate manual command. It also notes that replaced migrations should be kept.\n\nThe tests require one specific interface and specific output:\n- A `prune=True` keyword option on the `migrate` command.\n- Exact stdout text, such as 'Pruning migrations:\\n  No migrations to prune.\\n'.\n- A long, exact message about the 'replaces' attributes.\n- A specific CommandError message, 'Migrations can be pruned only when an app is specified.'\n- The requirement that an app label is mandatory.\n- Refusing to prune when squashed migrations still carry 'replaces' attributes. The issue suggests the opposite: keep the replaced entries rather than refuse.\n\nNone of these strings, option names, or behaviours appear in the issue. A correct fix that cleans up automatically, uses a separate management command, or words its messages differently would fail every test.",
+    "score": 4,
+    "explanation": "The tests depend on an invented `prune` option for migrate and on exact output and error strings, none of which the issue mentions. The issue even prefers an automatic approach, which would fail these tests.",
+    "overspecification_vector": "call_command('migrate', 'migrations', prune=True, ...); assertEqual(out.getvalue(), 'Pruning migrations:\\n  No migrations to prune.\\n'); the exact message \"Cannot use --prune because the following squashed migrations have their 'replaces' attributes...\"; msg = 'Migrations can be pruned only when an app is specified.'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut6kbULs4AsaPbgTwsE",
+  "input_tokens": 3376,
+  "output_tokens": 655,
+  "seconds": 7.2
+}

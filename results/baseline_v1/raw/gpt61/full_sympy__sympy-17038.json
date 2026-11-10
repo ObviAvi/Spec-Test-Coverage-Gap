@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-17038",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5161,
+  "output": {
+    "reasoning": "The regression values and floor-square-root assertions directly exercise the reported correctness problem; the rational-input cases also extend behavior already covered by the existing tests. However, the monkeypatch requires the private attribute power._sqrt to remain present and demands correctness when it returns an arbitrarily inaccurate constant. The specification discusses bounded floating-point inaccuracies and explicitly considers approaches relying on such bounds. Those approaches, or an integer-only implementation that removes the unused _sqrt alias, could be correct yet fail this test.",
+    "score": 3,
+    "explanation": "The tests are mostly appropriate correctness checks, but the private-helper monkeypatch imposes an implementation dependency and a stronger error model than the specification requires.",
+    "overspecification_vector": "old_sqrt = power._sqrt; power._sqrt = lambda x: 2.999999999; assert isqrt(9) == 3; assert isqrt(10000) == 100"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1568,
+  "output_tokens": 1030,
+  "seconds": 28.2
+}

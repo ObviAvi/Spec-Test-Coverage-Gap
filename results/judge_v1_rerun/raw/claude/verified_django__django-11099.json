@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-11099",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8855,
+  "output": {
+    "reasoning": "1. The specification says the ASCIIUsernameValidator and UnicodeUsernameValidator regex `^[\\w.@+-]+$` accepts usernames ending in a newline. It names both validators and proposes the regex `\\A[\\w.@+-]+\\Z`.\n\n2. What the tests require:\n- `ASCIIUsernameValidator()` must raise ValidationError for 'trailingnewline\\n'.\n- `UnicodeUsernameValidator()` must raise ValidationError for 'trailingnewline\\u000A'.\n- Existing valid and invalid usernames must keep their current results.\n- test_help_text (UserAttributeSimilarityValidatorTest) is listed as graded, but the patch does not change it. It is presumably unaffected by the fix, or a listing artifact, so no fix-specific requirement comes from it.\n\n3. Settledness:\n- Rejecting a trailing newline is settled by the spec: \"in order to reject usernames that end with a newline.\"\n- Both validators are named: \"the two validators in contrib.auth.validators.\"\n- Keeping existing valid and invalid results is a regression requirement that follows by convention.\n\n4. Alternatives:\n- Using `\\A...\\Z` passes.\n- Using `^...\\Z`, or `fullmatch`, also rejects the newline and passes.\n- No reasonable correct fix fails these assertions.",
+    "score": 1,
+    "explanation": "The tests check exactly the spec's case: both validators must reject a username ending in a newline, which any correct regex anchoring fix achieves.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7B77BJEWaY1NtN1r8",
+  "input_tokens": 3307,
+  "output_tokens": 561,
+  "seconds": 6.4
+}

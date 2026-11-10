@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11555",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9578,
+  "output": {
+    "reasoning": "1. The specification identifies a crash in order_by() involving a parent model during “multi-table inheritance” when “Meta.ordering contains expressions”; it specifically reports an OrderBy object being treated as a string in get_order_dir.\n2. The graded test adds a ChildArticle subclass, creates four instances with differing headlines, dates, and authors, evaluates ChildArticle.objects.order_by('article_ptr'), and requires the sequence [ca4, ca2, ca1, ca3]. It asserts no private calls, implementation structure, or exception wording.\n3. Multi-table inheritance and expression-based parent ordering are settled by the specification. The generated article_ptr relation and using a related model's default ordering when ordering by that relation are Django conventions. The concrete model name and record values are test inputs, not names or constants the fix must introduce. The sequence assertion requires preserving the existing ordering semantics rather than merely suppressing the crash. Article's full ordering declaration is not shown, so its individual sort keys cannot be independently reconstructed from this patch.\n4. No reasonable alternative fix is apparent that resolves this ordering bug while legitimately choosing a different ordering policy. Dropping expressions or replacing the parent's declared ordering with primary-key ordering would avoid the exception but would not correctly support the reported operation. The test therefore adds an ordinary semantic regression check, not an arbitrary repair-specific requirement.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should let order_by('article_ptr') evaluate without crashing while retaining the parent model's declared ordering, which is what the sequence assertion checks.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2211,
+  "output_tokens": 1105,
+  "seconds": 30.5
+}

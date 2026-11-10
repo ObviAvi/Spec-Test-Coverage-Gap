@@ -1,0 +1,18 @@
+{
+  "task_id": "full/pydata__xarray-3159",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 3297,
+  "output": {
+    "reasoning": "The positive tests largely exercise the requested behavior: filling an array with a scalar and deriving its shape from coordinates. Defaulting omitted data to NaN and an uncoordinated dimension to length one are plausible extensions. However, the final assertions require zero-dimensional NumPy arrays to be rejected with particular exception types and message text. The issue does not require this distinction between 3 and np.array(3); a correct implementation could broadcast both, or reject the latter with a different validation error.",
+    "score": 3,
+    "explanation": "The core scalar-broadcasting checks are appropriate, but the tests additionally mandate unspecified rejection behavior for zero-dimensional NumPy arrays. This can reject a correct, more general implementation or one using different error handling.",
+    "overspecification_vector": "with pytest.raises(KeyError):\n    DataArray(np.array(1), coords={\"x\": np.arange(10)}, dims=[\"x\"])\nwith raises_regex(ValueError, \"does not match the 0 dim\"):\n    DataArray(np.array(1), coords=[(\"x\", np.arange(10))])"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 992,
+  "output_tokens": 731,
+  "seconds": 19.8
+}

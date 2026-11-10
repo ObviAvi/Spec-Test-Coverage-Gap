@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pydata__xarray-3151",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10554,
+  "output": {
+    "reasoning": "1. The spec says combine_by_coords raises a ValueError (non-monotonic global index) when a coordinate dimension is identical across datasets but non-monotonic. The docs say such dimensions should be ignored, and the expected outcome is that the call returns without error.\n2. The test reproduces the MCVE: x=[1,2,3] and x=[4..7], with y=['a','c','b'] in both datasets. It calls combine_by_coords((ds1, ds2)) and uses assert_identical against a dataset whose data is concatenated along x and whose y is kept as ['a','c','b'].\n3. Requirement-by-requirement:\n- No error raised: settled by the spec (\"combine_by_coords should return without error\").\n- Data concatenated along x in order 1..7: settled by existing behavior, since x is the varying, monotonic dimension.\n- y left unchanged as ['a','c','b']: settled by the docs quoted in the spec (\"as will any coordinate dimensions which do not vary between each dataset\" are ignored). Ignoring the dimension means leaving it as-is, not reordering it.\n- No extra coordinates or attributes: assert_identical would only differ if a fix added something unrelated.\n4. A fix that sorted y would contradict the 'ignored' semantics, so it is not a reasonable reading. Two natural fixes both pass: restricting the monotonicity check to concatenated dimensions, or skipping it for dimensions that don't vary. No private APIs or new names are involved.",
+    "score": 2,
+    "explanation": "The test is the issue's MCVE plus an assert_identical against the only sensible result: data concatenated along x with the untouched, identical y coordinate preserved, which any fix honoring the documented 'ignore non-varying dims' behavior produces.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut7TS8crj3jJPoffekd",
+  "input_tokens": 4165,
+  "output_tokens": 919,
+  "seconds": 10.5
+}

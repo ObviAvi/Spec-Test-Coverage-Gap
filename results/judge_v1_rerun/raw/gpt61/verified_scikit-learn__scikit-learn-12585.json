@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/scikit-learn__scikit-learn-12585",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8964,
+  "output": {
+    "reasoning": "1. The issue identifies clone as the entry point and requests support for parameters that are estimator classes: “not instances, but classes,” with “No error” expected. 2. The graded test constructs MyEstimator(empty=MyEstimator), calls clone(clf), and asserts clf.empty is clf2.empty. It requires successful cloning and preservation of the class-valued parameter; it specifies no messages, mocks, or implementation helpers. 3. Successful cloning is explicitly settled. Using MyEstimator rather than StandardScaler is a closely related input covered by the general description. Preserving the identical class object is settled by normal Python class-value semantics and the stated intention to store estimator classes rather than instances: classes are type objects, not estimator instances to reconstruct. 4. There is no reasonable alternative that violates the identity assertion while preserving the intended parameter. Instantiating the class would contradict the request, and manufacturing a distinct replacement class would unnecessarily change the parameter's meaning. 5. The identity assertion is a reasonable inference rather than a verbatim reproduction of the expected result, so the score is 2.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should pass: assert clf.empty is clf2.empty checks that cloning succeeds while preserving the estimator class supplied as a parameter, as the requested use case requires.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2046,
+  "output_tokens": 567,
+  "seconds": 15.9
+}

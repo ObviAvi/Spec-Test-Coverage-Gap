@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13658",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9779,
+  "output": {
+    "reasoning": "1. The specification identifies ManagementUtility constructing CommandParser without its computed self.prog_name, and explicitly requests that execute_from_command_line(custom_argv) work when sys.argv[0] is None. 2. The test patches sys.argv to [None, 'help', 'shell'], calls execute_from_command_line(['django-admin', 'help', 'shell']), and requires stdout to contain 'usage: django-admin shell' and stderr to be empty. 3. The entry point and None-valued sys.argv[0] are explicitly specified. Using 'django-admin' from the supplied argv is settled by 'Instead, it should refer to self.prog_name.' The help invocation and usage substring exercise that requirement through normal CLI behavior; empty stderr is the conventional result of successful help output. Output capture and mocking impose no implementation requirements. 4. There are no open choices that reject a reasonable correct fix: the test neither inspects parser construction nor requires a particular implementation.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix makes the supplied argv determine the program name despite sys.argv[0] being None, allowing help to print 'usage: django-admin shell' without errors.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2243,
+  "output_tokens": 592,
+  "seconds": 15.6
+}

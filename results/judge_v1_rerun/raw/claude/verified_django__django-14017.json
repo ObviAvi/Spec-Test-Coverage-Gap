@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14017",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9562,
+  "output": {
+    "reasoning": "1. What is wrong: `Q(...) & Exists(...)` raises TypeError from `Q._combine`, while `Exists(...) & Q(...)` works. The spec says \"The & (and |) operators should be commutative on Q-Exists pairs\", so both & and | are in scope.\n\n2. What the graded tests require:\n- `Q(salary__gte=30) & Exists(is_ceo)` used in `filter`, returning [max].\n- `Q(salary__lt=15) | Exists(is_poc)` used in `filter`, returning [ceo, max].\n- Four combinations of empty `Q()` with `Exists`, in both operand orders and with both & and |, each filtering to [max].\n- Only public operators and queryset results are used. No private APIs or internal state are asserted.\n\n3. Settlement:\n- Q-first & and | with Exists: settled by \"should be commutative on Q-Exists pairs\" and the reproduction `Q() & Exists(...)`.\n- Expected result sets: settled by commutativity. They must match what the already-working Exists-first forms return, and the existing context assertions show those results.\n- Empty-Q cases: the spec's own example uses `Q()`. An empty Q is a no-op filter, so the result must equal the Exists-only filter. This is the only reasonable semantics.\n\n4. Alternative fixes:\n- Accepting conditional expressions in `Q._combine` passes.\n- Making `Q._combine` return NotImplemented and defining `__rand__`/`__ror__` on Combinable or Exists (wrapping as `Q(other) & Q(self)`) also passes. Empty Q children are dropped when the filter is built, so the results are the same.\n- Each correct fix yields the same filtered querysets, so no reasonable fix is rejected.\n\n5. The tests apply the reported behavior to related inputs (|, non-empty Q, empty Q), so the score is 2.",
+    "score": 2,
+    "explanation": "The tests only check that `Q(...) & Exists(...)` and `Q(...) | Exists(...)` (including with empty `Q()`) produce the same querysets as the Exists-first forms, which is exactly the commutativity the issue asks for; any correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgusxbXo2xXUE3Lpx7eYH",
+  "input_tokens": 3685,
+  "output_tokens": 3212,
+  "seconds": 32.1
+}

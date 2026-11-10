@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/astropy__astropy-7671",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9440,
+  "output": {
+    "reasoning": "1. The spec says `minversion('numpy', '1.14dev')` raises a TypeError when the installed version is like '1.14.3'. This comes from a LooseVersion bug when comparing int and str components. The spec shows the expected result is True (`parse_version('1.14.3') >= parse_version('1.14dev')` gives True). The entry point is the public `minversion`.\n2. The graded test sets `__version__ = '0.12.2'` on a module and asserts `minversion(test_module, v)` is truthy for '0.12', '0.12.1', '0.12.0.dev' and the new '0.12dev'. Existing bad versions '1' and '1.2rc1' must still be falsy.\n3. The new case '0.12.2' vs '0.12dev' has the same structure as '1.14.3' vs '1.14dev'. The spec settles it: it must not raise and should return True, matching parse_version semantics. The other inputs are pre-existing behavior.\n4. Any correct fix passes: using packaging/pkg_resources parse_version, or a regex workaround that makes LooseVersion handle 'dev'. All go through the public `minversion` and return True here. No reasonable correct fix would return False or raise on this input.",
+    "score": 1,
+    "explanation": "The added assertion `minversion(module with '0.12.2', '0.12dev')` is a direct analogue of the issue's reproduction ('1.14.3' vs '1.14dev', expected True), so every correct fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut2ADtHCY51fMd3yrYz",
+  "input_tokens": 3517,
+  "output_tokens": 865,
+  "seconds": 8.7
+}

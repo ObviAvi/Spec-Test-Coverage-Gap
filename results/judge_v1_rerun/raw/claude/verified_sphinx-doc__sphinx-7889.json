@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-7889",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 9044,
+  "output": {
+    "reasoning": "Step 1: The spec names the failing code: autodoc's mock `_make_subclass` raises a TypeError when a class subclasses a generic-parametrized mocked class, because it concatenates a str with a TypeVar. The expected behavior is that docs build when generics are involved.\n\nStep 2: What the test requires:\n- A class defined as `SubClass2(mock.SomeClass[T])`, where T is a TypeVar, can be created without error.\n- Instantiating it with `SubClass2()` works.\n- `SubClass2.__doc__` keeps the subclass's own docstring.\n- `isinstance(obj2, SubClass2)` is true.\n\nStep 3: How each requirement is settled:\n- Subscripting a mock with a TypeVar and then subclassing the result is exactly the reported scenario, so it is settled by the spec.\n- Preserving the docstring and passing isinstance are standard class behavior. The existing SubClass test already checks the same things for plain subclassing, so they are settled by convention.\n- The test uses only the public `_MockObject` mock, already exercised by the existing test. It references no new names.\n\nStep 4: Any reasonable fix should pass:\n- Converting the name with str() would make `__getitem__` return a mock subclass, and subclassing that works.\n- Returning self from `__getitem__` would also let subclassing work through `__mro_entries__` or the metaclass path.\n- In either case the docstring and isinstance checks hold.\nI see no reasonable correct fix that fails.",
+    "score": 2,
+    "explanation": "The test subclasses `mock.SomeClass[T]`, which is the exact scenario in the issue, and checks only basic class behavior (docstring preserved, isinstance true) mirroring the existing subclass test, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusx34uo6CgZHTpUUrnN",
+  "input_tokens": 3488,
+  "output_tokens": 627,
+  "seconds": 7.6
+}

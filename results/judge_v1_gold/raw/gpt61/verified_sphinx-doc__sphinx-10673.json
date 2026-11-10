@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sphinx-doc__sphinx-10673",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 15942,
+  "output": {
+    "reasoning": "1. The specification describes a user-facing toctree problem: entries named 'genindex', 'modindex', and 'search' should work without nonexisting-document warnings. It does not specify an internal representation or implementation entry point.\n2. The test builds an XML project containing an ordinary document and a second toctree listing those three names. It then inspects app.env.tocs['index'], requiring an exact bullet_list/list_item/compact_paragraph/toctree hierarchy. The second toctree must retain caption='Indices', the ordinary default flags and depth/numbering values, and exactly entries=[(None, 'genindex'), (None, 'modindex'), (None, 'search')]. No mocks or new implementation names are required.\n3. Accepting the three entries is settled by the requested example. The caption and ordinary option defaults follow existing toctree conventions. However, preserving the unresolved entries, especially their None titles, in the cached environment tree is open: the specification never requires this intermediate representation. The exact cached-node hierarchy is likewise not a user-facing requirement.\n4. A reasonable correct implementation could populate each generated page's default title during directive parsing, store (resolved_title, generated_reference) entries, and resolve these entries into functioning links without warnings. That implementation would satisfy the request but fail the exact entries assertion because the titles would not be None.\n5. The decisive assertion constrains internal intermediate state rather than the requested behavior, so the score is 4.",
+    "score": 4,
+    "explanation": "A correct fix could resolve generated-page default titles while parsing the directive instead of preserving None until later resolution. The test would reject that fix because it requires exact unresolved tuples inside app.env.tocs['index'], although the resulting links and warning-free build could be identical.",
+    "overspecification_vector": "toctree = app.env.tocs['index']\nassert_node(toctree[0][1][1], addnodes.toctree,\n            caption=\"Indices\", glob=False, hidden=False,\n            titlesonly=False, maxdepth=-1, numbered=0,\n            entries=[(None, 'genindex'), (None, 'modindex'), (None, 'search')])"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3799,
+  "output_tokens": 1464,
+  "seconds": 38.3
+}

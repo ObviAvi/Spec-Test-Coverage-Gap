@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-17194",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 14277,
+  "output": {
+    "reasoning": "1. The specification says content MathML prints acoth, acsc and asec with the wrong element names. They should be arccoth, arccsc and arcsec. The problem lives in the content printer's tag mapping.\n\n2. The graded tests require three things:\n- (a) test_content_mathml_trig: correct names for cot, csc, sec, acot, acsc, asec, coth, csch, sech, acoth, acsch and asech.\n- (b) test_content_mathml_constants: EmptySet() prints '<emptyset/>', S.true prints '<true/>', S.false prints '<false/>', S.NaN prints '<notanumber/>'.\n- (c) test_content_mathml_logic: exact strings for And, Or, Xor, Implies and Not, e.g. '<apply><xor/><ci>x</ci><ci>y</ci></apply>' and '<apply><not/><ci>x</ci></apply>'.\n\n3. Status of each requirement:\n- (a) Settled. The issue names acoth, acsc and asec. acsch and asech are the obvious related inverses that a thorough fix would also map to the arc prefix. The non-inverse functions likely already print correctly through the lowercase class-name fallback.\n- (b) Open. The issue never mentions NaN, EmptySet or the boolean constants. These need new _print_ methods, which is a different code path.\n- (c) Open. The issue never mentions logic operators. Xor, Implies and Not need new printing support plus tag-map entries.\n\n4. A competent developer who adds acoth→arccoth, acsc→arccsc, asec→arcsec, acsch→arccsch and asech→arcsech to the mathml_tag dictionary fully resolves the issue and its close relatives. That fix still fails test_content_mathml_constants and test_content_mathml_logic, because those tests check unrelated features the original PR added.\n\n5. Two of the three graded tests exercise code paths the specification never implicates, so the score is 4.",
+    "score": 4,
+    "explanation": "A correct fix that maps the inverse trig/hyperbolic functions to their arc* MathML names fails two graded tests. test_content_mathml_constants requires new printers for NaN (<notanumber/>), EmptySet, S.true and S.false. test_content_mathml_logic requires new printing for And/Or/Xor/Implies/Not. The issue mentions neither.",
+    "overspecification_vector": "test_content_mathml_constants: `assert mathml(EmptySet()) == '<emptyset/>'`, `assert mathml(S.true) == '<true/>'`, `assert mathml(S.false) == '<false/>'`, `assert mathml(S.NaN) == '<notanumber/>'`; test_content_mathml_logic: `mathml(And(x, y)) == '<apply><and/>...'`, `mathml(Xor(x, y)) == '<apply><xor/>...'`, `mathml(Implies(x, y)) == '<apply><implies/>...'`, `mathml(Not(x)) == '<apply><not/><ci>x</ci></apply>'`"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutGt5xEiwVRwgZwGWWj",
+  "input_tokens": 6096,
+  "output_tokens": 1469,
+  "seconds": 14.5
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13143",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5313,
+  "output": {
+    "reasoning": "The specification asks for precision_score(A, A, average=None) to return 1 for an all-zero label column. The added tests instead require warnings for all-negative binary inputs across precision, recall, F-score, and precision_recall_fscore_support. They enforce exact warning text, and the successive record.pop() assertions also enforce the order of multiple warnings. Neither these warning requirements nor changes to recall and F-score are specified. A fix that produces the requested multilabel precision values while preserving existing binary warning behavior could therefore fail the graded tests.",
+    "score": 4,
+    "explanation": "The tests impose unspecified binary-classification warning behavior rather than checking the reported multilabel precision result. Exact warning messages and emission order further restrict otherwise correct fixes.",
+    "overspecification_vector": "test_prf_warnings: precision_recall_fscore_support([0, 0], [0, 0], average=\"binary\") followed by ordered record.pop() message assertions; test_recall_warnings: recall_score([0, 0], [0, 0]) and its exact warning assertion; test_precision_warnings: precision_score([0, 0], [0, 0]) and its exact warning assertion; test_fscore_warnings: score([0, 0], [0, 0]) followed by ordered assertions requiring both 'no true samples' and 'no predicted samples' warnings stating that the score is set to 0.0."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1423,
+  "output_tokens": 665,
+  "seconds": 16.5
+}

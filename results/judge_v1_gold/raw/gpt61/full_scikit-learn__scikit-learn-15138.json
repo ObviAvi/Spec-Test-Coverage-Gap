@@ -1,0 +1,18 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-15138",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 21960,
+  "output": {
+    "reasoning": "1. The specification requests an optional mode that trains final_estimator on predictions plus the original dataset: “If True, the meta-classifier will be trained both on the predictions ... and the original dataset.” Default False is explicit in the reference. The reference calls the option use_features_in_secondary; it does not specify passthrough.\n2. The graded tests require both StackingClassifier and StackingRegressor to accept passthrough=False/True. They exercise fit, predict, and transform with existing CV choices and final estimators, including after dropping a base estimator. They require prediction-only column counts when disabled, additional original-feature columns when enabled, and unchanged feature values specifically in the last four or ten columns. Sparse tests require sparse transformed output and preservation of X_test.format for the tested sparse inputs.\n3. Optional inclusion, unchanged original features, and default-off behavior are settled by the specification. Supporting both stacking variants and preserving existing prediction/drop behavior are reasonable repository-consistency requirements. Given the existing prediction column counts, the increased dimensions follow naturally. However, the keyword name passthrough, placement of original features after prediction columns, and exact sparse-format preservation are open choices.\n4. A reasonable implementation could expose use_features_in_secondary=False, following the cited interface, and fully implement the requested functionality. It would fail every graded constructor call because passthrough is unexpected. Independently, an implementation could prepend original features consistently during training and prediction, failing the trailing-column assertions. It could also normalize sparse concatenations to CSC or CSR rather than preserving the input format, without losing the requested functionality.\n5. The strongest mismatch is the mandatory new keyword name absent from the specification, which meets the rubric for score 4.",
+    "score": 4,
+    "explanation": "A correct implementation using the reference's use_features_in_secondary option would fail because the tests require the unspecified keyword passthrough. The tests additionally select an unspecified feature ordering and require exact sparse-format preservation.",
+    "overspecification_vector": "Constructor calls requiring `passthrough=passthrough` and `passthrough=True`; `assert_allclose(X_test, X_trans[:, -4:])`; `assert_allclose(X_test, X_trans[:, -10:])`; corresponding `assert_allclose_dense_sparse` trailing-column checks; `assert X_test.format == X_trans.format`."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5362,
+  "output_tokens": 1463,
+  "seconds": 38.8
+}

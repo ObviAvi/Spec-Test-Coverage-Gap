@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/astropy__astropy-14995",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11321,
+  "output": {
+    "reasoning": "1. The issue identifies the public entry point NDDataRef.multiply(..., handle_mask=np.bitwise_or): arithmetic fails when exactly one operand lacks a mask. It explicitly requires that “the mask that exists should just be copied over to the output.”\n2. The test uses NDDataRef, its multiply method, and the result's mask field with the same 3×3 data and integer mask as the reproduction. It requires: two unmasked operands produce mask is None; multiplying an unmasked object by 1.0 also produces None; multiplying a masked object by 1.0 or an unmasked object preserves the mask values; and multiplying the masked object by itself preserves those values. These requirements are settled by the reproduction and expected behavior. The test does not require copy identity or a particular implementation.\n3. The additional input is another integer mask, [[64,1,0],[2,1,0],[8,0,2]]. Multiplying two differently masked objects must produce np.bitwise_or(mask, other_mask). This is a conventional regression check of the explicitly selected mask-combination function on closely related inputs. Preserving correct combination when both masks exist is the only reasonable interpretation of fixing the missing-mask case.\n4. No open implementation choices are constrained. There are no mocks, private methods, exact error messages, or internal-state assertions. Every reasonable correct fix passes.",
+    "score": 2,
+    "explanation": "The tests reproduce the specified missing-mask cases and add only a straightforward regression check that two existing masks are still combined using the requested np.bitwise_or function.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2909,
+  "output_tokens": 788,
+  "seconds": 20.4
+}

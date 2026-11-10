@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/pylint-dev__pylint-6903",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 11706,
+  "output": {
+    "reasoning": "The specification identifies CPU detection in `_query_cpu()` as the cause of a crash with `--jobs=0`, specifically when quota is -1 and CPU shares are 2, and states that the calculated number must never be 0. The test reproduces those inputs by mocking the cgroup files and their existence, then invokes the normal `Run` entry point with `--jobs=0`. These inputs are directly settled by the report. `Reporter`, the temporary working directory, and linting the test file provide the execution harness; the expected `SystemExit(0)` represents normal successful runner completion. The patches to `builtins.open` and the existing `pylint.lint.run.Path` simulate the reported environment rather than assert a particular calculation or repair. No private helper is called directly, no resulting worker count is inspected, and no particular rounding or clamping strategy is required. There is no open behavioral requirement that excludes a reasonable correct fix.",
+    "score": 1,
+    "explanation": "The test directly reproduces the reported fractional-CPU environment and checks successful completion with `--jobs=0`, without prescribing how the fix prevents a zero worker count.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2979,
+  "output_tokens": 1081,
+  "seconds": 30.8
+}

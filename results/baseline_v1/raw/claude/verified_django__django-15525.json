@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15525",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 8418,
+  "output": {
+    "reasoning": "The test loads a fixture into the 'other' database and checks that the object was created with the correct name and author. That is pure behavior, and any correct fix would pass it, for example setting obj._state.db = db in build_instance before calling natural_key(). One small detail: the assertion obj.author.name uses default routing to fetch the related object. Since the obj was fetched using('other'), the related lookup follows the instance's db, so this is fine.\n\nThe sqlite test_features change is incidental and not part of FAIL_TO_PASS. It is a test infrastructure tweak, probably needed because the fix touched something else, but it is not graded.\n\nThe test models, fixture and new test class are all added by the test patch, so the developer doesn't need to create them.\n\nOverall the test is directly specified.",
+    "score": 1,
+    "explanation": "The test only checks that loaddata with natural keys over foreign keys succeeds on a non-default database and that the resulting data is correct, which is exactly what the issue asks for.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusyfxii2KuUvUhUwJNf",
+  "input_tokens": 3880,
+  "output_tokens": 346,
+  "seconds": 4.4
+}

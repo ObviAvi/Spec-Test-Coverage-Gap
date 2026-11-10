@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-16334",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9894,
+  "output": {
+    "reasoning": "1. The spec says that for q zero and p real and nonzero, (q**p).is_positive returns None but should be False, because 0**p is 0 or zoo. It names the is_positive query on Pow and nothing else.\n\n2. What the graded test requires:\n- (p**q).is_positive is False, with p zero and q real nonzero. This is the reported case and is settled.\n- (p**j).is_positive is False, with j nonzero and even. Even implies integer and real, so this is the same case on a related input. Settled.\n- The older assertions such as S(0)**S(0), I**2 and w**3 already behave this way. Context.\n- (p**q).is_negative is False. Open. The spec only discusses is_positive; the title says 'non-positive' but never asks for is_negative.\n- (x**y).is_positive is True with both symbols zero (0**0). Open. The spec only covers nonzero real exponents. Pow does not auto-evaluate a zero-assumption Symbol exponent, so this needs explicit handling of a zero exponent.\n- (x**y).is_negative is False. Open, for the same reasons.\n\n3. A reasonable fix that fails: add to _eval_is_positive a branch 'elif base.is_zero and exp.is_real and exp.is_zero is False: return False'. This exactly matches the spec's '0**a (where a is real and non-zero)' and is correct for the reported case and related inputs. It fails two ways:\n- (x**y).is_positive returns None instead of True.\n- (p**q).is_negative stays None, because the existing nonnegative-base branch needs exp.is_nonnegative.\n\n4. Both requirements are reasonable extensions, not the only reading of the spec. They check observable assumption results, not internals.",
+    "score": 3,
+    "explanation": "A fix that only makes 0**(real nonzero) report is_positive False, as the issue describes, fails the test. The test also requires is_negative to be False for these powers and requires 0**0 with symbolic zero base and exponent to be positive (True), and neither is in the specification.",
+    "overspecification_vector": "assert (p**q).is_negative is False; assert (x**y).is_positive is True   # 0**0; assert (x**y).is_negative is False"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutFkBAmJKV2Th2yLGYf",
+  "input_tokens": 3775,
+  "output_tokens": 1505,
+  "seconds": 15.4
+}

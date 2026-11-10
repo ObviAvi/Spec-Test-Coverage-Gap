@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13536",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8982,
+  "output": {
+    "reasoning": "1. Spec: Pipeline.fit with an unprefixed `sample_weight` raises an unhelpful unpacking ValueError. The fix should give a friendlier message that explicitly describes the correct `stepname__sample_weight` format. Entry point: Pipeline.fit.\n2. The graded test calls clf.fit(..., sample_weight=[1,1]) and requires:\n   (a) a ValueError;\n   (b) the message to match the regex \"Pipeline.fit does not accept the sample_weight parameter\".\n3. Status of each requirement:\n   (a) ValueError is effectively settled. The existing error is a ValueError, and an invalid-argument error conventionally stays ValueError. A TypeError is also arguable, but ValueError is the natural choice.\n   (b) The exact wording is open. The spec only says the message should be friendlier and should describe the correct format.\n4. A reasonable fix that fails: `ValueError(\"Invalid parameter 'sample_weight'. Fit parameters must be prefixed with the step name, e.g. logisticregression__sample_weight\")`. This fully satisfies the spec but does not contain the phrase \"Pipeline.fit does not accept the sample_weight parameter\", so it fails the match.\n5. The test pins one exact message phrasing on externally observable behavior, so the score is 3.",
+    "score": 3,
+    "explanation": "The test requires the error message to contain the exact phrase \"Pipeline.fit does not accept the sample_weight parameter\". A fix that raises a ValueError with a clear but differently worded message explaining the `stepname__sample_weight` format would fail.",
+    "overspecification_vector": "pytest.raises(ValueError, match=\"Pipeline.fit does not accept the sample_weight parameter\")"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutEa9Pv3TA9Txhy6VX7",
+  "input_tokens": 3440,
+  "output_tokens": 611,
+  "seconds": 7.0
+}

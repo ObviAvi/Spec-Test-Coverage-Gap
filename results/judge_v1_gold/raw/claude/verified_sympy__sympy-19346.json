@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/sympy__sympy-19346",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9698,
+  "output": {
+    "reasoning": "1. Spec: `srepr` on dict and set prints raw elements (`{x: y}`) instead of their srepr forms, unlike list and tuple, which print `[Symbol('x'), Symbol('y')]`. The entry point is `srepr`.\n2. Graded test_dict requires:\n- `srepr({}) == \"{}\"`\n- `srepr({x: y}) == \"{Symbol('x'): Symbol('y')}\"`\n- a two-key dict printed in either order\n- a nested dict printed recursively as `{Symbol('x'): {Symbol('y'): Symbol('z')}}`\n3. Settlement:\n- Element formatting is settled by the spec's list/tuple example: elements should use srepr form inside the container syntax.\n- The `: ` and `, ` separators and the brace literal are settled by convention. They match Python's dict repr and the existing list/tuple pattern (`reprify(expr, \", \")`).\n- Empty `{}` is the natural result of that format and matches Python's repr.\n- Key order is not pinned; both orders are accepted.\n- Nested recursion follows naturally from calling doprint on values.\n4. One alternative is a `dict(...)` style output, but it breaks the literal-repr pattern used for list and tuple and is not a plausible reading. Any fix that applies srepr to keys and values inside a dict literal passes. The set test, where `set()` could be an open choice, is not graded.",
+    "score": 2,
+    "explanation": "The graded assertions such as `srepr({x: y}) == \"{Symbol('x'): Symbol('y')}\"` are exactly what follows from applying srepr to the dict's elements the way list and tuple already do, with Python's dict repr format; ordering is not pinned.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut2soh3ZRvtmS2BuuJm",
+  "input_tokens": 3832,
+  "output_tokens": 859,
+  "seconds": 9.1
+}

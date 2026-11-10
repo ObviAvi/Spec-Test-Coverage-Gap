@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-13417",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8807,
+  "output": {
+    "reasoning": "Spec: QuerySet.ordered returns True for a GROUP BY query (via annotate with an aggregate) on a model with Meta.ordering, even though the SQL has no ORDER BY because the default ordering is dropped. Fix: ordered should be False in this case. Test 1 uses Tag.objects.annotate(num_notes=Count('pk')) and asserts ordered is False. This matches the reproduction example nearly verbatim, with Tag presumably having Meta.ordering. It also asserts that order_by('name').ordered is True; explicit ordering already counted as ordered before, so this is a regression check. Test 2 uses values('name').annotate(Count). This is also a GROUP BY query, and Meta.ordering is dropped there too. It is a closely related input, and a fix keyed on query.group_by being set handles both. Could a reasonable fix handle only the annotate case and not values+annotate? The title says 'GROUP BY queries', so a correct fix must cover any GROUP BY query. Both tests use the public .ordered property. No arbitrary choices.",
+    "score": 2,
+    "explanation": "The tests assert that qs.ordered is False for aggregate-annotated querysets that produce GROUP BY on a model with Meta.ordering, which is exactly the behavior the issue title and example describe. The values().annotate() case is just another GROUP BY input of the same kind.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgusycenYjaiNe58PZbr4",
+  "input_tokens": 3382,
+  "output_tokens": 476,
+  "seconds": 6.0
+}

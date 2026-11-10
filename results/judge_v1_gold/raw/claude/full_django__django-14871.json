@@ -1,0 +1,19 @@
+{
+  "task_id": "full/django__django-14871",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9744,
+  "output": {
+    "reasoning": "1. The spec says Select2 translations aren't applied for languages with subtags like pt-BR. It blames lowercasing in widgets.py (the SELECT2_TRANSLATIONS / media area), but names no API change; it only describes a symptom and a suspected cause.\n2. The graded test calls AutocompleteSelect.build_attrs() and asserts the returned dict equals an exact set of attributes. That set now includes a new key 'lang': 'en'.\n3. Requirement-by-requirement:\n- A 'lang' attribute in build_attrs output: open. The spec never mentions emitting a lang attribute or changing build_attrs. It points at the lowercasing/i18n file lookup in the media/translation mapping.\n- The value 'en', the Select2 translation name for the active language: open, since it follows only from choosing a lang attribute.\n4. Reasonable fixes that fail the test:\n- Pass the language to Select2 another way, e.g. a 'data-language' attribute, or setting the `language` option in autocomplete.js from the media-selected i18n name. Select2 reads data-* attributes as options, so this works but omits 'lang'.\n- Adjust SELECT2_TRANSLATIONS or the media lookup, as the spec's pointer suggests. This leaves build_attrs unchanged.\nEither way, the exact dict comparison fails. The real cause is that Select2 reads the lowercased page `lang` attribute, so the language code must reach Select2 with its original case. The tests pin one specific mechanism, a 'lang' HTML attribute emitted by build_attrs, that the spec never names.\n5. The test depends on a new attribute name and code path (build_attrs) that the spec doesn't implicate, so this is significant overspecification.",
+    "score": 4,
+    "explanation": "The test requires build_attrs() to emit a new 'lang' attribute set to the Select2 translation name, a mechanism the issue never mentions. A correct fix that passes the language through a data-language attribute or the JS initialization, or that fixes the case handling in the translation/media lookup the issue points to, fails the exact dict comparison.",
+    "overspecification_vector": "+            'lang': 'en',  (in test_build_attrs expected attrs dict for AutocompleteSelect.build_attrs)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut9xwTpmFqmSjLF8acY",
+  "input_tokens": 3660,
+  "output_tokens": 1757,
+  "seconds": 18.9
+}

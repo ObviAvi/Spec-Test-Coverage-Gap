@@ -1,0 +1,19 @@
+{
+  "task_id": "full/scikit-learn__scikit-learn-13253",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 16263,
+  "output": {
+    "reasoning": "1. The specification asks OneHotEncoder and OrdinalEncoder to accept DataFrames without first converting them to one contiguous array. The goal is to \"preserve the datatypes per column\" and \"avoid converting a potentially mixed-dtype DataFrame (eg ints and object strings) to a full object array\". It names the user-visible consequence: the dtype of `categories_` changes.\n\n2. The graded test `test_encoder_dtypes_pandas` requires:\n   (a) An all-int64 DataFrame with three columns gives int64 categories and the expected one-hot output. This already worked before and is settled by existing behavior.\n   (b) A mixed DataFrame {A: int, B: object strings, C: float} gives `categories_` dtypes [int, object, float], plus the correct transform output.\n\n3. Requirement (b) is settled by the specification's core request to preserve per-column dtypes. The issue even suggests running check_array on each column. With dtype=None, that keeps int64 as int64, float64 as float64, and object strings as object.\n   - The object column staying object matches the existing convention: string data is held as object dtype, and the existing test already expected object.\n   - On the test platform, int64 compares equal to `int`.\n   - The transform output is standard one-hot behavior.\n\n4. No reasonable fix that preserves per-column dtypes would fail. A fix that turned the object string column into a numpy unicode dtype would go against the repo's established convention of converting strings to object. The other graded test changes (1D checks, NaN with DataFrame) are not in the FAIL_TO_PASS list.\n\n5. Score 2: the tests check exactly the per-column dtype preservation the issue describes, with only small, convention-based inferences.",
+    "score": 2,
+    "explanation": "The graded assertion that `categories_` dtypes are [int, object, float] for a mixed DataFrame is exactly the per-column dtype preservation the issue requests, so any fix that encodes column by column while keeping each column's dtype passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutE8urBdpSRr3yMTgGp",
+  "input_tokens": 6421,
+  "output_tokens": 1101,
+  "seconds": 11.4
+}

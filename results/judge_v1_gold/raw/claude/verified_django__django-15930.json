@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-15930",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9826,
+  "output": {
+    "reasoning": "1. The spec says Case/When with ~Q(pk__in=[]) generates invalid SQL ('CASE WHEN THEN'). The expected behavior is that all rows get the True (then) value. The entry point is the public annotate/Case/When API.\n\n2. The test annotates with Case(When(~Q(pk__in=[]), then=Value('selected')), default=Value('not selected')). It asserts two things: the row count equals the total count, and every row's annotation equals 'selected'.\n\n3. Each requirement is settled:\n- No crash: settled by the spec ('syntax error').\n- Every row gets the then value: settled by the spec ('I expected behavior to annotate all rows with the value True since they all match').\n- The test uses a string Value and no output_field instead of BooleanField. That is the same code path with a different argument, so it is a related input.\n\n4. Any correct fix passes. Possible fixes include making the condition compile to an always-true predicate, short-circuiting in Case so it returns the then result, or special-casing it in WhereNode. In every case the observable result is that all rows get 'selected'. The test does not check the SQL text.",
+    "score": 1,
+    "explanation": "The test reproduces the issue's example (Case/When with ~Q(pk__in=[])) and asserts every row receives the When's then value, which is exactly the behavior the spec says it expects.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CguswsSV72DethaiCu1Rz",
+  "input_tokens": 3632,
+  "output_tokens": 474,
+  "seconds": 5.5
+}

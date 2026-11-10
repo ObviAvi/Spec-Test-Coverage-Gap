@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-14122",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8651,
+  "output": {
+    "reasoning": "The specification identifies incorrect aggregation caused by including Meta.ordering fields in GROUP BY and explicitly requires that those fields be excluded. The test exercises this behavior through the public ORM: it assigns articles to two authors, calls values('author').annotate(count=Count('author')), and checks the resulting groups. Correct grouping is directly settled by the specification; the dictionary keys and counts follow standard values()/annotate()/Count semantics and the fixture assignments. The expected counts of 3 and 1 are consequences of the test data, not arbitrary implementation choices. assertCountEqual imposes no result ordering. No private APIs, internal state, new names, or implementation strategy are required, and there is no open requirement that a reasonable correct fix would violate.",
+    "score": 1,
+    "explanation": "Every reasonable correct fix passes because the assertion checks exactly the reported aggregation error: grouping by author must produce counts of 3 and 1 without additional grouping from Meta.ordering.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2015,
+  "output_tokens": 471,
+  "seconds": 14.8
+}

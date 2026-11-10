@@ -163,3 +163,11 @@ def test_prevalence_helpers():
     assert corrected_prevalence(0.234, 0.861, 0.038) == pytest.approx(0.238, abs=1e-3)
     assert corrected_prevalence(0.01, 0.9, 0.05) == 0.0
     assert [resolve_band(x) for x in (0, 0.5, 16 / 30, 0.9)] == ["0%", "1-50%", "51-89%", ">=90%"]
+
+
+def test_flag_changes_between_runs():
+    from stcg.compare import flag_changes
+
+    c = flag_changes([1, 2, 3, 4, 3], [1, 3, 2, 3, 3])
+    assert (c["same_score"], c["newly_flagged"], c["unflagged"]) == (2, 1, 1)
+    assert flag_changes([1, 4], [2, 3])["kappa"] == pytest.approx(1.0)

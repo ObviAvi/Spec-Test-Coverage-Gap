@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-11749",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10018,
+  "output": {
+    "reasoning": "The specification identifies call_command() as the entry point and explains that kwargs satisfying a required mutually exclusive group are incorrectly omitted from parser input. The graded test requires: (1) call_command(..., foo_id=1) to succeed; (2) call_command(..., foo_name='foo') to succeed; (3) the command's options to include the corresponding destination names; and (4) calling without either option to raise CommandError containing 'Error: one of the arguments --foo-id --foo-name is required'. Requirements (1)–(3) are settled by the reported call_command('my_command', shop_id=1) failure and its generalization to either group member; the fixture uses the same required-group structure, nargs, types, and defaults. Requirement (4) is a conventional regression check: required=True must still reject an unsatisfied group, using the parser error format explicitly shown in the specification. The fixture's names do not require production code to introduce any particular helper or identifier. No open requirement excludes a reasonable correct fix.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix should accept either group member through kwargs while preserving the existing required-group error when neither is supplied; the tests add only closely related inputs and that regression check.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2270,
+  "output_tokens": 634,
+  "seconds": 17.0
+}

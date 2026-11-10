@@ -1,0 +1,19 @@
+{
+  "task_id": "full/sympy__sympy-13236",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 11810,
+  "output": {
+    "reasoning": "The issue asks for one thing: `factorial(n) % n` should simplify to 0, and ideally `factorial(n) % k` should too when 1 <= k <= n.\n\nThe FAIL_TO_PASS tests check far more than that. Behaviors graded but never mentioned in the issue:\n- New `is_composite` handling for Mul and Pow, e.g. `((x+1)*(y+1)).is_composite is True` and `((-x-1)**(2*y)).is_composite is True`.\n- An even, positive, non-prime Dummy being integer and composite.\n- `factorial(n+2).is_even is True`.\n- `factorint` accepting an unevaluated `factorial`.\n- New Mod denesting rules involving negatives and multiples, e.g. `Mod(-Mod(x, 2*t), t) == Mod(-x, t)`.\n- Symbolic Mod with positive offsets, e.g. `Mod(-2, p + 3) == p + 1`.\n- Modular exponentiation for an unevaluated Pow.\n- `x**m % x` staying unevaluated for a non-integer `x`.\n- `f1.equals(f2) is None` instead of False in `test_issue_7426`.\n- `_monotonic_sign` handling composite Dummies.\n\nMany other listed tests, such as `test_pow_E` and `test_leadterm`, appear to fail only because of these broader core assumption and Mod refactors. A developer who correctly made `factorial(n) % n` and `factorial(n) % k` return 0, for example by adding factorial handling in `Mod.eval`, would still fail most of these tests.\n\nThe tests are tied to a large refactor of the original PR rather than to the stated issue.",
+    "score": 4,
+    "explanation": "The graded tests require many behaviors unrelated to the issue, including new is_composite logic for Mul and Pow, factorial parity, factorint on unevaluated factorials, new Mod denesting rules and a changed `equals` result. A correct fix that only makes `factorial(n) % k` simplify to 0 would fail them.",
+    "overspecification_vector": "test_Mul_is_prime_composite: assert ((x+1)*(y+1)).is_composite is True; test_Pow_is_prime_composite: assert ((-x-1)**(2*y)).is_composite is True; test_issue_9115_9150: assert factorial(n + 2).is_even is True; test_composite: x = Dummy(positive=True, even=True, prime=False); assert x.is_composite is True; test_Mod: assert Mod(-Mod(x, 2*t), t) == Mod(-x, t); assert Mod(-2, p + 3) == p + 1; assert Mod(Pow(4, 13, evaluate=False), 497) == Mod(Pow(4, 13), 497); assert (x**m % x).func is Mod; test_issue_7426: assert f1.equals(f2) is None; test_factorint: assert multiproduct(factorint(fac(200, evaluate=False))) == fac(200)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutB9nbmVXtVQhpp6wWP",
+  "input_tokens": 6107,
+  "output_tokens": 1380,
+  "seconds": 12.7
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/matplotlib__matplotlib-26113",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 18680,
+  "output": {
+    "reasoning": "The specification identifies an off-by-one error in hexbin when C is supplied and explicitly requests “len(vals) >= mincnt” rather than “len(vals) > mincnt.” It also says that with mincnt=1, the same gridpoints should be plotted with and without C. The graded test compares rendered figures from those two calls, using unit-valued C and a sum reducer, as in the reproduction. Its smaller dataset includes singleton bins and a bin containing two points, directly exercising the reported boundary. The gridpoint inclusion requirement is explicitly settled; equal colors follow from the existing counting behavior because summing unit values gives the same bin values as counting points. Identical extent, gridsize, and background settings introduce no additional fix requirements. The test uses the public hexbin entry point and imposes no implementation details, new names, exception messages, or unspecified edge-case behavior. There is no open requirement for which a reasonable correct fix would fail.",
+    "score": 1,
+    "explanation": "The figure-equality assertion directly checks the requested consistency at mincnt=1: summing unit-valued C must produce the same occupied bins and counts as omitting C.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 4915,
+  "output_tokens": 638,
+  "seconds": 16.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-12039",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10467,
+  "output": {
+    "reasoning": "1. The spec says CREATE INDEX for fields=['-name'] produces `(\"name\"DESC)` and that `(\"name\" DESC)` is expected. It also reports a trailing-whitespace problem with opclasses. It points to ddl_references.Columns but describes the problem through Index output.\n2. The only graded test is test_descending_columns_list_sql. It builds Index(fields=['-headline'], name='whitespace_idx'), calls index.create_sql(Article, editor), and asserts that '(\"headline\" DESC)' appears in str().\n3. That format is settled by the spec, which gives `(\"name\" DESC)` as the expected output. The test uses the public Index.create_sql, which is the natural entry point. Quoting goes through editor.quote_name, so it is backend-agnostic.\n4. No reasonable alternative fails. Any fix inserts a single space between the column and DESC, whether in Columns.__str__ or in how col_suffixes are built. The non-graded opclass tests also match the spec's stated expectations.",
+    "score": 1,
+    "explanation": "The graded test asserts that a descending Index produces '(\"headline\" DESC)', which is exactly the expected output given in the spec, so every reasonable fix passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut4zETfyWtpuGgPgSZf",
+  "input_tokens": 3980,
+  "output_tokens": 436,
+  "seconds": 6.0
+}

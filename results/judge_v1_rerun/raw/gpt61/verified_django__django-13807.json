@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/django__django-13807",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 10067,
+  "output": {
+    "reasoning": "The specification identifies missing table-name quoting in check_constraints(), explicitly showing both PRAGMA foreign_key_check(%s) and PRAGMA foreign_key_list(%s). Calling connection.check_constraints(table_names=['order']) is therefore settled by the specification, even though the reproduction uses loaddata. Creating an invalid foreign key and expecting IntegrityError is conventional constraint-checking behavior; no exact message or implementation is required. However, the test additionally requires handling SQL-keyword column names: the primary key uses db_column='select' and the foreign key uses db_column='where'. Those are open requirements: the issue describes keyword table names, not keyword columns. A reasonable fix would quote table_name in both displayed PRAGMA statements, correctly handling reserved table names generally, while leaving existing column handling unchanged. Such a fix can still encounter a syntax error when the violation-reporting SQL accesses these keyword columns, failing the IntegrityError assertion. This is an additional observable input requirement in the same function, rather than an internal implementation requirement.",
+    "score": 3,
+    "explanation": "A reasonable fix can quote table names in both PRAGMA statements without repairing keyword-column handling. The test also requires reserved primary-key and foreign-key column names to work during violation reporting, so that table-name fix can still raise a SQL syntax error instead of IntegrityError.",
+    "overspecification_vector": "id = models.AutoField(primary_key=True, db_column='select'); reporter = models.ForeignKey(Reporter, models.CASCADE, db_column='where'); combined with assertRaises(IntegrityError) around connection.check_constraints(table_names=['order'])."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 2322,
+  "output_tokens": 1892,
+  "seconds": 50.8
+}

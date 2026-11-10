@@ -1,0 +1,18 @@
+{
+  "task_id": "verified/sympy__sympy-12096",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 8058,
+  "output": {
+    "reasoning": "The specification identifies recursive evaluation of implemented functions as broken: `f(g(2)).evalf()` stays symbolic, and `Function._eval_evalf` is not calling evalf recursively on `_imp_` results. The graded test creates `f` with `implemented_function('f', lambda x: x**2)`, as in the report, then requires `f(f(2)).evalf() == Float(16)`. Self-composition is a closely related input to the reported composition of two implemented functions; fixing only composition of distinct functions would leave the same bug unresolved. The value 16 follows from squaring twice, and the floating-point result follows the existing `.evalf()` behavior illustrated by the specification. There are no mocks, private-method assertions, or open implementation requirements. No reasonable correct fix would reject self-composition or produce a different numerical result.",
+    "score": 2,
+    "explanation": "Every reasonable correct fix for recursive implemented-function evaluation should make the closely related self-composition assertion `f(f(2)).evalf() == Float(16)` pass.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 1954,
+  "output_tokens": 434,
+  "seconds": 12.5
+}

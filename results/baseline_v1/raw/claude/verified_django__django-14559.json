@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/django__django-14559",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "baseline_v1",
+  "prompt_sha": "773de26ef9f4",
+  "prompt_chars": 2782,
+  "output": {
+    "reasoning": "The issue asks for bulk_update() to return the number of rows matched, and it suggests summing the return values of the repeated update() calls.\n\n- **test_large_batch**: expects 2000, which follows directly from summing.\n- **test_empty_objects**: expects 0. The existing early-return path returns None, so the developer must infer that \"number of rows matched\" means 0 here. This is a natural reading.\n- **test_updated_rows_when_passing_duplicates**: expects 1 when duplicates fall in the same batch and 2 when they fall in separate batches. This is exactly what summing update() results gives. A same-batch update with pk__in matches one row, and separate batches each match one row.\n\nAn alternative design, such as counting distinct objects or deduplicating, would fail the batch_size=1 assertion. However, that design departs from the explicitly suggested approach. The duplicate semantics are somewhat quirky and not spelled out, but they follow from the spec's hint.",
+    "score": 2,
+    "explanation": "The tests check the behavior the issue describes: return the summed update() counts, including the natural 0 for empty input. The only implicit detail is how duplicates are counted, and that follows from the suggested summing approach.",
+    "overspecification_vector": "rows_updated = Note.objects.bulk_update([note, note], ['note'], batch_size=1); self.assertEqual(rows_updated, 2)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgut36RivmTRXZfiXUZyB",
+  "input_tokens": 1445,
+  "output_tokens": 727,
+  "seconds": 8.5
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "full/matplotlib__matplotlib-24334",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 9398,
+  "output": {
+    "reasoning": "1. The spec says that Axis.set_ticks silently ignores kwargs when labels is not passed, so invalid kwargs are not even validated. It proposes two remedies: \"We should at least check that `kwargs` are valid Text properties in all cases; we could even consider making any kwargs an error if `labels` is not set.\"\n2. The graded test calls ax.xaxis.set_ticks([1,2,3], alpha=0.5) with no labels and requires a ValueError.\n3. Calling Axis.set_ticks is settled, since it is the named entry point. The test passes alpha, which is a valid Text property, and still requires an error. That outcome is only produced by the second, optional proposal (\"could even consider\"). It is not produced by the minimal proposal (\"at least check ... valid Text properties\"). The exception type ValueError is also open. Matplotlib's usual Text-property validation (e.g. via _internal_update / Artist.set) raises AttributeError for unknown properties.\n4. A reasonable fix that implements the spec's primary suggestion fails the test. That fix validates kwargs against Text properties even when labels is None, for example by creating a dummy Text and calling _internal_update, or using normalize_kwargs. It would accept alpha=0.5 without error. A fix that rejects any kwargs but raises TypeError, as for an unexpected keyword, would also fail.\n5. The test pins one of two options the spec explicitly offers, plus a specific exception type. The assertion is on observable behavior, so the score is 3.",
+    "score": 3,
+    "explanation": "A fix that follows the spec's primary suggestion fails because the test requires ValueError for the valid Text property alpha=0.5. That fix only validates kwargs as Text properties when labels is None, so it would accept alpha and raise nothing. The test thus pins the optional \"make any kwargs an error\" behavior and the ValueError type.",
+    "overspecification_vector": "with pytest.raises(ValueError):\n    ax.xaxis.set_ticks(ticks, alpha=0.5)"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgutBLLbPC3HhHCh2a841",
+  "input_tokens": 3546,
+  "output_tokens": 888,
+  "seconds": 9.6
+}

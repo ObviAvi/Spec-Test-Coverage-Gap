@@ -1,0 +1,18 @@
+{
+  "task_id": "full/sympy__sympy-17194",
+  "judge": "gpt61",
+  "model": "gpt-6.1-sol",
+  "prompt": "judge_v1_gold",
+  "prompt_sha": "097f84ef323d",
+  "prompt_chars": 14277,
+  "output": {
+    "reasoning": "The specification identifies incorrect mathml output for acoth(x), acsc(x), and asec(x), explicitly requiring arccoth, arccsc, and arcsec tags. Those three expectations are settled. The graded trig test calls mp._print and checks cot/csc/sec, acot/acsc/asec, coth/csch/sech, and acoth/acsch/asech operator names. The additional inverse-function cases reasonably extend the reported naming problem; the non-inverse names follow existing MathML conventions. The constants test additionally requires mathml(EmptySet()), mathml(S.true), mathml(S.false), and mathml(S.NaN) to produce <emptyset/>, <true/>, <false/>, and <notanumber/>. The logic test requires exact apply expressions using lowercase and, or, xor, implies, and not tags, with x and y operands in the shown order. Although these are conventional MathML representations, requiring repairs for constants and Boolean expressions is open: the issue only reports inverse-trigonometric naming errors. A reasonable fix could extend the existing inverse-function tag mappings, including the closely related acsch and asech cases, while leaving constants and Boolean printing unchanged. It would resolve the specified problem but fail both unrelated groups. These failures concern externally observable results for additional arguments to mathml, rather than a required implementation technique, so the score is 3.",
+    "score": 3,
+    "explanation": "A correct fix covering the reported inverse-trigonometric tags and related inverse functions can leave constant and Boolean printing unchanged. It would fail the added EmptySet/true/false/NaN and logical-operator assertions, none of which the specification requests.",
+    "overspecification_vector": "test_content_mathml_constants: mathml(EmptySet()) == '<emptyset/>', mathml(S.true) == '<true/>', mathml(S.false) == '<false/>', mathml(S.NaN) == '<notanumber/>'; test_content_mathml_logic: the five exact mathml(And(x, y)), mathml(Or(x, y)), mathml(Xor(x, y)), mathml(Implies(x, y)), and mathml(Not(x)) output assertions."
+  },
+  "served_model": "gpt-6.1-sol",
+  "input_tokens": 3918,
+  "output_tokens": 1646,
+  "seconds": 37.7
+}

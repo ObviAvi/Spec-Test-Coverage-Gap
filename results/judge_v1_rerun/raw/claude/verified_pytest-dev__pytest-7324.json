@@ -1,0 +1,19 @@
+{
+  "task_id": "verified/pytest-dev__pytest-7324",
+  "judge": "claude",
+  "model": "claude-opus-5-5",
+  "prompt": "judge_v1_rerun",
+  "prompt_sha": "f389ae3edc52",
+  "prompt_chars": 7879,
+  "output": {
+    "reasoning": "1. The issue: `Expression.compile(\"False\")` builds an AST `Name` node for the identifier 'False'. CPython's compiler rejects this, crashing debug builds and raising ValueError on newer Pythons (per the bpo-40870 link). The fix needs `Expression` to handle True/False/None (and closely related inputs) without building such Name nodes.\n2. Requirements from the graded tests: `test_valid_idents[True|False|None]`. The existing test body (not shown, but the context lines show it) evaluates the expression with a matcher like `{ident: True}.__getitem__` and asserts a truthy result. So 'True', 'False' and 'None' must compile and be treated as identifiers passed to the matcher.\n3. Settled points:\n - 'True' and 'False' as identifiers: settled by existing code and tests, which already list them in `test_valid_idents`. The issue's reproducer is exactly `Expression.compile(\"False\")`.\n - 'None': the closely related reserved constant, also named in the assertion message the issue quotes.\n4. Any correct fix that keeps the existing identifier semantics passes, whether it prefixes names, uses a Subscript/Call lookup, or uses a custom evaluator. A fix that turned these into Python constants would break existing documented behavior, so it is not a reasonable fix. No open requirement remains.",
+    "score": 2,
+    "explanation": "The tests only require that 'True', 'False' and the closely related 'None' compile and evaluate as matcher identifiers, which the existing test_valid_idents already established; any correct fix that avoids the compiler assertion while keeping that behavior passes.",
+    "overspecification_vector": "None"
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgusw6LLtULK34RxxFQxy",
+  "input_tokens": 2918,
+  "output_tokens": 1124,
+  "seconds": 13.1
+}
