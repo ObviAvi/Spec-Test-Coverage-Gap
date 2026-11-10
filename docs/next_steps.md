@@ -53,27 +53,43 @@ About $10 each:
 - rerun of `judge_v1` into a separate cache to measure run-to-run noise
 - a plain one-paragraph prompt as a baseline
 
-### 5. Executable counterexamples
+### 5. Relax, validate, regrade (RQ3)
 
-For 20-30 flagged Verified tasks, have an LLM write the alternative fix the judge describes, then run it in the SWE-bench docker harness. A counterexample is confirmed when the fix passes the existing tests and fails the graded ones.
+Merges the old "executable counterexamples" and "relax tests" steps. Needs the SWE-bench docker harness.
 
-This is the part no other auditor has, and it removes the dependence on judge-only labels.
+For each flagged Verified task:
+1. An LLM relaxes the overspecified part of the test, using the judge's explanation and blamed lines.
+2. The relaxed test is validated with the checks below.
+3. Existing patches from public submissions are regraded on it. No agent reruns.
 
-### 6. Step 4: relax tests and regrade public submissions (RQ3)
+A patch that failed the original test, passes the relaxed one, and passes every pre-existing test is an executable counterexample: a working fix the benchmark marked wrong. These come from real agents, so nothing has to be generated.
 
-Uses the same harness as step 5.
-- relax the overspecified part of each flagged test, using the judge's explanation
-- each relaxed test must fail on the base commit, pass the gold patch, and accept at least one alternative the original rejected
-- regrade existing patches from public submissions, no agent reruns
-- run the same procedure on about 20 fine placebo tasks
-- report score change per agent and ranking change
+Checks on each relaxed test (pass/fail, all deterministic):
+1. It fails on the base commit with the failure the issue describes.
+2. It passes with the gold patch.
+3. Every agent patch that passed the original test still passes.
 
-### 7. Write
+Check on the procedure as a whole:
+4. Placebo. Run the same relaxation procedure on unflagged tasks. Almost nothing should flip. If patches flip there as often as on flagged tasks, the relaxer is weakening tests in general and the gains are not evidence of overspecification. The placebo flip rate is the baseline to subtract.
+   - Placebo tasks need failing patches to be able to flip, so pick unflagged tasks matched on resolve rate (the fine validation set is solved by nearly everyone and has almost none).
+
+Reported, not enforced:
+- How much of the test each relaxation changed, and whether it stayed within the lines the judge blamed. Some fixes need a larger rewrite (e.g. a test that calls a private helper has to be rewritten to go through the public entry point), so this is not a pass/fail gate. Report results separately for small edits and rewrites.
+
+Outcomes to report:
+- tasks with at least one flipped patch (confirmed), tasks with none (inconclusive, not a negative), tasks where no relaxed test passes the checks (not relaxable)
+- score change per agent and ranking change
+- flip rate on flagged tasks against the placebo flip rate
+
+Fallback: for flagged tasks where no agent patch flips, have an LLM write the alternative fix the judge describes and run it the same way.
+
+### 6. Write
 
 The method and validation sections can be written now. The draft has no results section yet and needs the new numbers.
 
 ## Open decisions
 
-- Steps 2-4 only need API calls. Steps 5-6 need Docker with the SWE-bench images (WSL2 on Windows, plus a lot of disk).
-- Whether the paper includes step 6 or stops at step 5 depends on that setup and the deadline.
+- Steps 2-4 only need API calls. Step 5 needs Docker with the SWE-bench images (WSL2 on Windows, plus a lot of disk).
+- With the line restriction dropped, the placebo is the only guard against a relaxed test that is too weak, and it works on average, not per task. A per-task guard would be: a few deliberately wrong variants of the gold patch must still fail the relaxed test. Decide whether to add it, at least for rewrites.
+- Possible shortcut before any Docker work: if the public submissions include per-test pass/fail reports, check whether failing agents fail specifically on the tests the judge blamed. Not yet verified that those files exist.
 - The prompt-clarification experiment and the contamination study from the draft are future work.
