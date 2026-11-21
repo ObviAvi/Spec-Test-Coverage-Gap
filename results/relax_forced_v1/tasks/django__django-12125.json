@@ -1,0 +1,57 @@
+{
+ "instance_id": "django__django-12125",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I replaced the exact serialized string and import-set check for nested classes with a round-trip check. The test now only requires that the serialized output imports and resolves back to the same nested class. The unfixed code still fails, because `migrations.test_writer.NestedEnum` does not exist at module level.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 23,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/migrations/test_writer.py\n+++ b/tests/migrations/test_writer.py\n@@ -396,13 +396,7 @@\n         for nested_cls in [self.NestedEnum, self.NestedChoices]:\n             cls_name = nested_cls.__name__\n             with self.subTest(cls_name):\n-                self.assertSerializedResultEqual(\n-                    nested_cls,\n-                    (\n-                        \"migrations.test_writer.WriterTests.%s\" % cls_name,\n-                        {'import migrations.test_writer'},\n-                    ),\n-                )\n+                self.assertSerializedEqual(nested_cls)\n \n     def test_serialize_uuid(self):\n         self.assertSerializedEqual(uuid.uuid1())\n",
+ "neutralized": [],
+ "lines_changed": 8,
+ "regrade": [
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_serialize_nested_class (migrations.test_writer.WriterTests)",
+    "test_serialize_numbers (migrations.test_writer.WriterTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_serialize_nested_class (migrations.test_writer.WriterTests)",
+    "test_serialize_numbers (migrations.test_writer.WriterTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_serialize_nested_class (migrations.test_writer.WriterTests)",
+    "test_serialize_numbers (migrations.test_writer.WriterTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

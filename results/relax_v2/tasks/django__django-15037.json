@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-15037",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The exact-substring check is now a regex. It accepts `to_field` given as either the column name `people_unique_id` or the inspectdb field name `people_unique`, in either quote style. It still requires a ForeignKey that points to the specific field, so the unfixed code (no `to_field`) fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 27,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/inspectdb/tests.py\n+++ b/tests/inspectdb/tests.py\n@@ -208,10 +208,10 @@\n     def test_foreign_key_to_field(self):\n         out = StringIO()\n         call_command('inspectdb', 'inspectdb_foreignkeytofield', stdout=out)\n-        self.assertIn(\n-            \"to_field_fk = models.ForeignKey('InspectdbPeoplemoredata', \"\n-            \"models.DO_NOTHING, to_field='people_unique_id')\",\n+        self.assertRegex(\n             out.getvalue(),\n+            r\"to_field_fk = models\\.ForeignKey\\('InspectdbPeoplemoredata', \"\n+            r\"models\\.DO_NOTHING, to_field=(['\\\"])people_unique(_id)?\\1\\)\",\n         )\n \n     def test_digits_column_name_introspection(self):\n",
+ "neutralized": [],
+ "lines_changed": 6,
+ "regrade": [
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

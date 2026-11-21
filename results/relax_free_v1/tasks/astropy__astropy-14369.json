@@ -1,0 +1,58 @@
+{
+ "instance_id": "astropy__astropy-14369",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The graded fail case requires `km/s.Mpc-1` to raise an error, but the issue never says this mixed expression is invalid. A left-to-right parser that reads it as km/s/Mpc would also be a correct fix. I kept the test id and swapped in an input with an unmatched parenthesis, which every parser rejects. The `test_cds_grammar` cases still fail on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [
+    "astropy/units/tests/test_format.py::test_cds_grammar_fail[km/s.Mpc-1]"
+   ],
+   "passers": 16,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/astropy/units/tests/test_format.py\n+++ b/astropy/units/tests/test_format.py\n@@ -110,7 +110,10 @@\n         \"solMass(3/2)\",\n         \"km / s\",\n         \"km s-1\",\n-        \"km/s.Mpc-1\",\n+        # Whether 'km/s.Mpc-1' must be rejected or read left-to-right as km/s/Mpc is\n+        # not settled by the issue; keep the test id but use an input that is invalid\n+        # under any grammar.\n+        pytest.param(\"km/s.Mpc-1)\", id=\"km/s.Mpc-1\"),\n         \"/s.Mpc\",\n         \"pix0.1nm\",\n         \"pix/(0.1nm)\",\n",
+ "neutralized": [
+  "astropy/units/tests/test_format.py::test_cds_grammar_fail[km/s.Mpc-1]"
+ ],
+ "lines_changed": 5,
+ "regrade": [
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "astropy/units/tests/test_format.py::test_cds_grammar[strings4-unit4]",
+    "astropy/units/tests/test_format.py::test_cds_grammar[strings6-unit6]"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "astropy/units/tests/test_format.py::test_cds_grammar[strings4-unit4]",
+    "astropy/units/tests/test_format.py::test_cds_grammar[strings6-unit6]"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

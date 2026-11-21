@@ -1,0 +1,263 @@
+{
+ "instance_id": "pydata__xarray-6992",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the tests so they no longer pin the new reset_index design: whether the multi-index dimension or level coords get dropped or renamed, the IndexVariable-to-Variable conversion, and the exact remaining index. They now check that reset coords lose their index, that drop=True removes them, and that converted values are preserved. They also check that the Dataset stays consistent (non-negative data_vars, working repr), which still fails on the unfixed code for the drop=True cases.",
+   "edits": 7,
+   "check": "ok",
+   "neutralized": [
+    "xarray/tests/test_dataarray.py::TestDataArray::test_reset_index",
+    "xarray/tests/test_dataset.py::TestDataset::test_reset_index",
+    "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[arg4-False-dropped4-converted4-renamed4]",
+    "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[arg6-False-dropped6-converted6-renamed6]",
+    "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[foo-False-dropped0-converted0-renamed0]",
+    "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[x-False-dropped2-converted2-renamed2]",
+    "xarray/tests/test_groupby.py::test_groupby_drops_nans"
+   ],
+   "passers": 0,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/xarray/tests/test_dataarray.py\n+++ b/xarray/tests/test_dataarray.py\n@@ -2007,6 +2007,9 @@\n     def test_reset_index(self) -> None:\n         indexes = [self.mindex.get_level_values(n) for n in self.mindex.names]\n         coords = {idx.name: (\"x\", idx) for idx in indexes}\n+        # keeping or dropping the multi-index dimension coordinate is left open\n+        if \"x\" in self.mda.reset_index(\"x\").coords:\n+            coords[\"x\"] = (\"x\", self.mindex.values)\n         expected = DataArray(self.mda.values, coords=coords, dims=\"x\")\n \n         obj = self.mda.reset_index(\"x\")\n@@ -2017,20 +2020,22 @@\n         assert len(obj.xindexes) == 0\n         obj = self.mda.reset_index([\"x\", \"level_1\"])\n         assert_identical(obj, expected, check_default_indexes=False)\n+        assert \"x\" not in obj.xindexes\n+        assert \"level_1\" not in obj.xindexes\n+\n+        obj = self.mda.reset_index([\"level_1\"])\n+        assert \"level_1\" in obj.coords\n+        assert_identical(\n+            obj[\"level_1\"].variable.to_base_variable(),\n+            self.mda[\"level_1\"].variable.to_base_variable(),\n+        )\n+        assert \"level_1\" not in obj.xindexes\n+\n+        obj = self.mda.reset_index(\"x\", drop=True)\n+        assert \"x\" not in obj.coords\n         assert len(obj.xindexes) == 0\n-\n-        coords = {\n-            \"x\": (\"x\", self.mindex.droplevel(\"level_1\")),\n-            \"level_1\": (\"x\", self.mindex.get_level_values(\"level_1\")),\n-        }\n-        expected = DataArray(self.mda.values, coords=coords, dims=\"x\")\n-        obj = self.mda.reset_index([\"level_1\"])\n-        assert_identical(obj, expected, check_default_indexes=False)\n-        assert list(obj.xindexes) == [\"x\"]\n-        assert type(obj.xindexes[\"x\"]) is PandasIndex\n-\n-        expected = DataArray(self.mda.values, dims=\"x\")\n-        obj = self.mda.reset_index(\"x\", drop=True)\n+        assert (obj.values == self.mda.values).all()\n+        expected = obj.copy()\n         assert_identical(obj, expected, check_default_indexes=False)\n \n         array = self.mda.copy()\n@@ -2042,7 +2047,7 @@\n         obj = array.reset_index(\"x\")\n         print(obj.x.variable)\n         print(array.x.variable)\n-        assert_equal(obj.x.variable, array.x.variable.to_base_variable())\n+        assert_equal(obj.x.variable.to_base_variable(), array.x.variable.to_base_variable())\n         assert len(obj.xindexes) == 0\n \n     def test_reset_index_keep_attrs(self) -> None:\n--- a/xarray/tests/test_dataset.py\n+++ b/xarray/tests/test_dataset.py\n@@ -3262,6 +3262,9 @@\n         mindex = ds[\"x\"].to_index()\n         indexes = [mindex.get_level_values(n) for n in mindex.names]\n         coords = {idx.name: (\"x\", idx) for idx in indexes}\n+        # keeping or dropping the multi-index dimension coordinate is left open\n+        if \"x\" in ds.reset_index(\"x\").coords:\n+            coords[\"x\"] = (\"x\", mindex.values)\n         expected = Dataset({}, coords=coords)\n \n         obj = ds.reset_index(\"x\")\n@@ -3282,7 +3285,9 @@\n     def test_reset_index_drop_dims(self) -> None:\n         ds = Dataset(coords={\"x\": [1, 2]})\n         reset = ds.reset_index(\"x\", drop=True)\n-        assert len(reset.dims) == 0\n+        assert \"x\" not in reset.variables\n+        assert len(reset.data_vars) == 0\n+        repr(reset)\n \n     @pytest.mark.parametrize(\n         \"arg,drop,dropped,converted,renamed\",\n@@ -3308,12 +3313,20 @@\n         ds = xr.Dataset(coords={\"x\": midx})\n         reset = ds.reset_index(arg, drop=drop)\n \n-        for name in dropped:\n-            assert name not in reset.variables\n+        args = [arg] if isinstance(arg, str) else arg\n+        for name in args:\n+            assert name not in reset.xindexes\n+        if drop:\n+            for name in args:\n+                assert name not in reset.variables\n         for name in converted:\n-            assert_identical(reset[name].variable, ds[name].variable.to_base_variable())\n-        for old_name, new_name in renamed.items():\n-            assert_identical(ds[old_name].variable, reset[new_name].variable)\n+            assert_identical(\n+                reset[name].variable.to_base_variable(),\n+                ds[name].variable.to_base_variable(),\n+            )\n+        # the dataset must remain internally consistent\n+        assert len(reset.data_vars) == 0\n+        repr(reset)\n \n     def test_reorder_levels(self) -> None:\n         ds = create_test_multiindex()\n--- a/xarray/tests/test_groupby.py\n+++ b/xarray/tests/test_groupby.py\n@@ -538,6 +538,7 @@\n         .rename({\"xy\": \"id\"})\n         .to_dataset()\n         .reset_index(\"id\", drop=True)\n+        .drop_vars([\"lon\", \"lat\"], errors=\"ignore\")\n         .assign(id=stacked.id.values)\n         .dropna(\"id\")\n         .transpose(*actual2.dims)\n",
+ "neutralized": [
+  "xarray/tests/test_dataarray.py::TestDataArray::test_reset_index",
+  "xarray/tests/test_dataset.py::TestDataset::test_reset_index",
+  "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[arg4-False-dropped4-converted4-renamed4]",
+  "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[arg6-False-dropped6-converted6-renamed6]",
+  "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[foo-False-dropped0-converted0-renamed0]",
+  "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[x-False-dropped2-converted2-renamed2]",
+  "xarray/tests/test_groupby.py::test_groupby_drops_nans"
+ ],
+ "lines_changed": 59,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5",
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[foo-True-dropped1-converted1-renamed1]",
+    "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[x-True-dropped3-converted3-renamed3]",
+    "xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[arg5-True-dropped5-converted5-renamed5]"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet",
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101",
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+  "instance_id": "mwaskom__seaborn-3187",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "acedb1630233",
+  "prompt_chars": 8274,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/_core/test_plot.py",
+        "old": "        legend = p._figure.legends[0]\n        assert legend.texts\n        for text in legend.texts:\n            assert float(text.get_text()) > 1e7",
+        "new": "        legend = p._figure.legends[0]\n        assert legend.texts\n        all_text = [legend.get_title().get_text()] + [t.get_text() for t in legend.texts]\n        markers = (\"e8\", \"e+8\", \"e+08\", \"10^{8}\", \"10^8\", \"100000000\")\n        offset_shown = any(\n            m in s.replace(\" \", \"\") for s in all_text for m in markers\n        )\n        if not offset_shown:\n            for text in legend.texts:\n                assert float(text.get_text()) > 1e7"
+      },
+      {
+        "file": "tests/test_relational.py",
+        "old": "        g = relplot(data=long_df, x=\"x\", y=\"y\", hue=long_df[\"z\"] + 1e8)\n        for text in g.legend.texts:\n            assert float(text.get_text()) > 1e7",
+        "new": "        g = relplot(data=long_df, x=\"x\", y=\"y\", hue=long_df[\"z\"] + 1e8)\n        legend = g.legend\n        all_text = [legend.get_title().get_text()] + [t.get_text() for t in legend.texts]\n        markers = (\"e8\", \"e+8\", \"e+08\", \"10^{8}\", \"10^8\", \"100000000\")\n        offset_shown = any(\n            m in s.replace(\" \", \"\") for s in all_text for m in markers\n        )\n        if not offset_shown:\n            for text in legend.texts:\n                assert float(text.get_text()) > 1e7"
+      }
+    ],
+    "summary": "The specification allows showing the offset in the legend title or labels, so the tests now also accept a legend that shows the 1e8 magnitude anywhere in its title or texts. If no such marker appears, the labels must still parse as values above 1e7, so the unfixed code (labels without the offset) still fails."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3GQ1zjwEyq4poDgaeGU",
+  "input_tokens": 3450,
+  "output_tokens": 2559,
+  "seconds": 25.8
+}

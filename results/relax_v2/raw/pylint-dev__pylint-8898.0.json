@@ -1,0 +1,25 @@
+{
+  "instance_id": "pylint-dev__pylint-8898",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "5d18b8d59cf0",
+  "prompt_chars": 13472,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/config/test_config.py",
+        "old": "    with pytest.raises(SystemExit):\n        Run(\n            [str(EMPTY_MODULE), r\"--bad-names-rgx=(foo{1,}, foo{1,3}})\"],\n            exit=False,\n        )\n    output = capsys.readouterr()\n    assert (\n        r\"Error in provided regular expression: (foo{1,} beginning at index 0: missing ), unterminated subpattern\"\n        in output.err\n    )",
+        "new": "    try:\n        Run(\n            [str(EMPTY_MODULE), r\"--bad-names-rgx=(foo{1,}, foo{1,3}})\"],\n            exit=False,\n        )\n    except SystemExit:\n        output = capsys.readouterr()\n        assert \"Error in provided regular expression\" in output.err\n        assert r\"Error in provided regular expression: (foo{1 beginning\" not in output.err"
+      }
+    ],
+    "summary": "Instead of pinning the exact offending sub-pattern `(foo{1,}`, the test now accepts either a successful run (e.g. a parenthesis-aware splitter that keeps the valid regex whole) or a regex error. It only rejects the naive comma-split failure on `(foo{1`, which is what the unfixed code produces; an escape-only fix that never splits differently still fails this test, but no edit can avoid that without pinning an escape syntax the spec leaves open."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzaJU4ZctqtvjvouKjqK",
+  "input_tokens": 5640,
+  "output_tokens": 2063,
+  "seconds": 20.5
+}

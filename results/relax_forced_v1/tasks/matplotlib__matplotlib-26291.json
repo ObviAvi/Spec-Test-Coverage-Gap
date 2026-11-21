@@ -1,0 +1,42 @@
+{
+ "instance_id": "matplotlib__matplotlib-26291",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test no longer requires that saving with bbox_inches=\"tight\" emits no warnings, which the test suite would otherwise turn into errors. Warnings are now ignored during savefig. The unfixed code still fails because savefig raises AttributeError.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 23,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/mpl_toolkits/axes_grid1/tests/test_axes_grid1.py\n+++ b/lib/mpl_toolkits/axes_grid1/tests/test_axes_grid1.py\n@@ -253,8 +253,11 @@\n     fig, ax = plt.subplots()\n     inset_axes(ax, width=1.3, height=0.9)\n \n+    import warnings\n     f = io.BytesIO()\n-    fig.savefig(f, bbox_inches=\"tight\")\n+    with warnings.catch_warnings():\n+        warnings.simplefilter(\"ignore\")\n+        fig.savefig(f, bbox_inches=\"tight\")\n \n \n @image_comparison(['fill_facecolor.png'], remove_text=True, style='mpl20')\n",
+ "neutralized": [],
+ "lines_changed": 5,
+ "regrade": [
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "passes_original_here",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/mpl_toolkits/axes_grid1/tests/test_axes_grid1.py::test_inset_axes_tight"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-15732",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_forced_v1",
+  "prompt_sha": "801b6179a9b7",
+  "prompt_digest": "315964447884",
+  "prompt_chars": 11215,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/migrations/test_operations.py",
+        "old": "        self.assertConstraintExists(table_name, unique_constraint_name, value=False)\n        self.assertConstraintNotExists(table_name, unique_together_constraint_name)",
+        "new": "        with connection.cursor() as cursor:\n            constraints = connection.introspection.get_constraints(\n                cursor, table_name\n            )\n        unique_on_name = [\n            n\n            for n, c in constraints.items()\n            if c[\"columns\"] == [\"name\"] and c[\"unique\"] and not c[\"primary_key\"]\n        ]\n        self.assertEqual(len(unique_on_name), 1)"
+      }
+    ],
+    "summary": "After removing unique_together, the test no longer requires the two exact constraint names: neither that the `_name_key` constraint survives nor that the hashed `_uniq` constraint is the one dropped. It now accepts any outcome where exactly one unique constraint remains on the `name` column. The unfixed code still fails because it raises ValueError when it finds two matching constraints."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch1brGaGStmxGF2Ufvv12",
+  "input_tokens": 4214,
+  "output_tokens": 1197,
+  "seconds": 12.8
+}

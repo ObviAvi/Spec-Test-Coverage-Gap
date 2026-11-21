@@ -1,0 +1,22 @@
+{
+ "instance_id": "sympy__sympy-13031",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the stacking assertions so they check only the resulting shape, which is what the issue reports. They no longer require cross-type equality between the stacked sparse result and a dense Matrix. The unfixed code still gives the wrong shape for 0-row hstack, so the test still fails on it.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 4,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/matrices/tests/test_sparse.py\n+++ b/sympy/matrices/tests/test_sparse.py\n@@ -28,9 +28,9 @@\n \n     # make sure 0 x n matrices get stacked correctly\n     sparse_matrices = [SparseMatrix.zeros(0, n) for n in range(4)]\n-    assert SparseMatrix.hstack(*sparse_matrices) == Matrix(0, 6, [])\n+    assert SparseMatrix.hstack(*sparse_matrices).shape == (0, 6)\n     sparse_matrices = [SparseMatrix.zeros(n, 0) for n in range(4)]\n-    assert SparseMatrix.vstack(*sparse_matrices) == Matrix(6, 0, [])\n+    assert SparseMatrix.vstack(*sparse_matrices).shape == (6, 0)\n \n     # test element assignment\n     a = SparseMatrix((\n",
+ "neutralized": [],
+ "lines_changed": 4
+}

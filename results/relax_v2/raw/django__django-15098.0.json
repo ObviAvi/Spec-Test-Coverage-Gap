@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-15098",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "0884cb158d52",
+  "prompt_chars": 10542,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/i18n/tests.py",
+        "old": "            ('/de-ch-1901/', 'de-ch-1901'),\n            ('/de-simple-page-test/', None),\n            ('/i-mingo/', 'i-mingo'),\n            ('/kl-tunumiit/', 'kl-tunumiit'),\n            ('/nan-hani-tw/', 'nan-hani-tw'),\n        ]\n        for path, language in tests:\n            with self.subTest(path=path):\n                self.assertEqual(g(path), language)",
+        "new": "            ('/i-mingo/', 'i-mingo'),\n            ('/kl-tunumiit/', 'kl-tunumiit'),\n            ('/nan-hani-tw/', 'nan-hani-tw'),\n        ]\n        for path, language in tests:\n            with self.subTest(path=path):\n                self.assertEqual(g(path), language)\n        # Behavior for region+variant tags and long dashed paths is not\n        # fixed by the specification.\n        loose_tests = [\n            ('/de-ch-1901/', {'de-ch-1901', 'de', None}),\n            ('/de-simple-page-test/', {None, 'de'}),\n        ]\n        for path, languages in loose_tests:\n            with self.subTest(path=path):\n                self.assertIn(g(path), languages)"
+      }
+    ],
+    "summary": "Kept the script+region checks (en-latn-us, en-Latn-US, nan-hani-tw), which fail on unfixed code. Loosened /de-ch-1901/ to accept 'de-ch-1901', 'de' or None, and /de-simple-page-test/ to accept None or 'de'. This admits fixes that handle only script+region, and fixes that allow unlimited subtags per RFC 5646."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzQvZMtb8x1TfyDSUu5D",
+  "input_tokens": 4565,
+  "output_tokens": 1621,
+  "seconds": 16.0
+}

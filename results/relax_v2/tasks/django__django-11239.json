@@ -1,0 +1,44 @@
+{
+ "instance_id": "django__django-11239",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "test_ssl_certificate now accepts each SSL option either as a PGSSL* environment variable or as a key=value entry in a psql argument (conninfo/URI), and only checks that the basic connection parameters appear somewhere, instead of pinning exact argv and env.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/dbshell/test_postgresql.py\n+++ b/tests/dbshell/test_postgresql.py\n@@ -53,26 +53,37 @@\n         )\n \n     def test_ssl_certificate(self):\n-        self.assertEqual(\n-            self._run_it({\n-                'database': 'dbname',\n-                'user': 'someuser',\n-                'host': 'somehost',\n-                'port': '444',\n-                'sslmode': 'verify-ca',\n-                'sslrootcert': 'root.crt',\n-                'sslcert': 'client.crt',\n-                'sslkey': 'client.key',\n-            }), (\n-                ['psql', '-U', 'someuser', '-h', 'somehost', '-p', '444', 'dbname'],\n-                {\n-                    'PGSSLCERT': 'client.crt',\n-                    'PGSSLKEY': 'client.key',\n-                    'PGSSLMODE': 'verify-ca',\n-                    'PGSSLROOTCERT': 'root.crt',\n-                },\n-            )\n-        )\n+        args, pg_env = self._run_it({\n+            'database': 'dbname',\n+            'user': 'someuser',\n+            'host': 'somehost',\n+            'port': '444',\n+            'sslmode': 'verify-ca',\n+            'sslrootcert': 'root.crt',\n+            'sslcert': 'client.crt',\n+            'sslkey': 'client.key',\n+        })\n+        self.assertEqual(args[0], 'psql')\n+        all_values = list(args) + list(pg_env.values())\n+        for value in ('someuser', 'somehost', '444', 'dbname'):\n+            with self.subTest(value=value):\n+                self.assertTrue(any(value in str(item) for item in all_values))\n+        expected = {\n+            'sslmode': 'verify-ca',\n+            'sslrootcert': 'root.crt',\n+            'sslcert': 'client.crt',\n+            'sslkey': 'client.key',\n+        }\n+        for option, value in expected.items():\n+            with self.subTest(option=option):\n+                in_env = pg_env.get('PG' + option.upper()) == value\n+                in_args = any(\n+                    ('%s=%s' % (option, value)) in arg or\n+                    (\"%s='%s'\" % (option, value)) in arg or\n+                    ('%s=\"%s\"' % (option, value)) in arg\n+                    for arg in args\n+                )\n+                self.assertTrue(in_env or in_args)\n \n     def test_column(self):\n         self.assertEqual(\n",
+ "neutralized": [],
+ "lines_changed": 51,
+ "regrade": [
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_ssl_certificate (dbshell.test_postgresql.PostgreSqlDbshellCommandTestCase)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_ssl_certificate (dbshell.test_postgresql.PostgreSqlDbshellCommandTestCase)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

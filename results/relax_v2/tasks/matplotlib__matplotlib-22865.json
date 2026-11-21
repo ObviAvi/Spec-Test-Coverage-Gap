@@ -1,0 +1,43 @@
+{
+ "instance_id": "matplotlib__matplotlib-22865",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Instead of requiring cbar.dividers to hold exactly the given ordered segments, the test now only requires each expected edge, at the extended ends and inside, to be drawn as a line by some LineCollection or Line2D on the colorbar axes. Point order within a segment does not matter, and extra edges such as one at the non-extended end are allowed. The unfixed code still fails because it draws no edge at an extended extremity.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 27,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/matplotlib/tests/test_colorbar.py\n+++ b/lib/matplotlib/tests/test_colorbar.py\n@@ -940,7 +940,18 @@\n     ax = plt.subplot(111)\n     cbar = Colorbar(ax, cmap=cmap, norm=norm, orientation='horizontal',\n                     drawedges=True)\n-    assert np.all(np.equal(cbar.dividers.get_segments(), res))\n+    from matplotlib.collections import LineCollection\n+    segs = []\n+    for coll in ax.collections:\n+        if isinstance(coll, LineCollection):\n+            segs.extend(np.asarray(s) for s in coll.get_segments())\n+    for line in ax.lines:\n+        segs.append(np.column_stack(line.get_data()))\n+    for expected in res:\n+        assert any(\n+            s.shape == expected.shape and\n+            (np.allclose(s, expected) or np.allclose(s[::-1], expected))\n+            for s in segs), expected\n \n \n def test_negative_boundarynorm():\n",
+ "neutralized": [],
+ "lines_changed": 13,
+ "regrade": [
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_colorbar.py::test_colorbar_extend_drawedges[min-0-res1]",
+    "lib/matplotlib/tests/test_colorbar.py::test_colorbar_extend_drawedges[max-0-res2]"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

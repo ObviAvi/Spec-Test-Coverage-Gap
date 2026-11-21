@@ -1,0 +1,32 @@
+{
+ "instance_id": "matplotlib__matplotlib-14623",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the exact tuple-equality check on the inverted log-scale ylim. It now requires the axis to stay inverted (bottom > top) with limits approximately equal to (10, 1), so it no longer depends on exact float or tuple representation. The unfixed code returns (1, 10) and still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/matplotlib/tests/test_axes.py\n+++ b/lib/matplotlib/tests/test_axes.py\n@@ -941,7 +941,10 @@\n     fig, ax = plt.subplots()\n     ax.set_yscale(\"log\")\n     ax.set_ylim(10, 1)\n-    assert ax.get_ylim() == (10, 1)\n+    import math\n+    bottom, top = ax.get_ylim()\n+    assert bottom > top\n+    assert math.isclose(bottom, 10) and math.isclose(top, 1)\n \n \n @image_comparison(baseline_images=['nonfinite_limits'])\n",
+ "neutralized": [],
+ "lines_changed": 5,
+ "regrade": [
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "passes_original_here",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

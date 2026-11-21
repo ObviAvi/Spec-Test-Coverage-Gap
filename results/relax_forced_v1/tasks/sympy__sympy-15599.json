@@ -1,0 +1,94 @@
+{
+ "instance_id": "sympy__sympy-15599",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test pinned `Mod(8*i/j, 4)` to the exact form `4*Mod(2*i/j, 1)`, which depends on how the original fix extracts the gcd. I replaced that exact-form check with a numeric check over several (i, j) substitutions, so any mathematically equivalent form passes. The core `Mod(3*i, 2) == Mod(i, 2)` assertion, which fails on the unfixed code, is unchanged.",
+   "edits": 1,
+   "check": "passer_fails",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  },
+  {
+   "relaxable": true,
+   "summary": "I loosened the secondary non-integer case `Mod(8*i/j, 4)`, which the issue never mentions. The test now accepts either the original fix's pinned form `4*Mod(2*i/j, 1)` or the same expression left unevaluated. The reported case `Mod(3*i, 2) == Mod(i, 2)` and the `Mod(8*i, 4) == 0` check are kept, so the unfixed code still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/core/tests/test_arit.py\n+++ b/sympy/core/tests/test_arit.py\n@@ -1665,7 +1665,7 @@\n     # issue 15493\n     i, j = symbols('i j', integer=True, positive=True)\n     assert Mod(3*i, 2) == Mod(i, 2)\n-    assert Mod(8*i/j, 4) == 4*Mod(2*i/j, 1)\n+    assert Mod(8*i/j, 4) in (4*Mod(2*i/j, 1), Mod(8*i/j, 4, evaluate=False))\n     assert Mod(8*i, 4) == 0\n \n \n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_Mod"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_Mod"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_Mod"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_Mod"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_Mod"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_Mod"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

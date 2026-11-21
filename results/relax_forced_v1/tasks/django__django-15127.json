@@ -1,0 +1,22 @@
+{
+ "instance_id": "django__django-15127",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test no longer requires the module-level constant `base.LEVEL_TAGS` to equal the overridden tags. It now checks the public `Message.level_tag` for each overridden level, so fixes that compute tags dynamically also pass. The unfixed code still fails on the custom level 12 and the changed tags.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 5,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/messages_tests/tests.py\n+++ b/tests/messages_tests/tests.py\n@@ -30,4 +30,6 @@\n \n     @override_settings(MESSAGE_TAGS=message_tags)\n     def test_override_settings_level_tags(self):\n-        self.assertEqual(base.LEVEL_TAGS, self.message_tags)\n+        for level, tag in self.message_tags.items():\n+            with self.subTest(level=level):\n+                self.assertEqual(Message(level, 'test').level_tag, tag)\n",
+ "neutralized": [],
+ "lines_changed": 4
+}

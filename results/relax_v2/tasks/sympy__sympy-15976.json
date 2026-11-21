@@ -1,0 +1,70 @@
+{
+ "instance_id": "sympy__sympy-15976",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The tests now inspect the public serialized output: they parse `mpp.doprint` and unwrap any single-child `mrow`/`mstyle` wrapper before checking for the msub/msup/msubsup structure. This accepts valid wrapper-based or serialization-level fixes, while the unfixed code still fails because it wraps the script element in an invalid `mi`.",
+   "edits": 8,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 23,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/printing/tests/test_mathml.py\n+++ b/sympy/printing/tests/test_mathml.py\n@@ -734,7 +734,15 @@\n     assert mml.childNodes[0].nodeValue == 'x'\n     del mml\n \n-    mml = mpp._print(Symbol(\"x^2\"))\n+    def _script(sym):\n+        from xml.dom.minidom import parseString\n+        node = parseString(mpp.doprint(sym)).documentElement\n+        while node.nodeName in ('mrow', 'mstyle') and \\\n+                len(node.childNodes) == 1:\n+            node = node.childNodes[0]\n+        return node\n+\n+    mml = _script(Symbol(\"x^2\"))\n     assert mml.nodeName == 'msup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -742,7 +750,7 @@\n     assert mml.childNodes[1].childNodes[0].nodeValue == '2'\n     del mml\n \n-    mml = mpp._print(Symbol(\"x__2\"))\n+    mml = _script(Symbol(\"x__2\"))\n     assert mml.nodeName == 'msup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -750,7 +758,7 @@\n     assert mml.childNodes[1].childNodes[0].nodeValue == '2'\n     del mml\n \n-    mml = mpp._print(Symbol(\"x_2\"))\n+    mml = _script(Symbol(\"x_2\"))\n     assert mml.nodeName == 'msub'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -758,7 +766,7 @@\n     assert mml.childNodes[1].childNodes[0].nodeValue == '2'\n     del mml\n \n-    mml = mpp._print(Symbol(\"x^3_2\"))\n+    mml = _script(Symbol(\"x^3_2\"))\n     assert mml.nodeName == 'msubsup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -768,7 +776,7 @@\n     assert mml.childNodes[2].childNodes[0].nodeValue == '3'\n     del mml\n \n-    mml = mpp._print(Symbol(\"x__3_2\"))\n+    mml = _script(Symbol(\"x__3_2\"))\n     assert mml.nodeName == 'msubsup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -778,7 +786,7 @@\n     assert mml.childNodes[2].childNodes[0].nodeValue == '3'\n     del mml\n \n-    mml = mpp._print(Symbol(\"x_2_a\"))\n+    mml = _script(Symbol(\"x_2_a\"))\n     assert mml.nodeName == 'msub'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -791,7 +799,7 @@\n     assert mml.childNodes[1].childNodes[2].childNodes[0].nodeValue == 'a'\n     del mml\n \n-    mml = mpp._print(Symbol(\"x^2^a\"))\n+    mml = _script(Symbol(\"x^2^a\"))\n     assert mml.nodeName == 'msup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -804,7 +812,7 @@\n     assert mml.childNodes[1].childNodes[2].childNodes[0].nodeValue == 'a'\n     del mml\n \n-    mml = mpp._print(Symbol(\"x__2__a\"))\n+    mml = _script(Symbol(\"x__2__a\"))\n     assert mml.nodeName == 'msup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n",
+ "neutralized": [],
+ "lines_changed": 24,
+ "regrade": [
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_presentation_symbol"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_presentation_symbol"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_presentation_symbol"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

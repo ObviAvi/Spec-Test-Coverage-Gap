@@ -1,0 +1,35 @@
+{
+  "instance_id": "django__django-15268",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_forced_v1",
+  "prompt_sha": "801b6179a9b7",
+  "prompt_digest": "889ed23e88f1",
+  "prompt_chars": 10465,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/migrations/test_autodetector.py",
+        "old": "        self.assertOperationTypes(changes, 'otherapp', 0, [\n            'AlterUniqueTogether',\n            'AlterIndexTogether',\n        ])\n        self.assertOperationAttributes(\n            changes, 'otherapp', 0, 0, name='book',\n            unique_together={('title', 'author')},\n        )\n        self.assertOperationAttributes(\n            changes, 'otherapp', 0, 1, name='book',\n            index_together={('title', 'author')},\n        )",
+        "new": "        operations = changes['otherapp'][0].operations\n        self.assertEqual(\n            sorted(op.__class__.__name__ for op in operations),\n            ['AlterIndexTogether', 'AlterUniqueTogether'],\n        )\n        for op in operations:\n            self.assertEqual(op.name, 'book')\n            if op.__class__.__name__ == 'AlterUniqueTogether':\n                self.assertEqual(op.unique_together, {('title', 'author')})\n            else:\n                self.assertEqual(op.index_together, {('title', 'author')})"
+      },
+      {
+        "file": "tests/migrations/test_autodetector.py",
+        "old": "        self.assertOperationTypes(changes, 'otherapp', 0, [\n            'AlterUniqueTogether',\n            'AlterIndexTogether',\n            'RemoveField',\n        ])\n        self.assertOperationAttributes(\n            changes, 'otherapp', 0, 0, name='book',\n            unique_together={('author', 'title')},\n        )\n        self.assertOperationAttributes(\n            changes, 'otherapp', 0, 1, name='book',\n            index_together={('author', 'title')},\n        )",
+        "new": "        operations = changes['otherapp'][0].operations\n        self.assertEqual(len(operations), 3)\n        self.assertEqual(\n            sorted(op.__class__.__name__ for op in operations[:2]),\n            ['AlterIndexTogether', 'AlterUniqueTogether'],\n        )\n        self.assertEqual(operations[2].__class__.__name__, 'RemoveField')\n        for op in operations[:2]:\n            self.assertEqual(op.name, 'book')\n            if op.__class__.__name__ == 'AlterUniqueTogether':\n                self.assertEqual(op.unique_together, {('author', 'title')})\n            else:\n                self.assertEqual(op.index_together, {('author', 'title')})"
+      },
+      {
+        "file": "tests/migrations/test_autodetector.py",
+        "old": "            'RenameField',\n            'AlterUniqueTogether',\n            'AlterIndexTogether',\n        ])\n        self.assertOperationAttributes(\n            changes, 'otherapp', 0, 1, name='book',\n            unique_together={('title', 'newfield2')},\n        )\n        self.assertOperationAttributes(\n            changes, 'otherapp', 0, 2, name='book',\n            index_together={('title', 'newfield2')},\n        )",
+        "new": "            'RenameField',\n            *[op.__class__.__name__ for op in changes['otherapp'][0].operations[1:]],\n        ])\n        operations = changes['otherapp'][0].operations\n        self.assertEqual(len(operations), 3)\n        self.assertEqual(\n            sorted(op.__class__.__name__ for op in operations[1:]),\n            ['AlterIndexTogether', 'AlterUniqueTogether'],\n        )\n        for op in operations[1:]:\n            self.assertEqual(op.name, 'book')\n            if op.__class__.__name__ == 'AlterUniqueTogether':\n                self.assertEqual(op.unique_together, {('title', 'newfield2')})\n            else:\n                self.assertEqual(op.index_together, {('title', 'newfield2')})"
+      }
+    ],
+    "summary": "Loosened the requirement that the merged AlterUniqueTogether come before the AlterIndexTogether: all three tests now accept the two together-operations in either order. They still require exactly one operation of each type with the final values, and RenameField first or RemoveField last where applicable. The unfixed code still fails because it emits four together-operations instead of two."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch1bQYGMtaYvq8vUA9xzF",
+  "input_tokens": 4117,
+  "output_tokens": 4152,
+  "seconds": 36.4
+}

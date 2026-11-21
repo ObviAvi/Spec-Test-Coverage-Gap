@@ -1,0 +1,25 @@
+{
+  "instance_id": "matplotlib__matplotlib-23299",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "a477083873b9",
+  "prompt_chars": 7151,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "lib/matplotlib/tests/test_rcparams.py",
+        "old": "def test_no_backend_reset_rccontext():\n    assert mpl.rcParams['backend'] != 'module://aardvark'\n    with mpl.rc_context():\n        mpl.rcParams['backend'] = 'module://aardvark'\n    assert mpl.rcParams['backend'] == 'module://aardvark'",
+        "new": "def test_no_backend_reset_rccontext():\n    sentinel = mpl.rcsetup._auto_backend_sentinel\n    orig = dict.__getitem__(mpl.rcParams, 'backend')\n    try:\n        # Start with an unresolved backend, as in the reported scenario.\n        dict.__setitem__(mpl.rcParams, 'backend', sentinel)\n        with mpl.rc_context():\n            # Simulate the backend getting resolved inside the context\n            # (e.g. by creating a figure).\n            dict.__setitem__(mpl.rcParams, 'backend', 'agg')\n        # Exiting the context must not put back the unresolved sentinel,\n        # which would force a backend switch (closing all figures) on the\n        # next get_backend() call.\n        assert dict.__getitem__(mpl.rcParams, 'backend') is not sentinel\n    finally:\n        dict.__setitem__(mpl.rcParams, 'backend', orig)"
+      }
+    ],
+    "summary": "The original test required that any explicit backend change made inside rc_context persists after it exits. The issue never asks for that. The test now checks only what the issue needs: exiting rc_context must not restore the unresolved auto-backend sentinel once the backend was resolved inside the context. This still fails on the unfixed code and passes the original fix. Fixes made only in get_backend or switch_backend, outside rc_context, are still not covered."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3E1pycaym7BeEFzbrhU",
+  "input_tokens": 3062,
+  "output_tokens": 3966,
+  "seconds": 39.1
+}

@@ -1,0 +1,54 @@
+{
+ "instance_id": "django__django-15128",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The combined-queryset checks now compare sets of distinct objects instead of exact row multisets. A fix that makes `qs1 | qs2` work but builds joins differently, and so may return duplicate rows, still passes. The unfixed code still fails because `qs1 | qs2` raises the AssertionError.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 25,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/queries/tests.py\n+++ b/tests/queries/tests.py\n@@ -2147,8 +2147,8 @@\n         )\n         self.assertSequenceEqual(qs1, [self.base_user_1])\n         self.assertSequenceEqual(qs2, [self.base_user_2])\n-        self.assertCountEqual(qs2 | qs1, qs1 | qs2)\n-        self.assertCountEqual(qs2 | qs1, [self.base_user_1, self.base_user_2])\n+        self.assertEqual(set(qs1 | qs2), {self.base_user_1, self.base_user_2})\n+        self.assertEqual(set(qs2 | qs1), {self.base_user_1, self.base_user_2})\n \n \n class CloneTests(TestCase):\n",
+ "neutralized": [],
+ "lines_changed": 4,
+ "regrade": [
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_conflicting_aliases_during_combine (queries.tests.QuerySetBitwiseOperationTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_conflicting_aliases_during_combine (queries.tests.QuerySetBitwiseOperationTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_conflicting_aliases_during_combine (queries.tests.QuerySetBitwiseOperationTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "instance_id": "scikit-learn__scikit-learn-14983",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test now accepts the three parameters in any order: alphabetical, as the original fix produces, or n_splits/n_repeats/random_state, as the issue shows. It still requires the class name and exactly those parameter values.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 23,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sklearn/model_selection/tests/test_split.py\n+++ b/sklearn/model_selection/tests/test_split.py\n@@ -986,9 +986,12 @@\n def test_repeated_cv_repr(RepeatedCV):\n     n_splits, n_repeats = 2, 6\n     repeated_cv = RepeatedCV(n_splits=n_splits, n_repeats=n_repeats)\n-    repeated_cv_repr = ('{}(n_repeats=6, n_splits=2, random_state=None)'\n-                        .format(repeated_cv.__class__.__name__))\n-    assert repeated_cv_repr == repr(repeated_cv)\n+    name = repeated_cv.__class__.__name__\n+    r = repr(repeated_cv)\n+    assert r.startswith(name + '(') and r.endswith(')')\n+    args = [a.strip() for a in r[len(name) + 1:-1].split(',')]\n+    assert sorted(args) == sorted(['n_repeats=6', 'n_splits=2',\n+                                   'random_state=None'])\n \n \n def test_repeated_kfold_determinstic_split():\n",
+ "neutralized": [],
+ "lines_changed": 9,
+ "regrade": [
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

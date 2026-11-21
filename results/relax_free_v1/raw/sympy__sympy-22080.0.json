@@ -1,0 +1,30 @@
+{
+  "instance_id": "sympy__sympy-22080",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "342cb6d87b34",
+  "prompt_chars": 8345,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "sympy/codegen/tests/test_rewriting.py",
+        "old": "    assert cc(-x**4) == '-(x*x*x*x)'\n    assert cc(x**4 - x**2) == '-(x*x) + x*x*x*x'\n    i = Symbol('i', integer=True)\n    assert cc(x**i - x**2) == 'pow(x, i) - (x*x)'",
+        "new": "    assert cc(-x**4) in ('-x*x*x*x', '-(x*x*x*x)')\n    assert cc(x**4 - x**2) in ('-x*x + x*x*x*x', '-(x*x) + x*x*x*x')\n    i = Symbol('i', integer=True)\n    assert cc(x**i - x**2) in ('pow(x, i) - x*x', 'pow(x, i) - (x*x)')"
+      },
+      {
+        "file": "sympy/printing/tests/test_pycode.py",
+        "old": "    assert prntr.doprint(-Mod(x, y)) == '-(x % y)'\n    assert prntr.doprint(Mod(-x, y)) == '(-x) % y'",
+        "new": "    assert eval(prntr.doprint(-Mod(x, y)), {'x': 3, 'y': 7}) == -3\n    assert eval(prntr.doprint(Mod(-x, y)), {'x': 3, 'y': 7}) == 4"
+      }
+    ],
+    "summary": "The C-code expectations pinned the original fix's incidental parenthesization of unary minus, so they now accept either the old or new equivalent form. The Python printer Mod checks now evaluate the printed code numerically instead of comparing exact strings, so any correctly parenthesized output passes. test_empty_modules is unchanged and still fails on the unfixed code."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3TN1P179oHhsBhkE3GH",
+  "input_tokens": 3819,
+  "output_tokens": 1585,
+  "seconds": 15.0
+}

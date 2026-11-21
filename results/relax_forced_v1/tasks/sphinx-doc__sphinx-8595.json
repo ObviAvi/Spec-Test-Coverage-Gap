@@ -1,0 +1,53 @@
+{
+ "instance_id": "sphinx-doc__sphinx-8595",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Replaced the exact-output comparison with checks that the module directive is emitted and that no member entries (foo, bar, baz or any other py: directive) are documented. The unfixed code still fails because it documents all three functions.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 10,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_ext_autodoc_automodule.py\n+++ b/tests/test_ext_autodoc_automodule.py\n@@ -17,11 +17,10 @@\n @pytest.mark.sphinx('html', testroot='ext-autodoc')\n def test_empty_all(app):\n     options = {'members': True}\n-    actual = do_autodoc(app, 'module', 'target.empty_all', options)\n-    assert list(actual) == [\n-        '',\n-        '.. py:module:: target.empty_all',\n-        '',\n-        'docsting of empty_all module.',\n-        '',\n-    ]\n+    actual = list(do_autodoc(app, 'module', 'target.empty_all', options))\n+    assert '.. py:module:: target.empty_all' in actual\n+    assert not any(line.lstrip().startswith('.. py:') and\n+                   not line.lstrip().startswith('.. py:module::')\n+                   for line in actual)\n+    for name in ('foo', 'bar', 'baz'):\n+        assert not any(name + '(' in line for line in actual)\n",
+ "neutralized": [],
+ "lines_changed": 15,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5",
+    "20251215_livesweagent_claude-opus-4-5",
+    "20251127_openhands_claude-opus-4-5",
+    "20251120_livesweagent_gemini-3-pro-preview",
+    "20260217_mini-v2.0.0_claude-4-6-opus",
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "passes_original_here",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "patch_does_not_apply",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

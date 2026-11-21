@@ -1,0 +1,262 @@
+{
+ "instance_id": "sphinx-doc__sphinx-7590",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Replaced exact-ID assertions for user-defined literals with a check that each UDL expression parses (without fallback) and round-trips to the same string, since the specification does not dictate any ID mangling scheme. The unfixed parser still fails on these inputs.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 1,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_domain_cpp.py\n+++ b/tests/test_domain_cpp.py\n@@ -172,20 +172,35 @@\n         for c, val in chars:\n             exprCheck(\"{}'{}'\".format(p, c), t + val)\n     # user-defined literals\n+    def udlCheck(expr):\n+        class UdlConfig:\n+            cpp_id_attributes = [\"id_attr\"]\n+            cpp_paren_attributes = [\"paren_attr\"]\n+\n+        parser = DefinitionParser(expr, location=None, config=UdlConfig())\n+        parser.allowFallbackExpressionParsing = False\n+        ast = parser.parse_expression()\n+        res = str(ast)\n+        if res != expr:\n+            print(\"\")\n+            print(\"Input:    \", expr)\n+            print(\"Result:   \", res)\n+            raise DefinitionError(\"\")\n+\n     for i in ints:\n-        exprCheck(i + '_udl', 'clL_Zli4_udlEL' + i + 'EE')\n-        exprCheck(i + 'uludl', 'clL_Zli5uludlEL' + i + 'EE')\n+        udlCheck(i + '_udl')\n+        udlCheck(i + 'uludl')\n     for f in decimalFloats:\n-        exprCheck(f + '_udl', 'clL_Zli4_udlEL' + f + 'EE')\n-        exprCheck(f + 'fudl', 'clL_Zli4fudlEL' + f + 'EE')\n+        udlCheck(f + '_udl')\n+        udlCheck(f + 'fudl')\n     for f in hexFloats:\n-        exprCheck('0x' + f + '_udl', 'clL_Zli4_udlEL0x' + f + 'EE')\n+        udlCheck('0x' + f + '_udl')\n     for p, t in charPrefixAndIds:\n         for c, val in chars:\n-            exprCheck(\"{}'{}'_udl\".format(p, c), 'clL_Zli4_udlE' + t + val + 'E')\n-    exprCheck('\"abc\"_udl', 'clL_Zli4_udlELA3_KcEE')\n+            udlCheck(\"{}'{}'_udl\".format(p, c))\n+    udlCheck('\"abc\"_udl')\n     # from issue #7294\n-    exprCheck('6.62607015e-34q_J', 'clL_Zli3q_JEL6.62607015e-34EE')\n+    udlCheck('6.62607015e-34q_J')\n \n     # fold expressions, paren, name\n     exprCheck('(... + Ns)', '(... + Ns)', id4='flpl2Ns')\n",
+ "neutralized": [],
+ "lines_changed": 31,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_cpp.py::test_expressions"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_cpp.py::test_expressions"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_cpp.py::test_expressions"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_cpp.py::test_expressions"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_cpp.py::test_expressions"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_cpp.py::test_expressions"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_cpp.py::test_expressions"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

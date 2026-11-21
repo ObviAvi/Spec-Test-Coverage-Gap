@@ -1,0 +1,25 @@
+{
+  "instance_id": "matplotlib__matplotlib-24026",
+  "attempt": 1,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_forced_v1",
+  "prompt_sha": "801b6179a9b7",
+  "prompt_digest": "26be7bb59209",
+  "prompt_chars": 9915,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "lib/matplotlib/tests/test_axes.py",
+        "old": "    ax.stackplot(\"x\", \"y1\", \"y2\", \"y3\", data=data, colors=[\"C0\", \"C1\", \"C2\"])",
+        "new": "    fig_tmp, ax_tmp = plt.subplots()\n    colls = ax_tmp.stackplot(\"x\", \"y1\", \"y2\", \"y3\", data=data,\n                             colors=[\"C0\", \"C1\", \"C2\"])\n    assert len(colls) == 3\n    plt.close(fig_tmp)\n    ax.stackplot(\"x\", \"y1\", \"y2\", \"y3\", data=data)"
+      }
+    ],
+    "summary": "I loosened the pixel-exact image check of the stackplot drawn with `colors=[\"C0\", \"C1\", \"C2\"]`. That call now runs on a separate, closed figure and only has to succeed and return three collections. The baseline image is drawn with the default-colour stackplot instead. The unfixed code still fails, because passing CN colours raises the ValueError from the issue."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch1f3Bs9eNMDKdHZvk9oU",
+  "input_tokens": 4312,
+  "output_tokens": 1809,
+  "seconds": 18.8
+}

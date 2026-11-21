@@ -1,0 +1,75 @@
+{
+  "instance_id": "sympy__sympy-14248",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "3e9c2004f678",
+  "prompt_chars": 14017,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "sympy/printing/pretty/tests/test_pretty.py",
+        "old": "    assert pretty(A - B) == \"-B + A\"\n    assert pretty(A*B*C - A*B - B*C) == \"-A*B -B*C + A*B*C\"",
+        "new": "    assert pretty(A - B) in (\"-B + A\", \"A - B\")\n    assert pretty(A*B*C - A*B - B*C) in (\"-A*B -B*C + A*B*C\",\n                                         \"-A*B - B*C + A*B*C\",\n                                         \"A*B*C - A*B - B*C\")"
+      },
+      {
+        "file": "sympy/printing/tests/test_ccode.py",
+        "old": "    assert(ccode(F) == \"(-B + A)[0]\")",
+        "new": "    assert(ccode(F) in (\"(-B + A)[0]\", \"(A - B)[0]\", \"((-1)*B + A)[0]\"))"
+      },
+      {
+        "file": "sympy/printing/tests/test_fcode.py",
+        "old": "    assert(fcode(F) == \"      (-B + A)(1, 1)\")",
+        "new": "    assert(fcode(F) in (\"      (-B + A)(1, 1)\", \"      (A - B)(1, 1)\",\n                        \"      ((-1)*B + A)(1, 1)\"))"
+      },
+      {
+        "file": "sympy/printing/tests/test_jscode.py",
+        "old": "    assert(jscode(F) == \"(-B + A)[0]\")",
+        "new": "    assert(jscode(F) in (\"(-B + A)[0]\", \"(A - B)[0]\", \"((-1)*B + A)[0]\"))"
+      },
+      {
+        "file": "sympy/printing/tests/test_julia.py",
+        "old": "    assert(julia_code(F) == \"(-B + A)[1,1]\")",
+        "new": "    assert(julia_code(F) in (\"(-B + A)[1,1]\", \"(A - B)[1,1]\", \"((-1)*B + A)[1,1]\"))"
+      },
+      {
+        "file": "sympy/printing/tests/test_octave.py",
+        "old": "    assert mcode(F) == \"(-B + A)(1, 1)\"",
+        "new": "    assert mcode(F) in (\"(-B + A)(1, 1)\", \"(A - B)(1, 1)\", \"((-1)*B + A)(1, 1)\")"
+      },
+      {
+        "file": "sympy/printing/tests/test_rcode.py",
+        "old": "    assert(rcode(F) == \"(-B + A)[0]\")",
+        "new": "    assert(rcode(F) in (\"(-B + A)[0]\", \"(A - B)[0]\", \"((-1)*B + A)[0]\"))"
+      },
+      {
+        "file": "sympy/printing/tests/test_latex.py",
+        "old": "    assert latex(F) == r\"\\left(-B + A\\right)_{0, 0}\"",
+        "new": "    assert latex(F) in (r\"\\left(-B + A\\right)_{0, 0}\", r\"\\left(A - B\\right)_{0, 0}\")"
+      },
+      {
+        "file": "sympy/printing/tests/test_latex.py",
+        "old": "    assert latex(A - A*B - B) == r\"-B - A B + A\"",
+        "new": "    assert latex(A - A*B - B) in (r\"-B - A B + A\", r\"A - A B - B\")"
+      },
+      {
+        "file": "sympy/printing/tests/test_str.py",
+        "old": "    assert str(F) == \"(-B + A)[0, 0]\"",
+        "new": "    assert str(F) in (\"(-B + A)[0, 0]\", \"(A - B)[0, 0]\")"
+      },
+      {
+        "file": "sympy/printing/tests/test_str.py",
+        "old": "    assert str(A - A*B - B) == \"-B - A*B + A\"\n    assert str(A*B - (A+B)) == \"-(A + B) + A*B\"",
+        "new": "    assert str(A - A*B - B) in (\"-B - A*B + A\", \"A - A*B - B\")\n    assert str(A*B - (A+B)) in (\"-(A + B) + A*B\", \"A*B - (A + B)\")"
+      }
+    ],
+    "summary": "The str, pretty and latex checks now accept negative-first or positive-first term order, and either spacing in the pretty output. The code-generation printers, which the issue does not cover, may keep their old output. The str, pretty and latex assertions still reject the unfixed '(-1)*B' / '-1 B' / '+ -A' output."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzcmXEnsigjdGbe1685q",
+  "input_tokens": 6592,
+  "output_tokens": 3027,
+  "seconds": 26.7
+}

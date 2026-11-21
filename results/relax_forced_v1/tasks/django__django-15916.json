@@ -1,0 +1,121 @@
+{
+ "instance_id": "django__django-15916",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I replaced the body of test_custom_callback_in_meta with `pass`. That test required a Meta-only formfield_callback to work on a directly declared ModelForm, a case beyond the modelform_factory bug the issue reports. test_custom_callback_from_base_form_meta still checks the reported problem, including inheritance, and still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [
+    "test_custom_callback_in_meta (model_forms.tests.FormFieldCallbackTests)"
+   ],
+   "passers": 16,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/model_forms/tests.py\n+++ b/tests/model_forms/tests.py\n@@ -3497,17 +3497,7 @@\n             )\n \n     def test_custom_callback_in_meta(self):\n-        def callback(db_field, **kwargs):\n-            return forms.CharField(widget=forms.Textarea)\n-\n-        class NewForm(forms.ModelForm):\n-            class Meta:\n-                model = Person\n-                fields = [\"id\", \"name\"]\n-                formfield_callback = callback\n-\n-        for field in NewForm.base_fields.values():\n-            self.assertEqual(type(field.widget), forms.Textarea)\n+        pass\n \n     def test_custom_callback_from_base_form_meta(self):\n         def callback(db_field, **kwargs):\n",
+ "neutralized": [
+  "test_custom_callback_in_meta (model_forms.tests.FormFieldCallbackTests)"
+ ],
+ "lines_changed": 12,
+ "regrade": [
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview",
+    "20260217_mini-v2.0.0_claude-4-6-opus",
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118",
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [],
+   "p2p_failed": [
+    "Regression test for #12960. Make sure the cleaned_data returned from"
+   ]
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "instance_id": "django__django-15554",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the pinned empty value for the unmatched 'alice' relation: it may now be either None or an empty string, whatever the backend feature flag says. The test still requires one row per Jane book, each with its own Jane title, so it still fails on the unfixed code, where both relations share one join.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 19,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/filtered_relation/tests.py\n+++ b/tests/filtered_relation/tests.py\n@@ -224,20 +224,13 @@\n             .filter(name=\"Jane\")\n             .values(\"book_title_alice__title\", \"book_title_jane__title\")\n         )\n-        empty = \"\" if connection.features.interprets_empty_strings_as_nulls else None\n+        rows = list(qs)\n         self.assertCountEqual(\n-            qs,\n-            [\n-                {\n-                    \"book_title_alice__title\": empty,\n-                    \"book_title_jane__title\": \"The book by Jane A\",\n-                },\n-                {\n-                    \"book_title_alice__title\": empty,\n-                    \"book_title_jane__title\": \"The book by Jane B\",\n-                },\n-            ],\n-        )\n+            [row[\"book_title_jane__title\"] for row in rows],\n+            [\"The book by Jane A\", \"The book by Jane B\"],\n+        )\n+        for row in rows:\n+            self.assertIn(row[\"book_title_alice__title\"], (None, \"\"))\n \n     def test_with_multiple_filter(self):\n         self.assertSequenceEqual(\n",
+ "neutralized": [],
+ "lines_changed": 19,
+ "regrade": []
+}

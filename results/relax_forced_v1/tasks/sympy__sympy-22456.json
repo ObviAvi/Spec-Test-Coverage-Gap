@@ -1,0 +1,23 @@
+{
+ "instance_id": "sympy__sympy-22456",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I dropped the assertion that `st.func(**st.kwargs()) == st` still holds. The issue frames args-invariance as replacing kwargs-invariance, so a fix built on args-invariance (e.g. an `Atom`-based `func`) need not keep the kwargs round trip. The `st.func(*st.args) == st` check is kept and still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 26,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/codegen/tests/test_ast.py\n+++ b/sympy/codegen/tests/test_ast.py\n@@ -266,7 +266,6 @@\n     assert st.is_Atom\n     assert st == String('foobar')\n     assert st.text == 'foobar'\n-    assert st.func(**st.kwargs()) == st\n     assert st.func(*st.args) == st\n \n \n",
+ "neutralized": [],
+ "lines_changed": 1,
+ "regrade": []
+}

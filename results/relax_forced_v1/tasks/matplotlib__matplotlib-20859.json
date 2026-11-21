@@ -1,0 +1,22 @@
+{
+ "instance_id": "matplotlib__matplotlib-20859",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the check on which figure the legend is attached to. The test now accepts either the subfigure or its root figure. Creating a legend on a SubFigure must still succeed, and the unfixed code still fails because it raises TypeError.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 3,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/matplotlib/tests/test_legend.py\n+++ b/lib/matplotlib/tests/test_legend.py\n@@ -879,4 +879,4 @@\n     ax = subfig.subplots()\n     ax.plot([0, 1], [0, 1], label=\"line\")\n     leg = subfig.legend()\n-    assert leg.figure is subfig\n+    assert leg.figure is subfig or leg.figure is subfig.figure\n",
+ "neutralized": [],
+ "lines_changed": 2
+}

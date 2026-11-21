@@ -1,0 +1,64 @@
+{
+ "instance_id": "django__django-16877",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the requirement that items already marked safe pass through escapeseq unescaped. For the mark_safe list, test_basic and test_autoescape_off now also accept force-escaped output. Escaping of plain items is still checked exactly.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 20,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/template_tests/filter_tests/test_escapeseq.py\n+++ b/tests/template_tests/filter_tests/test_escapeseq.py\n@@ -22,7 +22,13 @@\n             \"escapeseq_basic\",\n             {\"a\": [\"x&y\", \"<p>\"], \"b\": [mark_safe(\"x&y\"), mark_safe(\"<p>\")]},\n         )\n-        self.assertEqual(output, \"x&amp;y, &lt;p&gt; -- x&y, <p>\")\n+        self.assertIn(\n+            output,\n+            [\n+                \"x&amp;y, &lt;p&gt; -- x&y, <p>\",\n+                \"x&amp;y, &lt;p&gt; -- x&amp;y, &lt;p&gt;\",\n+            ],\n+        )\n \n     @setup(\n         {\n@@ -38,7 +44,13 @@\n             \"escapeseq_autoescape_off\",\n             {\"a\": [\"x&y\", \"<p>\"], \"b\": [mark_safe(\"x&y\"), mark_safe(\"<p>\")]},\n         )\n-        self.assertEqual(output, \"x&amp;y, &lt;p&gt; -- x&y, <p>\")\n+        self.assertIn(\n+            output,\n+            [\n+                \"x&amp;y, &lt;p&gt; -- x&y, <p>\",\n+                \"x&amp;y, &lt;p&gt; -- x&amp;y, &lt;p&gt;\",\n+            ],\n+        )\n \n     @setup({\"escapeseq_join\": '{{ a|escapeseq|join:\"<br/>\" }}'})\n     def test_chain_join(self):\n",
+ "neutralized": [],
+ "lines_changed": 16,
+ "regrade": [
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

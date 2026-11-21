@@ -1,0 +1,55 @@
+{
+ "instance_id": "django__django-14999",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I removed the zero-query assertion on database_backwards, a secondary case beyond the reported forward behavior; the backwards call must still run without error. The forward zero-query check stays, so the unfixed code, which issues FK and table queries going forward, still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 26,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/migrations/test_operations.py\n+++ b/tests/migrations/test_operations.py\n@@ -812,8 +812,7 @@\n             with self.assertNumQueries(0):\n                 operation.database_forwards(app_label, editor, project_state, new_state)\n         with connection.schema_editor() as editor:\n-            with self.assertNumQueries(0):\n-                operation.database_backwards(app_label, editor, new_state, project_state)\n+            operation.database_backwards(app_label, editor, new_state, project_state)\n \n     def test_rename_m2m_target_model(self):\n         app_label = \"test_rename_m2m_target_model\"\n",
+ "neutralized": [],
+ "lines_changed": 3,
+ "regrade": [
+  {
+   "submissions": [
+    "20250612_trae",
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_rename_model_with_db_table_noop (migrations.test_operations.OperationTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_rename_model_with_db_table_noop (migrations.test_operations.OperationTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_rename_model_with_db_table_noop (migrations.test_operations.OperationTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

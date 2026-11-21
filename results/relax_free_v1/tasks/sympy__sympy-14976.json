@@ -1,0 +1,112 @@
+{
+ "instance_id": "sympy__sympy-14976",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Replaced the exact-string check for the printed Rational with a check that the printed code, evaluated under mpmath at high precision, gives the rational to full precision. Any mpmath-wrapping representation passes, while the unfixed plain '1/3' float output still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 17,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/printing/tests/test_pycode.py\n+++ b/sympy/printing/tests/test_pycode.py\n@@ -40,7 +40,13 @@\n def test_MpmathPrinter():\n     p = MpmathPrinter()\n     assert p.doprint(sign(x)) == 'mpmath.sign(x)'\n-    assert p.doprint(Rational(1, 2)) == 'mpmath.mpf(1)/mpmath.mpf(2)'\n+    import mpmath\n+    for r in (Rational(1, 2), Rational(1, 3), Rational(232, 3)):\n+        s = p.doprint(r)\n+        with mpmath.workdps(60):\n+            val = eval(s, {'mpmath': mpmath})\n+            expected = mpmath.mpf(r.p)/mpmath.mpf(r.q)\n+            assert abs(val - expected) < mpmath.mpf(10)**-50\n \n def test_NumPyPrinter():\n     p = NumPyPrinter()\n",
+ "neutralized": [],
+ "lines_changed": 8,
+ "regrade": [
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,94 @@
+{
+ "instance_id": "sympy__sympy-18698",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "In the graded test_factor_terms, I relaxed the check on sqf_list(x*(x + y)). It no longer requires the combined multiplicity-1 factor to be written in expanded form, so x*(x + y) is also accepted. The test still requires coefficient 1 and a single factor with multiplicity 1, so the unfixed output (two separate factors) still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 19,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/polys/tests/test_polytools.py\n+++ b/sympy/polys/tests/test_polytools.py\n@@ -3273,7 +3273,11 @@\n def test_factor_terms():\n     # issue 7067\n     assert factor_list(x*(x + y)) == (1, [(x, 1), (x + y, 1)])\n-    assert sqf_list(x*(x + y)) == (1, [(x**2 + x*y, 1)])\n+    coeff, sqf_factors = sqf_list(x*(x + y))\n+    assert coeff == 1\n+    assert len(sqf_factors) == 1\n+    assert sqf_factors[0][1] == 1\n+    assert (sqf_factors[0][0] - (x**2 + x*y)).expand() == 0\n \n \n def test_as_list():\n",
+ "neutralized": [],
+ "lines_changed": 6,
+ "regrade": [
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_factor_terms"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_factor_terms"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_factor_terms"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_factor_terms"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_factor_terms"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_factor_terms"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_factor_terms"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

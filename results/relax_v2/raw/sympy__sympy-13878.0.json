@@ -1,0 +1,25 @@
+{
+  "instance_id": "sympy__sympy-13878",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "59dcb48a56c9",
+  "prompt_chars": 31331,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "sympy/stats/tests/test_continuous_rv.py",
+        "old": "    assert cdf(X)(x) == Piecewise((0, a > x),\n                            (2*asin(sqrt((-a + x)/(-a + b)))/pi, b >= x),\n                            (1, True))",
+        "new": "    cdfx = cdf(X)(x)\n    assert not cdfx.has(Integral)\n    expected = {-1: S(0), 1: 2*asin(sqrt(S(1)/3))/pi,\n                2: 2*asin(sqrt(S(2)/3))/pi, 4: S(1)}\n    for xv, ev in expected.items():\n        val = cdfx.subs({a: 0, b: 3}).subs(x, xv)\n        assert not val.has(Integral)\n        assert abs(N(val) - N(ev)) < 1e-10\n\n    res = cdf(Arcsin('y', 0, 3))(1)\n    assert not res.has(Integral)\n    assert abs(N(res) - N(2*asin(sqrt(S(1)/3))/pi)) < 1e-10"
+      }
+    ],
+    "summary": "Replaced the exact structural comparison of the Arcsin CDF with checks that the CDF is not left as an unevaluated Integral. It is also checked numerically against the true CDF at points below, inside and above the support. Any equivalent formula or Piecewise layout now passes, while the unfixed Integral result still fails."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzcTyZaFPdPJ8xiK5Z8m",
+  "input_tokens": 15039,
+  "output_tokens": 1663,
+  "seconds": 17.2
+}

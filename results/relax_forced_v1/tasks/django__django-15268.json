@@ -1,0 +1,47 @@
+{
+ "instance_id": "django__django-15268",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the requirement that the merged AlterUniqueTogether come before the AlterIndexTogether: all three tests now accept the two together-operations in either order. They still require exactly one operation of each type with the final values, and RenameField first or RemoveField last where applicable. The unfixed code still fails because it emits four together-operations instead of two.",
+   "edits": 3,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/migrations/test_autodetector.py\n+++ b/tests/migrations/test_autodetector.py\n@@ -1570,18 +1570,17 @@\n         )\n         # Right number/type of migrations?\n         self.assertNumberMigrations(changes, \"otherapp\", 1)\n-        self.assertOperationTypes(changes, 'otherapp', 0, [\n-            'AlterUniqueTogether',\n-            'AlterIndexTogether',\n-        ])\n-        self.assertOperationAttributes(\n-            changes, 'otherapp', 0, 0, name='book',\n-            unique_together={('title', 'author')},\n-        )\n-        self.assertOperationAttributes(\n-            changes, 'otherapp', 0, 1, name='book',\n-            index_together={('title', 'author')},\n-        )\n+        operations = changes['otherapp'][0].operations\n+        self.assertEqual(\n+            sorted(op.__class__.__name__ for op in operations),\n+            ['AlterIndexTogether', 'AlterUniqueTogether'],\n+        )\n+        for op in operations:\n+            self.assertEqual(op.name, 'book')\n+            if op.__class__.__name__ == 'AlterUniqueTogether':\n+                self.assertEqual(op.unique_together, {('title', 'author')})\n+            else:\n+                self.assertEqual(op.index_together, {('title', 'author')})\n \n     def test_add_field_and_foo_together(self):\n         \"\"\"\n@@ -1628,19 +1627,19 @@\n         )\n         # Right number/type of migrations?\n         self.assertNumberMigrations(changes, \"otherapp\", 1)\n-        self.assertOperationTypes(changes, 'otherapp', 0, [\n-            'AlterUniqueTogether',\n-            'AlterIndexTogether',\n-            'RemoveField',\n-        ])\n-        self.assertOperationAttributes(\n-            changes, 'otherapp', 0, 0, name='book',\n-            unique_together={('author', 'title')},\n-        )\n-        self.assertOperationAttributes(\n-            changes, 'otherapp', 0, 1, name='book',\n-            index_together={('author', 'title')},\n-        )\n+        operations = changes['otherapp'][0].operations\n+        self.assertEqual(len(operations), 3)\n+        self.assertEqual(\n+            sorted(op.__class__.__name__ for op in operations[:2]),\n+            ['AlterIndexTogether', 'AlterUniqueTogether'],\n+        )\n+        self.assertEqual(operations[2].__class__.__name__, 'RemoveField')\n+        for op in operations[:2]:\n+            self.assertEqual(op.name, 'book')\n+            if op.__class__.__name__ == 'AlterUniqueTogether':\n+                self.assertEqual(op.unique_together, {('author', 'title')})\n+            else:\n+                self.assertEqual(op.index_together, {('author', 'title')})\n         self.assertOperationAttributes(\n             changes, 'otherapp', 0, 2, model_name='book', name='newfield',\n         )\n@@ -1726,17 +1725,20 @@\n         self.assertNumberMigrations(changes, \"otherapp\", 1)\n         self.assertOperationTypes(changes, 'otherapp', 0, [\n             'RenameField',\n-            'AlterUniqueTogether',\n-            'AlterIndexTogether',\n+            *[op.__class__.__name__ for op in changes['otherapp'][0].operations[1:]],\n         ])\n-        self.assertOperationAttributes(\n-            changes, 'otherapp', 0, 1, name='book',\n-            unique_together={('title', 'newfield2')},\n-        )\n-        self.assertOperationAttributes(\n-            changes, 'otherapp', 0, 2, name='book',\n-            index_together={('title', 'newfield2')},\n-        )\n+        operations = changes['otherapp'][0].operations\n+        self.assertEqual(len(operations), 3)\n+        self.assertEqual(\n+            sorted(op.__class__.__name__ for op in operations[1:]),\n+            ['AlterIndexTogether', 'AlterUniqueTogether'],\n+        )\n+        for op in operations[1:]:\n+            self.assertEqual(op.name, 'book')\n+            if op.__class__.__name__ == 'AlterUniqueTogether':\n+                self.assertEqual(op.unique_together, {('title', 'newfield2')})\n+            else:\n+                self.assertEqual(op.index_together, {('title', 'newfield2')})\n \n     def test_proxy(self):\n         \"\"\"The autodetector correctly deals with proxy models.\"\"\"\n",
+ "neutralized": [],
+ "lines_changed": 72,
+ "regrade": [
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "Removed fields will be removed after updating index/unique_together.",
+    "Fields are renamed before updating index/unique_together."
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "index/unique_together also triggers on ordering changes.",
+    "Removed fields will be removed after updating index/unique_together.",
+    "Fields are renamed before updating index/unique_together."
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

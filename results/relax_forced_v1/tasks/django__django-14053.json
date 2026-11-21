@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-14053",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the global no-duplicates check on every post-processed file. It now only requires that the specific adjustable CSS files already asserted in the test are yielded exactly once. The unfixed code still yields these files in every pass, so the test still fails on it.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/staticfiles_tests/test_storage.py\n+++ b/tests/staticfiles_tests/test_storage.py\n@@ -203,8 +203,12 @@\n         self.assertIn(os.path.join('cached', 'css', 'window.css'), stats['post_processed'])\n         self.assertIn(os.path.join('cached', 'css', 'img', 'window.png'), stats['unmodified'])\n         self.assertIn(os.path.join('test', 'nonascii.css'), stats['post_processed'])\n-        # No file should be yielded twice.\n-        self.assertCountEqual(stats['post_processed'], set(stats['post_processed']))\n+        # The adjustable files checked above should not be yielded twice.\n+        for path in (\n+            os.path.join('cached', 'css', 'window.css'),\n+            os.path.join('test', 'nonascii.css'),\n+        ):\n+            self.assertEqual(stats['post_processed'].count(path), 1)\n         self.assertPostCondition()\n \n     def test_css_import_case_insensitive(self):\n",
+ "neutralized": [],
+ "lines_changed": 8,
+ "regrade": [
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5"
+   ],
+   "outcome": "passes_original_here",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

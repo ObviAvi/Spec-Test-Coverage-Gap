@@ -1,0 +1,25 @@
+{
+  "instance_id": "sympy__sympy-21596",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "1deb87c17938",
+  "prompt_chars": 9301,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "sympy/sets/tests/test_fancysets.py",
+        "old": "    assert imageset(Lambda(n, n/2 + im.expand()*I), S.Integers\n        ).intersect(S.Reals) == ImageSet(Lambda(x, x/2), ConditionSet(\n        n, Eq(n**2 - n/2 - S(1)/2, 0), S.Integers))",
+        "new": "    _r = imageset(Lambda(n, n/2 + im.expand()*I), S.Integers\n        ).intersect(S.Reals)\n    _ok = _r == FiniteSet(S.Half) or _r == ImageSet(Lambda(x, x/2), ConditionSet(\n        n, Eq(n**2 - n/2 - S(1)/2, 0), S.Integers))\n    if not _ok and isinstance(_r, ImageSet) and isinstance(\n            _r.base_sets[0], ConditionSet):\n        _cs = _r.base_sets[0]\n        _ok = (_cs.base_set == S.Integers and\n            _cs.condition.subs(_cs.sym, 1) == True and\n            _cs.condition.subs(_cs.sym, -S.Half) == True and\n            _cs.condition.subs(_cs.sym, 0) == False and\n            _r.lamda(1) == S.Half)\n    assert _ok"
+      }
+    ],
+    "summary": "For the case where the original fix leaves an unevaluated ConditionSet, the exact symbolic form is not fixed by the issue. That assertion now accepts the fully solved FiniteSet(1/2), the original form, or any ImageSet over an equivalent ConditionSet on the Integers. The spec-mandated {-1, 1} result and the other concrete results are left unchanged."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3TLGAC5cUKCGgEXQbXU",
+  "input_tokens": 4144,
+  "output_tokens": 2319,
+  "seconds": 22.8
+}

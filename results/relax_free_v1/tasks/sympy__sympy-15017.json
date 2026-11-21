@@ -1,0 +1,128 @@
+{
+ "instance_id": "sympy__sympy-15017",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The issue only asks that `len` of a rank-0 array be 1. It says nothing about whether indexing a rank-0 array with `[0]` should return the scalar or keep raising ValueError, so the test now accepts either; the `len == 1` check still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 13,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/tensor/array/tests/test_immutable_ndim_array.py\n+++ b/sympy/tensor/array/tests/test_immutable_ndim_array.py\n@@ -81,7 +81,10 @@\n     assert rank_zero_array.shape == ()\n     assert rank_zero_array.rank() == 0\n     assert rank_zero_array[()] == x\n-    assert rank_zero_array[0] == x\n+    try:\n+        assert rank_zero_array[0] == x\n+    except ValueError:\n+        pass\n \n \n def test_reshape():\n",
+ "neutralized": [],
+ "lines_changed": 5,
+ "regrade": [
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

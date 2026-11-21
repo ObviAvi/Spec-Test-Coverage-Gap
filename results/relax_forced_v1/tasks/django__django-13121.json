@@ -1,0 +1,34 @@
+{
+ "instance_id": "django__django-13121",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the secondary requirement that every fixture delta works, including negative ones; the test now checks only non-negative deltas, or just the first delta if `datetime` isn't imported. The duration-plus-timedelta annotation must still return the correct value, which the unfixed code fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 25,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/expressions/tests.py\n+++ b/tests/expressions/tests.py\n@@ -1469,7 +1469,7 @@\n         self.assertIsNone(queryset.first().shifted)\n \n     def test_duration_expressions(self):\n-        for delta in self.deltas:\n+        for delta in [d for d in self.deltas if d >= datetime.timedelta(0)] if 'datetime' in globals() else self.deltas[:1]:\n             qs = Experiment.objects.annotate(duration=F('estimated_time') + delta)\n             for obj in qs:\n                 self.assertEqual(obj.duration, obj.estimated_time + delta)\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_duration_expressions (expressions.tests.FTimeDeltaTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

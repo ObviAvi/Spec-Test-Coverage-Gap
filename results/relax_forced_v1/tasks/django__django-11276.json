@@ -1,0 +1,96 @@
+{
+ "instance_id": "django__django-11276",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the urlize-specific requirement that single quotes in urlize output be rendered as exactly &#x27;: test_urlize06 and test_url_split_chars now accept either &#x27; or &#39;, and the single-quote wrapping case was dropped from test_wrapping_characters. Every other test still pins &#x27; for escape(), so the unfixed code is still rejected.",
+   "edits": 3,
+   "check": "ok",
+   "neutralized": [
+    "A message can be provided in addition to a request",
+    "A simple exception report can be generated",
+    "An exception report can be generated without request",
+    "test_url_split_chars (template_tests.filter_tests.test_urlize.FunctionTests)",
+    "test_urlize01 (template_tests.filter_tests.test_urlize.UrlizeTests)",
+    "test_urlize06 (template_tests.filter_tests.test_urlize.UrlizeTests)",
+    "test_wrapping_characters (template_tests.filter_tests.test_urlize.FunctionTests)"
+   ],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/template_tests/filter_tests/test_urlize.py\n+++ b/tests/template_tests/filter_tests/test_urlize.py\n@@ -52,7 +52,10 @@\n     @setup({'urlize06': '{{ a|urlize }}'})\n     def test_urlize06(self):\n         output = self.engine.render_to_string('urlize06', {'a': \"<script>alert('foo')</script>\"})\n-        self.assertEqual(output, '&lt;script&gt;alert(&#x27;foo&#x27;)&lt;/script&gt;')\n+        self.assertIn(output, (\n+            '&lt;script&gt;alert(&#x27;foo&#x27;)&lt;/script&gt;',\n+            '&lt;script&gt;alert(&#39;foo&#39;)&lt;/script&gt;',\n+        ))\n \n     # mailto: testing for urlize\n     @setup({'urlize07': '{{ a|urlize }}'})\n@@ -111,9 +114,12 @@\n             urlize('www.server.com\"abc'),\n             '<a href=\"http://www.server.com\" rel=\"nofollow\">www.server.com</a>&quot;abc',\n         )\n-        self.assertEqual(\n+        self.assertIn(\n             urlize('www.server.com\\'abc'),\n-            '<a href=\"http://www.server.com\" rel=\"nofollow\">www.server.com</a>&#x27;abc',\n+            (\n+                '<a href=\"http://www.server.com\" rel=\"nofollow\">www.server.com</a>&#x27;abc',\n+                '<a href=\"http://www.server.com\" rel=\"nofollow\">www.server.com</a>&#39;abc',\n+            ),\n         )\n         self.assertEqual(\n             urlize('www.server.com<abc'),\n@@ -284,7 +290,6 @@\n             ('<>', ('&lt;', '&gt;')),\n             ('[]', ('[', ']')),\n             ('\"\"', ('&quot;', '&quot;')),\n-            (\"''\", ('&#x27;', '&#x27;')),\n         )\n         for wrapping_in, (start_out, end_out) in wrapping_chars:\n             with self.subTest(wrapping_in=wrapping_in):\n",
+ "neutralized": [
+  "A message can be provided in addition to a request",
+  "A simple exception report can be generated",
+  "An exception report can be generated without request",
+  "test_url_split_chars (template_tests.filter_tests.test_urlize.FunctionTests)",
+  "test_urlize01 (template_tests.filter_tests.test_urlize.UrlizeTests)",
+  "test_urlize06 (template_tests.filter_tests.test_urlize.UrlizeTests)",
+  "test_wrapping_characters (template_tests.filter_tests.test_urlize.FunctionTests)"
+ ],
+ "lines_changed": 13,
+ "regrade": [
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_make_list02 (template_tests.filter_tests.test_make_list.MakeListTests)",
+    "test_password_help_text (auth_tests.test_forms.UserCreationFormTest)",
+    "test_addslashes02 (template_tests.filter_tests.test_addslashes.AddslashesTests)",
+    "test_title1 (template_tests.filter_tests.test_title.TitleTests)",
+    "test_html_escaped (forms_tests.widget_tests.test_clearablefileinput.ClearableFileInputTest)",
+    "test_url12 (template_tests.syntax_tests.test_url.UrlTagTests)",
+    "test_initial_values (model_forms.tests.ModelFormBasicTests)",
+    "test_m2m_initial_callable (model_forms.tests.ModelFormBasicTests)",
+    "test_multi_fields (model_forms.tests.ModelFormBasicTests)",
+    "test_runtime_choicefield_populated (model_forms.tests.ModelFormBasicTests)",
+    "test_no_referer (view_tests.tests.test_csrf.CsrfViewTests)",
+    "test_escape (utils_tests.test_html.TestUtilsHtml)",
+    "test_escapejs (utils_tests.test_html.TestUtilsHtml)",
+    "test_escaping (forms_tests.tests.test_forms.FormsTestCase)",
+    "test_templates_with_forms (forms_tests.tests.test_forms.FormsTestCase)",
+    "test_methods_with_arguments_display_arguments_default_value (admin_docs.test_views.TestModelDetailView)",
+    "Safe strings in local variables are escaped.",
+    "test_message_only (view_tests.tests.test_debug.ExceptionReporterTests)",
+    "test_request_with_items_key (view_tests.tests.test_debug.ExceptionReporterTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_make_list02 (template_tests.filter_tests.test_make_list.MakeListTests)",
+    "test_password_help_text (auth_tests.test_forms.UserCreationFormTest)",
+    "test_addslashes02 (template_tests.filter_tests.test_addslashes.AddslashesTests)",
+    "test_title1 (template_tests.filter_tests.test_title.TitleTests)",
+    "test_html_escaped (forms_tests.widget_tests.test_clearablefileinput.ClearableFileInputTest)",
+    "test_url12 (template_tests.syntax_tests.test_url.UrlTagTests)",
+    "test_initial_values (model_forms.tests.ModelFormBasicTests)",
+    "test_m2m_initial_callable (model_forms.tests.ModelFormBasicTests)",
+    "test_multi_fields (model_forms.tests.ModelFormBasicTests)",
+    "test_runtime_choicefield_populated (model_forms.tests.ModelFormBasicTests)",
+    "test_no_referer (view_tests.tests.test_csrf.CsrfViewTests)",
+    "test_escape (utils_tests.test_html.TestUtilsHtml)",
+    "test_escapejs (utils_tests.test_html.TestUtilsHtml)",
+    "test_escaping (forms_tests.tests.test_forms.FormsTestCase)",
+    "test_templates_with_forms (forms_tests.tests.test_forms.FormsTestCase)",
+    "test_methods_with_arguments_display_arguments_default_value (admin_docs.test_views.TestModelDetailView)",
+    "Safe strings in local variables are escaped.",
+    "test_message_only (view_tests.tests.test_debug.ExceptionReporterTests)",
+    "test_request_with_items_key (view_tests.tests.test_debug.ExceptionReporterTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

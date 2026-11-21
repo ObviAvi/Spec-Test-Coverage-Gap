@@ -1,0 +1,35 @@
+{
+ "instance_id": "sphinx-doc__sphinx-8593",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened test_private_members so the `_PUBLIC_CONSTANT` block, which covers how the `private-members` option interacts with the variable, is optional. The rest of that output must still match exactly. The core `:meta public:` variable check in test_private_field is unchanged and still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_ext_autodoc_private_members.py\n+++ b/tests/test_ext_autodoc_private_members.py\n@@ -88,17 +88,21 @@\n     app.config.autoclass_content = 'class'\n     options = {\"members\": None,\n                \"private-members\": \"_PUBLIC_CONSTANT,_public_function\"}\n-    actual = do_autodoc(app, 'module', 'target.private', options)\n-    assert list(actual) == [\n-        '',\n-        '.. py:module:: target.private',\n-        '',\n-        '',\n+    actual = list(do_autodoc(app, 'module', 'target.private', options))\n+    constant_block = [\n         '.. py:data:: _PUBLIC_CONSTANT',\n         '   :module: target.private',\n         '   :value: None',\n         '',\n         '   :meta public:',\n+        '',\n+        '',\n+    ]\n+    if actual[4:4 + len(constant_block)] == constant_block:\n+        del actual[4:4 + len(constant_block)]\n+    assert actual == [\n+        '',\n+        '.. py:module:: target.private',\n         '',\n         '',\n         '.. py:function:: _public_function(name)',\n",
+ "neutralized": [],
+ "lines_changed": 16,
+ "regrade": [
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_private_members.py::test_private_field",
+    "tests/test_ext_autodoc_private_members.py::test_private_members"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

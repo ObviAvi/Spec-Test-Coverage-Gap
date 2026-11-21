@@ -1,0 +1,184 @@
+{
+ "instance_id": "django__django-16263",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Removed the exact SELECT-count (subquery wrapping) assertions from the three graded tests, since the specification only requires unused annotations to be stripped from count() SQL, not a particular query structure. The not-in checks for the annotation names still fail on the unfixed code for the annotate() cases.",
+   "edits": 3,
+   "check": "ok",
+   "neutralized": [
+    "test_unused_aliased_aggregate_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "passers": 0,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/aggregation/tests.py\n+++ b/tests/aggregation/tests.py\n@@ -2094,7 +2094,6 @@\n                 authors_count=Count(\"authors\"),\n             ).count()\n         sql = ctx.captured_queries[0][\"sql\"].lower()\n-        self.assertEqual(sql.count(\"select\"), 1, \"No subquery wrapping required\")\n         self.assertNotIn(\"authors_count\", sql)\n \n     def test_non_aggregate_annotation_pruned(self):\n@@ -2103,7 +2102,6 @@\n                 name_lower=Lower(\"name\"),\n             ).count()\n         sql = ctx.captured_queries[0][\"sql\"].lower()\n-        self.assertEqual(sql.count(\"select\"), 1, \"No subquery wrapping required\")\n         self.assertNotIn(\"name_lower\", sql)\n \n     def test_unreferenced_aggregate_annotation_pruned(self):\n@@ -2112,7 +2110,6 @@\n                 authors_count=Count(\"authors\"),\n             ).count()\n         sql = ctx.captured_queries[0][\"sql\"].lower()\n-        self.assertEqual(sql.count(\"select\"), 2, \"Subquery wrapping required\")\n         self.assertNotIn(\"authors_count\", sql)\n \n     def test_referenced_aggregate_annotation_kept(self):\n",
+ "neutralized": [
+  "test_unused_aliased_aggregate_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+ ],
+ "lines_changed": 3,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_unreferenced_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_unreferenced_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_non_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unreferenced_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_non_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_non_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unreferenced_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

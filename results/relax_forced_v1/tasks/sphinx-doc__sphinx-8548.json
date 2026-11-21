@@ -1,0 +1,165 @@
+{
+ "instance_id": "sphinx-doc__sphinx-8548",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "In test_inherited_instance_variable, the docstring shown for the overridden attribute attr2 may now be either the subclass's or the base class's docstring. Everything else stays exact, including that inherited attr1 appears with 'docstring foo', so the unfixed code still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 9,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_ext_autodoc_autoclass.py\n+++ b/tests/test_ext_autodoc_autoclass.py\n@@ -79,8 +79,11 @@\n def test_inherited_instance_variable(app):\n     options = {'members': True,\n                'inherited-members': True}\n-    actual = do_autodoc(app, 'class', 'target.instance_variable.Bar', options)\n-    assert list(actual) == [\n+    actual = list(do_autodoc(app, 'class', 'target.instance_variable.Bar', options))\n+    assert len(actual) == 22\n+    assert actual[14] in ('      docstring bar', '      docstring foo')\n+    actual[14] = '      docstring bar'\n+    assert actual == [\n         '',\n         '.. py:class:: Bar()',\n         '   :module: target.instance_variable',\n",
+ "neutralized": [],
+ "lines_changed": 7,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae",
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

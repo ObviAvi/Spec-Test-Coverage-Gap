@@ -1,0 +1,34 @@
+{
+ "instance_id": "django__django-12965",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Dropped the exact single-query count. The test now captures all queries and requires at least one DELETE statement, with no DELETE statement containing a SELECT subquery. The unfixed code still fails because its DELETE uses an IN (SELECT ...) subquery.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/delete/tests.py\n+++ b/tests/delete/tests.py\n@@ -606,11 +606,18 @@\n \n class FastDeleteTests(TestCase):\n     def test_fast_delete_all(self):\n-        with self.assertNumQueries(1) as ctx:\n+        from django.db import connection\n+        from django.test.utils import CaptureQueriesContext\n+        with CaptureQueriesContext(connection) as ctx:\n             User.objects.all().delete()\n-        sql = ctx.captured_queries[0]['sql']\n+        delete_sqls = [\n+            q['sql'] for q in ctx.captured_queries\n+            if q['sql'].lstrip().upper().startswith('DELETE')\n+        ]\n+        self.assertTrue(delete_sqls)\n         # No subqueries is used when performing a full delete.\n-        self.assertNotIn('SELECT', sql)\n+        for sql in delete_sqls:\n+            self.assertNotIn('SELECT', sql)\n \n     def test_fast_delete_fk(self):\n         u = User.objects.create(\n",
+ "neutralized": [],
+ "lines_changed": 13,
+ "regrade": [
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_fast_delete_all (delete.tests.FastDeleteTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,290 @@
+{
+ "instance_id": "matplotlib__matplotlib-23299",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The original test required that any explicit backend change made inside rc_context persists after it exits. The issue never asks for that. The test now checks only what the issue needs: exiting rc_context must not restore the unresolved auto-backend sentinel once the backend was resolved inside the context. This still fails on the unfixed code and passes the original fix. Fixes made only in get_backend or switch_backend, outside rc_context, are still not covered.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 5,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/matplotlib/tests/test_rcparams.py\n+++ b/lib/matplotlib/tests/test_rcparams.py\n@@ -497,10 +497,21 @@\n \n \n def test_no_backend_reset_rccontext():\n-    assert mpl.rcParams['backend'] != 'module://aardvark'\n-    with mpl.rc_context():\n-        mpl.rcParams['backend'] = 'module://aardvark'\n-    assert mpl.rcParams['backend'] == 'module://aardvark'\n+    sentinel = mpl.rcsetup._auto_backend_sentinel\n+    orig = dict.__getitem__(mpl.rcParams, 'backend')\n+    try:\n+        # Start with an unresolved backend, as in the reported scenario.\n+        dict.__setitem__(mpl.rcParams, 'backend', sentinel)\n+        with mpl.rc_context():\n+            # Simulate the backend getting resolved inside the context\n+            # (e.g. by creating a figure).\n+            dict.__setitem__(mpl.rcParams, 'backend', 'agg')\n+        # Exiting the context must not put back the unresolved sentinel,\n+        # which would force a backend switch (closing all figures) on the\n+        # next get_backend() call.\n+        assert dict.__getitem__(mpl.rcParams, 'backend') is not sentinel\n+    finally:\n+        dict.__setitem__(mpl.rcParams, 'backend', orig)\n \n \n def test_rcparams_reset_after_fail():\n",
+ "neutralized": [],
+ "lines_changed": 19,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_rcparams.py::test_no_backend_reset_rccontext"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

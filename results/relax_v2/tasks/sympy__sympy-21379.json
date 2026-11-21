@@ -1,0 +1,80 @@
+{
+ "instance_id": "sympy__sympy-21379",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I removed the direct `(Piecewise(...)/z) % 1` line, which forced the fix to live in `Mod.eval`; the specification only asks that `subs` (and the related assumption query) stop raising `PolynomialError`. The `subs` and `sinh(...).is_zero` checks remain, so the test still exercises the reported failure.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 20,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/core/tests/test_arit.py\n+++ b/sympy/core/tests/test_arit.py\n@@ -1918,7 +1918,6 @@\n     from sympy.functions.elementary.piecewise import Piecewise\n \n     x_r, y_r = symbols('x_r y_r', real=True)\n-    (Piecewise((x_r, y_r > x_r), (y_r, True)) / z) % 1\n     expr = exp(sinh(Piecewise((x_r, y_r > x_r), (y_r, True)) / z))\n     expr.subs({1: 1.0})\n     sinh(Piecewise((x_r, y_r > x_r), (y_r, True)) * z ** -1.0).is_zero\n",
+ "neutralized": [],
+ "lines_changed": 1,
+ "regrade": [
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

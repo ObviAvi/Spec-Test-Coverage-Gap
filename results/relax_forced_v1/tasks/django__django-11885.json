@@ -1,0 +1,44 @@
+{
+ "instance_id": "django__django-11885",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test no longer requires exactly 2 queries; it now requires at most 2. Any fix that combines the fast-delete queries passes, while the unfixed code, which runs 3 queries, still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 9,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/delete/tests.py\n+++ b/tests/delete/tests.py\n@@ -588,5 +588,8 @@\n         # in a single DELETE WHERE referrer_id OR unique_field.\n         origin = Origin.objects.create()\n         referer = Referrer.objects.create(origin=origin, unique_field=42)\n-        with self.assertNumQueries(2):\n+        from django.db import connection\n+        from django.test.utils import CaptureQueriesContext\n+        with CaptureQueriesContext(connection) as ctx:\n             referer.delete()\n+        self.assertLessEqual(len(ctx.captured_queries), 2)\n",
+ "neutralized": [],
+ "lines_changed": 5,
+ "regrade": [
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_fast_delete_combined_relationships (delete.tests.FastDeleteTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_fast_delete_combined_relationships (delete.tests.FastDeleteTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,145 @@
+{
+ "instance_id": "sympy__sympy-14248",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The str, pretty and latex checks now accept negative-first or positive-first term order, and either spacing in the pretty output. The code-generation printers, which the issue does not cover, may keep their old output. The str, pretty and latex assertions still reject the unfixed '(-1)*B' / '-1 B' / '+ -A' output.",
+   "edits": 11,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 7,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/printing/pretty/tests/test_pretty.py\n+++ b/sympy/printing/pretty/tests/test_pretty.py\n@@ -6096,8 +6096,10 @@\n     C = MatrixSymbol(\"C\", 3, 3)\n \n     assert pretty(-A*B*C) == \"-A*B*C\"\n-    assert pretty(A - B) == \"-B + A\"\n-    assert pretty(A*B*C - A*B - B*C) == \"-A*B -B*C + A*B*C\"\n+    assert pretty(A - B) in (\"-B + A\", \"A - B\")\n+    assert pretty(A*B*C - A*B - B*C) in (\"-A*B -B*C + A*B*C\",\n+                                         \"-A*B - B*C + A*B*C\",\n+                                         \"A*B*C - A*B - B*C\")\n \n \n def test_degree_printing():\n--- a/sympy/printing/tests/test_ccode.py\n+++ b/sympy/printing/tests/test_ccode.py\n@@ -755,7 +755,7 @@\n     assert(ccode(3 * A[0, 0]) == \"3*A[0]\")\n \n     F = C[0, 0].subs(C, A - B)\n-    assert(ccode(F) == \"(-B + A)[0]\")\n+    assert(ccode(F) in (\"(-B + A)[0]\", \"(A - B)[0]\", \"((-1)*B + A)[0]\"))\n \n \n def test_subclass_CCodePrinter():\n--- a/sympy/printing/tests/test_fcode.py\n+++ b/sympy/printing/tests/test_fcode.py\n@@ -756,4 +756,5 @@\n     assert(fcode(3 * A[0, 0]) == \"      3*A(1, 1)\")\n \n     F = C[0, 0].subs(C, A - B)\n-    assert(fcode(F) == \"      (-B + A)(1, 1)\")\n+    assert(fcode(F) in (\"      (-B + A)(1, 1)\", \"      (A - B)(1, 1)\",\n+                        \"      ((-1)*B + A)(1, 1)\"))\n--- a/sympy/printing/tests/test_jscode.py\n+++ b/sympy/printing/tests/test_jscode.py\n@@ -382,4 +382,4 @@\n     assert(jscode(3 * A[0, 0]) == \"3*A[0]\")\n \n     F = C[0, 0].subs(C, A - B)\n-    assert(jscode(F) == \"(-B + A)[0]\")\n+    assert(jscode(F) in (\"(-B + A)[0]\", \"(A - B)[0]\", \"((-1)*B + A)[0]\"))\n--- a/sympy/printing/tests/test_julia.py\n+++ b/sympy/printing/tests/test_julia.py\n@@ -374,4 +374,4 @@\n     assert(julia_code(3 * A[0, 0]) == \"3*A[1,1]\")\n \n     F = C[0, 0].subs(C, A - B)\n-    assert(julia_code(F) == \"(-B + A)[1,1]\")\n+    assert(julia_code(F) in (\"(-B + A)[1,1]\", \"(A - B)[1,1]\", \"((-1)*B + A)[1,1]\"))\n--- a/sympy/printing/tests/test_octave.py\n+++ b/sympy/printing/tests/test_octave.py\n@@ -394,4 +394,4 @@\n     assert mcode(3 * A[0, 0]) == \"3*A(1, 1)\"\n \n     F = C[0, 0].subs(C, A - B)\n-    assert mcode(F) == \"(-B + A)(1, 1)\"\n+    assert mcode(F) in (\"(-B + A)(1, 1)\", \"(A - B)(1, 1)\", \"((-1)*B + A)(1, 1)\")\n--- a/sympy/printing/tests/test_rcode.py\n+++ b/sympy/printing/tests/test_rcode.py\n@@ -488,4 +488,4 @@\n     assert(rcode(3 * A[0, 0]) == \"3*A[0]\")\n \n     F = C[0, 0].subs(C, A - B)\n-    assert(rcode(F) == \"(-B + A)[0]\")\n+    assert(rcode(F) in (\"(-B + A)[0]\", \"(A - B)[0]\", \"((-1)*B + A)[0]\"))\n--- a/sympy/printing/tests/test_latex.py\n+++ b/sympy/printing/tests/test_latex.py\n@@ -1710,7 +1710,7 @@\n     assert latex(3 * A[0, 0]) == r\"3 A_{0, 0}\"\n \n     F = C[0, 0].subs(C, A - B)\n-    assert latex(F) == r\"\\left(-B + A\\right)_{0, 0}\"\n+    assert latex(F) in (r\"\\left(-B + A\\right)_{0, 0}\", r\"\\left(A - B\\right)_{0, 0}\")\n \n \n def test_MatrixSymbol_printing():\n@@ -1720,7 +1720,7 @@\n     C = MatrixSymbol(\"C\", 3, 3)\n \n     assert latex(-A) == r\"-A\"\n-    assert latex(A - A*B - B) == r\"-B - A B + A\"\n+    assert latex(A - A*B - B) in (r\"-B - A B + A\", r\"A - A B - B\")\n     assert latex(-A*B - A*B*C - B) == r\"-B - A B - A B C\"\n \n \n--- a/sympy/printing/tests/test_str.py\n+++ b/sympy/printing/tests/test_str.py\n@@ -784,12 +784,12 @@\n     assert(str(3 * A[0, 0]) == \"3*A[0, 0]\")\n \n     F = C[0, 0].subs(C, A - B)\n-    assert str(F) == \"(-B + A)[0, 0]\"\n+    assert str(F) in (\"(-B + A)[0, 0]\", \"(A - B)[0, 0]\")\n \n \n def test_MatrixSymbol_printing():\n     A = MatrixSymbol(\"A\", 3, 3)\n     B = MatrixSymbol(\"B\", 3, 3)\n \n-    assert str(A - A*B - B) == \"-B - A*B + A\"\n-    assert str(A*B - (A+B)) == \"-(A + B) + A*B\"\n+    assert str(A - A*B - B) in (\"-B - A*B + A\", \"A - A*B - B\")\n+    assert str(A*B - (A+B)) in (\"-(A + B) + A*B\", \"A*B - (A + B)\")\n",
+ "neutralized": [],
+ "lines_changed": 29,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_MatrixElement_printing",
+    "test_MatrixSymbol_printing"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

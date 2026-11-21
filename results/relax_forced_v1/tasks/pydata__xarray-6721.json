@@ -1,0 +1,54 @@
+{
+ "instance_id": "pydata__xarray-6721",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the exact `ds.chunks == {}` check so that any empty result (e.g. `{}` or `None`) passes. The test still requires that accessing `chunks` on a lazily loaded, unchunked dataset does not touch the variable data, so the unfixed code still fails it.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/xarray/tests/test_dataset.py\n+++ b/xarray/tests/test_dataset.py\n@@ -997,7 +997,8 @@\n         store = InaccessibleVariableDataStore()\n         create_test_data().dump_to_store(store)\n         ds = open_dataset(store)\n-        assert ds.chunks == {}\n+        chunks = ds.chunks\n+        assert not chunks\n \n     @requires_dask\n     def test_chunk(self) -> None:\n",
+ "neutralized": [],
+ "lines_changed": 3,
+ "regrade": [
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_dataset.py::TestDataset::test_chunks_does_not_load_data"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_dataset.py::TestDataset::test_chunks_does_not_load_data"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_dataset.py::TestDataset::test_chunks_does_not_load_data"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

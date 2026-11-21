@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-11087",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "36cc3c15e2ba",
+  "prompt_chars": 20729,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/delete/tests.py",
+        "old": "        origin = Origin.objects.create()\n        expected_sql = str(\n            Referrer.objects.only(\n                # Both fields are referenced by SecondReferrer.\n                'id', 'unique_field',\n            ).filter(origin__in=[origin]).query\n        )\n        with self.assertNumQueries(2) as ctx:\n            origin.delete()\n        self.assertEqual(ctx.captured_queries[0]['sql'], expected_sql)\n\n        def receiver(instance, **kwargs):\n            pass\n\n        # All fields are selected if deletion signals are connected.\n        for signal_name in ('pre_delete', 'post_delete'):\n            with self.subTest(signal=signal_name):\n                origin = Origin.objects.create()\n                signal = getattr(models.signals, signal_name)\n                signal.connect(receiver, sender=Referrer)\n                with self.assertNumQueries(2) as ctx:\n                    origin.delete()\n                self.assertIn(\n                    connection.ops.quote_name('large_field'),\n                    ctx.captured_queries[0]['sql'],\n                )\n                signal.disconnect(receiver, sender=Referrer)",
+        "new": "        from django.test.utils import CaptureQueriesContext\n        origin = Origin.objects.create()\n        origin_pk = origin.pk\n        with CaptureQueriesContext(connection) as ctx:\n            origin.delete()\n        for query in ctx.captured_queries:\n            self.assertNotIn(\n                connection.ops.quote_name('large_field'),\n                query['sql'],\n            )\n        self.assertFalse(Origin.objects.filter(pk=origin_pk).exists())"
+      }
+    ],
+    "summary": "Replaced the exact-SQL and fixed-query-count assertions with a check that no query issued during the cascade delete touches the non-referenced large_field, and dropped the signal-receiver subtests, which test a design choice the issue never specifies."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzMEwtWS3oQDHmE4St5Z",
+  "input_tokens": 8361,
+  "output_tokens": 1484,
+  "seconds": 14.6
+}

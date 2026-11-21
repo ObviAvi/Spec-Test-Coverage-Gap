@@ -1,0 +1,45 @@
+You are repairing the tests of one task from a software-engineering benchmark such as SWE-bench.
+
+In these benchmarks an agent receives a task specification (a bug report or feature request) and the repository, writes a fix, and is graded by tests it never sees. The tests come from the pull request that originally fixed the issue, so they were written to confirm that one fix. Such tests sometimes check details the specification never settles, so a different but correct fix can be graded as a failure. Decide whether this task's tests do that. If they do, change the tests as little as possible so that they accept every correct fix and still reject the unfixed code. If they do not, change nothing.
+
+<specification>
+{{SPEC}}
+</specification>
+
+<fail_to_pass_tests>
+{{FAIL_TO_PASS}}
+</fail_to_pass_tests>
+
+<test_patch>
+{{TEST_PATCH}}
+</test_patch>
+
+<original_fix>
+{{GOLD_PATCH}}
+</original_fix>
+
+How to read the inputs:
+- The specification is everything the developer is told about the task. Anything it states explicitly counts as specified.
+- The FAIL_TO_PASS tests are the graded ones: they fail before the fix and must pass after it. Python test definitions that are graded are also tagged `# <-- FAIL_TO_PASS` in the test patch (the tag is not in the file).
+- In the test patch, `+` lines are added test code, `-` lines are removed test code, and lines starting with a space are unchanged context.
+- The original fix is one correct fix. It shows which code is involved, and it must pass your tests. It is not the only correct fix: do not write tests that only it would pass.
+- You cannot see the repository or run code.
+
+What to change:
+- Loosen only requirements the specification leaves open. Typical repairs: an exact message becomes a check on the exception type or on the part of the message the specification fixes; one pinned value among several valid ones becomes a check that accepts every valid one; a pinned order becomes an order-independent comparison; an assertion on internal state or a private helper becomes a check through the public behavior the specification describes, or is removed if the other assertions already cover that behavior.
+- If an entire graded test checks only behavior the specification never asks for, replace its body with `pass`. Keep the test itself so that its name still exists.
+- Keep every requirement the specification states or leaves only one reasonable choice for. At least one graded test must still fail on the unfixed code because of the problem the specification reports.
+- Do not add requirements. Every fix that passed the original tests must pass yours.
+- Touch nothing else. Leave assertions alone when every reasonable correct fix would satisfy them.
+
+Mechanics:
+- Give your changes as search-and-replace edits on the test files as they are after the test patch is applied. `old` must be copied exactly from the `+` and context lines of the test patch, without the leading diff character and without the `# <-- FAIL_TO_PASS` tag, with indentation and line breaks intact. It must occur exactly once in the file, so include enough neighboring lines to make it unique. `new` replaces it.
+- Edit only inside the regions the test patch shows.
+- Do not rename, add, or delete test functions or classes: tests are graded by name, and a skipped or missing test counts as failed.
+- Use only names the test patch shows are available in the file, or the standard library. Put a new import inside the test function that needs it.
+- If the tests already accept every reasonable correct fix, set `relaxable` to false and return no edits. Do the same if no edit can make the tests accept other correct fixes while still failing on the unfixed code.
+
+Return JSON with these fields:
+- `relaxable`: true or false.
+- `edits`: the list of edits, each with `file` (path as in the test patch), `old`, and `new`. Empty when `relaxable` is false.
+- `summary`: one or two sentences on what you loosened, or why nothing needs to be.

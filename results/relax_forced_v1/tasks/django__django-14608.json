@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-14608",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "In the validate_max and validate_min formset tests, I replaced the exact-HTML comparison of the rendered non-form errors with two checks: the class attribute contains `nonform`, and the message appears. The other tests still check the exact markup and fail on the unfixed code.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 16,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/forms_tests/tests/test_formsets.py\n+++ b/tests/forms_tests/tests/test_formsets.py\n@@ -337,10 +337,9 @@\n         formset = ChoiceFormSet(data, auto_id=False, prefix='choices')\n         self.assertFalse(formset.is_valid())\n         self.assertEqual(formset.non_form_errors(), ['Please submit at most 1 form.'])\n-        self.assertEqual(\n-            str(formset.non_form_errors()),\n-            '<ul class=\"errorlist nonform\"><li>Please submit at most 1 form.</li></ul>',\n-        )\n+        rendered = str(formset.non_form_errors())\n+        self.assertRegex(rendered, r'class=\"[^\"]*\\bnonform\\b[^\"]*\"')\n+        self.assertIn('Please submit at most 1 form.', rendered)\n \n     def test_formset_validate_min_flag(self):\n         \"\"\"\n@@ -363,11 +362,9 @@\n         formset = ChoiceFormSet(data, auto_id=False, prefix='choices')\n         self.assertFalse(formset.is_valid())\n         self.assertEqual(formset.non_form_errors(), ['Please submit at least 3 forms.'])\n-        self.assertEqual(\n-            str(formset.non_form_errors()),\n-            '<ul class=\"errorlist nonform\"><li>'\n-            'Please submit at least 3 forms.</li></ul>',\n-        )\n+        rendered = str(formset.non_form_errors())\n+        self.assertRegex(rendered, r'class=\"[^\"]*\\bnonform\\b[^\"]*\"')\n+        self.assertIn('Please submit at least 3 forms.', rendered)\n \n     def test_formset_validate_min_unchanged_forms(self):\n         \"\"\"\n",
+ "neutralized": [],
+ "lines_changed": 15,
+ "regrade": [
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "patch_does_not_apply",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

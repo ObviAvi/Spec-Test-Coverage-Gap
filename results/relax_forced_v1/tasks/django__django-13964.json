@@ -1,0 +1,34 @@
+{
+ "instance_id": "django__django-13964",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "In the graded test I removed the direct assertion on the internal `child.parent_id` attribute. The test still checks the public behavior: after `refresh_from_db()`, `child.parent` must equal the saved parent. That check still fails on the unfixed code, because there the FK is stored as an empty string.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 25,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/many_to_one/tests.py\n+++ b/tests/many_to_one/tests.py\n@@ -557,7 +557,6 @@\n         child.save()\n         child.refresh_from_db()\n         self.assertEqual(child.parent, parent)\n-        self.assertEqual(child.parent_id, parent.name)\n \n     def test_fk_to_bigautofield(self):\n         ch = City.objects.create(name='Chicago')\n",
+ "neutralized": [],
+ "lines_changed": 1,
+ "regrade": [
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_save_fk_after_parent_with_non_numeric_pk_set_on_child (many_to_one.tests.ManyToOneTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

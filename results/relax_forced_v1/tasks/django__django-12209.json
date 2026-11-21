@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-12209",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "For the UUIDDefaultData entry, I replaced the exact field-equality comparison after deserialization with a check that an object with that pk exists. The unfixed code still fails, because the raw save during deserialization does a second INSERT that hits an IntegrityError.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 27,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/serializers/test_data.py\n+++ b/tests/serializers/test_data.py\n@@ -351,7 +351,10 @@\n     # (pk_obj, 790, XMLPKData, \"<foo></foo>\"),\n     (pk_obj, 791, UUIDData, uuid_obj),\n     (fk_obj, 792, FKToUUID, uuid_obj),\n-    (pk_obj, 793, UUIDDefaultData, uuid_obj),\n+    (\n+        (pk_obj[0], lambda testcase, pk, klass, data: testcase.assertTrue(klass.objects.filter(pk=data).exists())),\n+        793, UUIDDefaultData, uuid_obj,\n+    ),\n \n     (data_obj, 800, AutoNowDateTimeData, datetime.datetime(2006, 6, 16, 10, 42, 37)),\n     (data_obj, 810, ModifyingSaveData, 42),\n",
+ "neutralized": [],
+ "lines_changed": 5,
+ "regrade": [
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "passes_original_here",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

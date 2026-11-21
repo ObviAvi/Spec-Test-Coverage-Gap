@@ -1,0 +1,27 @@
+{
+ "instance_id": "matplotlib__matplotlib-24627",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "invalid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I dropped the check that `.figure` is None after `ax.clear()`. The issue's reproduction only shows `.axes`, and a valid fix that unsets the axes may unset or keep the figure differently. The test still requires `.axes` to become None after clearing, which the unfixed code fails.",
+   "edits": 1,
+   "check": "edit_error"
+  },
+  {
+   "relaxable": true,
+   "summary": "I loosened the test so it no longer requires `.figure` to be reset to None after `ax.clear()`. The issue's example only shows `.axes` staying set, so that is the check I kept. The `.axes is None` assertion still fails on the unfixed code.",
+   "edits": 1,
+   "check": "edit_error"
+  },
+  {
+   "relaxable": true,
+   "summary": "I dropped the post-clear check that `art.figure is None`. The test still requires that `ax.clear()` unsets `.axes` on every former child, which is the behaviour shown in the issue's reproduction, so the unfixed code still fails. The figure check went because `set_figure(None)` raises in this version, so a fix written another way could reasonably reset only `.axes`.",
+   "edits": 1,
+   "check": "edit_error"
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+  "instance_id": "pytest-dev__pytest-10356",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "1a0105a38270",
+  "prompt_chars": 12111,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "testing/test_mark.py",
+        "old": "def test_mark_mro() -> None:\n    xfail = pytest.mark.xfail\n\n    @xfail(\"a\")\n    class A:\n        pass\n\n    @xfail(\"b\")\n    class B:\n        pass\n\n    @xfail(\"c\")\n    class C(A, B):\n        pass\n\n    from _pytest.mark.structures import get_unpacked_marks\n\n    all_marks = get_unpacked_marks(C)\n\n    assert all_marks == [xfail(\"c\").mark, xfail(\"a\").mark, xfail(\"b\").mark]\n\n    assert get_unpacked_marks(C, consider_mro=False) == [xfail(\"c\").mark]",
+        "new": "def test_mark_mro(pytester) -> None:\n    pytester.makeini(\n        \"\"\"\n        [pytest]\n        markers =\n            a\n            b\n            c\n        \"\"\"\n    )\n    item = pytester.getitem(\n        \"\"\"\n        import pytest\n\n        @pytest.mark.a\n        class A:\n            pass\n\n        @pytest.mark.b\n        class B:\n            pass\n\n        @pytest.mark.c\n        class TestC(A, B):\n            def test_foo(self):\n                pass\n        \"\"\",\n        \"test_foo\",\n    )\n    names = {m.name for m in item.iter_markers()}\n    assert {\"a\", \"b\", \"c\"} <= names"
+      }
+    ],
+    "summary": "The test called the private helper `get_unpacked_marks` with a new `consider_mro` keyword and pinned an exact mark order, none of which the issue specifies. It now collects a test in a class inheriting from two marked base classes and checks that the item carries all three marks, which still fails on the unfixed code where one base's mark is lost."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3M8fmjEkHwSq9Wtt1s3",
+  "input_tokens": 4763,
+  "output_tokens": 2416,
+  "seconds": 23.2
+}

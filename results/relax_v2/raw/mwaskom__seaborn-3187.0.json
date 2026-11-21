@@ -1,0 +1,30 @@
+{
+  "instance_id": "mwaskom__seaborn-3187",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "7a8f4d21f915",
+  "prompt_chars": 9413,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/_core/test_plot.py",
+        "old": "        color = np.add(xy[\"x\"], 1e8)\n        p = Plot(**xy, color=color).add(MockMark()).plot()\n        legend = p._figure.legends[0]\n        assert legend.texts\n        for text in legend.texts:\n            assert float(text.get_text()) > 1e7",
+        "new": "        import re\n        color = np.add(xy[\"x\"], 1e8)\n        p = Plot(**xy, color=color).add(MockMark()).plot()\n        legend = p._figure.legends[0]\n        assert legend.texts\n        pat = r\"(e\\+?0*8(?!\\d))|(10\\^\\{?8)|(10\\u2078)|(100000000)\"\n\n        def shows_magnitude(s):\n            try:\n                return float(s) > 1e7\n            except ValueError:\n                return re.search(pat, s) is not None\n\n        labels = [t.get_text() for t in legend.texts]\n        title = legend.get_title().get_text()\n        assert (\n            all(shows_magnitude(s) for s in labels)\n            or re.search(pat, title) is not None\n        )"
+      },
+      {
+        "file": "tests/test_relational.py",
+        "old": "        g = relplot(data=long_df, x=\"x\", y=\"y\", hue=long_df[\"z\"] + 1e8)\n        for text in g.legend.texts:\n            assert float(text.get_text()) > 1e7",
+        "new": "        import re\n        g = relplot(data=long_df, x=\"x\", y=\"y\", hue=long_df[\"z\"] + 1e8)\n        pat = r\"(e\\+?0*8(?!\\d))|(10\\^\\{?8)|(10\\u2078)|(100000000)\"\n\n        def shows_magnitude(s):\n            try:\n                return float(s) > 1e7\n            except ValueError:\n                return re.search(pat, s) is not None\n\n        labels = [t.get_text() for t in g.legend.texts]\n        title = g.legend.get_title().get_text()\n        assert (\n            all(shows_magnitude(s) for s in labels)\n            or re.search(pat, title) is not None\n        )"
+      }
+    ],
+    "summary": "Both tests now accept either labels that individually convey the ~1e8 magnitude (plain floats >1e7 or sci/mathtext notation with exponent 8) or a legend title that shows the 1e8 offset/multiplier, as the spec explicitly permits; unfixed code (small labels, plain title) still fails."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzViHrEtqiBHeWwv1owj",
+  "input_tokens": 3844,
+  "output_tokens": 2570,
+  "seconds": 26.6
+}

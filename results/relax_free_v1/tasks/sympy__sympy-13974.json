@@ -1,0 +1,224 @@
+{
+ "instance_id": "sympy__sympy-13974",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The issue only covers integer powers such as squares, and distributing a symbolic exponent over a tensor product is not generally valid. The two symbolic-exponent assertions now also accept the power left unevaluated. The integer-power assertions are unchanged, so they still fail on the unfixed code.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 8,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/physics/quantum/tests/test_tensorproduct.py\n+++ b/sympy/physics/quantum/tests/test_tensorproduct.py\n@@ -48,10 +48,10 @@\n def test_tensor_product_simp():\n     assert tensor_product_simp(TP(A, B)*TP(B, C)) == TP(A*B, B*C)\n     # tests for Pow-expressions\n-    assert tensor_product_simp(TP(A, B)**x) == TP(A**x, B**x)\n+    assert tensor_product_simp(TP(A, B)**x) in (TP(A**x, B**x), TP(A, B)**x)\n     assert tensor_product_simp(x*TP(A, B)**2) == x*TP(A**2,B**2)\n     assert tensor_product_simp(x*(TP(A, B)**2)*TP(C,D)) == x*TP(A**2*C,B**2*D)\n-    assert tensor_product_simp(TP(A,B)-TP(C,D)**x) == TP(A,B)-TP(C**x,D**x)\n+    assert tensor_product_simp(TP(A,B)-TP(C,D)**x) in (TP(A,B)-TP(C**x,D**x), TP(A,B)-TP(C,D)**x)\n \n \n def test_issue_5923():\n",
+ "neutralized": [],
+ "lines_changed": 4,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_tensor_product_simp"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

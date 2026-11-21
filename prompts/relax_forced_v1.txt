@@ -1,0 +1,47 @@
+You are repairing the tests of one task from a software-engineering benchmark such as SWE-bench.
+
+In these benchmarks an agent receives a task specification (a bug report or feature request) and the repository, writes a fix, and is graded by tests it never sees. The tests come from the pull request that originally fixed the issue, so they were written to confirm that one fix. Such tests sometimes check details the specification never settles, so a different but correct fix can be graded as a failure.
+
+This task is part of a control experiment. Its tests were reviewed and no such problem was reported. We want to measure what loosening tests does on tasks like this one, so loosen these tests anyway: pick the one requirement of the graded tests that a correct fix written differently from the original fix is most likely to miss, and loosen it. The loosened tests must still reject the unfixed code.
+
+<specification>
+{{SPEC}}
+</specification>
+
+<fail_to_pass_tests>
+{{FAIL_TO_PASS}}
+</fail_to_pass_tests>
+
+<test_patch>
+{{TEST_PATCH}}
+</test_patch>
+
+<original_fix>
+{{GOLD_PATCH}}
+</original_fix>
+
+How to read the inputs:
+- The specification is everything the developer is told about the task. Anything it states explicitly counts as specified.
+- The FAIL_TO_PASS tests are the graded ones: they fail before the fix and must pass after it. Python test definitions that are graded are also tagged `# <-- FAIL_TO_PASS` in the test patch (the tag is not in the file).
+- In the test patch, `+` lines are added test code, `-` lines are removed test code, and lines starting with a space are unchanged context.
+- The original fix is one correct fix. It shows which code is involved, and it must pass your tests. It is not the only correct fix: do not write tests that only it would pass.
+- You cannot see the repository or run code.
+
+What to change:
+- Loosen exactly one requirement: the one that depends most on how the original fix was written and least on what the specification says. If the specification leaves nothing open, pick the requirement it supports least directly, for example an exact message or format, one pinned value or order, a secondary case beyond the reported problem, or a check on internal state. One requirement can span several assertions. Typical ways to loosen: an exact message becomes a check on the exception type or on the part of the message the specification fixes; one pinned value among several valid ones becomes a check that accepts every valid one; a pinned order becomes an order-independent comparison; an assertion on internal state or a private helper becomes a check through the public behavior the specification describes, or is removed if the other assertions already cover that behavior.
+- If the requirement you picked is all that one graded test checks, and other graded tests still fail on the unfixed code, replace that test's body with `pass`. Keep the test itself so that its name still exists.
+- Keep every other requirement. At least one graded test must still fail on the unfixed code because of the problem the specification reports.
+- Do not add requirements. Every fix that passed the original tests must pass yours.
+- Touch nothing else.
+
+Mechanics:
+- Give your changes as search-and-replace edits on the test files as they are after the test patch is applied. `old` must be copied exactly from the `+` and context lines of the test patch, without the leading diff character and without the `# <-- FAIL_TO_PASS` tag, with indentation and line breaks intact. It must occur exactly once in the file, so include enough neighboring lines to make it unique. `new` replaces it.
+- Edit only inside the regions the test patch shows.
+- Do not rename, add, or delete test functions or classes: tests are graded by name, and a skipped or missing test counts as failed.
+- Use only names the test patch shows are available in the file, or the standard library. Put a new import inside the test function that needs it.
+- Set `relaxable` to true and return edits. Set it to false only if every possible loosening would make all graded tests pass on the unfixed code.
+
+Return JSON with these fields:
+- `relaxable`: true or false.
+- `edits`: the list of edits, each with `file` (path as in the test patch), `old`, and `new`. Empty when `relaxable` is false.
+- `summary`: one or two sentences on which requirement you loosened and how.

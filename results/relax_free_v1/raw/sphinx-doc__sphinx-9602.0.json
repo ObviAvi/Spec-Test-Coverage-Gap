@@ -1,0 +1,25 @@
+{
+  "instance_id": "sphinx-doc__sphinx-9602",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "876f48cdcba8",
+  "prompt_chars": 8470,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/test_domain_py.py",
+        "old": "    doctree = _parse_annotation(\"Literal[True, False]\", app.env)\n    assert_node(doctree, ([pending_xref, \"Literal\"],\n                          [desc_sig_punctuation, \"[\"],\n                          \"True\",\n                          [desc_sig_punctuation, \", \"],\n                          \"False\",\n                          [desc_sig_punctuation, \"]\"]))\n\n    doctree = _parse_annotation(\"typing.Literal[0, 1, 'abc']\", app.env)\n    assert_node(doctree, ([pending_xref, \"typing.Literal\"],\n                          [desc_sig_punctuation, \"[\"],\n                          \"0\",\n                          [desc_sig_punctuation, \", \"],\n                          \"1\",\n                          [desc_sig_punctuation, \", \"],\n                          \"'abc'\",\n                          [desc_sig_punctuation, \"]\"]))",
+        "new": "    def check(doctree, expected, value_indices):\n        assert [n.astext() for n in doctree] == expected\n        assert_node(doctree[0], pending_xref)\n        for i in range(1, len(expected)):\n            if i in value_indices:\n                assert not isinstance(doctree[i], pending_xref)\n                assert not list(doctree[i].traverse(pending_xref))\n            else:\n                assert_node(doctree[i], desc_sig_punctuation)\n\n    doctree = _parse_annotation(\"Literal[True, False]\", app.env)\n    check(doctree, [\"Literal\", \"[\", \"True\", \", \", \"False\", \"]\"], {2, 4})\n\n    doctree = _parse_annotation(\"typing.Literal[0, 1, 'abc']\", app.env)\n    check(doctree, [\"typing.Literal\", \"[\", \"0\", \", \", \"1\", \", \", \"'abc'\", \"]\"],\n          {2, 4, 6})"
+      }
+    ],
+    "summary": "The test pinned the Literal values to plain Text nodes. It now checks only the rendered text and that the values are not cross-references, so fixes that wrap the values in literal or other non-xref nodes are also accepted. Unfixed code still fails because it turns True/False into pending_xref nodes."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3NpKtt935P8m8toLpcB",
+  "input_tokens": 3412,
+  "output_tokens": 2015,
+  "seconds": 20.0
+}

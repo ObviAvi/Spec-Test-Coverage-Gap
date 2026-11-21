@@ -1,0 +1,22 @@
+{
+ "instance_id": "astropy__astropy-14365",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The lowercase round-trip variant now lowercases only the QDP command lines (READ SERR/TERR). Data lines and \"NO\" masked-value markers keep their case, since the issue only asks for case-insensitive commands. Lowercase `read` commands still make the unfixed code raise \"Unrecognized QDP line\".",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 4,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/astropy/io/ascii/tests/test_qdp.py\n+++ b/astropy/io/ascii/tests/test_qdp.py\n@@ -44,10 +44,10 @@\n \n \n def lowercase_header(value):\n-    \"\"\"Make every non-comment line lower case.\"\"\"\n+    \"\"\"Make every QDP command line lower case.\"\"\"\n     lines = []\n     for line in value.splitlines():\n-        if not line.startswith(\"!\"):\n+        if line.strip().upper().startswith(\"READ\"):\n             line = line.lower()\n         lines.append(line)\n     return \"\\n\".join(lines)\n",
+ "neutralized": [],
+ "lines_changed": 4
+}

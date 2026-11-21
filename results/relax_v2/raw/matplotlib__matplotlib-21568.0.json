@@ -1,0 +1,35 @@
+{
+  "instance_id": "matplotlib__matplotlib-21568",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "13c751a50457",
+  "prompt_chars": 10155,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "lib/matplotlib/tests/test_dates.py",
+        "old": "from matplotlib import rc_context, style\nimport matplotlib.dates as mdates\nimport matplotlib.pyplot as plt\nfrom matplotlib.testing.decorators import image_comparison",
+        "new": "from matplotlib import rc_context, style\nimport matplotlib.dates as mdates\nimport matplotlib.pyplot as plt\nfrom matplotlib.testing.decorators import image_comparison\n\n\nclass _TexLabel:\n    \"\"\"A usetex tick label compared up to equivalent TeX spacing markup.\"\"\"\n\n    def __init__(self, label):\n        self.label = label\n\n    @staticmethod\n    def _normalize(s):\n        import re\n        # Colons protected from relation spacing.\n        s = re.sub(r'\\\\(?:mathord|mathrm|text)\\{:\\}', '{:}', s)\n        # Explicit space between separate math segments.\n        s = re.sub(r'\\}\\$\\s+\\$\\\\mathdefault\\{', r'\\\\;', s)\n        # Explicit TeX spaces of any width.\n        s = re.sub(r'\\\\text\\{\\s+\\}|\\\\quad(?![a-zA-Z])\\s*|\\\\[ ,:;>]|~',\n                   r'\\\\;', s)\n        return s\n\n    def __eq__(self, other):\n        if isinstance(other, _TexLabel):\n            other = other.label\n        if not isinstance(other, str):\n            return NotImplemented\n        return self._normalize(other) == self._normalize(self.label)\n\n    __hash__ = None\n\n    def __repr__(self):\n        return repr(self.label)"
+      },
+      {
+        "file": "lib/matplotlib/tests/test_dates.py",
+        "old": "     [r'$\\mathdefault{01{-}01\\;%02d}$' % hour for hour in range(0, 21, 2)]),\n    (datetime.timedelta(minutes=10),\n     [r'$\\mathdefault{01\\;00{:}%02d}$' % minu for minu in range(0, 11)]),",
+        "new": "     [_TexLabel(r'$\\mathdefault{01{-}01\\;%02d}$' % hour)\n      for hour in range(0, 21, 2)]),\n    (datetime.timedelta(minutes=10),\n     [_TexLabel(r'$\\mathdefault{01\\;00{:}%02d}$' % minu)\n      for minu in range(0, 11)]),"
+      },
+      {
+        "file": "lib/matplotlib/tests/test_dates.py",
+        "old": "     ['Jan$\\\\mathdefault{{-}01}$', '$\\\\mathdefault{04{:}00}$',\n      '$\\\\mathdefault{08{:}00}$', '$\\\\mathdefault{12{:}00}$',\n      '$\\\\mathdefault{16{:}00}$', '$\\\\mathdefault{20{:}00}$',\n      'Jan$\\\\mathdefault{{-}02}$', '$\\\\mathdefault{04{:}00}$',\n      '$\\\\mathdefault{08{:}00}$', '$\\\\mathdefault{12{:}00}$',\n      '$\\\\mathdefault{16{:}00}$']),\n    (datetime.timedelta(seconds=2),\n     ['$\\\\mathdefault{59.5}$', '$\\\\mathdefault{00{:}00}$',\n      '$\\\\mathdefault{00.5}$', '$\\\\mathdefault{01.0}$',\n      '$\\\\mathdefault{01.5}$', '$\\\\mathdefault{02.0}$',\n      '$\\\\mathdefault{02.5}$']),",
+        "new": "     [_TexLabel(s) for s in [\n      'Jan$\\\\mathdefault{{-}01}$', '$\\\\mathdefault{04{:}00}$',\n      '$\\\\mathdefault{08{:}00}$', '$\\\\mathdefault{12{:}00}$',\n      '$\\\\mathdefault{16{:}00}$', '$\\\\mathdefault{20{:}00}$',\n      'Jan$\\\\mathdefault{{-}02}$', '$\\\\mathdefault{04{:}00}$',\n      '$\\\\mathdefault{08{:}00}$', '$\\\\mathdefault{12{:}00}$',\n      '$\\\\mathdefault{16{:}00}$']]),\n    (datetime.timedelta(seconds=2),\n     [_TexLabel(s) for s in [\n      '$\\\\mathdefault{59.5}$', '$\\\\mathdefault{00{:}00}$',\n      '$\\\\mathdefault{00.5}$', '$\\\\mathdefault{01.0}$',\n      '$\\\\mathdefault{01.5}$', '$\\\\mathdefault{02.0}$',\n      '$\\\\mathdefault{02.5}$']]),"
+      }
+    ],
+    "summary": "The new expected labels in the graded cases are wrapped in a `_TexLabel` comparator. Before comparing, it normalizes equivalent TeX markup: `\\mathord{:}`, `\\text{:}` and `\\mathrm{:}` count as `{:}`, and any explicit TeX space (`\\ `, `~`, `\\,`, `\\:`, `\\;`, `\\quad`, `\\text{ }`, or a space between separate math segments) counts as `\\;`. Unfixed output still fails because it keeps bare spaces and bare colons inside math mode."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzSMjsDc8tC63toNNQc2",
+  "input_tokens": 4679,
+  "output_tokens": 7772,
+  "seconds": 69.7
+}

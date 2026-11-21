@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-16631",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "a72f347624c4",
+  "prompt_chars": 9208,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/auth_tests/test_basic.py",
+        "old": "            self.assertEqual(user.username, created_user.username)\n            self.assertNotEqual(request.session.session_key, prev_session_key)\n        # Remove the fallback secret.\n        # The session hash should be updated using the current secret.\n        with override_settings(SECRET_KEY=\"newsecret\"):\n            user = get_user(request)\n            self.assertIsInstance(user, User)\n            self.assertEqual(user.username, created_user.username)",
+        "new": "            self.assertEqual(user.username, created_user.username)"
+      }
+    ],
+    "summary": "I removed the check that the session key is cycled and the check that the session hash is re-signed with the current secret, so the user stays logged in once the fallback is removed. The issue asks for neither, and the documented behaviour, removing fallbacks to expire the sessions that use them, is also a valid design. The test still requires that a session signed with a fallback secret authenticates the user, which fails on the unfixed code."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3Da5fvT1qdEBo6KXPbh",
+  "input_tokens": 3542,
+  "output_tokens": 777,
+  "seconds": 8.8
+}

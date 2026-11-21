@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-13786",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I removed the secondary partial-removal case, where AlterModelOptions keeps verbose_name but drops verbose_name_plural. The graded test still checks the reported case: squashing AlterModelOptions(options={}) into CreateModel must clear the model's options, and the unfixed code fails that.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/migrations/test_optimizer.py\n+++ b/tests/migrations/test_optimizer.py\n@@ -131,29 +131,6 @@\n             ],\n             [migrations.CreateModel('MyModel', fields=[])],\n         )\n-        self.assertOptimizesTo(\n-            [\n-                migrations.CreateModel(\n-                    'MyModel',\n-                    fields=[],\n-                    options={\n-                        'verbose_name': 'My Model',\n-                        'verbose_name_plural': 'My Model plural',\n-                    },\n-                ),\n-                migrations.AlterModelOptions(\n-                    'MyModel',\n-                    options={'verbose_name': 'My Model'},\n-                ),\n-            ],\n-            [\n-                migrations.CreateModel(\n-                    'MyModel',\n-                    fields=[],\n-                    options={'verbose_name': 'My Model'},\n-                ),\n-            ],\n-        )\n \n     def _test_create_alter_foo_delete_model(self, alter_foo):\n         \"\"\"\n",
+ "neutralized": [],
+ "lines_changed": 23,
+ "regrade": [
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "patch_does_not_apply",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

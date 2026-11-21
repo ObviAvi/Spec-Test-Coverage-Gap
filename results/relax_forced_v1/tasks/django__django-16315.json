@@ -1,0 +1,34 @@
+{
+ "instance_id": "django__django-16315",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I removed the separate row-count assertion that ran after the upsert. The `assertCountEqual` on the resulting rank/name values already covers that the conflicting rows were updated in place under the `db_column` names. The unfixed code still crashes because the ON CONFLICT clause uses the field names instead of the column names, so the test still rejects it.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/bulk_create/tests.py\n+++ b/tests/bulk_create/tests.py\n@@ -796,7 +796,6 @@\n             unique_fields=[\"rank\"],\n             update_fields=[\"name\"],\n         )\n-        self.assertEqual(FieldsWithDbColumns.objects.count(), 2)\n         self.assertCountEqual(\n             FieldsWithDbColumns.objects.values(\"rank\", \"name\"),\n             [\n",
+ "neutralized": [],
+ "lines_changed": 1,
+ "regrade": [
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_update_conflicts_unique_fields_update_fields_db_column (bulk_create.tests.BulkCreateTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

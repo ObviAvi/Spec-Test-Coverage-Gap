@@ -1,0 +1,237 @@
+{
+ "instance_id": "django__django-11734",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I removed the second check, which deleted r1 and then asserted that the subquery no longer matched. That check pins exact exclude semantics beyond the reported crash. The test still requires that exclude() with OuterRef inside Exists evaluates without raising and returns a match, which the unfixed code fails with a ValueError.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 4,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/queries/tests.py\n+++ b/tests/queries/tests.py\n@@ -2815,8 +2815,6 @@\n             Exists(Responsibility.objects.exclude(jobs=OuterRef('job'))),\n         )\n         self.assertTrue(qs.exists())\n-        self.r1.delete()\n-        self.assertFalse(qs.exists())\n \n \n class ExcludeTest17600(TestCase):\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5",
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_exclude_outerref (queries.tests.ExcludeTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

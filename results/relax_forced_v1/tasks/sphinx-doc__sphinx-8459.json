@@ -1,0 +1,32 @@
+{
+ "instance_id": "sphinx-doc__sphinx-8459",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Replaced the exact full-document comparison with checks that the signature, both parameter types, and the return type are rendered with the alias `myint` (and not `int`), without pinning the surrounding layout or whitespace.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 19,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_ext_autodoc_configs.py\n+++ b/tests/test_ext_autodoc_configs.py\n@@ -787,17 +787,12 @@\n     (app.srcdir / 'annotations.rst').write_text('.. autofunction:: target.annotations.sum')\n     app.build()\n     context = (app.outdir / 'annotations.txt').read_text()\n-    assert ('target.annotations.sum(x, y)\\n'\n-            '\\n'\n-            '   docstring\\n'\n-            '\\n'\n-            '   Parameters:\\n'\n-            '      * **x** (*myint*) --\\n'\n-            '\\n'\n-            '      * **y** (*myint*) --\\n'\n-            '\\n'\n-            '   Return type:\\n'\n-            '      myint\\n' == context)\n+    import re\n+    assert 'target.annotations.sum(x, y)' in context\n+    assert '**x** (*myint*)' in context\n+    assert '**y** (*myint*)' in context\n+    assert re.search(r'Return type:\\s*\\n\\s*myint\\b', context)\n+    assert '(*int*)' not in context\n \n \n @pytest.mark.sphinx('html', testroot='ext-autodoc')\n",
+ "neutralized": [],
+ "lines_changed": 17,
+ "regrade": [
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "passes_original_here",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

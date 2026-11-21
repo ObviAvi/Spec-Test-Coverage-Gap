@@ -1,0 +1,84 @@
+{
+ "instance_id": "django__django-11433",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test still requires that a non-empty value set in `cleaned_data` overrides the model default. I narrowed the empty-value loop to `''` only, which is what the field cleans omitted data to and is already covered by existing behaviour. The specification never says that every member of `empty_values` (None, [], (), {}) must still fall back to the default, so that loop pinned the original fix's choice.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 15,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/model_forms/tests.py\n+++ b/tests/model_forms/tests.py\n@@ -604,7 +604,7 @@\n         self.assertEqual(pub.mode, 'de')\n         # Default should be populated on an empty value in cleaned_data.\n         default_mode = 'di'\n-        for empty_value in pub_form.fields['mode'].empty_values:\n+        for empty_value in ('',):\n             with self.subTest(empty_value=empty_value):\n                 pub_form = PubForm({})\n                 pub_form.mocked_mode = empty_value\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

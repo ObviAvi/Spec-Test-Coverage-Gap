@@ -1,0 +1,22 @@
+{
+ "instance_id": "sphinx-doc__sphinx-9591",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the exact node structure of the property type annotation (a desc_annotation holding a Text ': ' followed by a pending_xref). The test now only requires the signature to render as 'prop: str' and to contain exactly one pending_xref for 'str', wherever it sits in the signature.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 3,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_domain_py.py\n+++ b/tests/test_domain_py.py\n@@ -831,18 +831,24 @@\n                                                   desc)])]))\n     assert_node(doctree[1][1][0], addnodes.index,\n                 entries=[('single', 'prop1 (Class property)', 'Class.prop1', '', None)])\n-    assert_node(doctree[1][1][1], ([desc_signature, ([desc_annotation, \"abstract property \"],\n-                                                     [desc_name, \"prop1\"],\n-                                                     [desc_annotation, (\": \",\n-                                                                        [pending_xref, \"str\"])])],\n-                                   [desc_content, ()]))\n+    assert_node(doctree[1][1][1], (desc_signature, [desc_content, ()]))\n+    sig1 = doctree[1][1][1][0]\n+    assert_node(sig1[0], [desc_annotation, \"abstract property \"])\n+    assert_node(sig1[1], [desc_name, \"prop1\"])\n+    assert sig1.astext() == \"abstract property prop1: str\"\n+    xrefs1 = list(sig1.traverse(pending_xref))\n+    assert len(xrefs1) == 1\n+    assert xrefs1[0].astext() == \"str\"\n     assert_node(doctree[1][1][2], addnodes.index,\n                 entries=[('single', 'prop2 (Class property)', 'Class.prop2', '', None)])\n-    assert_node(doctree[1][1][3], ([desc_signature, ([desc_annotation, \"class property \"],\n-                                                     [desc_name, \"prop2\"],\n-                                                     [desc_annotation, (\": \",\n-                                                                        [pending_xref, \"str\"])])],\n-                                   [desc_content, ()]))\n+    assert_node(doctree[1][1][3], (desc_signature, [desc_content, ()]))\n+    sig2 = doctree[1][1][3][0]\n+    assert_node(sig2[0], [desc_annotation, \"class property \"])\n+    assert_node(sig2[1], [desc_name, \"prop2\"])\n+    assert sig2.astext() == \"class property prop2: str\"\n+    xrefs2 = list(sig2.traverse(pending_xref))\n+    assert len(xrefs2) == 1\n+    assert xrefs2[0].astext() == \"str\"\n     assert 'Class.prop1' in domain.objects\n     assert domain.objects['Class.prop1'] == ('index', 'Class.prop1', 'property', False)\n     assert 'Class.prop2' in domain.objects\n",
+ "neutralized": [],
+ "lines_changed": 26
+}

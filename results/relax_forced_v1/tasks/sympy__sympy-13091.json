@@ -1,0 +1,64 @@
+{
+ "instance_id": "sympy__sympy-13091",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the requirement that ordering comparisons (<, >, <=, >=) between sympy numbers and unknown types raise TypeError specifically; the tests now only require that these comparisons don't fail with some other exception. That TypeError depends on how the ordering methods are implemented and on the Python version. The equality and inequality symmetry checks, which fail on the unfixed code, are kept.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 19,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/core/tests/test_numbers.py\n+++ b/sympy/core/tests/test_numbers.py\n@@ -1670,14 +1670,13 @@\n         assert foo != n\n         assert not n == foo\n         assert not foo == n\n-        raises(TypeError, lambda: n < foo)\n-        raises(TypeError, lambda: foo > n)\n-        raises(TypeError, lambda: n > foo)\n-        raises(TypeError, lambda: foo < n)\n-        raises(TypeError, lambda: n <= foo)\n-        raises(TypeError, lambda: foo >= n)\n-        raises(TypeError, lambda: n >= foo)\n-        raises(TypeError, lambda: foo <= n)\n+        for f in (lambda: n < foo, lambda: foo > n, lambda: n > foo,\n+                  lambda: foo < n, lambda: n <= foo, lambda: foo >= n,\n+                  lambda: n >= foo, lambda: foo <= n):\n+            try:\n+                f()\n+            except TypeError:\n+                pass\n \n     class Bar(object):\n         \"\"\"\n@@ -1711,14 +1710,13 @@\n         assert not bar == n\n \n     for n in ni, nf, nr, oo, -oo, zoo, nan:\n-        raises(TypeError, lambda: n < bar)\n-        raises(TypeError, lambda: bar > n)\n-        raises(TypeError, lambda: n > bar)\n-        raises(TypeError, lambda: bar < n)\n-        raises(TypeError, lambda: n <= bar)\n-        raises(TypeError, lambda: bar >= n)\n-        raises(TypeError, lambda: n >= bar)\n-        raises(TypeError, lambda: bar <= n)\n+        for f in (lambda: n < bar, lambda: bar > n, lambda: n > bar,\n+                  lambda: bar < n, lambda: n <= bar, lambda: bar >= n,\n+                  lambda: n >= bar, lambda: bar <= n):\n+            try:\n+                f()\n+            except TypeError:\n+                pass\n \n def test_NumberSymbol_comparison():\n     rpi = Rational('905502432259640373/288230376151711744')\n",
+ "neutralized": [],
+ "lines_changed": 30,
+ "regrade": [
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_comparisons_with_unknown_type"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_comparisons_with_unknown_type"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_comparisons_with_unknown_type"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_comparisons_with_unknown_type"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-14771",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "5532c700e725",
+  "prompt_chars": 8987,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/utils_tests/test_autoreload.py",
+        "old": "    def test_xoptions(self):\n        self.assertEqual(\n            autoreload.get_child_arguments(),\n            [sys.executable, '-Xutf8', '-Xa=b', __file__, 'runserver'],\n        )",
+        "new": "    def test_xoptions(self):\n        args = autoreload.get_child_arguments()\n        normalized = []\n        i = 0\n        while i < len(args):\n            if args[i] == '-X' and i + 1 < len(args):\n                normalized.append('-X' + args[i + 1])\n                i += 2\n            else:\n                normalized.append(args[i])\n                i += 1\n        self.assertEqual(\n            normalized,\n            [sys.executable, '-Xutf8', '-Xa=b', __file__, 'runserver'],\n        )"
+      }
+    ],
+    "summary": "test_xoptions now also accepts -X options passed as two separate arguments ('-X', 'utf8'). Python's command line treats that form the same as '-Xutf8'. The test still requires every -X option to be forwarded to the child process."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3CquW5Gd8A4SteYUHsC",
+  "input_tokens": 3905,
+  "output_tokens": 974,
+  "seconds": 10.8
+}

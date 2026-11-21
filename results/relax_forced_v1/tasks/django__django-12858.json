@@ -1,0 +1,23 @@
+{
+ "instance_id": "django__django-12858",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test used to require that `Model.check()` return no messages at all. It now only requires that no models.E015 error is reported for an ordering on the `isnull` lookup. The unfixed code still raises E015 here, so the test still fails without the fix.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 17,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/invalid_models_tests/test_models.py\n+++ b/tests/invalid_models_tests/test_models.py\n@@ -900,7 +900,10 @@\n             class Meta:\n                 ordering = ('test__isnull',)\n \n-        self.assertEqual(Model.check(), [])\n+        self.assertEqual(\n+            [e for e in Model.check() if e.id == 'models.E015'],\n+            [],\n+        )\n \n     def test_ordering_pointing_to_related_model_pk(self):\n         class Parent(models.Model):\n",
+ "neutralized": [],
+ "lines_changed": 5,
+ "regrade": []
+}

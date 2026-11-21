@@ -1,0 +1,30 @@
+{
+  "instance_id": "pylint-dev__pylint-4661",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "5749bafa5e18",
+  "prompt_chars": 8427,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/lint/unittest_lint.py",
+        "old": "from shutil import rmtree\n\nimport appdirs\nimport pytest\n",
+        "new": "from shutil import rmtree\n\nimport pytest\n"
+      },
+      {
+        "file": "tests/lint/unittest_lint.py",
+        "old": "    if uhome == \"~\":\n        expected = \".pylint.d\"\n    else:\n        expected = appdirs.user_cache_dir(\"pylint\")\n    assert config.PYLINT_HOME == expected\n",
+        "new": "    if uhome == \"~\":\n        expected = \".pylint.d\"\n        assert config.PYLINT_HOME == expected\n    else:\n        old_home = os.path.join(uhome, \".pylint.d\")\n        assert os.path.normpath(config.PYLINT_HOME) != os.path.normpath(old_home)\n        assert os.path.isabs(config.PYLINT_HOME)\n        assert \"pylint\" in config.PYLINT_HOME.lower()\n        assert os.path.normpath(os.path.dirname(config.PYLINT_HOME)) != os.path.normpath(\n            uhome\n        )\n"
+      }
+    ],
+    "summary": "The test no longer requires exactly appdirs.user_cache_dir(\"pylint\") or the appdirs package. It now asserts only that PYLINT_HOME is no longer ~/.pylint.d, is an absolute pylint-named path, and does not sit directly in the home directory. This accepts XDG data or cache locations, as well as appdirs or platformdirs results, while still failing on the unfixed code."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzZc7ZQQo451VqcrkF4S",
+  "input_tokens": 3604,
+  "output_tokens": 1880,
+  "seconds": 19.4
+}

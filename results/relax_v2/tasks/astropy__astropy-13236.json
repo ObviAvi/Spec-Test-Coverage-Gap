@@ -1,0 +1,235 @@
+{
+ "instance_id": "astropy__astropy-13236",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Both tests now accept either the final behavior (structured arrays become Column/MaskedColumn) or the spec's proposed staged step: a FutureWarning is emitted and the NdarrayMixin conversion is kept. The unfixed code still fails, because it converts silently with no warning.",
+   "edits": 3,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 5,
+   "passers_error": 0,
+   "passers_unreproduced": 1
+  }
+ ],
+ "diff": "--- a/astropy/table/tests/test_mixin.py\n+++ b/astropy/table/tests/test_mixin.py\n@@ -723,10 +723,21 @@\n         class_exp = Column\n \n     # Add one during initialization and the next as a new column.\n+    import warnings\n+    _wctx = warnings.catch_warnings(record=True)\n+    _warns = _wctx.__enter__()\n+    warnings.simplefilter('always')\n     t = Table([a], names=['a'])\n     t['b'] = b\n     t['c'] = c\n     t['d'] = d\n+    _wctx.__exit__(None, None, None)\n+\n+    # A staged transition (FutureWarning while still converting to\n+    # NdarrayMixin) is also acceptable for plain structured arrays.\n+    if not as_ndarray_mixin and any(issubclass(w.category, FutureWarning)\n+                                    for w in _warns):\n+        class_exp = (Column, NdarrayMixin)\n \n     assert isinstance(t['a'], class_exp)\n \n--- a/astropy/table/tests/test_table.py\n+++ b/astropy/table/tests/test_table.py\n@@ -2918,13 +2918,20 @@\n \n def test_structured_masked_column():\n     \"\"\"Test that adding a masked ndarray with a structured dtype works\"\"\"\n+    import warnings\n     dtype = np.dtype([('z', 'f8'), ('x', 'f8'), ('y', 'i4')])\n     t = Table()\n-    t['a'] = np.ma.array([(1, 2, 3),\n-                          (4, 5, 6)],\n-                         mask=[(False, False, True),\n-                               (False, True, False)],\n-                         dtype=dtype)\n+    with warnings.catch_warnings(record=True) as warns:\n+        warnings.simplefilter('always')\n+        t['a'] = np.ma.array([(1, 2, 3),\n+                              (4, 5, 6)],\n+                             mask=[(False, False, True),\n+                                   (False, True, False)],\n+                             dtype=dtype)\n+    if (not isinstance(t['a'], MaskedColumn)\n+            and any(issubclass(w.category, FutureWarning) for w in warns)):\n+        # Staged transition: FutureWarning emitted, old behavior retained.\n+        return\n     assert np.all(t['a']['z'].mask == [False, False])\n     assert np.all(t['a']['x'].mask == [False, True])\n     assert np.all(t['a']['y'].mask == [True, False])\n",
+ "neutralized": [],
+ "lines_changed": 28,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "astropy/table/tests/test_mixin.py::test_ndarray_mixin[False]",
+    "astropy/table/tests/test_table.py::test_structured_masked_column"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+{
+ "instance_id": "sphinx-doc__sphinx-8621",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I dropped the exact LaTeX-output expectation for the two new kbd cases by setting `latex_expected` to None. The issue only concerns HTML, and a fix made elsewhere (e.g. in the role rather than the HTML post-transform) could legitimately change the LaTeX rendering. The exact HTML expectations remain, so both graded tests still fail on the unfixed code. The edit changes the test IDs only after `<p><kbd`, so the graded names as listed should still match.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_markup.py\n+++ b/tests/test_markup.py\n@@ -260,7 +260,7 @@\n          '+'\n          '<kbd class=\"kbd docutils literal notranslate\">^</kbd>'\n          '</kbd></p>'),\n-        '\\\\sphinxkeyboard{\\\\sphinxupquote{Alt+\\\\textasciicircum{}}}',\n+        None,\n     ),\n     (\n         # kbd role\n@@ -282,7 +282,7 @@\n         'verify',\n         ':kbd:`-`',\n         '<p><kbd class=\"kbd docutils literal notranslate\">-</kbd></p>',\n-        '\\\\sphinxkeyboard{\\\\sphinxupquote{\\\\sphinxhyphen{}}}',\n+        None,\n     ),\n     (\n         # non-interpolation of dashes in option role\n",
+ "neutralized": [],
+ "lines_changed": 4,
+ "regrade": [
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_markup.py::test_inline[verify-:kbd:`Alt+^`-<p><kbd"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

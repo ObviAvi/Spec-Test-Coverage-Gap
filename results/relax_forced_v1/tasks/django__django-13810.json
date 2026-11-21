@@ -1,0 +1,22 @@
+{
+ "instance_id": "django__django-13810",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the log assertions. The test no longer requires the exact 'Asynchronous middleware ... adapted.' record at index 0 or a fixed record order; it only checks that the MiddlewareNotUsed debug message was logged somewhere. The response content and status checks are kept, so the unfixed code still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 2,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/middleware_exceptions/tests.py\n+++ b/tests/middleware_exceptions/tests.py\n@@ -190,14 +190,9 @@\n             response = await self.async_client.get('/middleware_exceptions/view/')\n         self.assertEqual(response.content, b'OK')\n         self.assertEqual(response.status_code, 200)\n-        self.assertEqual(\n-            cm.records[0].getMessage(),\n-            'Asynchronous middleware middleware_exceptions.tests.MyMiddleware '\n-            'adapted.',\n-        )\n-        self.assertEqual(\n-            cm.records[1].getMessage(),\n+        self.assertIn(\n             \"MiddlewareNotUsed: 'middleware_exceptions.tests.MyMiddleware'\",\n+            [record.getMessage() for record in cm.records],\n         )\n \n \n",
+ "neutralized": [],
+ "lines_changed": 9
+}

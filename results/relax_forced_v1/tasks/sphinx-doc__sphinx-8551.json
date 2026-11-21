@@ -1,0 +1,22 @@
+{
+ "instance_id": "sphinx-doc__sphinx-8551",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I dropped the checks that the info-field pending_xref nodes carry a `py:class` attribute, since the issue is only about module-scoped lookup. The checks for the `py:module` context still fail on the unfixed code.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 4,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_domain_py.py\n+++ b/tests/test_domain_py.py\n@@ -806,7 +806,7 @@\n                  \"blah blah\"))\n     assert_node(doctree[3][1][0][0][1][0][0][0][2], pending_xref,\n                 refdomain=\"py\", reftype=\"class\", reftarget=\"str\",\n-                **{\"py:module\": \"example\", \"py:class\": \"Class\"})\n+                **{\"py:module\": \"example\"})\n \n     # :param age: + :type age:\n     assert_node(doctree[3][1][0][0][1][0][1][0],\n@@ -818,7 +818,7 @@\n                  \"blah blah\"))\n     assert_node(doctree[3][1][0][0][1][0][1][0][2], pending_xref,\n                 refdomain=\"py\", reftype=\"class\", reftarget=\"int\",\n-                **{\"py:module\": \"example\", \"py:class\": \"Class\"})\n+                **{\"py:module\": \"example\"})\n \n \n @pytest.mark.sphinx(freshenv=True)\n",
+ "neutralized": [],
+ "lines_changed": 4
+}

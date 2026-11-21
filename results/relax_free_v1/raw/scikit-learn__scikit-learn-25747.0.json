@@ -1,0 +1,25 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-25747",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "f679832aab2d",
+  "prompt_chars": 12567,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "sklearn/utils/tests/test_set_output.py",
+        "old": "    X = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=[0, 1])\n    est = EstimatorWithSetOutputIndex().set_output(transform=\"pandas\")\n    est.fit(X)\n\n    X_trans = est.transform(X)\n    assert_array_equal(X_trans.index, [\"s0\", \"s1\"])",
+        "new": "    class AggregatingEstimator(EstimatorWithSetOutputIndex):\n        def transform(self, X, y=None):\n            # aggregate rows: output has fewer rows than the input\n            return pd.DataFrame(X.to_numpy()[:1], index=[\"s0\"])\n\n    X = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=[0, 1])\n    est = AggregatingEstimator().set_output(transform=\"pandas\")\n    est.fit(X)\n\n    X_trans = est.transform(X)\n    assert X_trans.shape == (1, 3)\n    assert_array_equal(X_trans.index, [\"s0\"])"
+      }
+    ],
+    "summary": "The graded test pinned keeping the transformer's index even when the row counts match. The spec only requires that row-aggregating transformers stop raising under pandas output, so a fix that re-indexes only when lengths match is also valid. The test now uses a transformer that returns fewer rows than its input and checks there is no error and the transformer's index is kept; the unfixed code still raises the length-mismatch error."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3MohffstWqkLB5WYJxx",
+  "input_tokens": 5340,
+  "output_tokens": 2366,
+  "seconds": 23.7
+}

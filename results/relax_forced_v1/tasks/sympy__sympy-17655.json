@@ -1,0 +1,38 @@
+{
+ "instance_id": "sympy__sympy-17655",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the secondary 3D case by removing the `5 * p4 == Point3D(5, 5, 5)` assertion from test_point3D, which the issue never mentions. test_point still checks reverse multiplication of a 2D Point, so it still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [
+    "test_point3D"
+   ],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/geometry/tests/test_point.py\n+++ b/sympy/geometry/tests/test_point.py\n@@ -168,7 +168,6 @@\n \n     assert p4 * 5 == Point3D(5, 5, 5)\n     assert p4 / 5 == Point3D(0.2, 0.2, 0.2)\n-    assert 5 * p4 == Point3D(5, 5, 5)\n \n     raises(ValueError, lambda: Point3D(0, 0, 0) + 10)\n \n",
+ "neutralized": [
+  "test_point3D"
+ ],
+ "lines_changed": 1,
+ "regrade": [
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_point"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-11239",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "2663ca89da86",
+  "prompt_chars": 10651,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/dbshell/test_postgresql.py",
+        "old": "    def test_ssl_certificate(self):\n        self.assertEqual(\n            self._run_it({\n                'database': 'dbname',\n                'user': 'someuser',\n                'host': 'somehost',\n                'port': '444',\n                'sslmode': 'verify-ca',\n                'sslrootcert': 'root.crt',\n                'sslcert': 'client.crt',\n                'sslkey': 'client.key',\n            }), (\n                ['psql', '-U', 'someuser', '-h', 'somehost', '-p', '444', 'dbname'],\n                {\n                    'PGSSLCERT': 'client.crt',\n                    'PGSSLKEY': 'client.key',\n                    'PGSSLMODE': 'verify-ca',\n                    'PGSSLROOTCERT': 'root.crt',\n                },\n            )\n        )",
+        "new": "    def test_ssl_certificate(self):\n        args, pg_env = self._run_it({\n            'database': 'dbname',\n            'user': 'someuser',\n            'host': 'somehost',\n            'port': '444',\n            'sslmode': 'verify-ca',\n            'sslrootcert': 'root.crt',\n            'sslcert': 'client.crt',\n            'sslkey': 'client.key',\n        })\n        self.assertEqual(args[0], 'psql')\n        all_values = list(args) + list(pg_env.values())\n        for value in ('someuser', 'somehost', '444', 'dbname'):\n            with self.subTest(value=value):\n                self.assertTrue(any(value in str(item) for item in all_values))\n        expected = {\n            'sslmode': 'verify-ca',\n            'sslrootcert': 'root.crt',\n            'sslcert': 'client.crt',\n            'sslkey': 'client.key',\n        }\n        for option, value in expected.items():\n            with self.subTest(option=option):\n                in_env = pg_env.get('PG' + option.upper()) == value\n                in_args = any(\n                    ('%s=%s' % (option, value)) in arg or\n                    (\"%s='%s'\" % (option, value)) in arg or\n                    ('%s=\"%s\"' % (option, value)) in arg\n                    for arg in args\n                )\n                self.assertTrue(in_env or in_args)"
+      }
+    ],
+    "summary": "test_ssl_certificate now accepts each SSL option either as a PGSSL* environment variable or as a key=value entry in a psql argument (conninfo/URI), and only checks that the basic connection parameters appear somewhere, instead of pinning exact argv and env."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzN734h6xUN4pXqDAC9y",
+  "input_tokens": 4467,
+  "output_tokens": 1628,
+  "seconds": 15.2
+}

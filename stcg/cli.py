@@ -103,6 +103,28 @@ def cmd_compare(args):
     print(f"report: {config.RESULTS / f'compare_{args.split}.md'}")
 
 
+def cmd_relax(args):
+    if not sys.flags.utf8_mode:
+        # the harness reads and writes test logs with the platform encoding; on Windows that is not UTF-8
+        import subprocess
+
+        sys.exit(subprocess.call([sys.executable, "-X", "utf8", "-m", "stcg", *sys.argv[1:]]))
+    from .relax import run_relax
+
+    run_relax(args.group, args.prompt, args.judge_prompt, args.ids.split(",") if args.ids else None, args.skip,
+              args.limit, not args.no_regrade, args.max_passers, args.task_workers, args.run_workers, args.keep_images)
+
+
+def cmd_relax_report(args):
+    from .evaluate import _fmt_rate
+    from .judging import run_dir
+    from .relax_report import report
+
+    rep = report(args.group, args.prompt, args.judge_prompt)
+    print(f"flip rate over regraded patches: {_fmt_rate(rep['flip_rate_regraded'])}")
+    print(f"report: {run_dir(args.prompt) / f'report_{args.group}.md'}")
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(prog="stcg", description="Spec-Test Coverage Gap judge pipeline")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -138,9 +160,28 @@ def main(argv=None):
     c.add_argument("--split", default="dev", choices=["dev", "test", "all"])
     c.add_argument("--judges", default=",".join(config.PANEL))
 
+    r = sub.add_parser("relax", help="Step 5: relax tests, check them in Docker, regrade public agent patches (resumable)")
+    r.add_argument("--group", default="flagged", choices=["flagged", "dev", "control"],
+                   help="Verified tasks flagged by both judges | by one (for prompt development) | by neither")
+    r.add_argument("--prompt", default="relax_v2", help="relaxer prompt version in prompts/")
+    r.add_argument("--judge-prompt", default="judge_v1")
+    r.add_argument("--ids", help="comma-separated instance ids (overrides --group selection)")
+    r.add_argument("--skip", type=int, default=0)
+    r.add_argument("--limit", type=int)
+    r.add_argument("--no-regrade", action="store_true", help="stop after the validity checks")
+    r.add_argument("--max-passers", type=int, help="cap the passing patches used in check 3")
+    r.add_argument("--task-workers", type=int, default=4)
+    r.add_argument("--run-workers", type=int, default=8, help="concurrent containers")
+    r.add_argument("--keep-images", action="store_true", help="do not delete each task's image when it finishes")
+
+    rr = sub.add_parser("relax-report", help="Step 5: summarize the relaxations and the regrading")
+    rr.add_argument("--group", default="flagged", choices=["flagged", "dev", "control"])
+    rr.add_argument("--prompt", default="relax_v2")
+    rr.add_argument("--judge-prompt", default="judge_v1")
+
     args = p.parse_args(argv)
-    {"build": cmd_build, "split": cmd_split, "judge": cmd_judge, "evaluate": cmd_evaluate,
-     "prevalence": cmd_prevalence, "compare": cmd_compare}[args.cmd](args)
+    {"build": cmd_build, "split": cmd_split, "judge": cmd_judge, "evaluate": cmd_evaluate, "prevalence": cmd_prevalence,
+     "compare": cmd_compare, "relax": cmd_relax, "relax-report": cmd_relax_report}[args.cmd](args)
 
 
 if __name__ == "__main__":

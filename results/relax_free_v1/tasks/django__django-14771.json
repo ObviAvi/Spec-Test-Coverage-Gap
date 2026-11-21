@@ -1,0 +1,70 @@
+{
+ "instance_id": "django__django-14771",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "test_xoptions now also accepts -X options passed as two separate arguments ('-X', 'utf8'). Python's command line treats that form the same as '-Xutf8'. The test still requires every -X option to be forwarded to the child process.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 25,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/utils_tests/test_autoreload.py\n+++ b/tests/utils_tests/test_autoreload.py\n@@ -211,8 +211,18 @@\n     @mock.patch('sys.warnoptions', [])\n     @mock.patch('sys._xoptions', {'utf8': True, 'a': 'b'})\n     def test_xoptions(self):\n+        args = autoreload.get_child_arguments()\n+        normalized = []\n+        i = 0\n+        while i < len(args):\n+            if args[i] == '-X' and i + 1 < len(args):\n+                normalized.append('-X' + args[i + 1])\n+                i += 2\n+            else:\n+                normalized.append(args[i])\n+                i += 1\n         self.assertEqual(\n-            autoreload.get_child_arguments(),\n+            normalized,\n             [sys.executable, '-Xutf8', '-Xa=b', __file__, 'runserver'],\n         )\n \n",
+ "neutralized": [],
+ "lines_changed": 12,
+ "regrade": [
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_xoptions (utils_tests.test_autoreload.TestChildArguments)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_xoptions (utils_tests.test_autoreload.TestChildArguments)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_xoptions (utils_tests.test_autoreload.TestChildArguments)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,145 @@
+{
+ "instance_id": "django__django-11206",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the requirement that a 301-digit number still renders in scientific notation, which the specification never settles. The test now also accepts full positional output, so a fix that drops the 200-digit cutoff is not rejected. The small-number case still requires '0.000', so the unfixed code still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 19,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/utils_tests/test_numberformat.py\n+++ b/tests/utils_tests/test_numberformat.py\n@@ -93,9 +93,13 @@\n             ('1e-9', 8, '0.00000000'),\n             ('1e-10', 8, '0.00000000'),\n             ('1e-11', 8, '0.00000000'),\n-            ('1' + ('0' * 300), 3, '1.000e+300'),\n             ('0.{}1234'.format('0' * 299), 3, '0.000'),\n         ]\n+        from django.utils.numberformat import format as _nformat\n+        self.assertIn(\n+            _nformat(Decimal('1' + ('0' * 300)), '.', 3),\n+            ('1.000e+300', '1' + ('0' * 300) + '.000'),\n+        )\n         for value, decimal_pos, expected_value in tests:\n             with self.subTest(value=value):\n                 self.assertEqual(nformat(Decimal(value), '.', decimal_pos), expected_value)\n",
+ "neutralized": [],
+ "lines_changed": 6,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_decimal_numbers (utils_tests.test_numberformat.TestNumberFormat)",
+    "test_decimal_subclass (utils_tests.test_numberformat.TestNumberFormat)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

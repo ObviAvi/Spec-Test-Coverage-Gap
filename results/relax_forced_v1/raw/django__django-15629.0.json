@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-15629",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_forced_v1",
+  "prompt_sha": "801b6179a9b7",
+  "prompt_digest": "ecc55d081fd9",
+  "prompt_chars": 18389,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/migrations/test_operations.py",
+        "old": "        \"\"\"Creation of models with a FK to a PK with db_collation.\"\"\"\n        collation = connection.features.test_collations.get(\"non_default\")\n        if not collation:\n            self.skipTest(\"Language collations are not supported.\")\n\n        app_label = \"test_cfkmtopkfdbc\"\n        operations = [\n            migrations.CreateModel(\n                \"Pony\",\n                [\n                    (\n                        \"id\",\n                        models.CharField(\n                            primary_key=True,\n                            max_length=10,\n                            db_collation=collation,\n                        ),\n                    ),\n                ],\n            )\n        ]\n        project_state = self.apply_operations(app_label, ProjectState(), operations)\n        # ForeignKey.\n        new_state = project_state.clone()\n        operation = migrations.CreateModel(\n            \"Rider\",\n            [\n                (\"id\", models.AutoField(primary_key=True)),\n                (\"pony\", models.ForeignKey(\"Pony\", models.CASCADE)),\n            ],\n        )\n        operation.state_forwards(app_label, new_state)\n        with connection.schema_editor() as editor:\n            operation.database_forwards(app_label, editor, project_state, new_state)\n        self.assertColumnCollation(f\"{app_label}_rider\", \"pony_id\", collation)\n        # Reversal.\n        with connection.schema_editor() as editor:\n            operation.database_backwards(app_label, editor, new_state, project_state)\n        # OneToOneField.\n        new_state = project_state.clone()\n        operation = migrations.CreateModel(\n            \"ShetlandPony\",\n            [\n                (\n                    \"pony\",\n                    models.OneToOneField(\"Pony\", models.CASCADE, primary_key=True),\n                ),\n                (\"cuteness\", models.IntegerField(default=1)),\n            ],\n        )\n        operation.state_forwards(app_label, new_state)\n        with connection.schema_editor() as editor:\n            operation.database_forwards(app_label, editor, project_state, new_state)\n        self.assertColumnCollation(f\"{app_label}_shetlandpony\", \"pony_id\", collation)\n        # Reversal.\n        with connection.schema_editor() as editor:\n            operation.database_backwards(app_label, editor, new_state, project_state)\n\n    def test_create_model_inheritance(self):",
+        "new": "        \"\"\"Creation of models with a FK to a PK with db_collation.\"\"\"\n        pass\n\n    def test_create_model_inheritance(self):"
+      }
+    ],
+    "summary": "Removed the model-creation requirement (FK/OneToOne columns created against a collated PK inherit its collation) by replacing that test's body with `pass`. The spec only reports the AlterField propagation case, and test_alter_field_pk_fk_db_collation still enforces it and still fails on the unfixed code."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch1boqbYbYNv4Htotp6ev",
+  "input_tokens": 6989,
+  "output_tokens": 1939,
+  "seconds": 16.8
+}

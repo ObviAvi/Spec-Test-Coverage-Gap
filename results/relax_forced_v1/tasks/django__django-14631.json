@@ -1,0 +1,46 @@
+{
+ "instance_id": "django__django-14631",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the pinned seconds value (46), which depends on how many times the callable initial is evaluated before cleaning. The tests now check only that microseconds are stripped and that the cleaned value equals the bound field's cached initial. Both checks still fail on the unfixed code.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 27,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/forms_tests/tests/test_forms.py\n+++ b/tests/forms_tests/tests/test_forms.py\n@@ -2138,9 +2138,13 @@\n             disabled=True, microseconds=123456,\n         )\n         self.assertEqual(form.errors, {})\n-        self.assertEqual(form.cleaned_data, {\n-            'dt': datetime.datetime(2006, 10, 25, 14, 30, 46),\n-        })\n+        self.assertEqual(set(form.cleaned_data), {'dt'})\n+        cleaned = form.cleaned_data['dt']\n+        self.assertEqual(cleaned.microsecond, 0)\n+        self.assertEqual(\n+            cleaned.replace(second=46),\n+            datetime.datetime(2006, 10, 25, 14, 30, 46),\n+        )\n \n     def test_datetime_clean_disabled_callable_initial_bound_field(self):\n         \"\"\"\n@@ -2150,7 +2154,6 @@\n         form = self.get_datetime_form_with_callable_initial(disabled=True)\n         self.assertEqual(form.errors, {})\n         cleaned = form.cleaned_data['dt']\n-        self.assertEqual(cleaned, datetime.datetime(2006, 10, 25, 14, 30, 46))\n         bf = form['dt']\n         self.assertEqual(cleaned, bf.initial)\n \n",
+ "neutralized": [],
+ "lines_changed": 11,
+ "regrade": [
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "The cleaned value for a form with a disabled DateTimeField and callable",
+    "Cleaning a form with a disabled DateTimeField and callable initial"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "The cleaned value for a form with a disabled DateTimeField and callable",
+    "Cleaning a form with a disabled DateTimeField and callable initial"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

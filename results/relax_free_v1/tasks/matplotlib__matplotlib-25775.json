@@ -1,0 +1,88 @@
+{
+ "instance_id": "matplotlib__matplotlib-25775",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Replaced assertions on the private `_antialiased` attribute with checks through the public `get_antialiased()` getter, so fixes that store the state under a different internal name still pass; behavior checks and image comparisons are unchanged.",
+   "edits": 3,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/matplotlib/tests/test_text.py\n+++ b/lib/matplotlib/tests/test_text.py\n@@ -906,24 +906,22 @@\n \n def test_set_antialiased():\n     txt = Text(.5, .5, \"foo\\nbar\")\n-    assert txt._antialiased == mpl.rcParams['text.antialiased']\n+    assert txt.get_antialiased() == mpl.rcParams['text.antialiased']\n \n     txt.set_antialiased(True)\n-    assert txt._antialiased is True\n+    assert txt.get_antialiased() is True\n \n     txt.set_antialiased(False)\n-    assert txt._antialiased is False\n+    assert txt.get_antialiased() is False\n \n \n def test_get_antialiased():\n \n     txt2 = Text(.5, .5, \"foo\\nbar\", antialiased=True)\n-    assert txt2._antialiased is True\n-    assert txt2.get_antialiased() == txt2._antialiased\n+    assert txt2.get_antialiased() is True\n \n     txt3 = Text(.5, .5, \"foo\\nbar\", antialiased=False)\n-    assert txt3._antialiased is False\n-    assert txt3.get_antialiased() == txt3._antialiased\n+    assert txt3.get_antialiased() is False\n \n     txt4 = Text(.5, .5, \"foo\\nbar\")\n     assert txt4.get_antialiased() == mpl.rcParams['text.antialiased']\n@@ -931,20 +929,17 @@\n \n def test_annotation_antialiased():\n     annot = Annotation(\"foo\\nbar\", (.5, .5), antialiased=True)\n-    assert annot._antialiased is True\n-    assert annot.get_antialiased() == annot._antialiased\n+    assert annot.get_antialiased() is True\n \n     annot2 = Annotation(\"foo\\nbar\", (.5, .5), antialiased=False)\n-    assert annot2._antialiased is False\n-    assert annot2.get_antialiased() == annot2._antialiased\n+    assert annot2.get_antialiased() is False\n \n     annot3 = Annotation(\"foo\\nbar\", (.5, .5), antialiased=False)\n     annot3.set_antialiased(True)\n     assert annot3.get_antialiased() is True\n-    assert annot3._antialiased is True\n \n     annot4 = Annotation(\"foo\\nbar\", (.5, .5))\n-    assert annot4._antialiased == mpl.rcParams['text.antialiased']\n+    assert annot4.get_antialiased() == mpl.rcParams['text.antialiased']\n \n \n @check_figures_equal()\n",
+ "neutralized": [],
+ "lines_changed": 21,
+ "regrade": [
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_text.py::test_set_antialiased",
+    "lib/matplotlib/tests/test_text.py::test_get_antialiased",
+    "lib/matplotlib/tests/test_text.py::test_annotation_antialiased"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_text.py::test_get_antialiased",
+    "lib/matplotlib/tests/test_text.py::test_annotation_antialiased",
+    "lib/matplotlib/tests/test_text.py::test_text_antialiased_off_default_vs_manual[png]"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

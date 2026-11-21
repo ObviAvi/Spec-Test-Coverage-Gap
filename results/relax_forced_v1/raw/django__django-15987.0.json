@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-15987",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_forced_v1",
+  "prompt_sha": "801b6179a9b7",
+  "prompt_digest": "33ad11c63ba4",
+  "prompt_chars": 6451,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/fixtures_regress/tests.py",
+        "old": "    @override_settings(FIXTURE_DIRS=[Path(_cur_dir) / \"fixtures\"])\n    def test_fixture_dirs_with_default_fixture_path_as_pathlib(self):\n        \"\"\"\n        settings.FIXTURE_DIRS cannot contain a default fixtures directory\n        for application (app/fixtures) in order to avoid repeated fixture loading.\n        \"\"\"\n        msg = (\n            \"'%s' is a default fixture directory for the '%s' app \"\n            \"and cannot be listed in settings.FIXTURE_DIRS.\"\n            % (os.path.join(_cur_dir, \"fixtures\"), \"fixtures_regress\")\n        )\n        with self.assertRaisesMessage(ImproperlyConfigured, msg):",
+        "new": "    @override_settings(FIXTURE_DIRS=[Path(_cur_dir) / \"fixtures\"])\n    def test_fixture_dirs_with_default_fixture_path_as_pathlib(self):\n        \"\"\"\n        settings.FIXTURE_DIRS cannot contain a default fixtures directory\n        for application (app/fixtures) in order to avoid repeated fixture loading.\n        \"\"\"\n        msg = (\n            \"is a default fixture directory for the '%s' app \"\n            \"and cannot be listed in settings.FIXTURE_DIRS.\"\n            % \"fixtures_regress\"\n        )\n        with self.assertRaisesMessage(ImproperlyConfigured, msg):"
+      }
+    ],
+    "summary": "The Path-based duplicate test no longer pins the exact path string rendered in the error message. It still requires ImproperlyConfigured with the default-fixture-directory message for the fixtures_regress app."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch1cCM7gB2gzZrUxeAh2w",
+  "input_tokens": 2593,
+  "output_tokens": 913,
+  "seconds": 8.0
+}

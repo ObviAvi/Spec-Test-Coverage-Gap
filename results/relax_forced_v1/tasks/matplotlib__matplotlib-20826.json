@@ -1,0 +1,44 @@
+{
+ "instance_id": "matplotlib__matplotlib-20826",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I relaxed the exact pixel-for-pixel match between the cleared and never-cleared shared-axes figures to a small RMS tolerance (tol=1). This lets fixes that leave tiny rendering differences pass. The unfixed code still fails, because its extra tick labels and the top/right ticks change far more pixels than that tolerance allows.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 20,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/matplotlib/tests/test_axes.py\n+++ b/lib/matplotlib/tests/test_axes.py\n@@ -6961,7 +6961,7 @@\n     axs[4].bar(np.arange(10), np.arange(10), color=color.reshape((1, -1)))\n \n \n-@check_figures_equal(extensions=['png'])\n+@check_figures_equal(extensions=['png'], tol=1)\n def test_shared_axes_clear(fig_test, fig_ref):\n     x = np.arange(0.0, 2*np.pi, 0.01)\n     y = np.sin(x)\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_axes.py::test_shared_axes_clear[png]"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "lib/matplotlib/tests/test_axes.py::test_shared_axes_clear[png]"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

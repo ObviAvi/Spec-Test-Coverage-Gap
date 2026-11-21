@@ -1,0 +1,45 @@
+{
+  "instance_id": "django__django-13195",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "780a5524c1f1",
+  "prompt_chars": 13932,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/responses/test_cookie.py",
+        "old": "    def test_delete_cookie_secure_samesite_none(self):\n        # delete_cookie() sets the secure flag if samesite='none'.\n        response = HttpResponse()\n        response.delete_cookie('c', samesite='none')\n        self.assertIs(response.cookies['c']['secure'], True)",
+        "new": "    def test_delete_cookie_secure_samesite_none(self):\n        pass"
+      },
+      {
+        "file": "tests/responses/test_cookie.py",
+        "old": "        response.delete_cookie('c', samesite='lax')\n        self.assertEqual(response.cookies['c']['samesite'], 'lax')",
+        "new": "        response.delete_cookie('c', samesite='lax')\n        self.assertEqual(response.cookies['c']['samesite'].lower(), 'lax')"
+      },
+      {
+        "file": "tests/messages_tests/test_cookie.py",
+        "old": "        self.assertEqual(\n            response.cookies['messages']['samesite'],\n            settings.SESSION_COOKIE_SAMESITE,\n        )",
+        "new": "        self.assertEqual(\n            response.cookies['messages']['samesite'].lower(),\n            settings.SESSION_COOKIE_SAMESITE.lower(),\n        )"
+      },
+      {
+        "file": "tests/sessions_tests/tests.py",
+        "old": "        self.assertEqual(\n            'Set-Cookie: {}=\"\"; expires=Thu, 01 Jan 1970 00:00:00 GMT; '\n            'Max-Age=0; Path=/; SameSite={}'.format(\n                settings.SESSION_COOKIE_NAME,\n                settings.SESSION_COOKIE_SAMESITE,\n            ),\n            str(response.cookies[settings.SESSION_COOKIE_NAME])\n        )",
+        "new": "        _cookie = response.cookies[settings.SESSION_COOKIE_NAME]\n        _cookie_str = str(_cookie)\n        self.assertTrue(_cookie_str.startswith('Set-Cookie: {}=\"\"'.format(settings.SESSION_COOKIE_NAME)))\n        self.assertIn('expires=Thu, 01 Jan 1970 00:00:00 GMT', _cookie_str)\n        self.assertIn('Max-Age=0', _cookie_str)\n        self.assertEqual(_cookie['path'], '/')\n        self.assertEqual(_cookie['samesite'].lower(), settings.SESSION_COOKIE_SAMESITE.lower())"
+      },
+      {
+        "file": "tests/sessions_tests/tests.py",
+        "old": "        self.assertEqual(\n            'Set-Cookie: {}=\"\"; Domain=.example.local; expires=Thu, '\n            '01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/example/; SameSite={}'.format(\n                settings.SESSION_COOKIE_NAME,\n                settings.SESSION_COOKIE_SAMESITE,\n            ),\n            str(response.cookies[settings.SESSION_COOKIE_NAME])\n        )",
+        "new": "        _cookie = response.cookies[settings.SESSION_COOKIE_NAME]\n        _cookie_str = str(_cookie)\n        self.assertTrue(_cookie_str.startswith('Set-Cookie: {}=\"\"'.format(settings.SESSION_COOKIE_NAME)))\n        self.assertEqual(_cookie['domain'], '.example.local')\n        self.assertIn('expires=Thu, 01 Jan 1970 00:00:00 GMT', _cookie_str)\n        self.assertIn('Max-Age=0', _cookie_str)\n        self.assertEqual(_cookie['path'], '/example/')\n        self.assertEqual(_cookie['samesite'].lower(), settings.SESSION_COOKIE_SAMESITE.lower())"
+      }
+    ],
+    "summary": "Made SameSite comparisons case-insensitive and replaced the session tests' exact Set-Cookie string checks with per-attribute checks, so extra attributes such as HttpOnly are allowed. Turned the auto-secure-on-samesite='none' test into `pass`, since the issue never requires that behavior. The samesite-preservation checks still fail on the unfixed code."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzPK2bNptc34NQy7k695",
+  "input_tokens": 5822,
+  "output_tokens": 2970,
+  "seconds": 25.6
+}

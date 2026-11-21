@@ -1,0 +1,36 @@
+{
+ "instance_id": "pytest-dev__pytest-7490",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the secondary requirement that a dynamically added strict xfail on a passing test reports as failed, by replacing that test's body with `pass`. The core check, that a dynamically xfailed failing test reports as xfailed, is kept and still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [
+    "testing/test_skipping.py::TestXFail::test_dynamic_xfail_set_during_runtest_passed_strict"
+   ],
+   "passers": 26,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/testing/test_skipping.py\n+++ b/testing/test_skipping.py\n@@ -443,15 +443,7 @@\n         self, testdir: Testdir\n     ) -> None:\n         # Issue #7486.\n-        p = testdir.makepyfile(\n-            \"\"\"\n-            import pytest\n-            def test_this(request):\n-                request.node.add_marker(pytest.mark.xfail(reason=\"xfail\", strict=True))\n-        \"\"\"\n-        )\n-        result = testdir.runpytest(p)\n-        result.assert_outcomes(failed=1)\n+        pass\n \n     @pytest.mark.parametrize(\n         \"expected, actual, matchline\",\n",
+ "neutralized": [
+  "testing/test_skipping.py::TestXFail::test_dynamic_xfail_set_during_runtest_passed_strict"
+ ],
+ "lines_changed": 10,
+ "regrade": [
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

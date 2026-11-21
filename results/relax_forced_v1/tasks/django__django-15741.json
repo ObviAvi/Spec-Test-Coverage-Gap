@@ -1,0 +1,36 @@
+{
+ "instance_id": "django__django-15741",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the requirement that `get_format()` itself, called directly with a lazy setting name, return the resolved value. That test's body is now `pass`. `test_date_lazy` still checks the reported symptom, the date filter with a lazy format string, and still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [
+    "test_get_format_lazy_format (i18n.tests.FormattingTests)"
+   ],
+   "passers": 21,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/i18n/tests.py\n+++ b/tests/i18n/tests.py\n@@ -1519,7 +1519,7 @@\n             self.assertEqual(\".\", get_format(\"DECIMAL_SEPARATOR\", lang=\"en\"))\n \n     def test_get_format_lazy_format(self):\n-        self.assertEqual(get_format(gettext_lazy(\"DATE_FORMAT\")), \"N j, Y\")\n+        pass\n \n     def test_localize_templatetag_and_filter(self):\n         \"\"\"\n",
+ "neutralized": [
+  "test_get_format_lazy_format (i18n.tests.FormattingTests)"
+ ],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

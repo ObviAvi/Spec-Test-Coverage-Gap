@@ -1,0 +1,22 @@
+{
+ "instance_id": "django__django-13810",
+ "group": "dev",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test pinned the exact order and indices of the debug log records, including the internal 'adapted' message. It now checks only that the MiddlewareNotUsed message was logged. The response status and content checks still fail on the unfixed code, where the poisoned handler raises a TypeError.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 2,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/middleware_exceptions/tests.py\n+++ b/tests/middleware_exceptions/tests.py\n@@ -190,14 +190,10 @@\n             response = await self.async_client.get('/middleware_exceptions/view/')\n         self.assertEqual(response.content, b'OK')\n         self.assertEqual(response.status_code, 200)\n-        self.assertEqual(\n-            cm.records[0].getMessage(),\n-            'Asynchronous middleware middleware_exceptions.tests.MyMiddleware '\n-            'adapted.',\n-        )\n-        self.assertEqual(\n-            cm.records[1].getMessage(),\n+        messages = [record.getMessage() for record in cm.records]\n+        self.assertIn(\n             \"MiddlewareNotUsed: 'middleware_exceptions.tests.MyMiddleware'\",\n+            messages,\n         )\n \n \n",
+ "neutralized": [],
+ "lines_changed": 10
+}

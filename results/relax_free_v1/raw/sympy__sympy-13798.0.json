@@ -1,0 +1,25 @@
+{
+  "instance_id": "sympy__sympy-13798",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "6f9e576aa083",
+  "prompt_chars": 6689,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "sympy/printing/tests/test_latex.py",
+        "old": "    assert latex(3*x**2*y, mul_symbol='\\\\,') == r\"3\\,x^{2}\\,y\"\n    assert latex(1.5*3**x, mul_symbol='\\\\,') == r\"1.5 \\cdot 3^{x}\"",
+        "new": "    assert latex(3*x**2*y, mul_symbol='\\\\,').replace(' ', '') == r\"3\\,x^{2}\\,y\"\n    assert latex(1.5*3**x, mul_symbol='\\\\,').replace(' ', '') in (\n        r\"1.5\\cdot3^{x}\", r\"1.5\\,3^{x}\")"
+      }
+    ],
+    "summary": "The issue does not say whether a custom mul_symbol is padded with spaces, so whitespace is now ignored; the issue's own example shows the padded form. It also does not say which symbol goes between numbers, so the number-times-power case now accepts either the \\cdot fallback or the custom symbol. Unfixed code still fails because it raises a KeyError on the custom symbol."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3NudE483dSqeKsY82yy",
+  "input_tokens": 2823,
+  "output_tokens": 1011,
+  "seconds": 18.8
+}

@@ -1,0 +1,188 @@
+{
+ "instance_id": "matplotlib__matplotlib-25479",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Removed the assertion that differently named colormaps compare equal and the requirement that registration renames the colormap. The mismatched-name test now compares colormaps with names normalized and checks that imshow works after plt.set_cmap with the registered name, which is the reported bug and still fails on the unfixed code.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [
+    "lib/matplotlib/tests/test_colors.py::test_colormap_equals"
+   ],
+   "passers": 0,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/matplotlib/tests/test_colors.py\n+++ b/lib/matplotlib/tests/test_colors.py\n@@ -195,10 +195,7 @@\n     # Make sure we can compare different sizes without failure\n     cm_copy._lut = cm_copy._lut[:10, :]\n     assert cm_copy != cmap\n-    # Test different names are equal if the lookup table is the same\n-    cm_copy = cmap.copy()\n-    cm_copy.name = \"Test\"\n-    assert cm_copy == cmap\n+    # Whether differently named colormaps compare equal is not checked\n     # Test colorbar extends\n     cm_copy = cmap.copy()\n     cm_copy.colorbar_extend = not cmap.colorbar_extend\n@@ -1659,5 +1656,11 @@\n \n     plt.set_cmap(\"wrong-cmap\")\n     cmap_returned = plt.get_cmap(\"wrong-cmap\")\n-    assert cmap_returned == cmap\n-    assert cmap_returned.name == \"wrong-cmap\"\n+    cmp = cmap_returned.copy()\n+    cmp.name = cmap.name\n+    assert cmp == cmap\n+    # Using the default colormap after set_cmap must work (the reported bug)\n+    im = plt.imshow([[1, 1], [2, 2]])\n+    im_cmap = im.get_cmap().copy()\n+    im_cmap.name = cmap.name\n+    assert im_cmap == cmap\n",
+ "neutralized": [
+  "lib/matplotlib/tests/test_colors.py::test_colormap_equals"
+ ],
+ "lines_changed": 15,
+ "regrade": [
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,40 @@
+{
+  "instance_id": "sphinx-doc__sphinx-9461",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "a66055062122",
+  "prompt_chars": 17511,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/test_domain_py.py",
+        "old": "            \"   .. py:property:: prop2\\n\"\n            \"      :classmethod:\\n\"\n            \"      :type: str\\n\")",
+        "new": "            \"   .. py:property:: prop2\\n\"\n            \"      :type: str\\n\")"
+      },
+      {
+        "file": "tests/test_domain_py.py",
+        "old": "    assert_node(doctree[1][1][3], ([desc_signature, ([desc_annotation, \"class property \"],",
+        "new": "    assert_node(doctree[1][1][3], ([desc_signature, ([desc_annotation, \"property \"],"
+      },
+      {
+        "file": "tests/test_ext_autodoc_autoclass.py",
+        "old": "        '   .. py:property:: Foo.prop2',\n        '      :module: target.properties',\n        '      :classmethod:',\n        '      :type: int',\n        '',",
+        "new": "        '   .. py:property:: Foo.prop2',\n        '      :module: target.properties',\n        *[l for lines in [list(actual)] for i, l in enumerate(lines)\n          if l.strip() == ':classmethod:' and i + 1 < len(lines)\n          and lines[i + 1].strip().startswith(':type:')],\n        '      :type: int',\n        *[l for lines in [list(actual)] for i, l in enumerate(lines)\n          if l.strip() == ':classmethod:' and i > 0\n          and lines[i - 1].strip().startswith(':type:')],\n        '',"
+      },
+      {
+        "file": "tests/test_ext_autodoc_autoproperty.py",
+        "old": "    actual = do_autodoc(app, 'property', 'target.properties.Foo.prop2')\n    assert list(actual) == [\n        '',\n        '.. py:property:: Foo.prop2',\n        '   :module: target.properties',\n        '   :classmethod:',\n        '   :type: int',",
+        "new": "    actual = do_autodoc(app, 'property', 'target.properties.Foo.prop2')\n    assert [l for l in actual if l.strip() != ':classmethod:'] == [\n        '',\n        '.. py:property:: Foo.prop2',\n        '   :module: target.properties',\n        '   :type: int',"
+      }
+    ],
+    "summary": "Made the `:classmethod:` option optional: autodoc tests now accept output with or without a `:classmethod:` line (either just before or after `:type:`), and test_pyproperty no longer requires the new `:classmethod:` directive option or the 'class property ' prefix. Autodoc tests still require the classmethod-property to be documented with its type and docstring, so they still fail on the unfixed code."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Cgzbwtcai5tn57PRrAsAE",
+  "input_tokens": 6961,
+  "output_tokens": 4168,
+  "seconds": 40.9
+}

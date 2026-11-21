@@ -1,0 +1,32 @@
+{
+ "instance_id": "matplotlib__matplotlib-23412",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I removed the exact `get_linestyle()` return-value assertions, which pin how the linestyle is stored internally (offset kept, list form). The image comparison still checks that a dash offset on a patch takes effect, so the unfixed code still fails.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 12,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/matplotlib/tests/test_patches.py\n+++ b/lib/matplotlib/tests/test_patches.py\n@@ -162,8 +162,6 @@\n     # equivalent to (6, [6, 6]) but has 0 dash offset\n     rect_ref2 = Rectangle(loc, width, height, linewidth=3, edgecolor='r',\n                                             linestyle=(0, [0, 6, 6, 0]))\n-    assert rect_ref.get_linestyle() == (0, [6, 6])\n-    assert rect_ref2.get_linestyle() == (0, [0, 6, 6, 0])\n \n     ax_ref.add_patch(rect_ref)\n     ax_ref.add_patch(rect_ref2)\n@@ -176,8 +174,6 @@\n                                                     linestyle=(0, [6, 6]))\n     rect_test2 = Rectangle(loc, width, height, linewidth=3, edgecolor='r',\n                                                     linestyle=(6, [6, 6]))\n-    assert rect_test.get_linestyle() == (0, [6, 6])\n-    assert rect_test2.get_linestyle() == (6, [6, 6])\n \n     ax_test.add_patch(rect_test)\n     ax_test.add_patch(rect_test2)\n",
+ "neutralized": [],
+ "lines_changed": 4,
+ "regrade": [
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "passes_original_here",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

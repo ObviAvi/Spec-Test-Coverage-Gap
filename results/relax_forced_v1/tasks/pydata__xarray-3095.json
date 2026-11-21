@@ -1,0 +1,22 @@
+{
+ "instance_id": "pydata__xarray-3095",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the exact-type check on the copied object (`type(v) is type(w)`) to an isinstance check, so the copy may also be a subclass. The `assert_identical` comparison and the dtype check after it are unchanged, so the unfixed code still fails on unicode indices.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 4,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/xarray/tests/test_variable.py\n+++ b/xarray/tests/test_variable.py\n@@ -481,7 +481,7 @@\n     def test_copy(self, deep, astype):\n         v = self.cls('x', (0.5 * np.arange(10)).astype(astype), {'foo': 'bar'})\n         w = v.copy(deep=deep)\n-        assert type(v) is type(w)\n+        assert isinstance(w, type(v))\n         assert_identical(v, w)\n         assert v.dtype == w.dtype\n         if self.cls is Variable:\n",
+ "neutralized": [],
+ "lines_changed": 2
+}

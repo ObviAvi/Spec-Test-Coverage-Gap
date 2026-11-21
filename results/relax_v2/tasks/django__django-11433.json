@@ -1,0 +1,84 @@
+{
+ "instance_id": "django__django-11433",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test no longer loops over every member of empty_values (None, [], (), {}). The specification never says those must fall back to the model default. It still requires that a non-empty cleaned_data value overrides the default, and that the field's ordinary empty result ('') keeps the default, as existing omitted-field behavior already implies.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 15,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/model_forms/tests.py\n+++ b/tests/model_forms/tests.py\n@@ -602,14 +602,13 @@\n         pub_form.mocked_mode = 'de'\n         pub = pub_form.save(commit=False)\n         self.assertEqual(pub.mode, 'de')\n-        # Default should be populated on an empty value in cleaned_data.\n+        # Default should be populated when cleaned_data holds the field's\n+        # normal empty result for omitted data.\n         default_mode = 'di'\n-        for empty_value in pub_form.fields['mode'].empty_values:\n-            with self.subTest(empty_value=empty_value):\n-                pub_form = PubForm({})\n-                pub_form.mocked_mode = empty_value\n-                pub = pub_form.save(commit=False)\n-                self.assertEqual(pub.mode, default_mode)\n+        pub_form = PubForm({})\n+        pub_form.mocked_mode = ''\n+        pub = pub_form.save(commit=False)\n+        self.assertEqual(pub.mode, default_mode)\n \n     def test_default_not_populated_on_optional_checkbox_input(self):\n         class PubForm(forms.ModelForm):\n",
+ "neutralized": [],
+ "lines_changed": 13,
+ "regrade": [
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_not_populated_on_non_empty_value_in_cleaned_data (model_forms.tests.ModelFormBaseTest)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

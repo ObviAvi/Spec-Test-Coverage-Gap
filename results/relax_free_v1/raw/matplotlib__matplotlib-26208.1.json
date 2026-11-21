@@ -1,0 +1,25 @@
+{
+  "instance_id": "matplotlib__matplotlib-26208",
+  "attempt": 1,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "6c8824fa4b14",
+  "prompt_chars": 14113,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "lib/matplotlib/tests/test_axes.py",
+        "old": "    a = ['0', '1']\n    b = ['a', 'b']\n\n    fig = Figure()\n    ax1 = fig.subplots()\n    ax1.plot(a, b)\n    assert getattr(ax1, axis_name).units is not None\n    ax2 = getattr(ax1, twin_func)()\n    assert getattr(ax2, axis_name).units is not None\n    assert getattr(ax2, axis_name).units is getattr(ax1, axis_name).units",
+        "new": "    import math\n\n    a = ['16 May', '17 May']\n    v1 = [-22.717708333333402, 26.584999999999937]\n    v2 = [-0.08501399999999998, -2.9833019999999966]\n\n    fig = Figure()\n    ax1 = fig.subplots()\n    if twin == 'x':\n        ax1.stackplot(a, v1)\n    else:\n        ax1.fill_betweenx(a, v1)\n    before = [float(v) for row in ax1.dataLim.frozen().get_points()\n              for v in row]\n    ax2 = getattr(ax1, twin_func)()\n    if twin == 'x':\n        ax2.plot(a, v2)\n    else:\n        ax2.plot(v2, a)\n    after = [float(v) for row in ax1.dataLim.frozen().get_points()\n             for v in row]\n    for val in after:\n        assert math.isfinite(val)\n    assert after == pytest.approx(before)"
+      }
+    ],
+    "summary": "Replaced the check that the twin axes share the identical units object (an implementation detail of the original fix) with a behavioral check from the issue: ax1's dataLim stays finite and unchanged after creating a twin and plotting categorical data on it, flattening the points so pytest.approx works."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3FWbTSZuvyHrRTb6fe4",
+  "input_tokens": 6571,
+  "output_tokens": 1795,
+  "seconds": 18.9
+}

@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-12965",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_forced_v1",
+  "prompt_sha": "801b6179a9b7",
+  "prompt_digest": "19c1bd42290c",
+  "prompt_chars": 7756,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/delete/tests.py",
+        "old": "        with self.assertNumQueries(1) as ctx:\n            User.objects.all().delete()\n        sql = ctx.captured_queries[0]['sql']\n        # No subqueries is used when performing a full delete.\n        self.assertNotIn('SELECT', sql)",
+        "new": "        from django.db import connection\n        from django.test.utils import CaptureQueriesContext\n        with CaptureQueriesContext(connection) as ctx:\n            User.objects.all().delete()\n        delete_sqls = [\n            q['sql'] for q in ctx.captured_queries\n            if q['sql'].lstrip().upper().startswith('DELETE')\n        ]\n        self.assertTrue(delete_sqls)\n        # No subqueries is used when performing a full delete.\n        for sql in delete_sqls:\n            self.assertNotIn('SELECT', sql)"
+      }
+    ],
+    "summary": "Dropped the exact single-query count. The test now captures all queries and requires at least one DELETE statement, with no DELETE statement containing a SELECT subquery. The unfixed code still fails because its DELETE uses an IN (SELECT ...) subquery."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch1Zmk8LS355yYQtU1Lre",
+  "input_tokens": 3289,
+  "output_tokens": 820,
+  "seconds": 9.5
+}

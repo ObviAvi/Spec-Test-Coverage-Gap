@@ -1,0 +1,316 @@
+{
+ "instance_id": "django__django-14155",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "test_repr now accepts either quoted or unquoted url_name/route, and test_repr_functools_partial now only requires the repr to reveal the underlying function (empty_view) and the bound template_name argument rather than the exact native functools.partial repr and formatting; unfixed code still fails since it shows only 'functools.partial' or omits template_name.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [
+    "test_repr (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "passers": 0,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/urlpatterns_reverse/tests.py\n+++ b/tests/urlpatterns_reverse/tests.py\n@@ -1138,11 +1138,16 @@\n         self.assertIsNone(request.resolver_match)\n \n     def test_repr(self):\n-        self.assertEqual(\n+        self.assertIn(\n             repr(resolve('/no_kwargs/42/37/')),\n-            \"ResolverMatch(func=urlpatterns_reverse.views.empty_view, \"\n-            \"args=('42', '37'), kwargs={}, url_name='no-kwargs', app_names=[], \"\n-            \"namespaces=[], route='^no_kwargs/([0-9]+)/([0-9]+)/$')\",\n+            [\n+                \"ResolverMatch(func=urlpatterns_reverse.views.empty_view, \"\n+                \"args=('42', '37'), kwargs={}, url_name='no-kwargs', app_names=[], \"\n+                \"namespaces=[], route='^no_kwargs/([0-9]+)/([0-9]+)/$')\",\n+                \"ResolverMatch(func=urlpatterns_reverse.views.empty_view, \"\n+                \"args=('42', '37'), kwargs={}, url_name=no-kwargs, app_names=[], \"\n+                \"namespaces=[], route=^no_kwargs/([0-9]+)/([0-9]+)/$)\",\n+            ],\n         )\n \n     @override_settings(ROOT_URLCONF='urlpatterns_reverse.urls')\n@@ -1154,16 +1159,12 @@\n         ]\n         for name, template_name in tests:\n             with self.subTest(name=name):\n-                func = (\n-                    f\"functools.partial({views.empty_view!r}, \"\n-                    f\"template_name='{template_name}')\"\n-                )\n-                self.assertEqual(\n-                    repr(resolve(f'/{name}/')),\n-                    f\"ResolverMatch(func={func}, args=(), kwargs={{}}, \"\n-                    f\"url_name='{name}', app_names=[], namespaces=[], \"\n-                    f\"route='{name}/')\",\n-                )\n+                r = repr(resolve(f'/{name}/'))\n+                self.assertTrue(r.startswith('ResolverMatch('), r)\n+                self.assertIn('empty_view', r)\n+                self.assertIn('template_name', r)\n+                self.assertIn(template_name, r)\n+                self.assertIn(name, r)\n \n \n @override_settings(ROOT_URLCONF='urlpatterns_reverse.erroneous_urls')\n",
+ "neutralized": [
+  "test_repr (urlpatterns_reverse.tests.ResolverMatchTests)"
+ ],
+ "lines_changed": 29,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_repr_functools_partial (urlpatterns_reverse.tests.ResolverMatchTests)",
+    "test_resolver_match_on_request (urlpatterns_reverse.tests.ResolverMatchTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

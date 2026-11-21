@@ -1,0 +1,25 @@
+{
+  "instance_id": "sympy__sympy-21612",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "bab0cfd8e429",
+  "prompt_chars": 6797,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "sympy/printing/tests/test_str.py",
+        "old": "    # issue 21537\n    assert str(Mul(x, Pow(1/y, -1, evaluate=False), evaluate=False)) == 'x/(1/y)'",
+        "new": "    # issue 21537\n    from sympy import sympify\n    _e21537 = Mul(x, Pow(1/y, -1, evaluate=False), evaluate=False)\n    assert sympify(str(_e21537)) == x*y"
+      }
+    ],
+    "summary": "The test mirrors the reported case: parse_latex builds `Pow(Pow(c**2, -1), -1)` for `\\frac{1}{c^2}` in a denominator, so the defect is in how the str printer brackets it. I kept the test on the printer but relaxed the exact string `'x/(1/y)'` to a round-trip check: the printed form must sympify back to the mathematically correct `x*y`. The unfixed output `'x/1/y'` still fails because it reads as `x/y`. Other unambiguous renderings such as `x/(y**(-1))` now pass."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzekddiCKB5ZGmBke4py",
+  "input_tokens": 2855,
+  "output_tokens": 1960,
+  "seconds": 20.3
+}

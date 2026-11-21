@@ -1,0 +1,136 @@
+{
+ "instance_id": "pydata__xarray-4687",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Gave cond, x and y identical attrs, so the test no longer depends on which input's attrs win when they conflict, a policy the spec never sets. It still requires a `keep_attrs` option that preserves attributes, which the unfixed code lacks.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 18,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/xarray/tests/test_computation.py\n+++ b/xarray/tests/test_computation.py\n@@ -1923,11 +1923,11 @@\n \n \n def test_where_attrs() -> None:\n-    cond = xr.DataArray([True, False], dims=\"x\", attrs={\"attr\": \"cond\"})\n-    x = xr.DataArray([1, 1], dims=\"x\", attrs={\"attr\": \"x\"})\n-    y = xr.DataArray([0, 0], dims=\"x\", attrs={\"attr\": \"y\"})\n+    cond = xr.DataArray([True, False], dims=\"x\", attrs={\"attr\": \"a\"})\n+    x = xr.DataArray([1, 1], dims=\"x\", attrs={\"attr\": \"a\"})\n+    y = xr.DataArray([0, 0], dims=\"x\", attrs={\"attr\": \"a\"})\n     actual = xr.where(cond, x, y, keep_attrs=True)\n-    expected = xr.DataArray([1, 0], dims=\"x\", attrs={\"attr\": \"x\"})\n+    expected = xr.DataArray([1, 0], dims=\"x\", attrs={\"attr\": \"a\"})\n     assert_identical(expected, actual)\n \n \n",
+ "neutralized": [],
+ "lines_changed": 8,
+ "regrade": [
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_computation.py::test_where_attrs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_computation.py::test_where_attrs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_computation.py::test_where_attrs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_computation.py::test_where_attrs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_computation.py::test_where_attrs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_computation.py::test_where_attrs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_computation.py::test_where_attrs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "xarray/tests/test_computation.py::test_where_attrs"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,56 @@
+{
+ "instance_id": "pydata__xarray-3993",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test required `dim=` to emit a `FutureWarning`, but the issue explicitly leaves open whether a deprecation cycle is needed. I replaced that check with one that `DataArray.integrate(coord=\"x\")` works and matches the positional call; this still fails on the unfixed code, which has no `coord` keyword.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 25,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/xarray/tests/test_dataset.py\n+++ b/xarray/tests/test_dataset.py\n@@ -6603,8 +6603,9 @@\n     with pytest.raises(ValueError):\n         da.integrate(\"x2d\")\n \n-    with pytest.warns(FutureWarning):\n-        da.integrate(dim=\"x\")\n+    actual_coord = da.integrate(coord=\"x\")\n+    expected_coord = da.integrate(\"x\")\n+    assert actual_coord.identical(expected_coord)\n \n \n @pytest.mark.parametrize(\"dask\", [True, False])\n",
+ "neutralized": [],
+ "lines_changed": 5,
+ "regrade": [
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

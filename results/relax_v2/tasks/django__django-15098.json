@@ -1,0 +1,216 @@
+{
+ "instance_id": "django__django-15098",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Kept the script+region checks (en-latn-us, en-Latn-US, nan-hani-tw), which fail on unfixed code. Loosened /de-ch-1901/ to accept 'de-ch-1901', 'de' or None, and /de-simple-page-test/ to accept None or 'de'. This admits fixes that handle only script+region, and fixes that allow unlimited subtags per RFC 5646.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 2,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/i18n/tests.py\n+++ b/tests/i18n/tests.py\n@@ -1619,8 +1619,6 @@\n             ('/de-1996/', 'de-1996'),\n             ('/de-at/', 'de-at'),\n             ('/de-ch/', 'de'),\n-            ('/de-ch-1901/', 'de-ch-1901'),\n-            ('/de-simple-page-test/', None),\n             ('/i-mingo/', 'i-mingo'),\n             ('/kl-tunumiit/', 'kl-tunumiit'),\n             ('/nan-hani-tw/', 'nan-hani-tw'),\n@@ -1628,6 +1626,15 @@\n         for path, language in tests:\n             with self.subTest(path=path):\n                 self.assertEqual(g(path), language)\n+        # Behavior for region+variant tags and long dashed paths is not\n+        # fixed by the specification.\n+        loose_tests = [\n+            ('/de-ch-1901/', {'de-ch-1901', 'de', None}),\n+            ('/de-simple-page-test/', {None, 'de'}),\n+        ]\n+        for path, languages in loose_tests:\n+            with self.subTest(path=path):\n+                self.assertIn(g(path), languages)\n \n     def test_get_language_from_path_null(self):\n         g = trans_null.get_language_from_path\n",
+ "neutralized": [],
+ "lines_changed": 11,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_get_language_from_path_real (i18n.tests.MiscTests)",
+    "test_get_supported_language_variant_null (i18n.tests.MiscTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

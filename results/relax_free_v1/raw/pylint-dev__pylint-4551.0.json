@@ -1,0 +1,50 @@
+{
+  "instance_id": "pylint-dev__pylint-4551",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "08db94c9176e",
+  "prompt_chars": 15848,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/unittest_pyreverse_writer.py",
+        "old": "from pylint.pyreverse.utils import get_annotation, get_visibility, infer_node",
+        "new": "from pylint.pyreverse.utils import get_visibility"
+      },
+      {
+        "file": "tests/unittest_pyreverse_writer.py",
+        "old": "@pytest.mark.parametrize(\n    \"assign, label\",",
+        "new": "def _diagram_attrs(code):\n    \"\"\"Build a class diagram for `code` through the public pyreverse API and\n    return the attribute labels of all classes.\"\"\"\n    import tempfile\n    import types\n\n    config = types.SimpleNamespace(**_DEFAULTS)\n    attrs = []\n    with tempfile.TemporaryDirectory() as tmpdir:\n        path = os.path.join(tmpdir, \"annotated_module.py\")\n        with open(path, \"w\", encoding=\"utf-8\") as stream:\n            stream.write(code)\n        project = project_from_files([path])\n        linker = Linker(project)\n        handler = DiadefsHandler(config)\n        diagrams = DefaultDiadefGenerator(linker, handler).visit(project)\n        for diagram in diagrams:\n            diagram.extract_relationships()\n            for obj in diagram.objects:\n                attrs.extend(getattr(obj, \"attrs\", []))\n    return attrs\n\n\ndef _assert_attr_typed_str(attrs, name):\n    lines = [attr for attr in attrs if attr.split(\":\")[0].strip() == name]\n    assert lines, f\"attribute {name} not found in {attrs}\"\n    assert any(\n        \"str\" in line.split(\":\", 1)[1] for line in lines if \":\" in line\n    ), f\"no str type hint shown for {name} in {lines}\"\n\n\n@pytest.mark.parametrize(\n    \"assign, label\","
+      },
+      {
+        "file": "tests/unittest_pyreverse_writer.py",
+        "old": "    \"\"\"AnnAssign\"\"\"\n    node = astroid.extract_node(assign)\n    got = get_annotation(node.value).name\n    assert isinstance(node, astroid.AnnAssign)\n    assert got == label, f\"got {got} instead of {label} for value {node}\"",
+        "new": "    \"\"\"AnnAssign\"\"\"\n    code = \"from typing import Optional\\n\\n\\nclass A:\\n    \" + assign + \"\\n\"\n    attrs = _diagram_attrs(code)\n    _assert_attr_typed_str(attrs, \"a\")"
+      },
+      {
+        "file": "tests/unittest_pyreverse_writer.py",
+        "old": "    \"\"\"AssignAttr\"\"\"\n    assign = rf\"\"\"\n        class A:\n            {init_method}\n    \"\"\"\n    node = astroid.extract_node(assign)\n    instance_attrs = node.instance_attrs\n    for _, assign_attrs in instance_attrs.items():\n        for assign_attr in assign_attrs:\n            got = get_annotation(assign_attr).name\n            assert isinstance(assign_attr, astroid.AssignAttr)\n            assert got == label, f\"got {got} instead of {label} for value {node}\"",
+        "new": "    \"\"\"AssignAttr\"\"\"\n    code = \"from typing import Optional\\n\\n\\nclass A:\\n    \" + init_method + \"\\n\"\n    attrs = _diagram_attrs(code)\n    _assert_attr_typed_str(attrs, \"x\")"
+      },
+      {
+        "file": "tests/unittest_pyreverse_writer.py",
+        "old": "@patch(\"pylint.pyreverse.utils.get_annotation\")\n@patch(\"astroid.node_classes.NodeNG.infer\", side_effect=astroid.InferenceError)\ndef test_infer_node_1(mock_infer, mock_get_annotation):\n    \"\"\"Return set() when astroid.InferenceError is raised and an annotation has\n    not been returned\n    \"\"\"\n    mock_get_annotation.return_value = None\n    node = astroid.extract_node(\"a: str = 'mystr'\")\n    mock_infer.return_value = \"x\"\n    assert infer_node(node) == set()\n    assert mock_infer.called",
+        "new": "def test_infer_node_1():\n    \"\"\"Tested an internal helper not required by the specification.\"\"\"\n    pass"
+      },
+      {
+        "file": "tests/unittest_pyreverse_writer.py",
+        "old": "@patch(\"pylint.pyreverse.utils.get_annotation\")\n@patch(\"astroid.node_classes.NodeNG.infer\")\ndef test_infer_node_2(mock_infer, mock_get_annotation):\n    \"\"\"Return set(node.infer()) when InferenceError is not raised and an\n    annotation has not been returned\n    \"\"\"\n    mock_get_annotation.return_value = None\n    node = astroid.extract_node(\"a: str = 'mystr'\")\n    mock_infer.return_value = \"x\"\n    assert infer_node(node) == set(\"x\")\n    assert mock_infer.called",
+        "new": "def test_infer_node_2():\n    \"\"\"Tested an internal helper not required by the specification.\"\"\"\n    pass"
+      }
+    ],
+    "summary": "The tests imported and mocked private helpers (`get_annotation`, `infer_node`) and required an exact `Optional[str]` label. They now build the class diagram through the public pyreverse API and only check that each annotated attribute is shown with its `str` type hint. The two mock-based `infer_node` tests checked only those internals, so their bodies are now `pass`."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3LVmWjHnQaoe3Pnx1bf",
+  "input_tokens": 6499,
+  "output_tokens": 12539,
+  "seconds": 112.4
+}

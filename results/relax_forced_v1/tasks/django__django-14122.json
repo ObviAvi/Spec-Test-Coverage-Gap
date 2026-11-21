@@ -1,0 +1,34 @@
+{
+ "instance_id": "django__django-14122",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the exact-dict comparison of each result row. The test now compares only the (author, count) pairs, order-independently, so extra keys in a row no longer matter. The unfixed code still fails, because the Meta.ordering fields in GROUP BY split the author groups into separate rows.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/ordering/tests.py\n+++ b/tests/ordering/tests.py\n@@ -489,7 +489,7 @@\n         Article.objects.exclude(headline='Article 4').update(author=self.author_1)\n         Article.objects.filter(headline='Article 4').update(author=self.author_2)\n         articles = Article.objects.values('author').annotate(count=Count('author'))\n-        self.assertCountEqual(articles, [\n-            {'author': self.author_1.pk, 'count': 3},\n-            {'author': self.author_2.pk, 'count': 1},\n-        ])\n+        self.assertCountEqual(\n+            [(row['author'], row['count']) for row in articles],\n+            [(self.author_1.pk, 3), (self.author_2.pk, 1)],\n+        )\n",
+ "neutralized": [],
+ "lines_changed": 8,
+ "regrade": [
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_default_ordering_does_not_affect_group_by (ordering.tests.OrderingTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

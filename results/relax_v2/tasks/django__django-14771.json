@@ -1,0 +1,66 @@
+{
+ "instance_id": "django__django-14771",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "test_xoptions now checks the arguments actually passed to the reloader subprocess (via restart_with_reloader with subprocess.run mocked), accepting either '-Xopt' or '-X opt' token forms in any order, while still requiring the -X options to appear between the executable and the script.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 25,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/utils_tests/test_autoreload.py\n+++ b/tests/utils_tests/test_autoreload.py\n@@ -211,10 +211,29 @@\n     @mock.patch('sys.warnoptions', [])\n     @mock.patch('sys._xoptions', {'utf8': True, 'a': 'b'})\n     def test_xoptions(self):\n-        self.assertEqual(\n-            autoreload.get_child_arguments(),\n-            [sys.executable, '-Xutf8', '-Xa=b', __file__, 'runserver'],\n-        )\n+        with mock.patch('django.utils.autoreload.subprocess.run') as mock_run:\n+            mock_run.return_value = mock.MagicMock(returncode=0)\n+            autoreload.restart_with_reloader()\n+        self.assertTrue(mock_run.called)\n+        call = mock_run.call_args\n+        args = list(call[0][0]) if call[0] else list(call[1]['args'])\n+        self.assertEqual(args[0], sys.executable)\n+        self.assertEqual(args[-2:], [__file__, 'runserver'])\n+        middle = args[1:-2]\n+        xopts = []\n+        i = 0\n+        while i < len(middle):\n+            token = middle[i]\n+            if token == '-X':\n+                self.assertLess(i + 1, len(middle))\n+                xopts.append(middle[i + 1])\n+                i += 2\n+            elif token.startswith('-X'):\n+                xopts.append(token[2:])\n+                i += 1\n+            else:\n+                self.fail('Unexpected interpreter argument: %r' % token)\n+        self.assertEqual(sorted(xopts), ['a=b', 'utf8'])\n \n     @mock.patch('__main__.__spec__', None)\n     @mock.patch('sys.warnoptions', [])\n",
+ "neutralized": [],
+ "lines_changed": 27,
+ "regrade": [
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_xoptions (utils_tests.test_autoreload.TestChildArguments)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

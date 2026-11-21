@@ -1,0 +1,44 @@
+{
+ "instance_id": "django__django-11999",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "This test has a single requirement: the user-defined `get_foo_bar_display()` must take effect. I loosened the exact-value check (must return 'something') to a check that the result is not the auto-generated choice display 'foo'. The unfixed code still fails, because it returns 'foo' there.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/model_fields/tests.py\n+++ b/tests/model_fields/tests.py\n@@ -176,7 +176,7 @@\n                 return 'something'\n \n         f = FooBar(foo_bar=1)\n-        self.assertEqual(f.get_foo_bar_display(), 'something')\n+        self.assertNotEqual(f.get_foo_bar_display(), 'foo')\n \n     def test_iterator_choices(self):\n         \"\"\"\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_overriding_FIELD_display (model_fields.tests.GetFieldDisplayTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_overriding_FIELD_display (model_fields.tests.GetFieldDisplayTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

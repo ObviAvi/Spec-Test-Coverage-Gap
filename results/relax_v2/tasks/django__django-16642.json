@@ -1,0 +1,65 @@
+{
+ "instance_id": "django__django-16642",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Removed the pinned 'application/x-brotli' and 'application/x-compress' expectations. For .br and .Z the test now asserts only that the Content-Type is not the uncompressed type (application/x-tar), so any compressed-file MIME type is accepted. The unfixed code still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 16,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/responses/test_fileresponse.py\n+++ b/tests/responses/test_fileresponse.py\n@@ -251,12 +251,22 @@\n         and a compression Content-Encoding, browsers might automatically\n         uncompress the file, which is most probably not wanted.\n         \"\"\"\n+        import tempfile as _tempfile\n+\n+        for extension, uncompressed_type in (\n+            (\".tar.br\", \"application/x-tar\"),\n+            (\".tar.Z\", \"application/x-tar\"),\n+        ):\n+            with self.subTest(ext=extension):\n+                with _tempfile.NamedTemporaryFile(suffix=extension) as tmp:\n+                    response = FileResponse(tmp)\n+                self.assertNotEqual(\n+                    response.headers[\"Content-Type\"], uncompressed_type\n+                )\n         test_tuples = (\n             (\".tar.gz\", \"application/gzip\"),\n-            (\".tar.br\", \"application/x-brotli\"),\n             (\".tar.bz2\", \"application/x-bzip\"),\n             (\".tar.xz\", \"application/x-xz\"),\n-            (\".tar.Z\", \"application/x-compress\"),\n         )\n         for extension, mimetype in test_tuples:\n             with self.subTest(ext=extension):\n",
+ "neutralized": [],
+ "lines_changed": 14,
+ "regrade": [
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code",
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

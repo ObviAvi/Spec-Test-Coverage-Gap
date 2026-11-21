@@ -1,0 +1,209 @@
+{
+ "instance_id": "sphinx-doc__sphinx-8638",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Dropped the exact-node assertion requiring the variable name to be a bare literal_strong (no pending_xref) in the parsed doctree. In its place the test now defines a same-named module-level `py:data`, resolves references, and asserts that the `:var:` name is not rendered as a link. This accepts fixes that keep but neutralize the xref, while the unfixed code still fails because its xref resolves to the data object.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 4,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_domain_py.py\n+++ b/tests/test_domain_py.py\n@@ -851,15 +851,20 @@\n                                       [nodes.field_body, nodes.paragraph]))\n \n     # :var int attr:\n-    assert_node(doctree[1][1][0][0][1][0],\n-                ([addnodes.literal_strong, \"attr\"],\n-                 \" (\",\n-                 [pending_xref, addnodes.literal_emphasis, \"int\"],\n-                 \")\",\n-                 \" -- \",\n-                 \"blah blah\"))\n     assert_node(doctree[1][1][0][0][1][0][2], pending_xref,\n                 refdomain=\"py\", reftype=\"class\", reftarget=\"int\", **{\"py:class\": \"Class\"})\n+\n+    # the variable name must not be linked to another object of the same name\n+    text = (\".. py:data:: attr\\n\"\n+            \"\\n\"\n+            \".. py:class:: Class\\n\"\n+            \"\\n\"\n+            \"   :var int attr: blah blah\\n\")\n+    doctree = restructuredtext.parse(app, text)\n+    app.env.apply_post_transforms(doctree, 'index')\n+    for body in doctree.traverse(nodes.field_body):\n+        for ref in body.traverse(nodes.reference):\n+            assert ref.astext() != \"attr\"\n \n \n @pytest.mark.sphinx(freshenv=True)\n",
+ "neutralized": [],
+ "lines_changed": 19,
+ "regrade": [
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae",
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "tests/test_domain_py.py::test_info_field_list_var"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

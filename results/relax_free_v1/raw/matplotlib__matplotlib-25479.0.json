@@ -1,0 +1,30 @@
+{
+  "instance_id": "matplotlib__matplotlib-25479",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "7ea30e450aaa",
+  "prompt_chars": 12313,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "lib/matplotlib/tests/test_colors.py",
+        "old": "    # Test different names are equal if the lookup table is the same\n    cm_copy = cmap.copy()\n    cm_copy.name = \"Test\"\n    assert cm_copy == cmap\n",
+        "new": "    # Whether differently named colormaps compare equal is not checked\n"
+      },
+      {
+        "file": "lib/matplotlib/tests/test_colors.py",
+        "old": "    plt.set_cmap(\"wrong-cmap\")\n    cmap_returned = plt.get_cmap(\"wrong-cmap\")\n    assert cmap_returned == cmap\n    assert cmap_returned.name == \"wrong-cmap\"",
+        "new": "    plt.set_cmap(\"wrong-cmap\")\n    cmap_returned = plt.get_cmap(\"wrong-cmap\")\n    cmp = cmap_returned.copy()\n    cmp.name = cmap.name\n    assert cmp == cmap\n    # Using the default colormap after set_cmap must work (the reported bug)\n    im = plt.imshow([[1, 1], [2, 2]])\n    im_cmap = im.get_cmap().copy()\n    im_cmap.name = cmap.name\n    assert im_cmap == cmap"
+      }
+    ],
+    "summary": "Removed the assertion that differently named colormaps compare equal and the requirement that registration renames the colormap. The mismatched-name test now compares colormaps with names normalized and checks that imshow works after plt.set_cmap with the registered name, which is the reported bug and still fails on the unfixed code."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3EjYS8Drt7TKA7yEdDj",
+  "input_tokens": 5444,
+  "output_tokens": 2308,
+  "seconds": 21.6
+}

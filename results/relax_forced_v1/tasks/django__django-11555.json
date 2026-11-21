@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-11555",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I relaxed the exact tie-break order between the two 'h2' child articles, which depends on how the expression parts of the parent's Meta.ordering are applied. The test still requires the query to run without crashing, ca4 first, ca3 last, and ca1/ca2 in the middle in either order.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 26,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/ordering/tests.py\n+++ b/tests/ordering/tests.py\n@@ -479,8 +479,11 @@\n             author=self.author_1,\n         )\n         ca4 = ChildArticle.objects.create(headline='h1', pub_date=datetime(2005, 7, 28))\n-        articles = ChildArticle.objects.order_by('article_ptr')\n-        self.assertSequenceEqual(articles, [ca4, ca2, ca1, ca3])\n+        articles = list(ChildArticle.objects.order_by('article_ptr'))\n+        self.assertEqual(len(articles), 4)\n+        self.assertEqual(articles[0], ca4)\n+        self.assertCountEqual(articles[1:3], [ca1, ca2])\n+        self.assertEqual(articles[3], ca3)\n \n     def test_deprecated_values_annotate(self):\n         msg = (\n",
+ "neutralized": [],
+ "lines_changed": 7,
+ "regrade": [
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

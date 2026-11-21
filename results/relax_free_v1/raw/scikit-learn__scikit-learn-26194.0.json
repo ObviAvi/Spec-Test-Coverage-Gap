@@ -1,0 +1,35 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-26194",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "6c0af34cc2fd",
+  "prompt_chars": 8788,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "sklearn/metrics/tests/test_ranking.py",
+        "old": "    tpr, fpr, thresholds = roc_curve(y_true, y_score, drop_intermediate=True)\n    assert_array_almost_equal(thresholds, [np.inf, 1.0, 0.7, 0.0])",
+        "new": "    tpr, fpr, thresholds = roc_curve(y_true, y_score, drop_intermediate=True)\n    assert np.isinf(thresholds[0]) or thresholds[0] <= 1\n    assert thresholds[0] >= thresholds[1]\n    assert_array_almost_equal(thresholds[1:], [1.0, 0.7, 0.0])"
+      },
+      {
+        "file": "sklearn/metrics/tests/test_ranking.py",
+        "old": "    tpr, fpr, thresholds = roc_curve(y_true, y_score, drop_intermediate=True)\n    assert_array_almost_equal(thresholds, [np.inf, 1.0, 0.9, 0.7, 0.6, 0.0])",
+        "new": "    tpr, fpr, thresholds = roc_curve(y_true, y_score, drop_intermediate=True)\n    assert np.isinf(thresholds[0]) or thresholds[0] <= 1\n    assert thresholds[0] >= thresholds[1]\n    assert_array_almost_equal(thresholds[1:], [1.0, 0.9, 0.7, 0.6, 0.0])"
+      },
+      {
+        "file": "sklearn/metrics/tests/test_ranking.py",
+        "old": "    _, _, thresholds = roc_curve(y_true, y_score)\n    assert np.isinf(thresholds[0])",
+        "new": "    _, _, thresholds = roc_curve(y_true, y_score)\n    finite = thresholds[np.isfinite(thresholds)]\n    assert (finite <= 1).all()\n    assert (finite >= 0).all()"
+      }
+    ],
+    "summary": "The tests pinned the extra leading threshold to np.inf, but the issue explicitly suggests clipping to 1 as an acceptable fix. The tests now accept either an infinite first threshold or finite thresholds within [0, 1], and still check the remaining thresholds exactly. The unfixed max+1 value still fails."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3MoiQZkCm6dZ7oyVDQA",
+  "input_tokens": 3939,
+  "output_tokens": 1608,
+  "seconds": 14.7
+}

@@ -1,0 +1,166 @@
+{
+ "instance_id": "django__django-16667",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The widget test no longer pins the exact \"0-0-0\" sentinel for overflowing input. It now only requires that value_from_datadict does not raise. The form-level test still requires the \"Enter a valid date.\" error and fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 0,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/forms_tests/widget_tests/test_selectdatewidget.py\n+++ b/tests/forms_tests/widget_tests/test_selectdatewidget.py\n@@ -611,8 +611,12 @@\n             ((None, \"12\", \"1\"), None),\n             ((\"2000\", None, \"1\"), None),\n             ((\"2000\", \"12\", None), None),\n-            ((str(sys.maxsize + 1), \"12\", \"1\"), \"0-0-0\"),\n         ]\n+        from unittest import mock\n+\n+        # Overflowing input must not crash; the exact invalid value returned\n+        # is unspecified (form-level validation is checked elsewhere).\n+        tests.append(((str(sys.maxsize + 1), \"12\", \"1\"), mock.ANY))\n         for values, expected in tests:\n             with self.subTest(values=values):\n                 data = {}\n",
+ "neutralized": [],
+ "lines_changed": 6,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5",
+    "20251127_openhands_claude-opus-4-5",
+    "20251120_livesweagent_gemini-3-pro-preview",
+    "20250804_epam-ai-run-claude-4-sonnet",
+    "20250612_trae",
+    "20250731_harness_ai",
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5",
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118",
+    "20251103_SalesforceAIResearch_SAGE_OpenHands",
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high",
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5",
+    "20260217_mini-v2.0.0_claude-4-6-opus",
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514",
+    "20251014_Lingxi_kimi_k2",
+    "20250519_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,74 @@
+{
+ "instance_id": "sympy__sympy-15976",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The issue only requires that the invalid nesting of msub/msup inside <mi> be removed. The tests now also accept a fix that wraps the script element in a single-child <mrow>, which is equally valid MathML. The unfixed <mi> wrapper is still rejected.",
+   "edits": 8,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 23,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/printing/tests/test_mathml.py\n+++ b/sympy/printing/tests/test_mathml.py\n@@ -735,6 +735,8 @@\n     del mml\n \n     mml = mpp._print(Symbol(\"x^2\"))\n+    if mml.nodeName == 'mrow' and len(mml.childNodes) == 1:\n+        mml = mml.childNodes[0]\n     assert mml.nodeName == 'msup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -743,6 +745,8 @@\n     del mml\n \n     mml = mpp._print(Symbol(\"x__2\"))\n+    if mml.nodeName == 'mrow' and len(mml.childNodes) == 1:\n+        mml = mml.childNodes[0]\n     assert mml.nodeName == 'msup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -751,6 +755,8 @@\n     del mml\n \n     mml = mpp._print(Symbol(\"x_2\"))\n+    if mml.nodeName == 'mrow' and len(mml.childNodes) == 1:\n+        mml = mml.childNodes[0]\n     assert mml.nodeName == 'msub'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -759,6 +765,8 @@\n     del mml\n \n     mml = mpp._print(Symbol(\"x^3_2\"))\n+    if mml.nodeName == 'mrow' and len(mml.childNodes) == 1:\n+        mml = mml.childNodes[0]\n     assert mml.nodeName == 'msubsup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -769,6 +777,8 @@\n     del mml\n \n     mml = mpp._print(Symbol(\"x__3_2\"))\n+    if mml.nodeName == 'mrow' and len(mml.childNodes) == 1:\n+        mml = mml.childNodes[0]\n     assert mml.nodeName == 'msubsup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -779,6 +789,8 @@\n     del mml\n \n     mml = mpp._print(Symbol(\"x_2_a\"))\n+    if mml.nodeName == 'mrow' and len(mml.childNodes) == 1:\n+        mml = mml.childNodes[0]\n     assert mml.nodeName == 'msub'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -792,6 +804,8 @@\n     del mml\n \n     mml = mpp._print(Symbol(\"x^2^a\"))\n+    if mml.nodeName == 'mrow' and len(mml.childNodes) == 1:\n+        mml = mml.childNodes[0]\n     assert mml.nodeName == 'msup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n@@ -805,6 +819,8 @@\n     del mml\n \n     mml = mpp._print(Symbol(\"x__2__a\"))\n+    if mml.nodeName == 'mrow' and len(mml.childNodes) == 1:\n+        mml = mml.childNodes[0]\n     assert mml.nodeName == 'msup'\n     assert mml.childNodes[0].nodeName == 'mi'\n     assert mml.childNodes[0].childNodes[0].nodeValue == 'x'\n",
+ "neutralized": [],
+ "lines_changed": 16,
+ "regrade": [
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_presentation_symbol"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_presentation_symbol"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_presentation_symbol"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_presentation_symbol"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_presentation_symbol"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

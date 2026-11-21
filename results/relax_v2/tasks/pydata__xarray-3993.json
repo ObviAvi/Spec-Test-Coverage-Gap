@@ -1,0 +1,56 @@
+{
+ "instance_id": "pydata__xarray-3993",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test now requires `da.integrate(coord=\"x\")` to work, which is what the issue asks for and what the unfixed code fails. For the old `dim=` keyword it accepts either a TypeError (a plain rename) or a FutureWarning/DeprecationWarning (a deprecation shim), because the issue leaves the deprecation question open.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 25,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/xarray/tests/test_dataset.py\n+++ b/xarray/tests/test_dataset.py\n@@ -6603,8 +6603,21 @@\n     with pytest.raises(ValueError):\n         da.integrate(\"x2d\")\n \n-    with pytest.warns(FutureWarning):\n-        da.integrate(dim=\"x\")\n+    assert da.integrate(coord=\"x\").identical(da.integrate(\"x\"))\n+\n+    import warnings\n+\n+    with warnings.catch_warnings(record=True) as record:\n+        warnings.simplefilter(\"always\")\n+        try:\n+            da.integrate(dim=\"x\")\n+        except TypeError:\n+            pass\n+        else:\n+            assert any(\n+                issubclass(w.category, (FutureWarning, DeprecationWarning))\n+                for w in record\n+            )\n \n \n @pytest.mark.parametrize(\"dask\", [True, False])\n",
+ "neutralized": [],
+ "lines_changed": 17,
+ "regrade": [
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

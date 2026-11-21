@@ -1,0 +1,194 @@
+{
+ "instance_id": "django__django-16263",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "In test_unreferenced_aggregate_annotation_pruned, I removed the assertion that the SQL has exactly two SELECTs. A fix that also drops the unused join and runs a single-level COUNT is equally correct and matches the spec's \"same as Book.objects.count()\". The check that the annotation is absent still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 0,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/aggregation/tests.py\n+++ b/tests/aggregation/tests.py\n@@ -2112,7 +2112,6 @@\n                 authors_count=Count(\"authors\"),\n             ).count()\n         sql = ctx.captured_queries[0][\"sql\"].lower()\n-        self.assertEqual(sql.count(\"select\"), 2, \"Subquery wrapping required\")\n         self.assertNotIn(\"authors_count\", sql)\n \n     def test_referenced_aggregate_annotation_kept(self):\n",
+ "neutralized": [],
+ "lines_changed": 1,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_unreferenced_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_non_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unused_aliased_aggregate_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_non_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unused_aliased_aggregate_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_unused_aliased_aggregate_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_unreferenced_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unused_aliased_aggregate_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_non_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unreferenced_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unused_aliased_aggregate_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_non_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_non_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unused_aliased_aggregate_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_non_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unreferenced_aggregate_annotation_pruned (aggregation.tests.AggregateAnnotationPruningTests)",
+    "test_unused_aliased_aggregate_pruned (aggregation.tests.AggregateAnnotationPruningTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

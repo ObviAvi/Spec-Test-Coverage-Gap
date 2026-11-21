@@ -1,0 +1,124 @@
+{
+ "instance_id": "sympy__sympy-19495",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the secondary assertion that pinned `ConditionSet(n, n < x, Interval(-oo, 0)).subs(x, p)` to exactly `Interval(-oo, 0)`, which the issue never mentions. It now also accepts an unsimplified `ConditionSet` over that same base set. The issue-17341 `ImageSet` assertion is unchanged and still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 14,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/sets/tests/test_conditionset.py\n+++ b/sympy/sets/tests/test_conditionset.py\n@@ -124,8 +124,9 @@\n         x + 1, x < 1, s))\n     assert ConditionSet(\n         n, n < x, Interval(0, oo)).subs(x, p) == Interval(0, oo)\n-    assert ConditionSet(\n-        n, n < x, Interval(-oo, 0)).subs(x, p) == Interval(-oo, 0)\n+    r = ConditionSet(n, n < x, Interval(-oo, 0)).subs(x, p)\n+    assert r == Interval(-oo, 0) or (\n+        isinstance(r, ConditionSet) and r.base_set == Interval(-oo, 0))\n \n     assert ConditionSet(f(x), f(x) < 1, {w, z}\n         ).subs(f(x), y) == ConditionSet(y, y < 1, {w, z})\n",
+ "neutralized": [],
+ "lines_changed": 5,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subs_CondSet"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

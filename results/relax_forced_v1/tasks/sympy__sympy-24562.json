@@ -1,0 +1,42 @@
+{
+ "instance_id": "sympy__sympy-24562",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I narrowed the cross-type consistency sweep to string and int inputs and dropped the Python-float combinations. These secondary cases go beyond the reported string bug. The comparison now uses plain Rational equality instead of as_numer_denom. The reported case Rational('0.5', '100') == 1/200 and the string-string cases still fail on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 27,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/core/tests/test_numbers.py\n+++ b/sympy/core/tests/test_numbers.py\n@@ -370,9 +370,9 @@\n     assert n.p == -2\n \n def test_issue_24543():\n-    for p in ('1.5', 1.5, 2):\n-        for q in ('1.5', 1.5, 2):\n-            assert Rational(p, q).as_numer_denom() == Rational('%s/%s'%(p,q)).as_numer_denom()\n+    for p in ('1.5', 2):\n+        for q in ('1.5', 2):\n+            assert Rational(p, q) == Rational('%s/%s'%(p,q))\n \n     assert Rational('0.5', '100') == Rational(1, 200)\n \n",
+ "neutralized": [],
+ "lines_changed": 6,
+ "regrade": [
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_issue_24543"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+  "instance_id": "django__django-12325",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "0000a6d185c7",
+  "prompt_chars": 12348,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/invalid_models_tests/test_models.py",
+        "old": "    def test_onetoone_with_parent_model(self):\n        class Place(models.Model):\n            pass\n\n        class ParkingLot(Place):\n            other_place = models.OneToOneField(Place, models.CASCADE, related_name='other_parking')\n\n        self.assertEqual(ParkingLot.check(), [])",
+        "new": "    def test_onetoone_with_parent_model(self):\n        class Place(models.Model):\n            pass\n\n        class ParkingLot(Place):\n            place_ptr = models.OneToOneField(Place, models.CASCADE, parent_link=True, related_name='+')\n            other_place = models.OneToOneField(Place, models.CASCADE, related_name='other_parking')\n\n        self.assertEqual(ParkingLot._meta.pk.name, 'place_ptr')\n        self.assertEqual(ParkingLot.check(), [])"
+      },
+      {
+        "file": "tests/invalid_models_tests/test_relative_fields.py",
+        "old": "    def test_clash_parent_link(self):\n        class Parent(models.Model):\n            pass\n\n        class Child(Parent):\n            other_parent = models.OneToOneField(Parent, models.CASCADE)\n\n        errors = [\n            ('fields.E304', 'accessor', 'parent_ptr', 'other_parent'),\n            ('fields.E305', 'query name', 'parent_ptr', 'other_parent'),\n            ('fields.E304', 'accessor', 'other_parent', 'parent_ptr'),\n            ('fields.E305', 'query name', 'other_parent', 'parent_ptr'),\n        ]\n        self.assertEqual(Child.check(), [\n            Error(\n                \"Reverse %s for 'Child.%s' clashes with reverse %s for \"\n                \"'Child.%s'.\" % (attr, field_name, attr, clash_name),\n                hint=(\n                    \"Add or change a related_name argument to the definition \"\n                    \"for 'Child.%s' or 'Child.%s'.\" % (field_name, clash_name)\n                ),\n                obj=Child._meta.get_field(field_name),\n                id=error_id,\n            )\n            for error_id, attr, field_name, clash_name in errors\n        ])",
+        "new": "    def test_clash_parent_link(self):\n        pass"
+      }
+    ],
+    "summary": "The spec only requires that an explicit parent_link=True field wins regardless of declaration order. What happens with a lone unmarked OneToOne to the parent is left open. test_onetoone_with_parent_model now checks the spec's scenario: an explicit parent link declared before another OneToOne gives a valid model with the parent link as pk; this still fails on the unfixed code. test_clash_parent_link checked only the unspecified implicit-parent_ptr behavior, so its body is replaced with pass."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzP1hG43ky1WsF1TdTiW",
+  "input_tokens": 4837,
+  "output_tokens": 1891,
+  "seconds": 16.2
+}

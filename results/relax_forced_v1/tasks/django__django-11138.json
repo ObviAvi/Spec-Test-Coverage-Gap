@@ -1,0 +1,174 @@
+{
+ "instance_id": "django__django-11138",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I removed the secondary case, where the connection time zone (Bangkok) differs from the current time zone and a -4h conversion is checked. The test keeps the main reported case: when the connection and current time zones match, the `__date` lookup must find the event without conversion. That case still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 13,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/timezones/tests.py\n+++ b/tests/timezones/tests.py\n@@ -338,12 +338,6 @@\n             event_datetime = datetime.datetime(2016, 1, 2, 23, 10, 11, 123, tzinfo=EAT)\n             event = Event.objects.create(dt=event_datetime)\n             self.assertEqual(Event.objects.filter(dt__date=event_datetime.date()).first(), event)\n-        # Connection timezone is not equal to the current timezone, datetime\n-        # should be converted (-4h).\n-        with override_database_connection_timezone('Asia/Bangkok'):\n-            event_datetime = datetime.datetime(2016, 1, 2, 3, 10, 11, tzinfo=ICT)\n-            event = Event.objects.create(dt=event_datetime)\n-            self.assertEqual(Event.objects.filter(dt__date=datetime.date(2016, 1, 1)).first(), event)\n \n     @requires_tz_support\n     def test_query_filter_with_naive_datetime(self):\n",
+ "neutralized": [],
+ "lines_changed": 6,
+ "regrade": [
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_query_convert_timezones (timezones.tests.NewDatabaseTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

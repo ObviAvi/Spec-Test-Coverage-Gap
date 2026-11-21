@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-13121",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_forced_v1",
+  "prompt_sha": "801b6179a9b7",
+  "prompt_digest": "1335763062bf",
+  "prompt_chars": 13608,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/expressions/tests.py",
+        "old": "        for delta in self.deltas:\n            qs = Experiment.objects.annotate(duration=F('estimated_time') + delta)",
+        "new": "        for delta in [d for d in self.deltas if d >= datetime.timedelta(0)] if 'datetime' in globals() else self.deltas[:1]:\n            qs = Experiment.objects.annotate(duration=F('estimated_time') + delta)"
+      }
+    ],
+    "summary": "Loosened the secondary requirement that every fixture delta works, including negative ones; the test now checks only non-negative deltas, or just the first delta if `datetime` isn't imported. The duration-plus-timedelta annotation must still return the correct value, which the unfixed code fails."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch1ZrrzyTxinKPikARikN",
+  "input_tokens": 5316,
+  "output_tokens": 960,
+  "seconds": 10.1
+}

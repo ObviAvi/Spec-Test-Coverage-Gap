@@ -1,0 +1,22 @@
+{
+ "instance_id": "sphinx-doc__sphinx-11445",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the exact pinning of the '<generated>' separator line(s) between the prolog and the document: tests now require the prolog lines first followed by all original document lines in order, ignoring any generated padding lines. The unfixed code still fails because it inserts the prolog after the ':mod:' heading line.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 5,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/test_util_rst.py\n+++ b/tests/test_util_rst.py\n@@ -109,13 +109,14 @@\n     content = StringList([':mod:`foo`', '-' * 10, '', 'hello'], 'dummy.rst')\n     prepend_prolog(content, prolog)\n \n-    assert list(content.xitems()) == [('<rst_prolog>', 0, 'this is rst_prolog'),\n-                                      ('<rst_prolog>', 1, 'hello reST!'),\n-                                      ('<generated>', 0, ''),\n-                                      ('dummy.rst', 0, ':mod:`foo`'),\n-                                      ('dummy.rst', 1, '----------'),\n-                                      ('dummy.rst', 2, ''),\n-                                      ('dummy.rst', 3, 'hello')]\n+    items = list(content.xitems())\n+    assert items[:2] == [('<rst_prolog>', 0, 'this is rst_prolog'),\n+                         ('<rst_prolog>', 1, 'hello reST!')]\n+    assert [i for i in items[2:] if i[0] != '<generated>'] == [\n+        ('dummy.rst', 0, ':mod:`foo`'),\n+        ('dummy.rst', 1, '----------'),\n+        ('dummy.rst', 2, ''),\n+        ('dummy.rst', 3, 'hello')]\n \n \n def test_prepend_prolog_with_roles_in_sections_without_newline(app):\n@@ -124,13 +125,14 @@\n     content = StringList([':mod:`foo`', '-' * 10, '', 'hello'], 'dummy.rst')\n     prepend_prolog(content, prolog)\n \n-    assert list(content.xitems()) == [('<rst_prolog>', 0, 'this is rst_prolog'),\n-                                      ('<rst_prolog>', 1, 'hello reST!'),\n-                                      ('<generated>', 0, ''),\n-                                      ('dummy.rst', 0, ':mod:`foo`'),\n-                                      ('dummy.rst', 1, '----------'),\n-                                      ('dummy.rst', 2, ''),\n-                                      ('dummy.rst', 3, 'hello')]\n+    items = list(content.xitems())\n+    assert items[:2] == [('<rst_prolog>', 0, 'this is rst_prolog'),\n+                         ('<rst_prolog>', 1, 'hello reST!')]\n+    assert [i for i in items[2:] if i[0] != '<generated>'] == [\n+        ('dummy.rst', 0, ':mod:`foo`'),\n+        ('dummy.rst', 1, '----------'),\n+        ('dummy.rst', 2, ''),\n+        ('dummy.rst', 3, 'hello')]\n \n \n def test_textwidth():\n",
+ "neutralized": [],
+ "lines_changed": 30
+}

@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-16139",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the exact string match on the resolved password-change link. The test now compares only the URL path and ignores the trailing slash, so query strings, fragments, absolute URLs and a missing trailing slash all pass. The link must still resolve to the pk-based password change URL, so the unfixed relative \"../password/\" link still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 19,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/auth_tests/test_forms.py\n+++ b/tests/auth_tests/test_forms.py\n@@ -912,7 +912,8 @@\n             f\"admin:{user._meta.app_label}_{user._meta.model_name}_password_change\",\n             args=(user.pk,),\n         )\n-        self.assertEqual(joined_url, pw_change_url)\n+        joined_path = urllib.parse.urlsplit(joined_url).path\n+        self.assertEqual(joined_path.rstrip(\"/\"), pw_change_url.rstrip(\"/\"))\n \n     def test_custom_form(self):\n         class CustomUserChangeForm(UserChangeForm):\n",
+ "neutralized": [],
+ "lines_changed": 3,
+ "regrade": [
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "patch_does_not_apply",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

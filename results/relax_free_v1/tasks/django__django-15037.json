@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-15037",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The test pinned the exact generated line. Now it finds the to_field_fk line and checks the target model, DO_NOTHING, and a to_field naming the unique field. Either the field name 'people_unique' or its attname 'people_unique_id' is accepted, since both are valid references and the spec doesn't choose. Unfixed code still fails because it emits no to_field.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 27,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/inspectdb/tests.py\n+++ b/tests/inspectdb/tests.py\n@@ -208,11 +208,17 @@\n     def test_foreign_key_to_field(self):\n         out = StringIO()\n         call_command('inspectdb', 'inspectdb_foreignkeytofield', stdout=out)\n-        self.assertIn(\n-            \"to_field_fk = models.ForeignKey('InspectdbPeoplemoredata', \"\n-            \"models.DO_NOTHING, to_field='people_unique_id')\",\n-            out.getvalue(),\n-        )\n+        import re\n+        output = out.getvalue()\n+        lines = [\n+            line for line in output.splitlines()\n+            if 'to_field_fk = models.ForeignKey(' in line\n+        ]\n+        self.assertEqual(len(lines), 1, output)\n+        line = lines[0]\n+        self.assertIn(\"models.ForeignKey('InspectdbPeoplemoredata'\", line)\n+        self.assertIn('models.DO_NOTHING', line)\n+        self.assertRegex(line, r\"to_field=['\\\"]people_unique(_id)?['\\\"]\")\n \n     def test_digits_column_name_introspection(self):\n         \"\"\"Introspection of column names consist/start with digits (#16536/#17676)\"\"\"\n",
+ "neutralized": [],
+ "lines_changed": 16,
+ "regrade": [
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

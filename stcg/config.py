@@ -38,8 +38,15 @@ CONSENSUS_MIN_RESOLVE_RATE = 0.9
 CONSENSUS_MAX_PATCH_SIMILARITY = 0.5  # mean pairwise Jaccard of changed lines
 CONSENSUS_PATCHES_PER_TASK = 12
 
+# Step 5: relax the flagged tests, check the relaxed tests in Docker, regrade public agent patches.
+RELAXER = "claude"
+RELAX_ATTEMPTS = 3
+RELAX_MIN_PASSERS = 5   # with fewer top-N patches that pass, borrow passing patches from lower-ranked submissions
+RUN_TIMEOUT = 1800      # seconds per container run
+
 # Source URLs.
 VERIFIED_HF = "princeton-nlp/SWE-bench_Verified"
+VERIFIED_EVAL_HF = "SWE-bench/SWE-bench_Verified"  # same 500 tasks, plus each task's Docker image and eval script
 FULL_HF = "princeton-nlp/SWE-bench"
 PRO_HF = "ScaleAI/SWE-bench_Pro"
 PRO_HF_CONFIG = "v1"  # the original 731 tasks, before the V2 refresh

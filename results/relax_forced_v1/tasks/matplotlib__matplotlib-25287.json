@@ -1,0 +1,32 @@
+{
+ "instance_id": "matplotlib__matplotlib-25287",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Loosened the exact string comparison of the offset text color to a color-equivalence check (matplotlib.colors.same_color), so fixes that store the color in a different but equivalent representation (e.g. RGBA) still pass. The checks still fail on the unfixed code, which uses tick.color instead of tick.labelcolor.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 18,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/lib/matplotlib/tests/test_axes.py\n+++ b/lib/matplotlib/tests/test_axes.py\n@@ -7812,25 +7812,27 @@\n \n \n def test_xaxis_offsetText_color():\n+    import matplotlib.colors as mcolors_local\n     plt.rcParams['xtick.labelcolor'] = 'blue'\n     ax = plt.axes()\n-    assert ax.xaxis.offsetText.get_color() == 'blue'\n+    assert mcolors_local.same_color(ax.xaxis.offsetText.get_color(), 'blue')\n \n     plt.rcParams['xtick.color'] = 'yellow'\n     plt.rcParams['xtick.labelcolor'] = 'inherit'\n     ax = plt.axes()\n-    assert ax.xaxis.offsetText.get_color() == 'yellow'\n+    assert mcolors_local.same_color(ax.xaxis.offsetText.get_color(), 'yellow')\n \n \n def test_yaxis_offsetText_color():\n+    import matplotlib.colors as mcolors_local\n     plt.rcParams['ytick.labelcolor'] = 'green'\n     ax = plt.axes()\n-    assert ax.yaxis.offsetText.get_color() == 'green'\n+    assert mcolors_local.same_color(ax.yaxis.offsetText.get_color(), 'green')\n \n     plt.rcParams['ytick.color'] = 'red'\n     plt.rcParams['ytick.labelcolor'] = 'inherit'\n     ax = plt.axes()\n-    assert ax.yaxis.offsetText.get_color() == 'red'\n+    assert mcolors_local.same_color(ax.yaxis.offsetText.get_color(), 'red')\n \n \n @pytest.mark.parametrize('size', [size for size in mfont_manager.font_scalings\n",
+ "neutralized": [],
+ "lines_changed": 10,
+ "regrade": [
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "passes_original_here",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

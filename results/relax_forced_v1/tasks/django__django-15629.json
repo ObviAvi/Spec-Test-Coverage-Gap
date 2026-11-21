@@ -1,0 +1,283 @@
+{
+ "instance_id": "django__django-15629",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Removed the model-creation requirement (FK/OneToOne columns created against a collated PK inherit its collation) by replacing that test's body with `pass`. The spec only reports the AlterField propagation case, and test_alter_field_pk_fk_db_collation still enforces it and still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [
+    "Creation of models with a FK to a PK with db_collation."
+   ],
+   "passers": 0,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/migrations/test_operations.py\n+++ b/tests/migrations/test_operations.py\n@@ -263,62 +263,7 @@\n     @skipUnlessDBFeature(\"supports_collation_on_charfield\", \"supports_foreign_keys\")\n     def test_create_fk_models_to_pk_field_db_collation(self):\n         \"\"\"Creation of models with a FK to a PK with db_collation.\"\"\"\n-        collation = connection.features.test_collations.get(\"non_default\")\n-        if not collation:\n-            self.skipTest(\"Language collations are not supported.\")\n-\n-        app_label = \"test_cfkmtopkfdbc\"\n-        operations = [\n-            migrations.CreateModel(\n-                \"Pony\",\n-                [\n-                    (\n-                        \"id\",\n-                        models.CharField(\n-                            primary_key=True,\n-                            max_length=10,\n-                            db_collation=collation,\n-                        ),\n-                    ),\n-                ],\n-            )\n-        ]\n-        project_state = self.apply_operations(app_label, ProjectState(), operations)\n-        # ForeignKey.\n-        new_state = project_state.clone()\n-        operation = migrations.CreateModel(\n-            \"Rider\",\n-            [\n-                (\"id\", models.AutoField(primary_key=True)),\n-                (\"pony\", models.ForeignKey(\"Pony\", models.CASCADE)),\n-            ],\n-        )\n-        operation.state_forwards(app_label, new_state)\n-        with connection.schema_editor() as editor:\n-            operation.database_forwards(app_label, editor, project_state, new_state)\n-        self.assertColumnCollation(f\"{app_label}_rider\", \"pony_id\", collation)\n-        # Reversal.\n-        with connection.schema_editor() as editor:\n-            operation.database_backwards(app_label, editor, new_state, project_state)\n-        # OneToOneField.\n-        new_state = project_state.clone()\n-        operation = migrations.CreateModel(\n-            \"ShetlandPony\",\n-            [\n-                (\n-                    \"pony\",\n-                    models.OneToOneField(\"Pony\", models.CASCADE, primary_key=True),\n-                ),\n-                (\"cuteness\", models.IntegerField(default=1)),\n-            ],\n-        )\n-        operation.state_forwards(app_label, new_state)\n-        with connection.schema_editor() as editor:\n-            operation.database_forwards(app_label, editor, project_state, new_state)\n-        self.assertColumnCollation(f\"{app_label}_shetlandpony\", \"pony_id\", collation)\n-        # Reversal.\n-        with connection.schema_editor() as editor:\n-            operation.database_backwards(app_label, editor, new_state, project_state)\n+        pass\n \n     def test_create_model_inheritance(self):\n         \"\"\"\n",
+ "neutralized": [
+  "Creation of models with a FK to a PK with db_collation."
+ ],
+ "lines_changed": 57,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5",
+    "20251127_openhands_claude-opus-4-5",
+    "20250612_trae",
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5",
+    "20251120_livesweagent_gemini-3-pro-preview",
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "AlterField operation of db_collation on primary keys changes any FKs"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,64 @@
+{
+ "instance_id": "django__django-13406",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The values_list reload test now accepts a dict, a tuple or named Row equal to ('test',), or the flat scalar 'test'. The specification does not say which output format a reloaded values_list() query must use. It still rejects the broken model-instance result, and test_annotation_values is unchanged.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/queryset_pickle/tests.py\n+++ b/tests/queryset_pickle/tests.py\n@@ -244,7 +244,9 @@\n             with self.subTest(qs._iterable_class.__name__):\n                 reloaded = Happening.objects.all()\n                 reloaded.query = pickle.loads(pickle.dumps(qs.query))\n-                self.assertEqual(reloaded.get(), {'name': 'test'})\n+                # Accept dict (values()) or preserved values_list() output\n+                # (tuple, flat scalar, or named Row), but not model instances.\n+                self.assertIn(reloaded.get(), [{'name': 'test'}, ('test',), 'test'])\n \n     def test_filter_deferred(self):\n         qs = Happening.objects.all()\n",
+ "neutralized": [],
+ "lines_changed": 4,
+ "regrade": [
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

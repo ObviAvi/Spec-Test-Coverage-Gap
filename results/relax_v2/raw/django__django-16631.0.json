@@ -1,0 +1,25 @@
+{
+  "instance_id": "django__django-16631",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_v2",
+  "prompt_sha": "93fabd0add57",
+  "prompt_digest": "5d6bc9abe705",
+  "prompt_chars": 10469,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/auth_tests/test_basic.py",
+        "old": "            self.assertEqual(user.username, created_user.username)\n            self.assertNotEqual(request.session.session_key, prev_session_key)\n        # Remove the fallback secret.\n        # The session hash should be updated using the current secret.\n        with override_settings(SECRET_KEY=\"newsecret\"):\n            user = get_user(request)\n            self.assertIsInstance(user, User)\n            self.assertEqual(user.username, created_user.username)",
+        "new": "            self.assertEqual(user.username, created_user.username)"
+      }
+    ],
+    "summary": "I removed the assertion that the session key changes and the block that requires the user to stay logged in after the fallback is removed. The specification asks for neither, and the documented rotation flow implies sessions expire once the fallback is removed. The test still requires that `get_user` authenticates a session signed with a fallback secret, which fails on the unfixed code."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011CgzRVLB4QEcnkKGMcczsq",
+  "input_tokens": 3952,
+  "output_tokens": 563,
+  "seconds": 8.6
+}

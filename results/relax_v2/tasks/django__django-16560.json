@@ -1,0 +1,72 @@
+{
+ "instance_id": "django__django-16560",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The two test_repr_with_violation_error_code tests now only build a constraint with violation_error_code and call repr() without checking the exact string, because the spec says nothing about repr format. Construction with the new parameter still fails on the unfixed code.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 20,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/constraints/tests.py\n+++ b/tests/constraints/tests.py\n@@ -201,11 +201,7 @@\n             name=\"price_lt_one\",\n             violation_error_code=\"more_than_one\",\n         )\n-        self.assertEqual(\n-            repr(constraint),\n-            \"<CheckConstraint: check=(AND: ('price__lt', 1)) name='price_lt_one' \"\n-            \"violation_error_code='more_than_one'>\",\n-        )\n+        repr(constraint)\n \n     def test_invalid_check_types(self):\n         msg = \"CheckConstraint.check must be a Q instance or boolean expression.\"\n@@ -592,13 +588,7 @@\n             name=\"unique_lower_baz\",\n             violation_error_code=\"baz\",\n         )\n-        self.assertEqual(\n-            repr(constraint),\n-            (\n-                \"<UniqueConstraint: expressions=(F(baz__lower),) \"\n-                \"name='unique_lower_baz' violation_error_code='baz'>\"\n-            ),\n-        )\n+        repr(constraint)\n \n     def test_deconstruction(self):\n         fields = [\"foo\", \"bar\"]\n",
+ "neutralized": [],
+ "lines_changed": 14,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

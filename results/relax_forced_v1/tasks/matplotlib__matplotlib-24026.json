@@ -1,0 +1,27 @@
+{
+ "instance_id": "matplotlib__matplotlib-24026",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "invalid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the pixel-exact image check of the stackplot drawn with CN colours. That call now runs on a throwaway figure and only has to succeed and return three collections. The compared figure goes back to plain labeled-data stackplot, so the unfixed code still fails with the ValueError.",
+   "edits": 1,
+   "check": "edit_error"
+  },
+  {
+   "relaxable": true,
+   "summary": "I loosened the pixel-exact image check of the stackplot drawn with `colors=[\"C0\", \"C1\", \"C2\"]`. That call now runs on a separate, closed figure and only has to succeed and return three collections. The baseline image is drawn with the default-colour stackplot instead. The unfixed code still fails, because passing CN colours raises the ValueError from the issue.",
+   "edits": 1,
+   "check": "edit_error"
+  },
+  {
+   "relaxable": true,
+   "summary": "I loosened the requirement that the stackplot drawn with CN colours exactly match the baseline image. The CN-colour call now runs on a separate, non-pyplot figure and only has to succeed without raising. The image comparison uses the default-colour stackplot. Unfixed code still fails, because `set_prop_cycle` raises `ValueError` on 'C0'.",
+   "edits": 1,
+   "check": "edit_error"
+  }
+ ]
+}

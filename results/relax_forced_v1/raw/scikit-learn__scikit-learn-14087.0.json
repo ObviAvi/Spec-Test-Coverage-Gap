@@ -1,0 +1,25 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-14087",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_forced_v1",
+  "prompt_sha": "801b6179a9b7",
+  "prompt_digest": "2c8c507bfc39",
+  "prompt_chars": 9725,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "sklearn/linear_model/tests/test_logistic.py",
+        "old": "                                multi_class=multi_class, refit=False)\n    lrcv.fit(X, y)",
+        "new": "                                multi_class=multi_class, refit=False)\n    lrcv.fit(X, y)\n    assert lrcv.C_.shape == (n_classes,)\n    assert lrcv.coef_.shape == (n_classes, X.shape[1])\n    return"
+      }
+    ],
+    "summary": "I dropped the check on the exact shape of `l1_ratio_`, which depends on how a fix fills that attribute for a non-elasticnet penalty. The test still checks that `fit` succeeds with `refit=False` and that `C_` and `coef_` have the expected shapes; it returns early so the original `l1_ratio_` assertion is skipped. The unfixed code still fails, because `fit` raises before any assertion runs."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch1h99QDh8a3oAF8bq3uU",
+  "input_tokens": 4136,
+  "output_tokens": 2089,
+  "seconds": 20.3
+}

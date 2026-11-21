@@ -1,0 +1,40 @@
+{
+ "instance_id": "pydata__xarray-6461",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the scalar-`x` case so it no longer requires the resulting attrs to be exactly empty. The issue does not say which attrs to keep when `x` is a scalar; falling back to `cond`'s attrs, for example, would also be reasonable. The test now only requires that the call succeeds and returns an attrs dict, which still fails on the unfixed code because of the `IndexError`.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 25,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/xarray/tests/test_computation.py\n+++ b/xarray/tests/test_computation.py\n@@ -1930,7 +1930,7 @@\n \n     # ensure keep_attrs can handle scalar values\n     actual = xr.where(cond, 1, 0, keep_attrs=True)\n-    assert actual.attrs == {}\n+    assert isinstance(actual.attrs, dict)\n \n \n @pytest.mark.parametrize(\"use_dask\", [True, False])\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

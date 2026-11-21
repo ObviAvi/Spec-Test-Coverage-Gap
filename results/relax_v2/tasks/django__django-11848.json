@@ -1,0 +1,154 @@
+{
+ "instance_id": "django__django-11848",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Replaced the utcnow-only mock with a fake clock that controls datetime.datetime.now/utcnow/today, datetime.date.today, time.time/time_ns/gmtime/localtime, so any way of reading the current year sees the frozen time. Also moved the two exactly-50-year boundary cases to non-boundary clocks (69 under 2020 → 2069; 70 under 2048 → 2070), which still fails the hard-coded 70 cutoff.",
+   "edits": 1,
+   "check": "gold_fails",
+   "neutralized": []
+  },
+  {
+   "relaxable": true,
+   "summary": "The test now controls the clock through every common source: datetime.datetime.now/utcnow/today, datetime.date.today, time.time, time.gmtime and time.localtime. This drops the Python 3.6-incompatible time_ns patch from the previous attempt. Boundary cases were moved to reference years where whole-year and full-timestamp 50-year cutoffs agree; the 70→2070 case still fails on the unfixed code.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 14,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/utils_tests/test_http.py\n+++ b/tests/utils_tests/test_http.py\n@@ -317,26 +317,58 @@\n         parsed = parse_http_date('Sun, 06 Nov 1994 08:49:37 GMT')\n         self.assertEqual(datetime.utcfromtimestamp(parsed), datetime(1994, 11, 6, 8, 49, 37))\n \n-    @mock.patch('django.utils.http.datetime.datetime')\n-    def test_parsing_rfc850(self, mocked_datetime):\n-        mocked_datetime.side_effect = datetime\n-        mocked_datetime.utcnow = mock.Mock()\n+    def test_parsing_rfc850(self):\n+        import datetime as datetime_module\n+        import time\n+        real_gmtime = time.gmtime\n+        real_localtime = time.localtime\n+        clock = {}\n+\n+        class FakeDatetime(datetime):\n+            @classmethod\n+            def now(cls, tz=None):\n+                return cls.fromtimestamp(clock['ts'], tz)\n+\n+            @classmethod\n+            def utcnow(cls):\n+                return cls.utcfromtimestamp(clock['ts'])\n+\n+            @classmethod\n+            def today(cls):\n+                return cls.fromtimestamp(clock['ts'])\n+\n+        class FakeDate(datetime_module.date):\n+            @classmethod\n+            def today(cls):\n+                return cls.fromtimestamp(clock['ts'])\n+\n+        def fake_gmtime(secs=None):\n+            return real_gmtime(clock['ts'] if secs is None else secs)\n+\n+        def fake_localtime(secs=None):\n+            return real_localtime(clock['ts'] if secs is None else secs)\n+\n         utcnow_1 = datetime(2019, 11, 6, 8, 49, 37)\n         utcnow_2 = datetime(2020, 11, 6, 8, 49, 37)\n         utcnow_3 = datetime(2048, 11, 6, 8, 49, 37)\n         tests = (\n-            (utcnow_1, 'Tuesday, 31-Dec-69 08:49:37 GMT', datetime(2069, 12, 31, 8, 49, 37)),\n+            (utcnow_2, 'Tuesday, 31-Dec-69 08:49:37 GMT', datetime(2069, 12, 31, 8, 49, 37)),\n             (utcnow_1, 'Tuesday, 10-Nov-70 08:49:37 GMT', datetime(1970, 11, 10, 8, 49, 37)),\n             (utcnow_1, 'Sunday, 06-Nov-94 08:49:37 GMT', datetime(1994, 11, 6, 8, 49, 37)),\n-            (utcnow_2, 'Wednesday, 31-Dec-70 08:49:37 GMT', datetime(2070, 12, 31, 8, 49, 37)),\n+            (utcnow_3, 'Wednesday, 31-Dec-70 08:49:37 GMT', datetime(2070, 12, 31, 8, 49, 37)),\n             (utcnow_2, 'Friday, 31-Dec-71 08:49:37 GMT', datetime(1971, 12, 31, 8, 49, 37)),\n             (utcnow_3, 'Sunday, 31-Dec-00 08:49:37 GMT', datetime(2000, 12, 31, 8, 49, 37)),\n             (utcnow_3, 'Friday, 31-Dec-99 08:49:37 GMT', datetime(1999, 12, 31, 8, 49, 37)),\n         )\n         for utcnow, rfc850str, expected_date in tests:\n             with self.subTest(rfc850str=rfc850str):\n-                mocked_datetime.utcnow.return_value = utcnow\n-                parsed = parse_http_date(rfc850str)\n+                clock['ts'] = (utcnow - datetime(1970, 1, 1)).total_seconds()\n+                with mock.patch('django.utils.http.datetime.datetime', FakeDatetime), \\\n+                        mock.patch('django.utils.http.datetime.date', FakeDate), \\\n+                        mock.patch('time.time', return_value=clock['ts']), \\\n+                        mock.patch('time.gmtime', fake_gmtime), \\\n+                        mock.patch('time.localtime', fake_localtime):\n+                    parsed = parse_http_date(rfc850str)\n                 self.assertEqual(datetime.utcfromtimestamp(parsed), expected_date)\n \n     def test_parsing_asctime(self):\n",
+ "neutralized": [],
+ "lines_changed": 48,
+ "regrade": [
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_parsing_rfc850 (utils_tests.test_http.HttpDateProcessingTests)",
+    "test_parsing_year_less_than_70 (utils_tests.test_http.HttpDateProcessingTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

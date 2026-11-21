@@ -1,0 +1,35 @@
+{
+ "instance_id": "django__django-13551",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I removed the subtest in which the user starts with a null (None) email. How a missing email is handled when building the hash depends on the implementation, and the spec does not require it. The changed-email cases for both the default User and the custom EMAIL_FIELD model remain, so the unfixed code still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/auth_tests/test_tokens.py\n+++ b/tests/auth_tests/test_tokens.py\n@@ -42,7 +42,6 @@\n     def test_token_with_different_email(self):\n         \"\"\"Updating the user email address invalidates the token.\"\"\"\n         tests = [\n-            (CustomEmailField, None),\n             (CustomEmailField, 'test4@example.com'),\n             (User, 'test4@example.com'),\n         ]\n",
+ "neutralized": [],
+ "lines_changed": 1,
+ "regrade": [
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "Updating the user email address invalidates the token.",
+    "test_token_with_different_secret (auth_tests.test_tokens.TokenGeneratorTest)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

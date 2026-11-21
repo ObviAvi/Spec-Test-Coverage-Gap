@@ -1,0 +1,22 @@
+{
+ "instance_id": "django__django-15973",
+ "group": "dev",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the exact-equality check on the second authors migration's dependencies. It is now a subset check: the dependencies must include the earlier authors migration and the through model's contract migration, and any extra dependencies are allowed. All other assertions are kept, including the requirement for two authors migrations, which the unfixed code still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 4,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/migrations/test_autodetector.py\n+++ b/tests/migrations/test_autodetector.py\n@@ -3614,11 +3614,10 @@\n         self.assertNumberMigrations(changes, \"testapp\", 1)\n         self.assertNumberMigrations(changes, \"contract\", 1)\n         self.assertNumberMigrations(changes, \"authors\", 2)\n-        self.assertMigrationDependencies(\n-            changes,\n-            \"authors\",\n-            1,\n-            {(\"authors\", \"auto_1\"), (\"contract\", \"auto_1\"), (\"testapp\", \"auto_1\")},\n+        authors_deps = set(changes[\"authors\"][1].dependencies)\n+        self.assertTrue(\n+            {(\"authors\", \"auto_1\"), (\"contract\", \"auto_1\")} <= authors_deps,\n+            authors_deps,\n         )\n         self.assertOperationTypes(changes, \"testapp\", 0, [\"CreateModel\"])\n         self.assertOperationAttributes(changes, \"testapp\", 0, 0, name=\"Publisher\")\n",
+ "neutralized": [],
+ "lines_changed": 9
+}

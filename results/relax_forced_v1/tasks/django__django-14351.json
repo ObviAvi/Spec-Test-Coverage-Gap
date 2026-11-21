@@ -1,0 +1,74 @@
+{
+ "instance_id": "django__django-14351",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the exact result-set check to two requirements: the query must run without the subquery-column error, and it must include the book matched by the `authors__in` branch. The set of other rows returned through the HAVING count branch is no longer pinned, since that depends on how the fix handles GROUP BY. The unfixed code still fails because evaluating the query raises the multi-column subquery error.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 23,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/aggregation_regress/tests.py\n+++ b/tests/aggregation_regress/tests.py\n@@ -1531,7 +1531,7 @@\n         books = Book.objects.annotate(Count('authors')).filter(\n             Q(authors__in=authors) | Q(authors__count__gt=2)\n         )\n-        self.assertEqual(set(books), {self.b1, self.b4})\n+        self.assertIn(self.b1, set(books))\n \n \n class JoinPromotionTests(TestCase):\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_having_subquery_select (aggregation_regress.tests.AggregationTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_having_subquery_select (aggregation_regress.tests.AggregationTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_having_subquery_select (aggregation_regress.tests.AggregationTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_having_subquery_select (aggregation_regress.tests.AggregationTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_having_subquery_select (aggregation_regress.tests.AggregationTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

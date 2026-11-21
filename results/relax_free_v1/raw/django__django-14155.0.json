@@ -1,0 +1,30 @@
+{
+  "instance_id": "django__django-14155",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "1d808dcd376c",
+  "prompt_chars": 7285,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "tests/urlpatterns_reverse/tests.py",
+        "old": "        self.assertEqual(\n            repr(resolve('/no_kwargs/42/37/')),\n            \"ResolverMatch(func=urlpatterns_reverse.views.empty_view, \"\n            \"args=('42', '37'), kwargs={}, url_name='no-kwargs', app_names=[], \"\n            \"namespaces=[], route='^no_kwargs/([0-9]+)/([0-9]+)/$')\",\n        )",
+        "new": "        self.assertIn(\n            repr(resolve('/no_kwargs/42/37/')),\n            [\n                \"ResolverMatch(func=urlpatterns_reverse.views.empty_view, \"\n                \"args=('42', '37'), kwargs={}, url_name='no-kwargs', app_names=[], \"\n                \"namespaces=[], route='^no_kwargs/([0-9]+)/([0-9]+)/$')\",\n                \"ResolverMatch(func=urlpatterns_reverse.views.empty_view, \"\n                \"args=('42', '37'), kwargs={}, url_name=no-kwargs, app_names=[], \"\n                \"namespaces=[], route=^no_kwargs/([0-9]+)/([0-9]+)/$)\",\n            ],\n        )"
+      },
+      {
+        "file": "tests/urlpatterns_reverse/tests.py",
+        "old": "            with self.subTest(name=name):\n                func = (\n                    f\"functools.partial({views.empty_view!r}, \"\n                    f\"template_name='{template_name}')\"\n                )\n                self.assertEqual(\n                    repr(resolve(f'/{name}/')),\n                    f\"ResolverMatch(func={func}, args=(), kwargs={{}}, \"\n                    f\"url_name='{name}', app_names=[], namespaces=[], \"\n                    f\"route='{name}/')\",\n                )",
+        "new": "            with self.subTest(name=name):\n                r = repr(resolve(f'/{name}/'))\n                self.assertTrue(r.startswith('ResolverMatch('), r)\n                self.assertIn('empty_view', r)\n                self.assertIn(template_name, r)"
+      }
+    ],
+    "summary": "The partial-repr test now only requires that the repr reveal the underlying function (empty_view) and the pre-supplied template_name argument, so unwrapping in __init__ is accepted as well as repr-ing the partial. test_repr now accepts both quoted and unquoted url_name/route, since quoting was never specified."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3CVGurSYFtfctN6sAvA",
+  "input_tokens": 3020,
+  "output_tokens": 2316,
+  "seconds": 21.5
+}

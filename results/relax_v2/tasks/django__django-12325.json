@@ -1,0 +1,260 @@
+{
+ "instance_id": "django__django-12325",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The spec only requires that an explicit parent_link=True field wins regardless of declaration order. What happens with a lone unmarked OneToOne to the parent is left open. test_onetoone_with_parent_model now checks the spec's scenario: an explicit parent link declared before another OneToOne gives a valid model with the parent link as pk; this still fails on the unfixed code. test_clash_parent_link checked only the unspecified implicit-parent_ptr behavior, so its body is replaced with pass.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [
+    "test_clash_parent_link (invalid_models_tests.test_relative_fields.ComplexClashTests)"
+   ],
+   "passers": 4,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/invalid_models_tests/test_models.py\n+++ b/tests/invalid_models_tests/test_models.py\n@@ -1010,8 +1010,10 @@\n             pass\n \n         class ParkingLot(Place):\n+            place_ptr = models.OneToOneField(Place, models.CASCADE, parent_link=True, related_name='+')\n             other_place = models.OneToOneField(Place, models.CASCADE, related_name='other_parking')\n \n+        self.assertEqual(ParkingLot._meta.pk.name, 'place_ptr')\n         self.assertEqual(ParkingLot.check(), [])\n \n     def test_onetoone_with_explicit_parent_link_parent_model(self):\n--- a/tests/invalid_models_tests/test_relative_fields.py\n+++ b/tests/invalid_models_tests/test_relative_fields.py\n@@ -1292,31 +1292,7 @@\n         ])\n \n     def test_clash_parent_link(self):\n-        class Parent(models.Model):\n-            pass\n-\n-        class Child(Parent):\n-            other_parent = models.OneToOneField(Parent, models.CASCADE)\n-\n-        errors = [\n-            ('fields.E304', 'accessor', 'parent_ptr', 'other_parent'),\n-            ('fields.E305', 'query name', 'parent_ptr', 'other_parent'),\n-            ('fields.E304', 'accessor', 'other_parent', 'parent_ptr'),\n-            ('fields.E305', 'query name', 'other_parent', 'parent_ptr'),\n-        ]\n-        self.assertEqual(Child.check(), [\n-            Error(\n-                \"Reverse %s for 'Child.%s' clashes with reverse %s for \"\n-                \"'Child.%s'.\" % (attr, field_name, attr, clash_name),\n-                hint=(\n-                    \"Add or change a related_name argument to the definition \"\n-                    \"for 'Child.%s' or 'Child.%s'.\" % (field_name, clash_name)\n-                ),\n-                obj=Child._meta.get_field(field_name),\n-                id=error_id,\n-            )\n-            for error_id, attr, field_name, clash_name in errors\n-        ])\n+        pass\n \n \n @isolate_apps('invalid_models_tests')\n",
+ "neutralized": [
+  "test_clash_parent_link (invalid_models_tests.test_relative_fields.ComplexClashTests)"
+ ],
+ "lines_changed": 28,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251215_livesweagent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20260217_mini-v2.0.0_claude-4-6-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250807_openhands_gpt5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

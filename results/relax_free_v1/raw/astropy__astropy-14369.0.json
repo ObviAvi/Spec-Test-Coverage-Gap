@@ -1,0 +1,25 @@
+{
+  "instance_id": "astropy__astropy-14369",
+  "attempt": 0,
+  "model": "claude-opus-5-5",
+  "prompt": "relax_free_v1",
+  "prompt_sha": "941f9b813bf6",
+  "prompt_digest": "e7454f21fec9",
+  "prompt_chars": 19931,
+  "output": {
+    "relaxable": true,
+    "edits": [
+      {
+        "file": "astropy/units/tests/test_format.py",
+        "old": "        \"km s-1\",\n        \"km/s.Mpc-1\",\n        \"/s.Mpc\",",
+        "new": "        \"km s-1\",\n        # Whether 'km/s.Mpc-1' must be rejected or read left-to-right as km/s/Mpc is\n        # not settled by the issue; keep the test id but use an input that is invalid\n        # under any grammar.\n        pytest.param(\"km/s.Mpc-1)\", id=\"km/s.Mpc-1\"),\n        \"/s.Mpc\","
+      }
+    ],
+    "summary": "The graded fail case requires `km/s.Mpc-1` to raise an error, but the issue never says this mixed expression is invalid. A left-to-right parser that reads it as km/s/Mpc would also be a correct fix. I kept the test id and swapped in an input with an unmatched parenthesis, which every parser rejects. The `test_cds_grammar` cases still fail on the unfixed code."
+  },
+  "served_model": "claude-opus-5-5",
+  "request_id": "req_011Ch3AsDrvoDCs2crMysPxG",
+  "input_tokens": 9460,
+  "output_tokens": 3719,
+  "seconds": 37.2
+}

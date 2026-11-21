@@ -1,0 +1,266 @@
+{
+ "instance_id": "django__django-13195",
+ "group": "flagged",
+ "prompt": "relax_v2",
+ "prompt_sha": "93fabd0add57",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Made SameSite comparisons case-insensitive and replaced the session tests' exact Set-Cookie string checks with per-attribute checks, so extra attributes such as HttpOnly are allowed. Turned the auto-secure-on-samesite='none' test into `pass`, since the issue never requires that behavior. The samesite-preservation checks still fail on the unfixed code.",
+   "edits": 5,
+   "check": "ok",
+   "neutralized": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "passers": 3,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/responses/test_cookie.py\n+++ b/tests/responses/test_cookie.py\n@@ -121,12 +121,9 @@\n                 self.assertIs(response.cookies[cookie_name]['secure'], True)\n \n     def test_delete_cookie_secure_samesite_none(self):\n-        # delete_cookie() sets the secure flag if samesite='none'.\n-        response = HttpResponse()\n-        response.delete_cookie('c', samesite='none')\n-        self.assertIs(response.cookies['c']['secure'], True)\n+        pass\n \n     def test_delete_cookie_samesite(self):\n         response = HttpResponse()\n         response.delete_cookie('c', samesite='lax')\n-        self.assertEqual(response.cookies['c']['samesite'], 'lax')\n+        self.assertEqual(response.cookies['c']['samesite'].lower(), 'lax')\n--- a/tests/messages_tests/test_cookie.py\n+++ b/tests/messages_tests/test_cookie.py\n@@ -87,8 +87,8 @@\n         self.assertEqual(response.cookies['messages']['domain'], '.example.com')\n         self.assertEqual(response.cookies['messages']['expires'], 'Thu, 01 Jan 1970 00:00:00 GMT')\n         self.assertEqual(\n-            response.cookies['messages']['samesite'],\n-            settings.SESSION_COOKIE_SAMESITE,\n+            response.cookies['messages']['samesite'].lower(),\n+            settings.SESSION_COOKIE_SAMESITE.lower(),\n         )\n \n     def test_get_bad_cookie(self):\n--- a/tests/sessions_tests/tests.py\n+++ b/tests/sessions_tests/tests.py\n@@ -756,14 +756,13 @@\n         # The cookie was deleted, not recreated.\n         # A deleted cookie header looks like:\n         #  Set-Cookie: sessionid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/\n-        self.assertEqual(\n-            'Set-Cookie: {}=\"\"; expires=Thu, 01 Jan 1970 00:00:00 GMT; '\n-            'Max-Age=0; Path=/; SameSite={}'.format(\n-                settings.SESSION_COOKIE_NAME,\n-                settings.SESSION_COOKIE_SAMESITE,\n-            ),\n-            str(response.cookies[settings.SESSION_COOKIE_NAME])\n-        )\n+        _cookie = response.cookies[settings.SESSION_COOKIE_NAME]\n+        _cookie_str = str(_cookie)\n+        self.assertTrue(_cookie_str.startswith('Set-Cookie: {}=\"\"'.format(settings.SESSION_COOKIE_NAME)))\n+        self.assertIn('expires=Thu, 01 Jan 1970 00:00:00 GMT', _cookie_str)\n+        self.assertIn('Max-Age=0', _cookie_str)\n+        self.assertEqual(_cookie['path'], '/')\n+        self.assertEqual(_cookie['samesite'].lower(), settings.SESSION_COOKIE_SAMESITE.lower())\n         # SessionMiddleware sets 'Vary: Cookie' to prevent the 'Set-Cookie'\n         # from being cached.\n         self.assertEqual(response['Vary'], 'Cookie')\n@@ -788,14 +787,14 @@\n         #  Set-Cookie: sessionid=; Domain=.example.local;\n         #              expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0;\n         #              Path=/example/\n-        self.assertEqual(\n-            'Set-Cookie: {}=\"\"; Domain=.example.local; expires=Thu, '\n-            '01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/example/; SameSite={}'.format(\n-                settings.SESSION_COOKIE_NAME,\n-                settings.SESSION_COOKIE_SAMESITE,\n-            ),\n-            str(response.cookies[settings.SESSION_COOKIE_NAME])\n-        )\n+        _cookie = response.cookies[settings.SESSION_COOKIE_NAME]\n+        _cookie_str = str(_cookie)\n+        self.assertTrue(_cookie_str.startswith('Set-Cookie: {}=\"\"'.format(settings.SESSION_COOKIE_NAME)))\n+        self.assertEqual(_cookie['domain'], '.example.local')\n+        self.assertIn('expires=Thu, 01 Jan 1970 00:00:00 GMT', _cookie_str)\n+        self.assertIn('Max-Age=0', _cookie_str)\n+        self.assertEqual(_cookie['path'], '/example/')\n+        self.assertEqual(_cookie['samesite'].lower(), settings.SESSION_COOKIE_SAMESITE.lower())\n \n     def test_flush_empty_without_session_cookie_doesnt_set_cookie(self):\n         def response_ending_session(request):\n",
+ "neutralized": [
+  "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+ ],
+ "lines_changed": 42,
+ "regrade": [
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

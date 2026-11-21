@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-16661",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I removed the assertion on `restaurant__place__country__id__exact`. That secondary case depends on how a fix collapses a trailing primary-key lookup on the final relation, which the specification never addresses. The reported lookup `restaurant__place__country` and the `__name` lookup are still checked, so the unfixed code still fails.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/modeladmin/tests.py\n+++ b/tests/modeladmin/tests.py\n@@ -177,9 +177,6 @@\n         ma = WaiterAdmin(Waiter, self.site)\n         self.assertIs(ma.lookup_allowed(\"restaurant__place__country\", \"1\"), True)\n         self.assertIs(\n-            ma.lookup_allowed(\"restaurant__place__country__id__exact\", \"1\"), True\n-        )\n-        self.assertIs(\n             ma.lookup_allowed(\"restaurant__place__country__name\", \"test_value\"), True\n         )\n \n",
+ "neutralized": [],
+ "lines_changed": 3,
+ "regrade": [
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

@@ -1,0 +1,64 @@
+{
+ "instance_id": "django__django-13406",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The specification does not say whether a reloaded values_list() query must come back as values() dicts or keep its original tuple, flat or named form. The values_list test now accepts either the dict or the original queryset's result, while still rejecting the model instances the unfixed code returns.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/queryset_pickle/tests.py\n+++ b/tests/queryset_pickle/tests.py\n@@ -244,7 +244,9 @@\n             with self.subTest(qs._iterable_class.__name__):\n                 reloaded = Happening.objects.all()\n                 reloaded.query = pickle.loads(pickle.dumps(qs.query))\n-                self.assertEqual(reloaded.get(), {'name': 'test'})\n+                result = reloaded.get()\n+                self.assertNotIsInstance(result, Happening)\n+                self.assertIn(result, [{'name': 'test'}, qs.get()])\n \n     def test_filter_deferred(self):\n         qs = Happening.objects.all()\n",
+ "neutralized": [],
+ "lines_changed": 4,
+ "regrade": [
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

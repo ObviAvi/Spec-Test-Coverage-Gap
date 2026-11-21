@@ -1,0 +1,292 @@
+{
+ "instance_id": "django__django-13195",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The session-middleware tests compared the full Set-Cookie string, which would reject fixes that also pass HttpOnly or Secure from the session settings, as the issue itself suggests. They now check each relevant attribute, including SameSite, individually. The tests for the delete_cookie samesite kwarg, the automatic Secure flag for samesite='none', and messages samesite are kept as specified behavior.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 3,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/sessions_tests/tests.py\n+++ b/tests/sessions_tests/tests.py\n@@ -756,14 +756,13 @@\n         # The cookie was deleted, not recreated.\n         # A deleted cookie header looks like:\n         #  Set-Cookie: sessionid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/\n-        self.assertEqual(\n-            'Set-Cookie: {}=\"\"; expires=Thu, 01 Jan 1970 00:00:00 GMT; '\n-            'Max-Age=0; Path=/; SameSite={}'.format(\n-                settings.SESSION_COOKIE_NAME,\n-                settings.SESSION_COOKIE_SAMESITE,\n-            ),\n-            str(response.cookies[settings.SESSION_COOKIE_NAME])\n-        )\n+        cookie = response.cookies[settings.SESSION_COOKIE_NAME]\n+        self.assertEqual(cookie.value, '')\n+        self.assertEqual(cookie['expires'], 'Thu, 01 Jan 1970 00:00:00 GMT')\n+        self.assertEqual(str(cookie['max-age']), '0')\n+        self.assertEqual(cookie['path'], '/')\n+        self.assertEqual(cookie['domain'], '')\n+        self.assertEqual(cookie['samesite'], settings.SESSION_COOKIE_SAMESITE)\n         # SessionMiddleware sets 'Vary: Cookie' to prevent the 'Set-Cookie'\n         # from being cached.\n         self.assertEqual(response['Vary'], 'Cookie')\n@@ -788,14 +787,13 @@\n         #  Set-Cookie: sessionid=; Domain=.example.local;\n         #              expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0;\n         #              Path=/example/\n-        self.assertEqual(\n-            'Set-Cookie: {}=\"\"; Domain=.example.local; expires=Thu, '\n-            '01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/example/; SameSite={}'.format(\n-                settings.SESSION_COOKIE_NAME,\n-                settings.SESSION_COOKIE_SAMESITE,\n-            ),\n-            str(response.cookies[settings.SESSION_COOKIE_NAME])\n-        )\n+        cookie = response.cookies[settings.SESSION_COOKIE_NAME]\n+        self.assertEqual(cookie.value, '')\n+        self.assertEqual(cookie['domain'], '.example.local')\n+        self.assertEqual(cookie['expires'], 'Thu, 01 Jan 1970 00:00:00 GMT')\n+        self.assertEqual(str(cookie['max-age']), '0')\n+        self.assertEqual(cookie['path'], '/example/')\n+        self.assertEqual(cookie['samesite'], settings.SESSION_COOKIE_SAMESITE)\n \n     def test_flush_empty_without_session_cookie_doesnt_set_cookie(self):\n         def response_ending_session(request):\n",
+ "neutralized": [],
+ "lines_changed": 30,
+ "regrade": [
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250804_epam-ai-run-claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250902_atlassian-rovo-dev"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250731_harness_ai"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250720_Lingxi-v1.5_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250915_JoyCode"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250710_bloop"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250715_qodo_command"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_cookie_setings (messages_tests.test_cookie.CookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_delete_cookie_secure_samesite_none (responses.test_cookie.DeleteCookieTests)",
+    "test_session_delete_on_end (sessions_tests.tests.SessionMiddlewareTests)",
+    "test_session_delete_on_end_with_custom_domain_and_path (sessions_tests.tests.SessionMiddlewareTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

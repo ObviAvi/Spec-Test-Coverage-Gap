@@ -1,0 +1,84 @@
+{
+ "instance_id": "django__django-12663",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the requirement that the filtered queryset contain exactly one row equal to gmbh. The test now only checks that the queryset evaluates and includes gmbh. The unfixed code still fails, because it raises TypeError while building the filter with the SimpleLazyObject.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 22,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/expressions/tests.py\n+++ b/tests/expressions/tests.py\n@@ -622,7 +622,7 @@\n                 ).values('manager'),\n             ),\n         ).filter(ceo_manager=max_manager)\n-        self.assertEqual(qs.get(), self.gmbh)\n+        self.assertIn(self.gmbh, list(qs))\n \n     def test_aggregate_subquery_annotation(self):\n         with self.assertNumQueries(1) as ctx:\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20251127_openhands_claude-opus-4-5"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_filter_by_lazy (expressions.tests.BasicExpressionsTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_filter_by_lazy (expressions.tests.BasicExpressionsTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_filter_by_lazy (expressions.tests.BasicExpressionsTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250623_warp"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_filter_by_lazy (expressions.tests.BasicExpressionsTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_filter_by_lazy (expressions.tests.BasicExpressionsTests)"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250519_trae"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_subquery_filter_by_lazy (expressions.tests.BasicExpressionsTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

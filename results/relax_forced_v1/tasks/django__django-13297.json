@@ -1,0 +1,34 @@
+{
+ "instance_id": "django__django-13297",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "Replaced the exact equality check on the context's artist object with a check that the view rendered successfully and put an artist in the context. `Artist.objects.get()` with the lazy kwarg still has to succeed, so the unfixed code still crashes.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/generic_views/test_base.py\n+++ b/tests/generic_views/test_base.py\n@@ -620,4 +620,5 @@\n \n         artist = Artist.objects.create(name='Rene Magritte')\n         response = ArtistView.as_view()(self.rf.get('/'), artist_name=artist.name)\n-        self.assertEqual(response.context_data['artist'], artist)\n+        self.assertEqual(response.status_code, 200)\n+        self.assertIn('artist', response.context_data)\n",
+ "neutralized": [],
+ "lines_changed": 3,
+ "regrade": [
+  {
+   "submissions": [
+    "20251103_SalesforceAIResearch_SAGE_OpenHands"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_template_params_filtering (generic_views.test_base.DeprecationTests)"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}

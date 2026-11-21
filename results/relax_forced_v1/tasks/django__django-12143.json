@@ -1,0 +1,32 @@
+{
+ "instance_id": "django__django-12143",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the exact count assertion (`count() == 1`). The test now only checks that the edited object (whose pk is in the `form$`-prefixed POST data) is in the returned queryset. The unfixed code still fails, because its unescaped `$` makes the queryset empty.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 15,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/tests/admin_changelist/tests.py\n+++ b/tests/admin_changelist/tests.py\n@@ -862,7 +862,7 @@\n         m = SwallowAdmin(Swallow, custom_site)\n         request = self.factory.post(changelist_url, data=data)\n         queryset = m._get_list_editable_queryset(request, prefix='form$')\n-        self.assertEqual(queryset.count(), 1)\n+        self.assertTrue(queryset.filter(pk=a.pk).exists())\n \n     def test_changelist_view_list_editable_changed_objects_uses_filter(self):\n         \"\"\"list_editable edits use a filtered queryset to limit memory usage.\"\"\"\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "patch_does_not_apply",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

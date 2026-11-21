@@ -1,0 +1,137 @@
+{
+ "instance_id": "sympy__sympy-22080",
+ "group": "flagged",
+ "prompt": "relax_free_v1",
+ "prompt_sha": "941f9b813bf6",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "The C-code expectations pinned the original fix's incidental parenthesization of unary minus, so they now accept either the old or new equivalent form. The Python printer Mod checks now evaluate the printed code numerically instead of comparing exact strings, so any correctly parenthesized output passes. test_empty_modules is unchanged and still fails on the unfixed code.",
+   "edits": 2,
+   "check": "ok",
+   "neutralized": [
+    "test_create_expand_pow_optimization"
+   ],
+   "passers": 2,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/sympy/codegen/tests/test_rewriting.py\n+++ b/sympy/codegen/tests/test_rewriting.py\n@@ -266,10 +266,10 @@\n     # gh issue 15335\n     assert cc(x**(-4)) == '1.0/(x*x*x*x)'\n     assert cc(x**(-5)) == 'pow(x, -5)'\n-    assert cc(-x**4) == '-(x*x*x*x)'\n-    assert cc(x**4 - x**2) == '-(x*x) + x*x*x*x'\n+    assert cc(-x**4) in ('-x*x*x*x', '-(x*x*x*x)')\n+    assert cc(x**4 - x**2) in ('-x*x + x*x*x*x', '-(x*x) + x*x*x*x')\n     i = Symbol('i', integer=True)\n-    assert cc(x**i - x**2) == 'pow(x, i) - (x*x)'\n+    assert cc(x**i - x**2) in ('pow(x, i) - x*x', 'pow(x, i) - (x*x)')\n     # gh issue 20753\n     cc2 = lambda x: ccode(optimize(x, [create_expand_pow_optimization(\n         4, base_req=lambda b: b.is_Function)]))\n--- a/sympy/printing/tests/test_pycode.py\n+++ b/sympy/printing/tests/test_pycode.py\n@@ -30,8 +30,8 @@\n \n     assert prntr.doprint(x**y) == 'x**y'\n     assert prntr.doprint(Mod(x, 2)) == 'x % 2'\n-    assert prntr.doprint(-Mod(x, y)) == '-(x % y)'\n-    assert prntr.doprint(Mod(-x, y)) == '(-x) % y'\n+    assert eval(prntr.doprint(-Mod(x, y)), {'x': 3, 'y': 7}) == -3\n+    assert eval(prntr.doprint(Mod(-x, y)), {'x': 3, 'y': 7}) == 4\n     assert prntr.doprint(And(x, y)) == 'x and y'\n     assert prntr.doprint(Or(x, y)) == 'x or y'\n     assert not prntr.module_imports\n",
+ "neutralized": [
+  "test_create_expand_pow_optimization"
+ ],
+ "lines_changed": 10,
+ "regrade": [
+  {
+   "submissions": [
+    "20251205_sonar-foundation-agent_claude-opus-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250928_trae_doubao_seed_code",
+    "20251127_openhands_claude-opus-4-5",
+    "20260217_mini-v2.0.0_claude-4-6-opus",
+    "20251124_mini-v1.16.0_claude-opus-4-5-20251101"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251120_livesweagent_gemini-3-pro-preview"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250819_ACoder"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250901_warp"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250612_trae"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251103_sonar-foundation-agent_claude-sonnet-4-5"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250603_Refact_Agent_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-opus"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251021_SalesforceAIResearch_SAGE_bash_only"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "test_PythonCodePrinter"
+   ],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250522_tools_claude-4-sonnet"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20251211_mini-v1.17.2_gpt-5.2-2025-12-11-high"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  },
+  {
+   "submissions": [
+    "20250611_moatless_claude-4-sonnet-20250514"
+   ],
+   "outcome": "flip",
+   "f2p_failed": [],
+   "p2p_failed": []
+  }
+ ]
+}

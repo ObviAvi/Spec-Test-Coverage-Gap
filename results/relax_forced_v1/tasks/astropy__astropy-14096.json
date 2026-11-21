@@ -1,0 +1,34 @@
+{
+ "instance_id": "astropy__astropy-14096",
+ "group": "control",
+ "prompt": "relax_forced_v1",
+ "prompt_sha": "801b6179a9b7",
+ "status": "valid",
+ "attempts": [
+  {
+   "relaxable": true,
+   "summary": "I loosened the exception-type requirement. The test now accepts any exception whose message names `random_attr`, not only `AttributeError`. The unfixed code still fails because its error names `prop` instead of `random_attr`.",
+   "edits": 1,
+   "check": "ok",
+   "neutralized": [],
+   "passers": 28,
+   "passers_error": 0,
+   "passers_unreproduced": 0
+  }
+ ],
+ "diff": "--- a/astropy/coordinates/tests/test_sky_coord.py\n+++ b/astropy/coordinates/tests/test_sky_coord.py\n@@ -2180,6 +2180,6 @@\n             return self.random_attr\n \n     c = custom_coord(\"00h42m30s\", \"+41d12m00s\", frame=\"icrs\")\n-    with pytest.raises(AttributeError, match=\"random_attr\"):\n+    with pytest.raises(Exception, match=\"random_attr\"):\n         # Before this matched \"prop\" rather than \"random_attr\"\n         c.prop\n",
+ "neutralized": [],
+ "lines_changed": 2,
+ "regrade": [
+  {
+   "submissions": [
+    "20251014_Lingxi_kimi_k2"
+   ],
+   "outcome": "still_fails",
+   "f2p_failed": [
+    "astropy/coordinates/tests/test_sky_coord.py::test_subclass_property_exception_error"
+   ],
+   "p2p_failed": []
+  }
+ ]
+}
