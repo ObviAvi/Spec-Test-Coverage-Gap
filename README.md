@@ -105,11 +105,11 @@ Targets, fixed before the test run: recall >= 70% on overspecified and a false-f
 
 ## Step 5: relax and regrade
 
-For each Verified task with at least one *candidate* (a top-30 patch that failed the task, whose published report shows failing graded tests and no failing pre-existing test):
+For each Verified task with at least one *candidate* (a top-30 patch that failed the task, whose published report shows failing evaluation (FAIL_TO_PASS) tests and no failing regression (PASS_TO_PASS) test):
 
 1. The relaxer (`stcg/relax.py`) gets the spec, the test patch, the gold patch and, for `relax_v2`, both judges' explanations. It returns search-and-replace edits inside the test patch's hunks.
-2. The relaxed tests run in the task's image through the SWE-bench harness (`stcg/dockerrun.py`). A relaxation is valid when at least one graded test still fails on the unfixed repo, the gold patch passes, and every patch that resolved the original task still resolves it. Up to 3 attempts, each seeing the previous failure.
-3. Every candidate is rerun on the valid relaxed tests. A *flip* passes every graded and pre-existing test under the relaxed tests and also fails the original tests in our environment.
+2. The relaxed tests run in the task's image through the SWE-bench harness (`stcg/dockerrun.py`). A relaxation is valid when at least one evaluation test still fails on the unfixed repo, the gold patch passes, and every patch that resolved the original task still resolves it. Up to 3 attempts, each seeing the previous failure.
+3. Every candidate is rerun on the valid relaxed tests. A *flip* passes every evaluation and regression test under the relaxed tests and also fails the original tests in our environment.
 
 Groups (`--group`) are set by how many panel judges flag the task: `flagged` (both), `control` (neither), `dev` (exactly one). Relaxer prompts were developed on `dev` tasks (`relax_v1`, then `relax_v2`), which are excluded from the reports; the 10 dev task records under `results/relax_free_v1/tasks/` and `results/relax_forced_v1/tasks/` are from that development.
 
@@ -117,7 +117,7 @@ Groups (`--group`) are set by how many panel judges flag the task: `flagged` (bo
 
 - There are no known-fine SWE-bench Pro tasks, so the false-flag rate is measured on Verified only. The repaired SWE-Bench Pro Verified versions are not a fine set: the repairs fixed only the reported narrow check, and on dev the judges flagged 11/30 of them for other overspecified checks still in the task. The 17 Pro tasks "reported broken but judged fine" are not in the SWE-Bench Pro Verified release.
 - Step 5 covers Verified only; there are no public per-task agent patches for Pro in the pipeline.
-- The relaxed-test checks bound a relaxation from one side only: nothing stops a relaxed test from being looser than the specification warrants. Flips are not individually audited.
+- The relaxed-test checks bound a relaxation from one side only: nothing stops a relaxed test from being looser than the specification warrants. Only a sample of flips is inspected by hand: two to four flipped patches on each of the five control tasks with the most flips, plus the examples in the paper's appendix.
 - The SPICE comparison is not implemented.
 
 ## Layout
