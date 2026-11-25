@@ -1,5 +1,7 @@
 # Spec-Test Coverage Gap (STCG)
 
+Paper: [Spec-Test Coverage Gap: Detecting Overspecified Tests in SWE-Bench-Style Benchmarks](https://arxiv.org/abs/2611.31839) (arXiv:2611.31839)
+
 Detects SWE-bench-style tasks whose tests check *how* the reference fix was written rather than *whether* the issue is fixed. A panel of LLM judges from different model families reads only the task specification and the test patch, then rates each task 1-4:
 
 | Score | Label | Meaning |
@@ -117,7 +119,7 @@ Groups (`--group`) are set by how many panel judges flag the task: `flagged` (bo
 
 - There are no known-fine SWE-bench Pro tasks, so the false-flag rate is measured on Verified only. The repaired SWE-Bench Pro Verified versions are not a fine set: the repairs fixed only the reported narrow check, and on dev the judges flagged 11/30 of them for other overspecified checks still in the task. The 17 Pro tasks "reported broken but judged fine" are not in the SWE-Bench Pro Verified release.
 - Step 5 covers Verified only; there are no public per-task agent patches for Pro in the pipeline.
-- The relaxed-test checks bound a relaxation from one side only: nothing stops a relaxed test from being looser than the specification warrants. Only a sample of flips is inspected by hand: two to four flipped patches on each of the five control tasks with the most flips, plus the examples in the paper's appendix.
+- The relaxed-test checks bound a relaxation from one side only: nothing stops a relaxed test from being looser than the specification warrants. Only a sample of flips is inspected by hand: two to four flipped patches on each of the five control tasks with the most flips, plus the examples in the [paper's](https://arxiv.org/abs/2611.31839) appendix.
 - The SPICE comparison is not implemented.
 
 ## Layout
